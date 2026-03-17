@@ -217,7 +217,7 @@ select option,select optgroup{background:#1e1e1e}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/16/2026 7:15 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/27/2026 12:33 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -323,10 +323,7 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div>
-<div style="margin-top:10px">
-<div style="font-weight:700;margin-bottom:6px">
-</div>
+    
 </div>
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
@@ -447,13 +444,7 @@ const PHONES=[
   {id:'iconpr', n:'Icon Pro 2026',         sw:0,      nw:0,       up:124.99,  sw_o:29.99,  nw_o:29.99,  up_o:124.99,  frp:124.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
 ];
 
-const WATCHES=[
-  {id:'wse3_40',n:'Watch SE 3 – 40mm',  price:289.99,frp:299.99,posOff:10,credit:10,creditMo:6},
-  {id:'wse3_44',n:'Watch SE 3 – 44mm',  price:319.99,frp:329.99,posOff:10,credit:10,creditMo:6},
-  {id:'ws11_42',n:'Watch Series 11 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
-  {id:'ws11_46',n:'Watch Series 11 – 46mm',price:519.99,frp:529.99,posOff:10,credit:10,creditMo:10},
-  {id:'wu3',    n:'Watch Ultra 3 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
-];
+const WATCHES = [];
 
 const TABLETS=[
   {id:'taba9p', n:'Galaxy Tab A9+',  price:149.99,frp:249.99},
@@ -485,7 +476,7 @@ const fmtMo=n=>fmt(n)+'/mo';
 
 function devById(id,cat){
   if(cat==='v')return PHONES.find(p=>p.id===id);
-  if(cat==='w')return WATCHES.find(w=>w.id===id);
+  if(false)return WATCHES.find(w=>w.id===id);
   if(cat==='t')return TABLETS.find(t=>t.id===id);
   if(cat==='h')return HS_DEVICES.find(h=>h.id===id);
 }
@@ -565,7 +556,7 @@ function renderPlanGrid(){
     const ap=(vn<=1&&S.ap&&!p.byod)?-5:0;
     const display=base+ap;
     const sub=ap<0?`$${base} w/o AutoPay`:(vn>1?vn+' lines':'1 line');
-    return`<div class="plan-btn${p.byod?' byod-btn':''} ${S.plan===p.id?'active':''}" onclick="setPlan('${p.id}')">
+    return`<div class="plan-btn${p.byod?' byod-btn':''} " onclick="setPlan('${p.id}')">
       <span class="pn">${p.n}</span>
       <span class="pp">$${display}</span>
       <span class="ps">${sub}</span>
@@ -611,7 +602,7 @@ function setPlan(id){
 // ============================================================
 function addLine(cat, clone=null){
   if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(false&&wc()>=5){alert('Max 5 watch lines.');return;}
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
@@ -622,7 +613,7 @@ function dupeLine(id){
   if(!src) return;
   const cat=src.cat;
   if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(false&&wc()>=5){alert('Max 5 watch lines.');return;}
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line.');return;}
   // Clone and insert right after source line
   const clone={...src, id:S.nid++};
@@ -689,9 +680,9 @@ function buildCard(l,idx){
   const showUp=S.acct==='aal'&&(txn==='upgrade'||txn==='both');
   const hasSw=isV; // only voice can be switcher
   const typeBtns=`
-    ${showSw&&hasSw?`<span class="lt sw ${l.lt==='switcher'?'on':''}" onclick="lu(${l.id},'lt','switcher')">SW</span>`:''}
-    ${showNew?`<span class="lt nw ${l.lt==='new'?'on':''}" onclick="lu(${l.id},'lt','new')">NEW</span>`:''}
-    ${showUp?`<span class="lt up ${l.lt==='upgrade'?'on':''}" onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
+    " onclick="lu(${l.id},'lt','switcher')">SW</span>`:''}
+    " onclick="lu(${l.id},'lt','new')">NEW</span>`:''}
+    " onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
 
   // Auto-set default line type based on txn
   if(S.acct==='aal'&&txn==='upgrade'&&l.lt!=='upgrade') l.lt='upgrade';
@@ -715,7 +706,7 @@ function buildCard(l,idx){
   let devHtml='<option value="">-- Select --</option>';
   if(isV){
     if(l.byod){
-      devHtml+=`<option value="byod_v" ${l.device==='byod_v'?'selected':''}>Customer's Own Device</option>`;
+      devHtml+=`<option value="byod_v" >Customer's Own Device</option>`;
     } else {
       const phones=visiblePhones();
       const brands=[...new Set(phones.map(p=>p.brand))];
@@ -727,39 +718,39 @@ function buildCard(l,idx){
           const lbl=pr===0?'FREE':fmt(pr);
           const displayName=p.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
           const limitNote=p.maxLines&&linePos>p.maxLines?` ⚠ over limit`:'';
-          devHtml+=`<option value="${p.id}" ${l.device===p.id?'selected':''}>${displayName} — ${lbl}${limitNote}</option>`;
+          devHtml+=`<option value="${p.id}" >${displayName} — ${lbl}${limitNote}</option>`;
         });
         devHtml+=`</optgroup>`;
       });
     }
   } else if(isW){
     if(l.byod){
-      devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
+      devHtml+=`<option value="byod_w" >Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?w.frp:w.price;
-        const tag=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
-        devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?w.price:w.price):w.price;
+        const tag=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        devHtml+=`<option value="${w.id}" >${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
   } else if(isT){
     if(l.byod){
-      devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
+      devHtml+=`<option value="byod_t" >Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?t.frp:t.price;
-        const tagT=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
-        devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?t.price:t.price):t.price;
+        const tagT=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        devHtml+=`<option value="${t.id}" >${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
   } else if(isH){
     if(l.byod){
-      devHtml+=`<option value="byod_h" ${l.device==='byod_h'?'selected':''}>Customer's Own Hotspot (SIM only)</option>`;
+      devHtml+=`<option value="byod_h" >Customer's Own Hotspot (SIM only)</option>`;
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
-        const pr=l.lt==='upgrade'?h.frp:h.price;
-        const tagH=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
-        devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?h.price:h.price):h.price;
+        const tagH=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        devHtml+=`<option value="${h.id}" >${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
   }
@@ -785,7 +776,7 @@ function buildCard(l,idx){
   // Hotspot data plan
   const hsData=isH?`<div class="f full"><label>Data Plan</label>
     <select onchange="lu(${l.id},'hsPlan',this.value)">
-      ${SD_PLANS.map(s=>`<option value="${s.id}" ${l.hsPlan===s.id?'selected':''}>${s.n} — ${fmt(s.price)}/mo</option>`).join('')}
+      ${SD_PLANS.map(s=>`<option value="${s.id}" >${s.n} — ${fmt(s.price)}/mo</option>`).join('')}
     </select></div>`:'';
 
   const isQual=l.upQual!==false;
@@ -794,7 +785,7 @@ function buildCard(l,idx){
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Upgrade pricing<small>${isQual?'Discounted upgrade price':'Non-qualified — FRP'}</small></div>
         <label class="toggle" onclick="setUpQual(${l.id},${!isQual})">
-          <input type="checkbox" ${isQual?'checked':''} onclick="event.preventDefault()">
+          <input type="checkbox" ${isQual?'checked':''} onclick="">
           <span class="tslide" style="${isQual?'background:var(--g)':''}"></span>
         </label>
       </div>
@@ -806,7 +797,7 @@ function buildCard(l,idx){
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Include in PPP<small>${isFinanced?'Device on Phone Payment Plan':'Not on PPP — cash OTD'}</small></div>
         <label class="toggle" onclick="setFinInclude(${l.id},${!isFinanced})">
-          <input type="checkbox" ${isFinanced?'checked':''} onclick="event.preventDefault()">
+          <input type="checkbox" ${isFinanced?'checked':''} onclick="">
           <span class="tslide" style="${isFinanced?'background:var(--prog)':''}"></span>
         </label>
       </div>
@@ -849,8 +840,8 @@ function buildFeats(l){
   // Protect chip
   if(isByodLine){
     const tier=l.protectTier||8;
-    chips+=`<span class="chip protect ${l.protect&&tier===8?'on protect':''}" onclick="setProtect(${l.id},8)">Protection $8/mo</span>`;
-    chips+=`<span class="chip protect ${l.protect&&tier===12?'on protect':''}" onclick="setProtect(${l.id},12)">Protection $12/mo</span>`;
+    chips+=`<span class="chip protect " onclick="setProtect(${l.id},8)">Protection $8/mo</span>`;
+    chips+=`<span class="chip protect " onclick="setProtect(${l.id},12)">Protection $12/mo</span>`;
   } else {
     const pc=protectCost(frp);
     chips+=`<span class="chip protect ${l.protect?'on protect':''}" onclick="tog(${l.id},'protect')">Protection $${pc}/mo</span>`;
@@ -909,8 +900,461 @@ function updateApoHint(){
   const hasApo=total>0&&S.finOn;
   $('apo-fin-opts').style.display=hasApo?'block':'none';
   if(!hasApo){S.apoFin=false;S.apoSplit=false;if($('apo-fin-chk'))$('apo-fin-chk').checked=false;}
-  if(
+  if(// fixed broken line $('apo-split-hint')){
+    const leasePart=S.apoSplit?S.apoLeaseAmt:total;
+    const cashPart=S.apoSplit?Math.max(0,total-S.apoLeaseAmt):0;
+    // fixed broken line $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On lease: ${fmt(leasePart)}`;
+  }
+}
+function toggleApoFin(){
+  S.apoFin=$('apo-fin-chk').checked;
+  // fixed broken line $('apo-split-opts').style.display=S.apoFin?'block':'none';
+  if(!S.apoFin){S.apoSplit=false;if(// fixed broken line $('apo-split-chk'))// fixed broken line $('apo-split-chk').checked=false;// fixed broken line $('apo-split-input').style.display='none';}
+  update();
+}
+function toggleApoSplit(){
+  S.apoSplit=// fixed broken line $('apo-split-chk').checked;
+  // fixed broken line $('apo-split-input').style.display=S.apoSplit?'block':'none';
+  if(!S.apoSplit)S.apoLeaseAmt=0;
+  update();
+}
+function setApoLease(val){
+  const total=S.apoPerDevice*deviceLineCount();
+  S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
+  updateApoHint();
+  update();
+}
+
+// ============================================================
+// FINANCING
+// ============================================================
+function toggleFin(){
+  S.finOn=$('fin-chk').checked;
+  $('fin-opts').style.display=S.finOn?'block':'none';
+  // Auto-include all non-hotspot lines in financing when turned on
+  if(S.finOn){
+    S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
+  }
+  renderLines();
+  update();
+}
+function setFinType(t){
+  S.finType=t;
+  $('ft-prog').classList.toggle('on',t==='prog');
+  $('ft-bread').classList.toggle('on',t==='bread');
+  $('apr-sec').style.display=t==='bread'?'block':'none';
+  $('prog-freq-sec').style.display=t==='prog'?'block':'none';
+  update();
+}
+function setProgFreq(f){
+  S.progFreq=f;
+  ['weekly','biweekly','monthly'].forEach(x=>$('pf-'+x).classList.toggle('on',x===f));
+  update();
+}
+function setAPR(r){
+  S.breadAPR=r;
+  $('apr0').classList.toggle('on',r===0);
+  $('apr14').classList.toggle('on',r===14.99);
+  update();
+}
+$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update();});
+
+// ============================================================
+// CALC
+// ============================================================
+function calc(){
+  const v=vc(),w=wc(),t=tc(),h=hc();
+  const plan=PLANS.find(p=>p.id===S.plan);
+
+  // Plan cost
+  let planCostFull=0,planCostMo=0,planDelta=0,planNewTotal=0,planOldTotal=0;
+  if(S.acct==='new'&&v>0){
+    planCostFull=plan.lines[Math.min(v,5)-1];
+    planCostMo=planCostFull;
+    if(v===1&&S.ap&&!plan.byod)planCostMo-=5;
+  } else if(S.acct==='aal'){
+    const aalNewLines=S.lines.filter(l=>l.cat==='v'&&l.lt!=='upgrade').length;
+    if(aalNewLines>0){
+      const aalPlan=PLANS.find(p=>p.id===S.aalPlan)||plan;
+      const existingLines=Math.min(S.aalLines,4);
+      const newLineCount=Math.min(existingLines+aalNewLines,5);
+      planOldTotal=aalPlan.lines[existingLines-1];
+      planNewTotal=aalPlan.lines[newLineCount-1];
+      planDelta=planNewTotal-planOldTotal;
+      planCostFull=planDelta;
+      planCostMo=planDelta;
+    }
+  }
+
+  // Hotspot plan cost — new lines only, upgrades already have a plan
+  let hsPlanCost=0;
+  S.lines.filter(l=>l.cat==='h'&&l.lt!=='upgrade').forEach(l=>{
+    const sd=SD_PLANS.find(s=>s.id===l.hsPlan);
+    if(sd)hsPlanCost+=sd.price;
+  });
+
+  // Watch & tablet plan monthly — new lines only
+  const watchNewLines=S.lines.filter(l=>l.cat==='w'&&l.lt!=='upgrade').length;
+  const tabletNewLines=S.lines.filter(l=>l.cat==='t'&&l.lt!=='upgrade').length;
+  const watchPlanMo=watchNewLines*WATCH_PLAN;
+  const tabletPlanMo=tabletNewLines*TABLET_PLAN;
+
+  // Features — split into recurring monthly vs one-time
+  let featMo=0,featOneTime=0,hasPassport=false;
+  S.lines.forEach(l=>{
+    if(l.protect){
+      const dev=l.byod?null:devById(l.device,l.cat);
+      featMo+=l.byod?(l.protectTier||8):protectCost(dev?dev.frp:0);
+    }
+    if(l.intl) featMo+=INTL_CALL;
+    if(l.intl15) featMo+=15;
+    if(l.passport) hasPassport=true;
+    if(l.hotspot){if(l.hsRecur)featMo+=HS_ADD;else featOneTime+=HS_ADD;}
+  });
+
+  // Activation & SIM fees
+  let actFees=0,simFees=0;
+  const curPlan=S.acct==='aal'?S.aalPlan:S.plan;
+  S.lines.forEach(l=>{
+    const isSw=l.lt==='switcher';
+    // Voice/tablet/hotspot: $25 for non-switcher
+    // Watches: handled separately via watchActOTD (new purchases) or here for upgrades
+    if(!isSw&&l.cat!=='w') actFees+=ACT_FEE;
+    if(!isSw&&l.cat==='w'&&l.lt==='upgrade') actFees+=ACT_FEE; // watch upgrades get $25
+    // SIM fee: BYOD on voice/tablet/hotspot/watch, non-switcher only
+    if(l.byod&&['v','t','h','w'].includes(l.cat)&&!isSw) simFees+=SIM_FEE;
+    // Force BYOD on BYOD plan for voice
+    if(l.cat==='v'&&curPlan==='byod'&&!l.byod){ l.byod=true; l.device='byod_v'; }
+  });
+  // Watch activation ($25) for new purchased non-BYOD watches (upgrades counted above)
+  const watchActOTD=S.lines.filter(l=>l.cat==='w'&&!l.byod&&l.lt!=='upgrade').length*WATCH_ACT;
+
+  // Device totals — split into financed vs cash per line
+  let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
+  const baseAccessories = S.apoPerDevice * deviceLineCount();
+const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
+
+// combine watches into accessories ALWAYS
+const apoTotal = baseAccessories + watchTotal;
+
+  S.lines.forEach(l=>{
+    if(l.byod) return; // BYOD = $0 device cost
+    if(l.cat==='h'){
+      const dev=devById(l.device,'h');
+      if(dev) hsDeviceTotal+=dev.price;
+      return;
+    }
+    const dev=devById(l.device,l.cat);
+    if(!dev) return;
+    const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
+    const isUpgrade=l.lt==='upgrade';
+    const upQualified=l.upQual!==false;
+    const pr=l.cat==='v'?devPrice(dev,l.lt,linePos,upQualified):(isUpgrade?(upQualified?dev.price:dev.frp):dev.price);
+    if(l.finInclude===true||l.finInclude==='true'){
+      deviceFinanced+=pr;
+      if(pr>=149.99) hasQual=true;
+    } else {
+      deviceCash+=pr;
+    }
+  });
+
+  // APO split
+  const apoLeased=S.finOn&&S.apoFin?(S.apoSplit?Math.min(S.apoLeaseAmt,apoTotal):apoTotal):0;
+  const apoCash=apoTotal-apoLeased;
+
+  const finBase=deviceFinanced+apoLeased;
+  const finTax=finBase*TAX;
+
+  // Financing
+  let progTotal=0,progPayment=0,progLastPayment=0,progTotalWithTax=0,progFeeAmt=0;
+  let breadTotal=0,breadMo=0;
+  if(S.finOn&&hasQual){
+    progFeeAmt=finBase*PROG_FEE;
+    progTotalWithTax=finBase+progFeeAmt; // 18.25% is all-in, no separate tax
+    progTotal=progTotalWithTax;
+    const divisor=S.progFreq==='weekly'?12:S.progFreq==='biweekly'?6:3;
+    const rawPayment=progTotal/divisor;
+    const roundedPayment=Math.floor(rawPayment*100)/100;
+    progPayment=roundedPayment;
+    progLastPayment=+(progTotal-(roundedPayment*(divisor-1))).toFixed(2);
+    breadTotal=finBase*(1+TAX);
+    if(S.breadAPR===0){breadMo=breadTotal/24;}
+    else{const r=S.breadAPR/100/12;breadMo=breadTotal*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1);}
+  }
+
+  // Watch incentives — new purchased watches only (not BYOD, not upgrades)
+  const watchNotes=[];
+  S.lines.filter(l=>l.cat==='w'&&l.device&&!l.byod&&l.lt!=='upgrade').forEach(l=>{
+    const dev=devById(l.device,'w');
+    if(dev&&dev.posOff){
+      watchNotes.push(`${dev.n}: $${dev.posOff} off today · $${dev.credit}/mo credit × ${dev.creditMo} months`);
+    }
+  });
+
+  // OTD build — everything due today at full price, no AutoPay discount
+  const otd=[];
+  if(S.acct==='new'&&planCostFull>0) otd.push({l:`First month — ${plan.full}`,v:planCostFull,tax:false});
+  const aalNewLines=S.lines.filter(l=>l.cat==='v'&&l.lt!=='upgrade').length;
+  if(S.acct==='aal'&&planDelta>0) otd.push({l:`First month plan increase (+${aalNewLines} line${aalNewLines>1?'s':''})`,v:planDelta,tax:false});
+  if(hsPlanCost>0) otd.push({l:'First month — Hotspot data plan',v:hsPlanCost,tax:false});
+  if(watchPlanMo>0) otd.push({l:`First month — Watch plan ×${watchNewLines}`,v:watchPlanMo,tax:false});
+  if(tabletPlanMo>0) otd.push({l:`First month — Tablet plan ×${tabletNewLines}`,v:tabletPlanMo,tax:false});
+  if(featMo>0) otd.push({l:'First month — Features',v:featMo,tax:false});
+  if(actFees>0) otd.push({l:'Activation fee(s)',v:actFees,tax:true});
+  if(watchActOTD>0) otd.push({l:`Watch activation ×${w}`,v:watchActOTD,tax:true});
+  if(simFees>0) otd.push({l:'SIM fee(s)',v:simFees,tax:true});
+  if(featOneTime>0) otd.push({l:'Hotspot add-on (one-time)',v:featOneTime,tax:true});
+
+  if(!S.finOn||!hasQual){
+    const allDevices=deviceFinanced+deviceCash;
+    if(allDevices>0) otd.push({l:'Devices',v:allDevices,tax:true});
+    if(apoTotal>0) otd.push({l:'Accessories',v:apoTotal,tax:true});
+  } else {
+    if(deviceCash>0) otd.push({l:'Devices (cash)',v:deviceCash,tax:true});
+    if(apoCash>0) otd.push({l:'Accessories (cash)',v:apoCash,tax:true});
+    if(S.finType==='prog') otd.push({l:'Progressive initial payment',v:PROG_INIT,tax:false});
+    else otd.push({l:'Bread — $0 down',v:0,tax:false,free:true});
+  }
+  if(hsDeviceTotal>0) otd.push({l:'Hotspot device',v:hsDeviceTotal,tax:true});
+
+  // Watch POS discounts — purchased watches only
+  let watchPosDiscount=0;
+  S.lines.filter(l=>l.cat==='w'&&l.device&&!l.byod&&l.lt!=='upgrade').forEach(l=>{
+    const dev=devById(l.device,'w');
+    if(dev&&dev.posOff) watchPosDiscount+=dev.posOff;
+  });
+  if(watchPosDiscount>0) otd.push({l:'Watch promo discount (POS)',v:-watchPosDiscount,tax:false,credit:true});
+
+  const taxItems=otd.filter(i=>i.tax);
+  const taxableSum=taxItems.reduce((s,i)=>s+i.v,0);
+  const taxAmt=taxableSum*TAX;
+  const otdTotal=otd.reduce((s,i)=>s+(i.free?0:i.v),0)+taxAmt;
+
+  const planMoTotal=planCostMo+hsPlanCost+watchPlanMo+tabletPlanMo+featMo;
+  const progMoEquiv=S.finOn&&hasQual?progTotal/3:0; // always ÷3 for monthly estimate
+  const pppMo=S.finOn&&hasQual?(S.finType==='prog'?progMoEquiv:breadMo):0;
+  const grandMo=planMoTotal+pppMo;
+
+  return{plan,planCostFull,planCostMo,planDelta,planNewTotal,planOldTotal,hsPlanCost,watchPlanMo,watchNewLines,tabletPlanMo,tabletNewLines,featMo,featOneTime,
+    actFees,simFees,watchActOTD,watchPosDiscount,taxableSum,taxAmt,
+    deviceFinanced,deviceCash,apoTotal,finBase,finTax,hsDeviceTotal,
+    hasQual,progTotal,progTotalWithTax,progPayment,progLastPayment,progMoEquiv,progFeeAmt,breadTotal,breadMo,
+    otd,otdTotal,planMoTotal,pppMo,grandMo,
+    hasPassport,watchNotes,v,w,t,h};
+}
+
+// ============================================================
+// UPDATE
+// ============================================================
+function update(){
+  updateApoHint();
+  const c=calc();
+
+  // Financing enable/disable
+  const hasDevice=S.lines.some(l=>l.device&&l.device!=='byod_v'&&l.cat!=='h');
+  if(!c.hasQual){
+    $('fin-chk').disabled=true;
+    $('fin-slide').classList.add('off');
+    if(S.finOn){S.finOn=false;$('fin-chk').checked=false;$('fin-opts').style.display='none';}
+    $('fin-note').textContent=hasDevice?'No device meets $149.99 minimum':'Add a qualifying device ($149.99+) to enable';
+  } else {
+    $('fin-chk').disabled=false;
+    $('fin-slide').classList.remove('off');
+    $('fin-note').textContent='Toggle to add Phone Payment Plan';
+  }
+
+  renderSummary(c);
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function renderSummary(c){
+  const el=$('summary');
+  if(S.lines.length===0&&S.acct==='new'){
+    el.innerHTML=`<div class="scard"><div class="sbody"><div class="empty"><div class="empty-icon">📱</div><div class="empty-txt">Select a plan and add lines<br>to build your quote</div></div></div></div>`;
+    return;
+  }
+
+  // OTD rows
+  let otdRows=c.otd.map(i=>{
+    if(i.free) return`<div class="sr"><span class="sl">${i.l}</span><span class="sv g">$0.00</span></div>`;
+    if(i.credit) return`<div class="sr"><span class="sl">${i.l}</span><span class="sv g">${fmt(i.v)}</span></div>`;
+    if(i.v===0) return'';
+    return`<div class="sr"><span class="sl">${i.l}${i.tax?'<span style="font-size:9px;color:var(--t3);margin-left:3px">+tax</span>':''}</span><span class="sv">${fmt(i.v)}</span></div>`;
+  }).join('');
+  if(c.taxAmt>0) otdRows+=`<div class="sr"><span class="sl">Tax (8.25%)</span><span class="sv">${fmt(c.taxAmt)}</span></div>`;
+  // SW promo note
+  const swLines=S.lines.filter(l=>l.lt==='switcher').length;
+  const swNote=swLines>0?`<div class="note-box" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:var(--r2);padding:8px 10px;font-size:10px;color:var(--warn);margin-top:6px">⚡ Activation fee waived for ${swLines} switcher${swLines>1?'s':''} — current promo. Great accessory attach opportunity!</div>`:'';
+
+  // Monthly rows
+  let moRows='';
+  if(S.acct==='new'&&c.planCostMo>0){
+    moRows+=`<div class="sr"><span class="sl">${c.plan.full}${c.v>1?' ('+c.v+' lines)':''}</span><span class="sv">${fmt(c.planCostMo)}</span></div>`;
+    if(c.v===1&&S.ap&&!c.plan.byod) moRows+=`<div class="sr"><span class="sl" style="color:var(--g)">AutoPay discount (mo 2+)</span><span class="sv g">−$5.00</span></div>`;
+  } else if(S.acct==='aal'&&c.planDelta>0){
+    const aalPlan=PLANS.find(p=>p.id===S.aalPlan);
+    const aalNew=S.lines.filter(l=>l.cat==='v'&&l.lt!=='upgrade').length;
+    moRows+=`<div class="sr"><span class="sl">Plan increase (${S.aalLines} → ${Math.min(S.aalLines+aalNew,5)} lines)</span><span class="sv">+${fmt(c.planDelta)}</span></div>`;
+    moRows+=`<div class="sr"><span class="sl" style="color:var(--t3)">New plan total — ${aalPlan?aalPlan.full:''}</span><span class="sv" style="color:var(--t2)">${fmt(c.planNewTotal)}</span></div>`;
+  }
+  if(c.hsPlanCost>0) moRows+=`<div class="sr"><span class="sl">Hotspot data plan</span><span class="sv">${fmt(c.hsPlanCost)}</span></div>`;
+  if(c.w>0){
+    S.lines.filter(l=>l.cat==='w').forEach((l,i)=>{
+      if(l.byod){
+        moRows+=`<div class="sr"><span class="sl">Watch plan — BYOD</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`;
+      } else if(l.lt==='upgrade'){
+        moRows+=`<div class="sr"><span class="sl">Watch plan — upgrade</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`;
+      } else {
+        const dev=devById(l.device,'w');
+        if(!dev){ moRows+=`<div class="sr"><span class="sl">Watch plan — no device selected</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`; return; }
+        const creditNote=dev.credit?` <span style="color:var(--g);font-size:9px">($${dev.credit}/mo credit ×${dev.creditMo} mo)</span>`:'';
+        moRows+=`<div class="sr"><span class="sl">Watch plan — ${dev.n}${creditNote}</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`;
+      }
+    });
+  }
+  if(c.t>0) moRows+=`<div class="sr"><span class="sl">Tablet plan ×${c.t}</span><span class="sv">${fmt(c.tabletPlanMo)}</span></div>`;
+
+  S.lines.forEach(l=>{
+    const dev=l.byod?null:devById(l.device,l.cat);
+    const frp=dev?dev.frp:0;
+    const devName=dev?dev.n:(l.byod?'BYOD':'—');
+    const lineIdx=S.lines.filter(x=>x.cat==='v').indexOf(l)+1;
+    if(l.protect){
+      const pc=l.byod?(l.protectTier||8):protectCost(frp);
+      moRows+=`<div class="sr"><span class="sl">Protection — ${devName}</span><span class="sv">${fmt(pc)}</span></div>`;
+    }
+    if(l.intl) moRows+=`<div class="sr"><span class="sl">Intl Calling — Line ${lineIdx}</span><span class="sv">${fmt(INTL_CALL)}</span></div>`;
+    if(l.intl15) moRows+=`<div class="sr"><span class="sl">Intl $15 add-on — Line ${lineIdx}</span><span class="sv">$15.00</span></div>`;
+    if(l.hotspot&&l.hsRecur) moRows+=`<div class="sr"><span class="sl">Hotspot +10GB — Line ${lineIdx}</span><span class="sv">${fmt(HS_ADD)}</span></div>`;
+  });
+
+  // PPP section
+  let pppHtml='';
+  if(S.finOn&&c.hasQual){
+    if(S.finType==='prog'){
+      const freqLabel={weekly:'Weekly · 12 payments',biweekly:'Bi-Weekly · 6 payments',monthly:'Monthly · 3 payments'}[S.progFreq];
+      const freqUnit={weekly:'/wk',biweekly:'/2 wks',monthly:'/mo'}[S.progFreq];
+      const lastDiffers=c.progLastPayment!==c.progPayment;
+      const lastNote=lastDiffers?` · Last payment: $${c.progLastPayment.toFixed(2)}`:'';
+      pppHtml=`<div class="ppp-card prog">
+        <div class="ppp-lbl">Progressive Leasing · ${freqLabel}</div>
+        <div class="ppp-val">$${c.progPayment.toFixed(2)}${freqUnit}</div>
+        <div class="ppp-sub">Total lease: ${fmt(c.progTotal)} · 90 days${lastNote}</div>
+        <div class="ppp-sub" style="margin-top:2px">Mo. equiv: ${fmtMo(c.progMoEquiv)}</div>
+      </div>
+      <div class="sr"><span class="sl">Devices + acc</span><span class="sv">${fmt(c.finBase)}</span></div>
+      <div class="sr"><span class="sl">18.25% (all-in lease cost)</span><span class="sv o">+${fmt(c.progFeeAmt)}</span></div>
+      <div class="sr"><span class="sl">Total lease amount</span><span class="sv">${fmt(c.progTotal)}</span></div>`;
+    } else {
+      const aprLbl=S.breadAPR===0?'0% APR · 24 months':'14.99% APR · 24 months';
+      pppHtml=`<div class="ppp-card bread">
+        <div class="ppp-lbl">Bread Pay · ${aprLbl}</div>
+        <div class="ppp-val">${fmtMo(c.breadMo)}</div>
+        <div class="ppp-sub">Total financed: ${fmt(c.breadTotal)} (incl. tax)</div>
+      </div>
+      <div class="sr"><span class="sl">Devices + acc</span><span class="sv">${fmt(c.finBase)}</span></div>
+      <div class="sr"><span class="sl">Tax financed in</span><span class="sv b">+${fmt(c.finBase*TAX)}</span></div>`;
+    }
+  }
+
+  const passportHtml=c.hasPassport?`<div class="note-box note-pass">✈ <b>Passport:</b> $0 today. Customer billed via AutoPay only when actively roaming. Text confirmation required upon entering eligible country.</div>`:'';
+  el.innerHTML=`
+    <div class="scard">
+      <div class="scard-head"><div class="stitle">Out the Door Today</div></div>
+      <div class="sbody">
+        ${otdRows||'<div class="sr"><span class="sl" style="color:var(--t3)">No charges yet</span></div>'}
+        <hr class="sdiv">
+        <div class="stot"><div class="stl">Due Today</div><div class="stv">${fmt(c.otdTotal)}</div></div>
+        ${swNote}
+      </div>
+    </div>
+
+    <div class="scard">
+      <div class="scard-head"><div class="stitle"></div></div>
+      <div class="sbody">
+        ${moRows||'<div class="sr"><span class="sl" style="color:var(--t3)">No monthly charges yet</span></div>'}
+        <hr class="sdiv">
+        <div class="stot"><div class="stl"></div><div class="stv">${fmt(c.planMoTotal)}</div></div>
+      </div>
+    </div>
+
+    ${S.finOn&&c.hasQual?`<div class="scard">
+      <div class="scard-head"><div class="stitle">Phone Payment Plan</div></div>
+      <div class="sbody">${pppHtml}</div>
+    </div>`:''}
+
+    ${passportHtml}
+
+    <div class="tm-card">
+      <div class="tm-lbl"></div>
+      <div class="tm-val">${fmt(c.grandMo)}</div>
+      <div class="tm-sub">${S.finOn&&c.hasQual?' + PPP (mo. equiv)':''}</div>
+    </div>
+
+    <button class="reset-btn" onclick="resetAll()">↺ Reset Calculator</button>`;
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll(){
+  S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+  $('btn-new').classList.add('active');$('btn-aal').classList.remove('active');
+  $('plan-sec').style.display='block';
+  $('aal-sec').style.display='none';
+  ['aal','up','both'].forEach(x=>$('txn-'+x).classList.toggle('on',x==='aal'));
+  $('lines-title').textContent='Step 3 — Lines';
+  $('ap-chk').checked=true;$('ap-chk').disabled=false;$('ap-slide').classList.remove('off');
+  $('fin-chk').checked=false;$('fin-chk').disabled=true;$('fin-opts').style.display='none';
+  $('fin-slide').classList.add('off');
+  $('ft-prog').classList.add('on');$('ft-bread').classList.remove('on');
+  $('apr-sec').style.display='none';
+  $('apo-inp').value=0;
+  $('aal-plan-sel').value='supreme';
+  $('aal-lines-sel').value='1';
+  $('lines-container').innerHTML='';
+  renderPlanGrid();update();
+}
+
+// INIT
+window.onerror = function(msg, src, line, col, err) {
+  document.body.insertAdjacentHTML('beforeend',
+    `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
+      <b>Error:</b> ${msg}<br>Line: ${line} Col: ${col}<br>${err ? err.stack : ''}
+    </div>`);
+  return false;
+};
+try {
+  renderPlanGrid();
+  update();
+} catch(e) {
+  document.body.insertAdjacentHTML('beforeend',
+    `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
+      <b>Init Error:</b> ${e.message}<br>${e.stack}
+    </div>`);
 }
 </script>
+
+<script>
+S.watches = {};
+
+function toggleWatch(type,price,el){
+  if(S.watches[type]){
+    delete S.watches[type];
+    el.classList.remove('active');
+  } else {
+    S.watches[type] = price;
+    el.classList.add('active');
+  }
+  update();
+}
+
+function getWatchTotal(){
+  return Object.values(S.watches).reduce((a,b)=>a+b,0);
+}
+</script>
+
 </body>
 </html>
