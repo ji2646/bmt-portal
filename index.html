@@ -1395,5 +1395,27 @@ function getWatchTotal(){
 }
 </script>
 
+
+<script>
+const _origToggleWatchPPP = toggleWatchPPP;
+function toggleWatchPPP(val){
+  if(val){
+    const devices = (typeof deviceLineCount === 'function') ? deviceLineCount() : 0;
+    if(!devices || devices < 1){
+      alert("PPP requires at least 1 device (anchor required)");
+      document.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+        if(cb.onchange && cb.onchange.toString().includes('toggleWatchPPP')){
+          cb.checked = false;
+        }
+      });
+      S.watchPPP = false;
+      return;
+    }
+  }
+  S.watchPPP = val;
+  update();
+}
+</script>
+
 </body>
 </html>
