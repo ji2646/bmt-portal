@@ -306,7 +306,29 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div id="apo-fin-opts" style="margin-top:10px;display:none">
+    <div 
+<div style="margin-top:12px">
+  <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">
+    Skeiwatch (adds to APO & PPP)
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+
+    <div>C30 $99.99 <button onclick="changeWatch('c30',-1)">-</button> <span id="qty-c30">0</span> <button onclick="changeWatch('c30',1)">+</button></div>
+    <div>C70 $159.99 <button onclick="changeWatch('c70',-1)">-</button> <span id="qty-c70">0</span> <button onclick="changeWatch('c70',1)">+</button></div>
+    <div>S40 $109.99 <button onclick="changeWatch('s40',-1)">-</button> <span id="qty-s40">0</span> <button onclick="changeWatch('s40',1)">+</button></div>
+    <div>C80 $159.99 <button onclick="changeWatch('c80',-1)">-</button> <span id="qty-c80">0</span> <button onclick="changeWatch('c80',1)">+</button></div>
+    <div>C62 $139.99 <button onclick="changeWatch('c62',-1)">-</button> <span id="qty-c62">0</span> <button onclick="changeWatch('c62',1)">+</button></div>
+    <div>Kids $39.99 <button onclick="changeWatch('kids',-1)">-</button> <span id="qty-kids">0</span> <button onclick="changeWatch('kids',1)">+</button></div>
+
+  </div>
+
+  <div style="margin-top:6px;font-size:10px;color:var(--warn)">
+    PPP requires $149.99+ anchor device
+  </div>
+</div>
+
+<div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
         <div class="fin-hdr-lbl">PPP — Accessories<small id="apo-fin-note">Include accessories in Phone Payment Plan</small></div>
         <label class="toggle"><input type="checkbox" id="apo-fin-chk" onchange="toggleApoFin()"><span class="tslide"></span></label>
@@ -1318,5 +1340,60 @@ try {
     </div>`);
 }
 </script>
+
+<script>
+if(!S.watches){
+  S.watches={c30:0,c70:0,s40:0,c80:0,c62:0,kids:0};
+}
+
+function watchPrices(){
+  return {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
+}
+
+function watchTotal(){
+  const p=watchPrices();
+  let t=0;
+  for(let k in S.watches){
+    t += (S.watches[k]||0)*p[k];
+  }
+  return t;
+}
+
+function changeWatch(type,delta){
+  S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
+  const el=document.getElementById('qty-'+type);
+  if(el) el.innerText=S.watches[type];
+  update();
+}
+
+/* SAFE PATCH into existing calc without breaking flow */
+const _origCalc = calcSummary;
+calcSummary = function(){
+  const res = _origCalc();
+
+  const wt = watchTotal();
+
+  if(wt>0){
+    // if PPP ON → include in financed accessories
+    if(S.finOn && S.apoFin){
+      res.financedAccessories = (res.financedAccessories||0) + wt;
+    }else{
+      // otherwise goes to upfront accessories
+      res.accessoriesOTD = (res.accessoriesOTD||0) + (wt * (1+TAX));
+    }
+
+    // ALWAYS impacts APO
+    const devices = deviceLineCount();
+    if(devices>0){
+      const newTotal = (S.apoPerDevice*devices) + wt;
+      res.apoTotal = newTotal;
+      res.apoPerDevice = newTotal / devices;
+    }
+  }
+
+  return res;
+};
+</script>
+
 </body>
 </html>
