@@ -1403,5 +1403,30 @@ update = function(){
 };
 </script>
 
+
+<script>
+function renderWatchRow(){
+  const wt = watchTotal();
+  const summary = document.getElementById('summary');
+  if(!summary || wt<=0) return;
+
+  // prevent duplicate
+  if(document.getElementById('watch-row')) return;
+
+  const div = document.createElement('div');
+  div.className = 'sr';
+  div.id = 'watch-row';
+  div.innerHTML = `<div class="sl">Watch Add-ons</div><div class="sv">$${wt.toFixed(2)}</div>`;
+
+  summary.appendChild(div);
+}
+
+const _u2 = update;
+update = function(){
+  _u2();
+  renderWatchRow();
+};
+</script>
+
 </body>
 </html>
