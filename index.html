@@ -335,10 +335,6 @@ select option,select optgroup{background:#1e1e1e}
   <div class="watch-btn" onclick="toggleWatch('c62',139.99,this)">C62 $139</div>
   <div class="watch-btn" onclick="toggleWatch('kids',39.99,this)">Kids $39</div>
 </div>
-
-<div style="margin-top:6px">
-  <label><input type="checkbox" onchange="toggleWatchPPP(this.checked)"> Include in PPP (like split accessories)</label>
-</div>
 </div>
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
@@ -1055,20 +1051,8 @@ function calc(){
   const baseAccessories = S.apoPerDevice * deviceLineCount();
 const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
 
-// total accessories
-let accessoriesTotal = baseAccessories + watchTotal;
-
-// PPP split (aligned with existing split accessories logic)
-let accessoriesOTD = accessoriesTotal;
-let accessoriesPPP = 0;
-
-if (S.watchPPP){
-  accessoriesPPP = watchTotal;
-  accessoriesOTD = baseAccessories;
-}
-
-// use accessoriesOTD for tax + due today
-const apoTotal = accessoriesOTD;
+// combine watches into accessories ALWAYS
+const apoTotal = baseAccessories + watchTotal;
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1372,7 +1356,6 @@ try {
 
 <script>
 S.watches = {};
-S.watchPPP = false;
 
 function toggleWatch(type,price,el){
   if(S.watches[type]){
@@ -1385,35 +1368,8 @@ function toggleWatch(type,price,el){
   update();
 }
 
-function toggleWatchPPP(val){
-  S.watchPPP = val;
-  update();
-}
-
 function getWatchTotal(){
   return Object.values(S.watches).reduce((a,b)=>a+b,0);
-}
-</script>
-
-
-<script>
-const _origToggleWatchPPP = toggleWatchPPP;
-function toggleWatchPPP(val){
-  if(val){
-    const devices = (typeof deviceLineCount === 'function') ? deviceLineCount() : 0;
-    if(!devices || devices < 1){
-      alert("PPP requires at least 1 device (anchor required)");
-      document.querySelectorAll('input[type=checkbox]').forEach(cb=>{
-        if(cb.onchange && cb.onchange.toString().includes('toggleWatchPPP')){
-          cb.checked = false;
-        }
-      });
-      S.watchPPP = false;
-      return;
-    }
-  }
-  S.watchPPP = val;
-  update();
 }
 </script>
 
