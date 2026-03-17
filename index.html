@@ -364,7 +364,11 @@ select option,select optgroup{background:#1e1e1e}
 </div>
 <div style="margin-top:10px;text-align:center">
   <div style="font-size:11px;color:var(--t2);margin-bottom:6px">
-    + Add Skeiwatch (optional)
+    + Add Skeiwatch (optional)</div>
+<div style="margin-top:6px;text-align:center">
+<input type="number" min="0" value="0" placeholder="Qty" oninput="setWatchQty(this.value)" style="width:80px;text-align:center">
+</div>
+<div
   </div>
   <div id="watch-select" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
     <button class="apo-btn" onclick="setWatch(0)">None</button>
@@ -598,7 +602,7 @@ function setAcct(a){
   $('plan-sec').style.display=a==='new'?'block':'none';
   $('aal-sec').style.display=a==='aal'?'block':'none';
   if(a==='new') S.lines=S.lines.filter(l=>l.lt!=='upgrade');
-  renderLines();update(); updateApoDisplay(); updateApoDisplay();
+  renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setTxnType(t){
   S.txnType=t;
@@ -609,10 +613,10 @@ function setTxnType(t){
   $('both-disclaimer').style.display=(t==='both')?'block':'none';
   // If upgrade-only, strip AAL lines; if aal-only, strip upgrades
   if(t==='upgrade') S.lines=S.lines.filter(l=>l.lt==='upgrade'||l.lt==='new'&&false||true);
-  renderLines();update(); updateApoDisplay(); updateApoDisplay();
+  renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
-function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateApoDisplay(); updateApoDisplay(); }
-function setAalLines(v){ S.aalLines=parseInt(v); update(); updateApoDisplay(); updateApoDisplay(); }
+function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay(); }
+function setAalLines(v){ S.aalLines=parseInt(v); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay(); }
 
 // ============================================================
 // PLAN
@@ -662,7 +666,7 @@ function setPlan(id){
   S.plan=id;
   if(id==='byod') S.lines.filter(l=>l.cat==='v').forEach(l=>{l.intl=false;l.passport=false;l.hotspot=false;});
   showPlanNote(id);
-  renderPlanGrid();renderLines();update(); updateApoDisplay(); updateApoDisplay();
+  renderPlanGrid();renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 
 // ============================================================
@@ -674,7 +678,7 @@ function addLine(cat, clone=null){
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
@@ -687,36 +691,36 @@ function dupeLine(id){
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
   S.lines.splice(srcIdx+1,0,clone);
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function removeLine(id){
   S.lines=S.lines.filter(l=>l.id!==id);
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setProtect(id, tier){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   if(l.protect && l.protectTier===tier){ l.protect=false; } // tap active = toggle off
   else { l.protect=true; l.protectTier=tier; }
-  renderLines(); update(); updateApoDisplay(); updateApoDisplay();
+  renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setUpQual(id, val){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   l.upQual=(val===true||val==='true');
-  renderLines(); update(); updateApoDisplay(); updateApoDisplay();
+  renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setFinInclude(id, val){
   const l=S.lines.find(l=>l.id===id);
   if(!l) return;
   l.finInclude = (val===true||val==='true');
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function lu(id,k,v){
   const l=S.lines.find(l=>l.id===id);if(!l)return;
   l[k]=v;
   if(k==='byod'&&v){l.intl=false;l.passport=false;l.hotspot=false;}
   if(['lt','byod','device'].includes(k)){renderLines();}
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 // Toggle boolean feature
 function tog(id,k){
@@ -724,7 +728,7 @@ function tog(id,k){
   l[k]=!l[k];
   // Always re-render full line to keep fin toggle + chips consistent
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 
 function renderLines(){
@@ -956,7 +960,7 @@ function updateAddBtns(){
 function setAPO(val){
   S.apoPerDevice=parseFloat(val)||0;
   updateApoHint();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function updateApoHint(){
   const cnt=deviceLineCount();
@@ -978,19 +982,19 @@ function toggleApoFin(){
   S.apoFin=$('apo-fin-chk').checked;
   $('apo-split-opts').style.display=S.apoFin?'block':'none';
   if(!S.apoFin){S.apoSplit=false;if($('apo-split-chk'))$('apo-split-chk').checked=false;$('apo-split-input').style.display='none';}
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function toggleApoSplit(){
   S.apoSplit=$('apo-split-chk').checked;
   $('apo-split-input').style.display=S.apoSplit?'block':'none';
   if(!S.apoSplit)S.apoLeaseAmt=0;
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setApoLease(val){
   const total=S.apoPerDevice*deviceLineCount();
   S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
   updateApoHint();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 
 // ============================================================
@@ -1004,7 +1008,7 @@ function toggleFin(){
     S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
   }
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setFinType(t){
   S.finType=t;
@@ -1012,20 +1016,20 @@ function setFinType(t){
   $('ft-bread').classList.toggle('on',t==='bread');
   $('apr-sec').style.display=t==='bread'?'block':'none';
   $('prog-freq-sec').style.display=t==='prog'?'block':'none';
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setProgFreq(f){
   S.progFreq=f;
   ['weekly','biweekly','monthly'].forEach(x=>$('pf-'+x).classList.toggle('on',x===f));
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 function setAPR(r){
   S.breadAPR=r;
   $('apr0').classList.toggle('on',r===0);
   $('apr14').classList.toggle('on',r===14.99);
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
-$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();});
+$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();});
 
 // ============================================================
 // CALC
@@ -1379,7 +1383,7 @@ function resetAll(){
   $('aal-plan-sel').value='supreme';
   $('aal-lines-sel').value='1';
   $('lines-container').innerHTML='';
-  renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
+  renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 }
 
 // INIT
@@ -1392,7 +1396,7 @@ window.onerror = function(msg, src, line, col, err) {
 };
 try {
   renderPlanGrid();
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
 } catch(e) {
   document.body.insertAdjacentHTML('beforeend',
     `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
@@ -1404,7 +1408,7 @@ function setApoPreset(val){
   S.apoPerDevice = val;
   const inp = document.getElementById('apo-inp');
   if(inp) inp.value = val;
-  update(); updateApoDisplay(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
   updateApoDisplay();
 }
 
@@ -1422,7 +1426,7 @@ S.watchPrice = 0;
 
 function setWatch(price){
   S.watchPrice = price;
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
   updateApoDisplay();
 }
 
@@ -1436,6 +1440,48 @@ function updateApoDisplay(){
   if(el){
     el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
   }
+}
+
+
+S.watchPrice = 0;
+S.watchQty = 0;
+
+function setSkeiwatch(price){
+  S.watchPrice = price;
+  update(); updateApoDisplay();
+  updateApoDisplay();
+}
+
+function setWatchQty(qty){
+  S.watchQty = Number(qty || 0);
+  update(); updateApoDisplay();
+  updateApoDisplay();
+}
+
+function updateApoDisplay(){
+  const devices = typeof deviceLineCount==='function' ? deviceLineCount() : 0;
+
+  const base = (S.apoPerDevice || 0) * devices;
+  const watchTotal = (S.watchPrice || 0) * (S.watchQty || 0);
+
+  const total = base + watchTotal;
+  const finalApo = devices > 0 ? total / devices : 0;
+
+  const el = document.getElementById('apo-total-big');
+  if(el){
+    el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+  }
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode.appendChild(sub);
+  }
+
+  sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
 }
 
 </script>
