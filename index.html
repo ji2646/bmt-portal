@@ -337,7 +337,7 @@ select option,select optgroup{background:#1e1e1e}
 </div>
 
 <div style="margin-top:6px">
-  <label><input type="checkbox" onchange="toggleWatchPPP(this.checked)"> Add to PPP</label>
+  <label><input type="checkbox" onchange="toggleWatchPPP(this.checked)"> Include in PPP (like split accessories)</label>
 </div>
 </div>
 
@@ -1055,16 +1055,19 @@ function calc(){
   const baseAccessories = S.apoPerDevice * deviceLineCount();
 const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
 
-// final accessories
+// total accessories
 let accessoriesTotal = baseAccessories + watchTotal;
 
-// PPP split
+// PPP split (aligned with existing split accessories logic)
 let accessoriesOTD = accessoriesTotal;
-if (S.watchPPP) {
+let accessoriesPPP = 0;
+
+if (S.watchPPP){
+  accessoriesPPP = watchTotal;
   accessoriesOTD = baseAccessories;
 }
 
-// use accessoriesOTD going forward
+// use accessoriesOTD for tax + due today
 const apoTotal = accessoriesOTD;
 
   S.lines.forEach(l=>{
