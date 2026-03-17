@@ -1374,5 +1374,34 @@ function changeWatch(type,delta){
 }
 </script>
 
+
+<script>
+function injectWatchIntoSummary(){
+  const wt = watchTotal();
+  if(!wt) return;
+
+  // find all summary value nodes
+  const rows = document.querySelectorAll('.sr');
+  rows.forEach(r=>{
+    if(r.innerText && r.innerText.toLowerCase().includes('accessories')){
+      const val = r.querySelector('.sv');
+      if(val && !val.dataset.watchApplied){
+        let current = parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
+        let newVal = current + wt;
+        val.innerText = '$' + newVal.toFixed(2);
+        val.dataset.watchApplied = "true";
+      }
+    }
+  });
+}
+
+// hook AFTER update runs (safe)
+const _u = update;
+update = function(){
+  _u();
+  injectWatchIntoSummary();
+};
+</script>
+
 </body>
 </html>
