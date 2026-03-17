@@ -205,7 +205,7 @@ select option,select optgroup{background:#1e1e1e}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/17/2026 1:00 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/17/2026 1:13 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -758,12 +758,7 @@ function buildCard(l,idx){
       }
     } else {
       qual='';
-    }
-      else if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
-      else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99</span>`;
-      else qual=`<span class="qpill q-free">FREE</span>`;
-    }
-  } else if(l.byod){
+    } else if(l.byod){
     qual=`<span class="qpill q-free">BYOD</span>`;
   }
 
