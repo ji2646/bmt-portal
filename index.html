@@ -312,8 +312,7 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div 
-<div style="margin-top:12px">
+    <div style="margin-top:12px">
 <div style="font-weight:700;margin-bottom:6px">Skeiwatch</div>
 
 <div style="display:flex;flex-wrap:wrap">
@@ -324,6 +323,13 @@ select option,select optgroup{background:#1e1e1e}
   <div class="watch-btn" onclick="toggleWatch('c62',139.99,this)">C62 $139</div>
   <div class="watch-btn" onclick="toggleWatch('kids',39.99,this)">Kids $39</div>
 </div>
+</div>
+
+<div 
+<div id="acc-summary" style="margin-top:10px;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--s3)">
+  <div style="font-size:10px;color:var(--t3);margin-bottom:4px">TOTAL ACCESSORIES</div>
+  <div style="font-family:'Bebas Neue';font-size:22px;color:var(--g)" id="acc-total">$0.00</div>
+  <div style="font-size:10px;color:var(--t3)" id="acc-breakdown"></div>
 </div>
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
@@ -471,7 +477,7 @@ const SD_PLANS=[
 // ============================================================
 // STATE
 // ============================================================
-let S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+let S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1,watches:{}};
 
 // ============================================================
 // HELPERS
@@ -536,7 +542,7 @@ function setAcct(a){
   $('plan-sec').style.display=a==='new'?'block':'none';
   $('aal-sec').style.display=a==='aal'?'block':'none';
   if(a==='new') S.lines=S.lines.filter(l=>l.lt!=='upgrade');
-  renderLines();update();
+  renderLines();update(); updateAccessoryDisplay();
 }
 function setTxnType(t){
   S.txnType=t;
@@ -547,10 +553,10 @@ function setTxnType(t){
   $('both-disclaimer').style.display=(t==='both')?'block':'none';
   // If upgrade-only, strip AAL lines; if aal-only, strip upgrades
   if(t==='upgrade') S.lines=S.lines.filter(l=>l.lt==='upgrade'||l.lt==='new'&&false||true);
-  renderLines();update();
+  renderLines();update(); updateAccessoryDisplay();
 }
-function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); }
-function setAalLines(v){ S.aalLines=parseInt(v); update(); }
+function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateAccessoryDisplay(); }
+function setAalLines(v){ S.aalLines=parseInt(v); update(); updateAccessoryDisplay(); }
 
 // ============================================================
 // PLAN
@@ -600,7 +606,7 @@ function setPlan(id){
   S.plan=id;
   if(id==='byod') S.lines.filter(l=>l.cat==='v').forEach(l=>{l.intl=false;l.passport=false;l.hotspot=false;});
   showPlanNote(id);
-  renderPlanGrid();renderLines();update();
+  renderPlanGrid();renderLines();update(); updateAccessoryDisplay();
 }
 
 // ============================================================
@@ -612,7 +618,7 @@ function addLine(cat, clone=null){
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
-  renderLines();renderPlanGrid();update();
+  renderLines();renderPlanGrid();update(); updateAccessoryDisplay();
 }
 function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
@@ -625,36 +631,36 @@ function dupeLine(id){
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
   S.lines.splice(srcIdx+1,0,clone);
-  renderLines();renderPlanGrid();update();
+  renderLines();renderPlanGrid();update(); updateAccessoryDisplay();
 }
 function removeLine(id){
   S.lines=S.lines.filter(l=>l.id!==id);
-  renderLines();renderPlanGrid();update();
+  renderLines();renderPlanGrid();update(); updateAccessoryDisplay();
 }
 function setProtect(id, tier){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   if(l.protect && l.protectTier===tier){ l.protect=false; } // tap active = toggle off
   else { l.protect=true; l.protectTier=tier; }
-  renderLines(); update();
+  renderLines(); update(); updateAccessoryDisplay();
 }
 function setUpQual(id, val){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   l.upQual=(val===true||val==='true');
-  renderLines(); update();
+  renderLines(); update(); updateAccessoryDisplay();
 }
 function setFinInclude(id, val){
   const l=S.lines.find(l=>l.id===id);
   if(!l) return;
   l.finInclude = (val===true||val==='true');
   renderLines();
-  update();
+  update(); updateAccessoryDisplay();
 }
 function lu(id,k,v){
   const l=S.lines.find(l=>l.id===id);if(!l)return;
   l[k]=v;
   if(k==='byod'&&v){l.intl=false;l.passport=false;l.hotspot=false;}
   if(['lt','byod','device'].includes(k)){renderLines();}
-  update();
+  update(); updateAccessoryDisplay();
 }
 // Toggle boolean feature
 function tog(id,k){
@@ -662,7 +668,7 @@ function tog(id,k){
   l[k]=!l[k];
   // Always re-render full line to keep fin toggle + chips consistent
   renderLines();
-  update();
+  update(); updateAccessoryDisplay();
 }
 
 function renderLines(){
@@ -894,7 +900,7 @@ function updateAddBtns(){
 function setAPO(val){
   S.apoPerDevice=parseFloat(val)||0;
   updateApoHint();
-  update();
+  update(); updateAccessoryDisplay();
 }
 function updateApoHint(){
   const cnt=deviceLineCount();
@@ -916,19 +922,19 @@ function toggleApoFin(){
   S.apoFin=$('apo-fin-chk').checked;
   $('apo-split-opts').style.display=S.apoFin?'block':'none';
   if(!S.apoFin){S.apoSplit=false;if($('apo-split-chk'))$('apo-split-chk').checked=false;$('apo-split-input').style.display='none';}
-  update();
+  update(); updateAccessoryDisplay();
 }
 function toggleApoSplit(){
   S.apoSplit=$('apo-split-chk').checked;
   $('apo-split-input').style.display=S.apoSplit?'block':'none';
   if(!S.apoSplit)S.apoLeaseAmt=0;
-  update();
+  update(); updateAccessoryDisplay();
 }
 function setApoLease(val){
-  const total=S.apoPerDevice*deviceLineCount();
+  const total=(S.apoPerDevice * deviceLineCount()) + (typeof getWatchTotal==='function'?getWatchTotal():0);
   S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
   updateApoHint();
-  update();
+  update(); updateAccessoryDisplay();
 }
 
 // ============================================================
@@ -942,7 +948,7 @@ function toggleFin(){
     S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
   }
   renderLines();
-  update();
+  update(); updateAccessoryDisplay();
 }
 function setFinType(t){
   S.finType=t;
@@ -950,20 +956,20 @@ function setFinType(t){
   $('ft-bread').classList.toggle('on',t==='bread');
   $('apr-sec').style.display=t==='bread'?'block':'none';
   $('prog-freq-sec').style.display=t==='prog'?'block':'none';
-  update();
+  update(); updateAccessoryDisplay();
 }
 function setProgFreq(f){
   S.progFreq=f;
   ['weekly','biweekly','monthly'].forEach(x=>$('pf-'+x).classList.toggle('on',x===f));
-  update();
+  update(); updateAccessoryDisplay();
 }
 function setAPR(r){
   S.breadAPR=r;
   $('apr0').classList.toggle('on',r===0);
   $('apr14').classList.toggle('on',r===14.99);
-  update();
+  update(); updateAccessoryDisplay();
 }
-$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update();});
+$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateAccessoryDisplay();});
 
 // ============================================================
 // CALC
@@ -1037,7 +1043,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const baseAccessories = S.apoPerDevice * deviceLineCount();
+  const baseAccessories = (S.apoPerDevice * deviceLineCount()) + (typeof getWatchTotal==='function'?getWatchTotal():0);
 const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
 
 const apoTotal = baseAccessories + watchTotal;
@@ -1320,7 +1326,7 @@ function resetAll(){
   $('aal-plan-sel').value='supreme';
   $('aal-lines-sel').value='1';
   $('lines-container').innerHTML='';
-  renderPlanGrid();update();
+  renderPlanGrid();update(); updateAccessoryDisplay();
 }
 
 // INIT
@@ -1333,13 +1339,47 @@ window.onerror = function(msg, src, line, col, err) {
 };
 try {
   renderPlanGrid();
-  update();
+  update(); updateAccessoryDisplay();
 } catch(e) {
   document.body.insertAdjacentHTML('beforeend',
     `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
       <b>Init Error:</b> ${e.message}<br>${e.stack}
     </div>`);
 }
+
+function toggleWatch(type, price, el){
+  if(!S.watches) S.watches = {};
+  if(S.watches[type]){
+    delete S.watches[type];
+    el.classList.remove('active');
+  } else {
+    S.watches[type] = price;
+    el.classList.add('active');
+  }
+  update(); updateAccessoryDisplay();
+}
+function getWatchTotal(){
+  return Object.values(S.watches || {}).reduce((a,b)=>a+b,0);
+}
+
+
+function updateAccessoryDisplay(){
+  const devices = deviceLineCount();
+  const base = S.apoPerDevice * devices;
+  const watches = (typeof getWatchTotal === 'function') ? getWatchTotal() : 0;
+  const total = base + watches;
+
+  const totalEl = document.getElementById('acc-total');
+  const breakdownEl = document.getElementById('acc-breakdown');
+
+  if(totalEl) totalEl.textContent = fmt(total);
+
+  if(breakdownEl){
+    breakdownEl.textContent =
+      `$${S.apoPerDevice} × ${devices} devices = ${fmt(base)} + Watches ${fmt(watches)}`;
+  }
+}
+
 </script>
 
 <script>
@@ -1353,12 +1393,46 @@ function toggleWatch(type,price,el){
     S.watches[type] = price;
     el.classList.add('active');
   }
-  update();
+  update(); updateAccessoryDisplay();
 }
 
 function getWatchTotal(){
   return Object.values(S.watches).reduce((a,b)=>a+b,0);
 }
+
+function toggleWatch(type, price, el){
+  if(!S.watches) S.watches = {};
+  if(S.watches[type]){
+    delete S.watches[type];
+    el.classList.remove('active');
+  } else {
+    S.watches[type] = price;
+    el.classList.add('active');
+  }
+  update(); updateAccessoryDisplay();
+}
+function getWatchTotal(){
+  return Object.values(S.watches || {}).reduce((a,b)=>a+b,0);
+}
+
+
+function updateAccessoryDisplay(){
+  const devices = deviceLineCount();
+  const base = S.apoPerDevice * devices;
+  const watches = (typeof getWatchTotal === 'function') ? getWatchTotal() : 0;
+  const total = base + watches;
+
+  const totalEl = document.getElementById('acc-total');
+  const breakdownEl = document.getElementById('acc-breakdown');
+
+  if(totalEl) totalEl.textContent = fmt(total);
+
+  if(breakdownEl){
+    breakdownEl.textContent =
+      `$${S.apoPerDevice} × ${devices} devices = ${fmt(base)} + Watches ${fmt(watches)}`;
+  }
+}
+
 </script>
 
 </body>
