@@ -364,27 +364,43 @@ select option,select optgroup{background:#1e1e1e}
 </div>
 <div style="margin-top:10px;text-align:center">
   <div style="font-size:11px;color:var(--t2);margin-bottom:6px">
-    + Add Skeiwatch (optional)</div>
-<div style="margin-top:6px;text-align:center">
-<input type="number" min="0" value="0" placeholder="Qty" oninput="setWatchQty(this.value)" style="width:80px;text-align:center">
-</div>
-<div
-  </div>
-  <div id="watch-select" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
-    <button class="apo-btn" onclick="setWatch(0)">None</button>
-    <button class="apo-btn" onclick="setWatch(99.99)">C30 $99</button>
-    <button class="apo-btn" onclick="setWatch(159.99)">C70 $159</button>
-    <button class="apo-btn" onclick="setWatch(109.99)">S40 $109</button>
-    <button class="apo-btn" onclick="setWatch(159.99)">C80 $159</button>
-    <button class="apo-btn" onclick="setWatch(139.99)">C62 $139</button>
-  </div>
+    
++ Add Skeiwatch (optional)
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:6px">
+
+
+<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+  <span>C30 $99</span>
+  <button onclick="changeWatch('c30',-1)">-</button>
+  <span id="qty-c30">0</span>
+  <button onclick="changeWatch('c30',1)">+</button>
 </div>
 
+<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+  <span>C70 $159</span>
+  <button onclick="changeWatch('c70',-1)">-</button>
+  <span id="qty-c70">0</span>
+  <button onclick="changeWatch('c70',1)">+</button>
+</div>
 
-  
+<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+  <span>S40 $109</span>
+  <button onclick="changeWatch('s40',-1)">-</button>
+  <span id="qty-s40">0</span>
+  <button onclick="changeWatch('s40',1)">+</button>
+</div>
 
-  <div style="text-align:center;border-top:1px solid var(--bd);padding-top:8px;width:100%">
-    <div style="font-size:10px;color:var(--t3)">Total Accessories</div>
+<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+  <span>C80 $159</span>
+  <button onclick="changeWatch('c80',-1)">-</button>
+  <span id="qty-c80">0</span>
+  <button onclick="changeWatch('c80',1)">+</button>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+  <span>C62 $139
+
+Total Accessories</div>
     
 
 </div>
@@ -1412,17 +1428,45 @@ function setApoPreset(val){
   updateApoDisplay();
 }
 
+
 function updateApoDisplay(){
-  const cnt = deviceLineCount();
-  const total = S.apoPerDevice * cnt;
+  const devices = deviceLineCount();
+
+  const base = (S.apoPerDevice || 0) * devices;
+
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+
+  let watchTotal = 0;
+  for(const k in S.watches){
+    watchTotal += (S.watches[k] || 0) * prices[k];
+  }
+
+  const total = base + watchTotal;
+  const finalApo = devices > 0 ? total / devices : 0;
+
   const el = document.getElementById('apo-total-big');
-  if(el){
-    el.innerText = total > 0 ? '$' + total : '$0';
+  if(!el) return;
+
+  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode && el.parentNode.appendChild(sub);
+  }
+
+  if(sub){
+    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
   }
 }
 
+}
 
-S.watchPrice = 0;
+
+S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
 
 function setWatch(price){
   S.watchPrice = price;
@@ -1430,39 +1474,94 @@ function setWatch(price){
   updateApoDisplay();
 }
 
+
 function updateApoDisplay(){
-  const devices = typeof deviceLineCount==='function' ? deviceLineCount() : 0;
+  const devices = deviceLineCount();
+
   const base = (S.apoPerDevice || 0) * devices;
-  const watch = S.watchPrice || 0;
-  const total = base + watch;
+
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+
+  let watchTotal = 0;
+  for(const k in S.watches){
+    watchTotal += (S.watches[k] || 0) * prices[k];
+  }
+
+  const total = base + watchTotal;
+  const finalApo = devices > 0 ? total / devices : 0;
 
   const el = document.getElementById('apo-total-big');
-  if(el){
-    el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+  if(!el) return;
+
+  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode && el.parentNode.appendChild(sub);
+  }
+
+  if(sub){
+    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
   }
 }
 
+}
 
-S.watchPrice = 0;
-S.watchQty = 0;
 
-function setSkeiwatch(price){
-  S.watchPrice = price;
-  update(); updateApoDisplay();
+S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
+
+
+
+function setWatchQty(type, qty){
+  S.watches[type] = Number(qty || 0);
+  update();
   updateApoDisplay();
 }
 
-function setWatchQty(qty){
-  S.watchQty = Number(qty || 0);
-  update(); updateApoDisplay();
-  updateApoDisplay();
-}
 
 function updateApoDisplay(){
-  const devices = typeof deviceLineCount==='function' ? deviceLineCount() : 0;
+  const devices = deviceLineCount();
 
   const base = (S.apoPerDevice || 0) * devices;
-  const watchTotal = (S.watchPrice || 0) * (S.watchQty || 0);
+
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+
+  let watchTotal = 0;
+  for(const k in S.watches){
+    watchTotal += (S.watches[k] || 0) * prices[k];
+  }
+
+  const total = base + watchTotal;
+  const finalApo = devices > 0 ? total / devices : 0;
+
+  const el = document.getElementById('apo-total-big');
+  if(!el) return;
+
+  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode && el.parentNode.appendChild(sub);
+  }
+
+  if(sub){
+    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
+  }
+}
+;
+
+  let watchTotal = 0;
+  for(const k in S.watches){
+    watchTotal += (S.watches[k] || 0) * prices[k];
+  }
 
   const total = base + watchTotal;
   const finalApo = devices > 0 ? total / devices : 0;
@@ -1482,6 +1581,74 @@ function updateApoDisplay(){
   }
 
   sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
+}
+
+
+function setWatchQty(qty){
+  S.watchQty = Number(qty || 0);
+  update(); updateApoDisplay();
+  updateApoDisplay();
+}
+
+
+function updateApoDisplay(){
+  const devices = deviceLineCount();
+
+  const base = (S.apoPerDevice || 0) * devices;
+
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+
+  let watchTotal = 0;
+  for(const k in S.watches){
+    watchTotal += (S.watches[k] || 0) * prices[k];
+  }
+
+  const total = base + watchTotal;
+  const finalApo = devices > 0 ? total / devices : 0;
+
+  const el = document.getElementById('apo-total-big');
+  if(!el) return;
+
+  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode && el.parentNode.appendChild(sub);
+  }
+
+  if(sub){
+    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
+  }
+}
+
+
+  let sub = document.getElementById('apo-breakdown');
+  if(!sub){
+    sub = document.createElement('div');
+    sub.id = 'apo-breakdown';
+    sub.style.fontSize = '11px';
+    sub.style.color = 'var(--t2)';
+    el.parentNode.appendChild(sub);
+  }
+
+  sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
+}
+
+
+function changeWatch(type, delta){
+  if(!S.watches) S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
+
+  S.watches[type] = Math.max(0,(S.watches[type]||0)+delta);
+
+  const el = document.getElementById('qty-'+type);
+  if(el) el.innerText = S.watches[type];
+
+  update();
+  updateApoDisplay();
 }
 
 </script>
