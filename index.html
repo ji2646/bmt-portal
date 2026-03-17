@@ -194,23 +194,6 @@ select option,select optgroup{background:#1e1e1e}
 .reset-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--bd);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .reset-btn:hover{border-color:var(--err);color:var(--err)}
 </style>
-
-<style>
-.watch-btn{
-  border:1.5px solid #3a3a3a;
-  padding:10px 14px;
-  border-radius:12px;
-  margin:4px;
-  cursor:pointer;
-  display:inline-block;
-  font-weight:600;
-}
-.watch-btn.active{
-  border-color:#00a94f;
-  background:rgba(0,169,79,.15);
-}
-</style>
-
 </head>
 <body>
 <header>
@@ -323,21 +306,7 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div 
-<div style="margin-top:12px">
-<div style="font-weight:700;margin-bottom:6px">Skeiwatch</div>
-
-<div style="display:flex;flex-wrap:wrap">
-  <div class="watch-btn" onclick="toggleWatch('c30',99.99,this)">C30 $99</div>
-  <div class="watch-btn" onclick="toggleWatch('c70',159.99,this)">C70 $159</div>
-  <div class="watch-btn" onclick="toggleWatch('s40',109.99,this)">S40 $109</div>
-  <div class="watch-btn" onclick="toggleWatch('c80',159.99,this)">C80 $159</div>
-  <div class="watch-btn" onclick="toggleWatch('c62',139.99,this)">C62 $139</div>
-  <div class="watch-btn" onclick="toggleWatch('kids',39.99,this)">Kids $39</div>
-</div>
-</div>
-
-<div id="apo-fin-opts" style="margin-top:10px;display:none">
+    <div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
         <div class="fin-hdr-lbl">PPP — Accessories<small id="apo-fin-note">Include accessories in Phone Payment Plan</small></div>
         <label class="toggle"><input type="checkbox" id="apo-fin-chk" onchange="toggleApoFin()"><span class="tslide"></span></label>
@@ -1048,11 +1017,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const baseAccessories = S.apoPerDevice * deviceLineCount();
-const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
-
-// combine watches into accessories ALWAYS
-const apoTotal = baseAccessories + watchTotal;
+  const apoTotal=S.apoPerDevice*deviceLineCount();
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1353,25 +1318,5 @@ try {
     </div>`);
 }
 </script>
-
-<script>
-S.watches = {};
-
-function toggleWatch(type,price,el){
-  if(S.watches[type]){
-    delete S.watches[type];
-    el.classList.remove('active');
-  } else {
-    S.watches[type] = price;
-    el.classList.add('active');
-  }
-  update();
-}
-
-function getWatchTotal(){
-  return Object.values(S.watches).reduce((a,b)=>a+b,0);
-}
-</script>
-
 </body>
 </html>
