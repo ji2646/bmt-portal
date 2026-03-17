@@ -323,11 +323,7 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div>
-<div style="margin-top:10px">
-<div style="font-weight:700;margin-bottom:6px">
-</div>
-</div>
+    
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
@@ -737,8 +733,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?w.frp:w.price;
-        const tag=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const pr=(l.lt==='upgrade')?w.frp:w.price;
+        const tag=l.lt==='upgrade'?'':'';
         devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
@@ -747,8 +743,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?t.frp:t.price;
-        const tagT=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const pr=(l.lt==='upgrade')?t.frp:t.price;
+        const tagT=l.lt==='upgrade'?'':'';
         devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
@@ -757,8 +753,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_h" ${l.device==='byod_h'?'selected':''}>Customer's Own Hotspot (SIM only)</option>`;
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
-        const pr=l.lt==='upgrade'?h.frp:h.price;
-        const tagH=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const pr=(l.lt==='upgrade')?h.frp:h.price;
+        const tagH=l.lt==='upgrade'?'':'';
         devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
@@ -789,7 +785,7 @@ function buildCard(l,idx){
     </select></div>`:'';
 
   const isQual=l.upQual!==false;
-  const upQualRow=l.lt==='upgrade'?`
+  const upQualRow=(l.lt==='upgrade' && l.cat==='v')?`
     <div class="f full">
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Upgrade pricing<small>${isQual?'Discounted upgrade price':'Non-qualified — FRP'}</small></div>
