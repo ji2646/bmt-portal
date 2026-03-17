@@ -196,19 +196,8 @@ select option,select optgroup{background:#1e1e1e}
 </style>
 
 <style>
-.watch-btn{
-  border:1.5px solid #3a3a3a;
-  padding:10px 14px;
-  border-radius:12px;
-  margin:4px;
-  cursor:pointer;
-  display:inline-block;
-  font-weight:600;
-}
-.watch-btn.active{
-  border-color:#00a94f;
-  background:rgba(0,169,79,.15);
-}
+.watch-btn{border:1.5px solid #3a3a3a;padding:10px 14px;border-radius:12px;margin:4px;cursor:pointer;display:inline-block;font-weight:600}
+.watch-btn.active{border-color:#00a94f;background:rgba(0,169,79,.15)}
 </style>
 
 </head>
@@ -1051,7 +1040,6 @@ function calc(){
   const baseAccessories = S.apoPerDevice * deviceLineCount();
 const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
 
-// combine watches into accessories ALWAYS
 const apoTotal = baseAccessories + watchTotal;
 
   S.lines.forEach(l=>{
