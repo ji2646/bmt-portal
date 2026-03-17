@@ -193,73 +193,6 @@ select option,select optgroup{background:#1e1e1e}
 .empty-txt{font-size:11px;line-height:1.7}
 .reset-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--bd);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .reset-btn:hover{border-color:var(--err);color:var(--err)}
-
-/* APO BUTTON STYLE */
-.apo-btn{
-  border:1.5px solid var(--bd2);
-  background:var(--s3);
-  color:var(--t1);
-  border-radius:8px;
-  padding:8px 14px;
-  font-weight:700;
-  cursor:pointer;
-  transition:.15s;
-}
-.apo-btn:hover{border-color:var(--g);}
-.apo-btn.active{
-  border-color:var(--g);
-  background:rgba(0,169,79,.15);
-}
-
-/* MOBILE FIX — APO */
-@media(max-width:600px){
-  .apo-wrap{
-    flex-direction:column !important;
-    align-items:center !important;
-    text-align:center;
-    gap:12px;
-  }
-
-  #apo-presets{
-    width:100%;
-    justify-content:center;
-  }
-
-  .apo-btn{
-    flex:1 1 40%;
-    padding:10px;
-    font-size:14px;
-  }
-
-  .apo-inp{
-    width:100% !important;
-    max-width:200px;
-    font-size:18px;
-  }
-
-  #apo-total-big{
-    font-size:36px !important;
-  }
-}
-
-
-.qty-box{
-  min-width:36px;
-  text-align:center;
-  padding:6px 10px;
-  border-radius:8px;
-  background:#1f1f1f;
-  border:1px solid #3a3a3a;
-  font-weight:700;
-}
-.qty-btn{
-  padding:6px 10px;
-  border-radius:8px;
-  background:#2a2a2a;
-  border:1px solid #3a3a3a;
-  cursor:pointer;
-}
-
 </style>
 </head>
 <body>
@@ -366,86 +299,65 @@ select option,select optgroup{background:#1e1e1e}
 <div class="sec">
   <div class="sec-head"><div class="sec-title">Step 4 — Accessories (APO)</div></div>
   <div class="sec-body">
-    <div class="apo-wrap" style="flex-direction:column;align-items:center;gap:10px">
-
-  <div class="apo-lbl">Accessories Per Device</div>
-
-  <div id="apo-presets" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
-    <button class="apo-btn" onclick="setApoPreset(40)">$40</button>
-    <button class="apo-btn" onclick="setApoPreset(75)">$75</button>
-    <button class="apo-btn" onclick="setApoPreset(130)">$130</button>
-    <button class="apo-btn" onclick="setApoPreset(190)">$190</button>
-  </div>
-
-<div style="display:flex;justify-content:center;margin-top:8px">
-<input class="apo-inp" style="width:160px;text-align:center" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
-</div>
-<div style="margin-top:10px;text-align:center">
-  <div style="font-size:11px;color:var(--t2);margin-bottom:6px">
-    
-
-+ Add Skeiwatch (optional)
-
-<div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px">
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>C30 $99</span>
-  <button class="qty-btn" onclick="changeWatch('c30',-1)">-</button>
-  <span class="qty-box" id="qty-c30">0</span>
-  <button class="qty-btn" onclick="changeWatch('c30',1)">+</button>
-</div>
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>C70 $159</span>
-  <button class="qty-btn" onclick="changeWatch('c70',-1)">-</button>
-  <span class="qty-box" id="qty-c70">0</span>
-  <button class="qty-btn" onclick="changeWatch('c70',1)">+</button>
-</div>
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>S40 $109</span>
-  <button class="qty-btn" onclick="changeWatch('s40',-1)">-</button>
-  <span class="qty-box" id="qty-s40">0</span>
-  <button class="qty-btn" onclick="changeWatch('s40',1)">+</button>
-</div>
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>C80 $159</span>
-  <button class="qty-btn" onclick="changeWatch('c80',-1)">-</button>
-  <span class="qty-box" id="qty-c80">0</span>
-  <button class="qty-btn" onclick="changeWatch('c80',1)">+</button>
-</div>
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>C62 $139</span>
-  <button class="qty-btn" onclick="changeWatch('c62',-1)">-</button>
-  <span class="qty-box" id="qty-c62">0</span>
-  <button class="qty-btn" onclick="changeWatch('c62',1)">+</button>
-</div>
-
-
-<div style="display:flex;gap:10px;align-items:center">
-  <span>Kids $39.99</span>
-  <button class="qty-btn" onclick="changeWatch('kids',-1)">-</button>
-  <span class="qty-box" id="qty-kids">0</span>
-  <button class="qty-btn" onclick="changeWatch('kids',1)">+</button>
-</div>
-
-</div>
-
-<div style="text-align:center;border-top:1px solid var(--bd);padding-top:10px;margin-top:10px">
-  <div style="font-size:10px;color:var(--t3)">Total Accessories</div>
-  <div id="apo-total-big" style="font-family:'Bebas Neue';font-size:34px;color:var(--g)">$0</div>
-</div>
-</div>
-    
-
-</div>
+    <div class="apo-wrap">
+      <div class="apo-info">
+        <div class="apo-lbl">APO per device ($)</div>
         <div class="apo-hint" id="apo-hint">Enter $ per device — auto-multiplies by device count</div>
       </div>
-      
+      <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div id="apo-fin-opts" style="margin-top:10px;display:none">
+    <div 
+<div style="margin-top:12px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--s2)">
+  <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">
+    Skeiwatch Add-On (counts toward APO & PPP)
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+
+    <div> C30 $99.99 
+      <button onclick="changeWatch('c30',-1)">-</button>
+      <span id="qty-c30">0</span>
+      <button onclick="changeWatch('c30',1)">+</button>
+    </div>
+
+    <div> C70 $159.99 
+      <button onclick="changeWatch('c70',-1)">-</button>
+      <span id="qty-c70">0</span>
+      <button onclick="changeWatch('c70',1)">+</button>
+    </div>
+
+    <div> S40 $109.99 
+      <button onclick="changeWatch('s40',-1)">-</button>
+      <span id="qty-s40">0</span>
+      <button onclick="changeWatch('s40',1)">+</button>
+    </div>
+
+    <div> C80 $159.99 
+      <button onclick="changeWatch('c80',-1)">-</button>
+      <span id="qty-c80">0</span>
+      <button onclick="changeWatch('c80',1)">+</button>
+    </div>
+
+    <div> C62 $139.99 
+      <button onclick="changeWatch('c62',-1)">-</button>
+      <span id="qty-c62">0</span>
+      <button onclick="changeWatch('c62',1)">+</button>
+    </div>
+
+    <div> Kids $39.99 
+      <button onclick="changeWatch('kids',-1)">-</button>
+      <span id="qty-kids">0</span>
+      <button onclick="changeWatch('kids',1)">+</button>
+    </div>
+
+  </div>
+
+  <div style="margin-top:10px;font-size:10px;color:var(--warn)">
+    PPP requires $149.99+ anchor device
+  </div>
+</div>
+
+<div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
         <div class="fin-hdr-lbl">PPP — Accessories<small id="apo-fin-note">Include accessories in Phone Payment Plan</small></div>
         <label class="toggle"><input type="checkbox" id="apo-fin-chk" onchange="toggleApoFin()"><span class="tslide"></span></label>
@@ -461,7 +373,7 @@ select option,select optgroup{background:#1e1e1e}
               <div class="apo-lbl">Amount on lease ($)</div>
               <div class="apo-hint" id="apo-split-hint">Remainder goes to cash OTD</div>
             </div>
-            
+            <input class="apo-inp" type="number" id="apo-lease-amt" min="0" step="5" value="0" oninput="setApoLease(this.value)">
           </div>
         </div>
       </div>
@@ -655,7 +567,7 @@ function setAcct(a){
   $('plan-sec').style.display=a==='new'?'block':'none';
   $('aal-sec').style.display=a==='aal'?'block':'none';
   if(a==='new') S.lines=S.lines.filter(l=>l.lt!=='upgrade');
-  renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines();update();
 }
 function setTxnType(t){
   S.txnType=t;
@@ -666,10 +578,10 @@ function setTxnType(t){
   $('both-disclaimer').style.display=(t==='both')?'block':'none';
   // If upgrade-only, strip AAL lines; if aal-only, strip upgrades
   if(t==='upgrade') S.lines=S.lines.filter(l=>l.lt==='upgrade'||l.lt==='new'&&false||true);
-  renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines();update();
 }
-function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay(); }
-function setAalLines(v){ S.aalLines=parseInt(v); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay(); }
+function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); }
+function setAalLines(v){ S.aalLines=parseInt(v); update(); }
 
 // ============================================================
 // PLAN
@@ -719,7 +631,7 @@ function setPlan(id){
   S.plan=id;
   if(id==='byod') S.lines.filter(l=>l.cat==='v').forEach(l=>{l.intl=false;l.passport=false;l.hotspot=false;});
   showPlanNote(id);
-  renderPlanGrid();renderLines();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderPlanGrid();renderLines();update();
 }
 
 // ============================================================
@@ -731,7 +643,7 @@ function addLine(cat, clone=null){
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update();
 }
 function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
@@ -744,36 +656,36 @@ function dupeLine(id){
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
   S.lines.splice(srcIdx+1,0,clone);
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update();
 }
 function removeLine(id){
   S.lines=S.lines.filter(l=>l.id!==id);
-  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines();renderPlanGrid();update();
 }
 function setProtect(id, tier){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   if(l.protect && l.protectTier===tier){ l.protect=false; } // tap active = toggle off
   else { l.protect=true; l.protectTier=tier; }
-  renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines(); update();
 }
 function setUpQual(id, val){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   l.upQual=(val===true||val==='true');
-  renderLines(); update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderLines(); update();
 }
 function setFinInclude(id, val){
   const l=S.lines.find(l=>l.id===id);
   if(!l) return;
   l.finInclude = (val===true||val==='true');
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function lu(id,k,v){
   const l=S.lines.find(l=>l.id===id);if(!l)return;
   l[k]=v;
   if(k==='byod'&&v){l.intl=false;l.passport=false;l.hotspot=false;}
   if(['lt','byod','device'].includes(k)){renderLines();}
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 // Toggle boolean feature
 function tog(id,k){
@@ -781,7 +693,7 @@ function tog(id,k){
   l[k]=!l[k];
   // Always re-render full line to keep fin toggle + chips consistent
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 
 function renderLines(){
@@ -1013,7 +925,7 @@ function updateAddBtns(){
 function setAPO(val){
   S.apoPerDevice=parseFloat(val)||0;
   updateApoHint();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function updateApoHint(){
   const cnt=deviceLineCount();
@@ -1035,19 +947,19 @@ function toggleApoFin(){
   S.apoFin=$('apo-fin-chk').checked;
   $('apo-split-opts').style.display=S.apoFin?'block':'none';
   if(!S.apoFin){S.apoSplit=false;if($('apo-split-chk'))$('apo-split-chk').checked=false;$('apo-split-input').style.display='none';}
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function toggleApoSplit(){
   S.apoSplit=$('apo-split-chk').checked;
   $('apo-split-input').style.display=S.apoSplit?'block':'none';
   if(!S.apoSplit)S.apoLeaseAmt=0;
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function setApoLease(val){
   const total=S.apoPerDevice*deviceLineCount();
   S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
   updateApoHint();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 
 // ============================================================
@@ -1061,7 +973,7 @@ function toggleFin(){
     S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
   }
   renderLines();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function setFinType(t){
   S.finType=t;
@@ -1069,20 +981,20 @@ function setFinType(t){
   $('ft-bread').classList.toggle('on',t==='bread');
   $('apr-sec').style.display=t==='bread'?'block':'none';
   $('prog-freq-sec').style.display=t==='prog'?'block':'none';
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function setProgFreq(f){
   S.progFreq=f;
   ['weekly','biweekly','monthly'].forEach(x=>$('pf-'+x).classList.toggle('on',x===f));
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
 function setAPR(r){
   S.breadAPR=r;
   $('apr0').classList.toggle('on',r===0);
   $('apr14').classList.toggle('on',r===14.99);
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 }
-$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();});
+$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update();});
 
 // ============================================================
 // CALC
@@ -1436,7 +1348,7 @@ function resetAll(){
   $('aal-plan-sel').value='supreme';
   $('aal-lines-sel').value='1';
   $('lines-container').innerHTML='';
-  renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  renderPlanGrid();update();
 }
 
 // INIT
@@ -1449,245 +1361,42 @@ window.onerror = function(msg, src, line, col, err) {
 };
 try {
   renderPlanGrid();
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
+  update();
 } catch(e) {
   document.body.insertAdjacentHTML('beforeend',
     `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
       <b>Init Error:</b> ${e.message}<br>${e.stack}
     </div>`);
 }
-
-function setApoPreset(val){
-  S.apoPerDevice = val;
-  const inp = document.getElementById('apo-inp');
-  if(inp) inp.value = val;
-  update(); updateApoDisplay(); updateApoDisplay(); updateApoDisplay();
-  updateApoDisplay();
-}
-
-
-function updateApoDisplay(){
-  const devices = deviceLineCount();
-
-  const base = (S.apoPerDevice || 0) * devices;
-
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
-
-  let watchTotal = 0;
-  for(const k in S.watches){
-    watchTotal += (S.watches[k] || 0) * prices[k];
-  }
-
-  const total = base + watchTotal;
-  const finalApo = devices > 0 ? total / devices : 0;
-
-  const el = document.getElementById('apo-total-big');
-  if(!el) return;
-
-  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode && el.parentNode.appendChild(sub);
-  }
-
-  if(sub){
-    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-  }
-}
-
-}
-
-
-S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
-
-function setWatch(price){
-  S.watchPrice = price;
-  update(); updateApoDisplay(); updateApoDisplay();
-  updateApoDisplay();
-}
-
-
-function updateApoDisplay(){
-  const devices = deviceLineCount();
-
-  const base = (S.apoPerDevice || 0) * devices;
-
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
-
-  let watchTotal = 0;
-  for(const k in S.watches){
-    watchTotal += (S.watches[k] || 0) * prices[k];
-  }
-
-  const total = base + watchTotal;
-  const finalApo = devices > 0 ? total / devices : 0;
-
-  const el = document.getElementById('apo-total-big');
-  if(!el) return;
-
-  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode && el.parentNode.appendChild(sub);
-  }
-
-  if(sub){
-    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-  }
-}
-
-}
-
-
-S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
-
-
-
-function setWatchQty(type, qty){
-  S.watches[type] = Number(qty || 0);
-  update();
-  updateApoDisplay();
-}
-
-
-function updateApoDisplay(){
-  const devices = deviceLineCount();
-
-  const base = (S.apoPerDevice || 0) * devices;
-
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
-
-  let watchTotal = 0;
-  for(const k in S.watches){
-    watchTotal += (S.watches[k] || 0) * prices[k];
-  }
-
-  const total = base + watchTotal;
-  const finalApo = devices > 0 ? total / devices : 0;
-
-  const el = document.getElementById('apo-total-big');
-  if(!el) return;
-
-  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode && el.parentNode.appendChild(sub);
-  }
-
-  if(sub){
-    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-  }
-}
-;
-
-  let watchTotal = 0;
-  for(const k in S.watches){
-    watchTotal += (S.watches[k] || 0) * prices[k];
-  }
-
-  const total = base + watchTotal;
-  const finalApo = devices > 0 ? total / devices : 0;
-
-  const el = document.getElementById('apo-total-big');
-  if(el){
-    el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
-  }
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode.appendChild(sub);
-  }
-
-  sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-}
-
-
-function setWatchQty(qty){
-  S.watchQty = Number(qty || 0);
-  update(); updateApoDisplay();
-  updateApoDisplay();
-}
-
-
-function updateApoDisplay(){
-  const devices = deviceLineCount();
-
-  const base = (S.apoPerDevice || 0) * devices;
-
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
-
-  let watchTotal = 0;
-  for(const k in S.watches){
-    watchTotal += (S.watches[k] || 0) * prices[k];
-  }
-
-  const total = base + watchTotal;
-  const finalApo = devices > 0 ? total / devices : 0;
-
-  const el = document.getElementById('apo-total-big');
-  if(!el) return;
-
-  el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode && el.parentNode.appendChild(sub);
-  }
-
-  if(sub){
-    sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-  }
-}
-
-
-  let sub = document.getElementById('apo-breakdown');
-  if(!sub){
-    sub = document.createElement('div');
-    sub.id = 'apo-breakdown';
-    sub.style.fontSize = '11px';
-    sub.style.color = 'var(--t2)';
-    el.parentNode.appendChild(sub);
-  }
-
-  sub.innerText = devices > 0 ? `APO: $${finalApo.toFixed(2)} per device` : '';
-}
-
-
-function changeWatch(type, delta){
-  if(!S.watches) S.watches = {c30:0,c70:0,s40:0,c80:0,c62:0};
-
-  S.watches[type] = Math.max(0,(S.watches[type]||0)+delta);
-
-  const el = document.getElementById('qty-'+type);
-  if(el) el.innerText = S.watches[type];
-
-  update();
-  updateApoDisplay();
-}
-
 </script>
+
+<script>
+S.watches={c30:0,c70:0,s40:0,c80:0,c62:0,kids:0};
+
+function changeWatch(type,delta){
+  S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
+  document.getElementById('qty-'+type).innerText=S.watches[type];
+  update();
+}
+
+function watchTotal(){
+  const p={c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
+  let t=0;
+  for(let k in S.watches){
+    t+=S.watches[k]*p[k];
+  }
+  return t;
+}
+
+const originalUpdate = update;
+update = function(){
+  originalUpdate();
+  const wt = watchTotal();
+  if(wt>0){
+    S.apoPerDevice = S.apoPerDevice; // keep base
+  }
+};
+</script>
+
 </body>
 </html>
