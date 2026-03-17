@@ -205,7 +205,7 @@ select option,select optgroup{background:#1e1e1e}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/27/2026 12:33 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/17/2026 1:00 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -375,6 +375,8 @@ select option,select optgroup{background:#1e1e1e}
 </div>
 
 
+
+<!-- PRICING SYSTEM LOCKED: Phones = dynamic, Tablets/Hotspot/Watch = FRP on upgrades. Do not modify without updating logic -->
 <script>
 // ============================================================
 // CONSTANTS
@@ -464,7 +466,7 @@ const fmtMo=n=>fmt(n)+'/mo';
 
 function devById(id,cat){
   if(cat==='v')return PHONES.find(p=>p.id===id);
-  if(false)return WATCHES.find(w=>w.id===id);
+  // watches removed
   if(cat==='t')return TABLETS.find(t=>t.id===id);
   if(cat==='h')return HS_DEVICES.find(h=>h.id===id);
 }
@@ -768,7 +770,7 @@ function buildCard(l,idx){
     </select></div>`:'';
 
   const isQual=l.upQual!==false;
-  const upQualRow=l.lt==='upgrade'?`
+  const upQualRow=(l.lt==='upgrade' && l.cat==='v')?`
     <div class="f full">
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Upgrade pricing<small>${isQual?'Discounted upgrade price':'Non-qualified — FRP'}</small></div>
@@ -1325,6 +1327,8 @@ try {
 }
 </script>
 
+
+<!-- PRICING SYSTEM LOCKED: Phones = dynamic, Tablets/Hotspot/Watch = FRP on upgrades. Do not modify without updating logic -->
 <script>
 S.watches = {};
 
