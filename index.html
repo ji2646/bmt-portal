@@ -196,14 +196,13 @@ select option,select optgroup{background:#1e1e1e}
 </style>
 
 <style>
-.watch-wrap{margin-top:12px}
-.watch-title{font-weight:700;margin-bottom:6px}
-.watch-grid{display:flex;flex-wrap:wrap;gap:6px}
 .watch-btn{
   border:1.5px solid #3a3a3a;
   padding:10px 14px;
   border-radius:12px;
+  margin:4px;
   cursor:pointer;
+  display:inline-block;
   font-weight:600;
 }
 .watch-btn.active{
@@ -218,7 +217,7 @@ select option,select optgroup{background:#1e1e1e}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/17/2026 1:41 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/16/2026 7:15 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -324,21 +323,9 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    <div 
-<div class="watch-wrap">
-<div class="watch-title">Skeiwatch</div>
-
-<div class="watch-grid">
-  <div class="watch-btn" onclick="toggleWatch('c30',99.99,this)">C30 $99</div>
-  <div class="watch-btn" onclick="toggleWatch('c70',159.99,this)">C70 $159</div>
-  <div class="watch-btn" onclick="toggleWatch('s40',109.99,this)">S40 $109</div>
-  <div class="watch-btn" onclick="toggleWatch('c80',159.99,this)">C80 $159</div>
-  <div class="watch-btn" onclick="toggleWatch('c62',139.99,this)">C62 $139</div>
-  <div class="watch-btn" onclick="toggleWatch('kids',39.99,this)">Kids $39</div>
-</div>
-
-<div style="margin-top:6px">
-  <label><input type="checkbox" onchange="S.watchPPP=this.checked; update();"> Add to PPP</label>
+    <div>
+<div style="margin-top:10px">
+<div style="font-weight:700;margin-bottom:6px">
 </div>
 </div>
 
@@ -654,11 +641,9 @@ function setProtect(id, tier){
   renderLines(); update();
 }
 function setUpQual(id, val){
-  const l = S.lines.find(l=>l.id===id);
-  if(!l) return;
-  l.upQual = (val===true || val==='true');
-  renderLines();
-  update();
+  const l=S.lines.find(l=>l.id===id); if(!l) return;
+  l.upQual=(val===true||val==='true');
+  renderLines(); update();
 }
 function setFinInclude(id, val){
   const l=S.lines.find(l=>l.id===id);
@@ -752,8 +737,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?w.price:w.frp):w.price;
-        const tag=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?w.frp:w.price;
+        const tag=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
@@ -762,8 +747,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?t.price:t.frp):t.price;
-        const tagT=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?t.frp:t.price;
+        const tagT=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
@@ -772,8 +757,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_h" ${l.device==='byod_h'?'selected':''}>Customer's Own Hotspot (SIM only)</option>`;
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?h.price:h.frp):h.price;
-        const tagH=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?h.frp:h.price;
+        const tagH=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
@@ -902,7 +887,7 @@ function updateAddBtns(){
   $('add-w').disabled=isNew&&v===0;
   $('add-t').disabled=isNew&&v===0;
   // Show tooltip hint if disabled
-  $('add-w').title = isNew && v===0 ? 'Requires a voice line on new accounts' : '';Add Watch';
+  $('add-w').title=isNew&&v===0?'Requires a voice line on new accounts':'Add Watch';
   $('add-t').title=isNew&&v===0?'Requires a voice line on new accounts':'Add Tablet';
 }
 
@@ -1055,19 +1040,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const baseApoTotal = S.apoPerDevice * deviceLineCount();
-const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
-
-let apoTotal = baseApoTotal + watchTotal;
-
-// PPP split
-let accessoriesOTD = apoTotal;
-let accessoriesPPP = 0;
-
-if(S.watchPPP){
-  accessoriesPPP = watchTotal;
-  accessoriesOTD = baseApoTotal;
-}
+  const apoTotal=S.apoPerDevice*deviceLineCount();
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1371,23 +1344,50 @@ try {
 
 <script>
 S.watches = {};
-S.watchPPP = false;
+S. = false;
 
-function toggleWatch(type,price,el){
-  if(S.watches[type]){
-    delete S.watches[type];
-    el.classList.remove('active');
-  }else{
+else{
     S.watches[type]=price;
     el.classList.add('active');
   }
-  update();
+  setTimeout(applyWatchTotals,50);
 }
+
+
 
 function getWatchTotal(){
   let t=0;
-  for(let k in S.watches){ t+=S.watches[k]; }
+  for(let k in S.watches){
+    t+=S.watches[k];
+  }
   return t;
+}
+
+function applyWatchTotals(){
+  const wt = getWatchTotal();
+  if(!wt) return;
+
+  const taxRate = 0.0825;
+
+  if(!S.){
+    const taxAdd = wt * taxRate;
+    const totalAdd = wt + taxAdd;
+
+    document.querySelectorAll('.stv').forEach(el=>{
+      let cur=parseFloat(el.innerText.replace(/[^0-9.]/g,''))||0;
+      el.innerText='$'+(cur+totalAdd).toFixed(2);
+    });
+
+    document.querySelectorAll('.sr').forEach(r=>{
+      if(r.innerText.toLowerCase().includes('tax')){
+        let val=r.querySelector('.sv');
+        if(val){
+          let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
+          val.innerText='$'+(cur+taxAdd).toFixed(2);
+        }
+      }
+    });
+  }
 }
 </script>
 
