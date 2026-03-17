@@ -307,9 +307,9 @@ select option,select optgroup{background:#1e1e1e}
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
     <div 
-<div style="margin-top:12px">
+<div style="margin-top:10px">
   <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">
-    Skeiwatch (manual add — does NOT break system)
+    Skeiwatch (Accessory Add-On)
   </div>
 
   <div style="display:flex;flex-direction:column;gap:6px">
@@ -321,10 +321,6 @@ select option,select optgroup{background:#1e1e1e}
     <div>C62 $139.99 <button onclick="changeWatch('c62',-1)">-</button> <span id="qty-c62">0</span> <button onclick="changeWatch('c62',1)">+</button></div>
     <div>Kids $39.99 <button onclick="changeWatch('kids',-1)">-</button> <span id="qty-kids">0</span> <button onclick="changeWatch('kids',1)">+</button></div>
 
-  </div>
-
-  <div style="margin-top:6px;font-size:10px;color:var(--warn)">
-    Add manually to APO / PPP for now (safe mode)
   </div>
 </div>
 
@@ -1363,6 +1359,18 @@ function changeWatch(type,delta){
   S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
   const el=document.getElementById('qty-'+type);
   if(el) el.innerText=S.watches[type];
+
+  // inject into APO input total visually
+  const devices = deviceLineCount();
+  const base = (S.apoPerDevice||0)*devices;
+  const total = base + watchTotal();
+
+  const hint = document.getElementById('apo-hint');
+  if(hint && devices>0){
+    hint.textContent = `$${S.apoPerDevice} × ${devices} + watches = $${total.toFixed(2)}`;
+  }
+
+  update();
 }
 </script>
 
