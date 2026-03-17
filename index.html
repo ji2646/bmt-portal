@@ -649,7 +649,7 @@ function setProtect(id, tier){
 }
 function setUpQual(id, val){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
-  l.upQual=(val===true||val==='true');
+  false=(val===true||val==='true');
   renderLines(); update();
 }
 function setFinInclude(id, val){
@@ -730,7 +730,7 @@ function buildCard(l,idx){
       brands.forEach(b=>{
         devHtml+=`<optgroup label="${b}">`;
         phones.filter(p=>p.brand===b).forEach(p=>{
-          const pr=devPrice(p,l.lt,linePos,true);
+          const pr=devPrice(p,l.lt,linePos,false!==false);
           const lbl=pr===0?'FREE':fmt(pr);
           const displayName=p.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
           const limitNote=p.maxLines&&linePos>p.maxLines?` ⚠ over limit`:'';
@@ -744,8 +744,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?(true?w.price:w.frp):w.price;
-        const tag=l.lt==='upgrade'?(true?' (qualified)':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?(false!==false?w.price:w.frp):w.price;
+        const tag=l.lt==='upgrade'?(false!==false?' ':' (FRP)'):'';
         devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
@@ -754,8 +754,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?(true?t.price:t.frp):t.price;
-        const tagT=l.lt==='upgrade'?(true?' (qualified)':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?(false!==false?t.price:t.frp):t.price;
+        const tagT=l.lt==='upgrade'?(false!==false?' ':' (FRP)'):'';
         devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
@@ -764,8 +764,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_h" ${l.device==='byod_h'?'selected':''}>Customer's Own Hotspot (SIM only)</option>`;
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
-        const pr=l.lt==='upgrade'?(true?h.price:h.frp):h.price;
-        const tagH=l.lt==='upgrade'?(true?' (qualified)':' (FRP)'):'';
+        const pr=l.lt==='upgrade'?(false!==false?h.price:h.frp):h.price;
+        const tagH=l.lt==='upgrade'?(false!==false?' ':' (FRP)'):'';
         devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
@@ -777,8 +777,8 @@ function buildCard(l,idx){
     const dev=devById(l.device,l.cat);
     if(dev){
       const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-      const pr=isV?devPrice(dev,l.lt,linePos,true):(l.lt==='upgrade'?dev.frp:dev.price);
-      const promoPrice=isV?devPrice(dev,l.lt,null,true):dev.price; // price without line limit
+      const pr=isV?devPrice(dev,l.lt,linePos,false!==false):(l.lt==='upgrade'?(false!==false?dev.price:dev.frp):dev.price);
+      const promoPrice=isV?devPrice(dev,l.lt,null,false!==false):dev.price; // price without line limit
       const overLimit=isV&&pr!==promoPrice&&pr>0; // price changed due to line limit
       if(pr>=149.99&&overLimit) qual=`<span class="qpill q-warn">Other plan price — Max 4</span>`;
       else if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
@@ -795,11 +795,11 @@ function buildCard(l,idx){
       ${SD_PLANS.map(s=>`<option value="${s.id}" ${l.hsPlan===s.id?'selected':''}>${s.n} — ${fmt(s.price)}/mo</option>`).join('')}
     </select></div>`:'';
 
-  const isQual=true;
+  const isQual=false!==false;
   const upQualRow=l.lt==='upgrade'?`
     <div class="f full">
       <div class="fin-hdr" style="margin:0">
-        <div class="fin-hdr-lbl">Upgrade pricing<small>${isQual?'Discounted upgrade price':'Non-qualified — FRP'}</small></div>
+        <div class="fin-hdr-lbl">
         <label class="toggle" onclick="setUpQual(${l.id},${!isQual})">
           <input type="checkbox" ${isQual?'checked':''} onclick="event.preventDefault()">
           <span class="tslide" style="${isQual?'background:var(--g)':''}"></span>
@@ -1064,7 +1064,7 @@ const apoTotal = baseAccessories + watchTotal;
     if(!dev) return;
     const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
     const isUpgrade=l.lt==='upgrade';
-    const upQualified=true;
+    const upQualified=false!==false;
     const pr=l.cat==='v'?devPrice(dev,l.lt,linePos,upQualified):(isUpgrade?(upQualified?dev.price:dev.frp):dev.price);
     if(l.finInclude===true||l.finInclude==='true'){
       deviceFinanced+=pr;
@@ -1220,8 +1220,7 @@ function renderSummary(c){
     S.lines.filter(l=>l.cat==='w').forEach((l,i)=>{
       if(l.byod){
         moRows+=`<div class="sr"><span class="sl">Watch plan — BYOD</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`;
-      } else if(l.lt==='upgrade'){
-        moRows+=`<div class="sr"><span class="sl">Watch plan — upgrade</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`;
+      } else if (l.lt==='upgrade' && l.cat!=='v'){ price = item.frp; }</span></div>`;
       } else {
         const dev=devById(l.device,'w');
         if(!dev){ moRows+=`<div class="sr"><span class="sl">Watch plan — no device selected</span><span class="sv">${fmt(WATCH_PLAN)}</span></div>`; return; }
