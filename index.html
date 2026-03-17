@@ -672,7 +672,7 @@ function buildCard(l,idx){
   const typeBtns=`
     ${showSw&&hasSw?`<span class="lt sw ${l.lt==='switcher'?'on':''}" onclick="lu(${l.id},'lt','switcher')">SW</span>`:''}
     ${showNew?`<span class="lt nw ${l.lt==='new'?'on':''}" onclick="lu(${l.id},'lt','new')">NEW</span>`:''}
-    ${showUp?`<span class="lt up ${l.lt==='upgrade'?'on':''}" onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
+    ${showUp?`<span class="lt up ${l.lt==='upgrade' && l.cat==='v'?'on':''}" onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
 
   // Auto-set default line type based on txn
   if(S.acct==='aal'&&txn==='upgrade'&&l.lt!=='upgrade') l.lt='upgrade';
@@ -718,8 +718,8 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?w.price:w.price):w.price;
-        const tag=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const pr=l.lt==='upgrade' && l.cat==='v'?(l.upQual!==false?w.price:w.price):w.price;
+        const tag=l.lt==='upgrade' && l.cat==='v'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
@@ -729,7 +729,7 @@ function buildCard(l,idx){
     } else {
       TABLETS.forEach(t=>{ 
         const pr = l.lt==='upgrade' ? t.frp : t.price;
-        const tagT=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const tagT=l.lt==='upgrade' && l.cat==='v'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
@@ -739,7 +739,7 @@ function buildCard(l,idx){
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
         const pr = l.lt==='upgrade' ? h.frp : h.price;
-        const tagH=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        const tagH=l.lt==='upgrade' && l.cat==='v'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
         devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
@@ -747,14 +747,18 @@ function buildCard(l,idx){
 
   // Qual badge
   let qual='';
-  if(!isH&&l.device&&l.device!=='byod_v'&&l.device!=='byod_w'&&l.device!=='byod_t'){
-    const dev=devById(l.device,l.cat);
-    if(dev){
-      const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-      const pr=isV?devPrice(dev,l.lt,linePos,l.upQual!==false):(l.lt==='upgrade'?(l.upQual!==false?dev.price:dev.frp):dev.price);
-      const promoPrice=isV?devPrice(dev,l.lt,null,l.upQual!==false):dev.price; // price without line limit
-      const overLimit=isV&&pr!==promoPrice&&pr>0; // price changed due to line limit
-      if(pr>=149.99&&overLimit) qual=`<span class="qpill q-warn">Other plan price — Max 4</span>`;
+  if(l.cat==='v' && !isH && l.device){
+      const dev=devById(l.device,l.cat);
+      if(dev){
+        const linePos=S.lines.filter(x=>x.cat==='v').indexOf(l)+1;
+        const pr=devPrice(dev,l.lt,linePos,l.upQual!==false);
+        if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
+        else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99</span>`;
+        else qual=`<span class="qpill q-free">FREE</span>`;
+      }
+    } else {
+      qual='';
+    }
       else if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
       else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99</span>`;
       else qual=`<span class="qpill q-free">FREE</span>`;
