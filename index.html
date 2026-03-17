@@ -1052,9 +1052,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const apoTotal = S.apoPerDevice * deviceLineCount();
-const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
-apoTotal += watchTotal;
+  const apoTotal=S.apoPerDevice*deviceLineCount();
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1368,12 +1366,12 @@ function toggleWatch(type,price,el){
     S.watches[type]=price;
     el.classList.add('active');
   }
-  update();
+  setTimeout(applyWatchTotals,50);
 }
 
 function toggleWatchPPP(val){
   S.watchPPP = val;
-  update();
+  setTimeout(applyWatchTotals,50);
 }
 
 function getWatchTotal(){
@@ -1382,6 +1380,33 @@ function getWatchTotal(){
     t+=S.watches[k];
   }
   return t;
+}
+
+function applyWatchTotals(){
+  const wt = getWatchTotal();
+  if(!wt) return;
+
+  const taxRate = 0.0825;
+
+  if(!S.watchPPP){
+    const taxAdd = wt * taxRate;
+    const totalAdd = wt + taxAdd;
+
+    document.querySelectorAll('.stv').forEach(el=>{
+      let cur=parseFloat(el.innerText.replace(/[^0-9.]/g,''))||0;
+      el.innerText='$'+(cur+totalAdd).toFixed(2);
+    });
+
+    document.querySelectorAll('.sr').forEach(r=>{
+      if(r.innerText.toLowerCase().includes('tax')){
+        let val=r.querySelector('.sv');
+        if(val){
+          let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
+          val.innerText='$'+(cur+taxAdd).toFixed(2);
+        }
+      }
+    });
+  }
 }
 </script>
 
