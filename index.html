@@ -308,20 +308,13 @@ select option,select optgroup{background:#1e1e1e}
     </div>
     <div 
 <div style="margin-top:10px">
-  <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">
-    Skeiwatch (Accessory Add-On)
-  </div>
-
-  <div style="display:flex;flex-direction:column;gap:6px">
-
-    <div>C30 $99.99 <button onclick="changeWatch('c30',-1)">-</button> <span id="qty-c30">0</span> <button onclick="changeWatch('c30',1)">+</button></div>
-    <div>C70 $159.99 <button onclick="changeWatch('c70',-1)">-</button> <span id="qty-c70">0</span> <button onclick="changeWatch('c70',1)">+</button></div>
-    <div>S40 $109.99 <button onclick="changeWatch('s40',-1)">-</button> <span id="qty-s40">0</span> <button onclick="changeWatch('s40',1)">+</button></div>
-    <div>C80 $159.99 <button onclick="changeWatch('c80',-1)">-</button> <span id="qty-c80">0</span> <button onclick="changeWatch('c80',1)">+</button></div>
-    <div>C62 $139.99 <button onclick="changeWatch('c62',-1)">-</button> <span id="qty-c62">0</span> <button onclick="changeWatch('c62',1)">+</button></div>
-    <div>Kids $39.99 <button onclick="changeWatch('kids',-1)">-</button> <span id="qty-kids">0</span> <button onclick="changeWatch('kids',1)">+</button></div>
-
-  </div>
+<div style="font-size:11px;font-weight:700;color:var(--t2)">Skeiwatch</div>
+<div>C30 $99.99 <button onclick="changeWatch('c30',-1)">-</button> <span id="qty-c30">0</span> <button onclick="changeWatch('c30',1)">+</button></div>
+<div>C70 $159.99 <button onclick="changeWatch('c70',-1)">-</button> <span id="qty-c70">0</span> <button onclick="changeWatch('c70',1)">+</button></div>
+<div>S40 $109.99 <button onclick="changeWatch('s40',-1)">-</button> <span id="qty-s40">0</span> <button onclick="changeWatch('s40',1)">+</button></div>
+<div>C80 $159.99 <button onclick="changeWatch('c80',-1)">-</button> <span id="qty-c80">0</span> <button onclick="changeWatch('c80',1)">+</button></div>
+<div>C62 $139.99 <button onclick="changeWatch('c62',-1)">-</button> <span id="qty-c62">0</span> <button onclick="changeWatch('c62',1)">+</button></div>
+<div>Kids $39.99 <button onclick="changeWatch('kids',-1)">-</button> <span id="qty-kids">0</span> <button onclick="changeWatch('kids',1)">+</button></div>
 </div>
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
@@ -469,7 +462,7 @@ const SD_PLANS=[
 // ============================================================
 // STATE
 // ============================================================
-let S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+let S={watches:{c30:0,c70:0,s40:0,c80:0,c62:0,kids:0},acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
 
 // ============================================================
 // HELPERS
@@ -1338,94 +1331,13 @@ try {
 </script>
 
 <script>
-if(!S.watches){
-  S.watches={c30:0,c70:0,s40:0,c80:0,c62:0,kids:0};
-}
-
-function watchPrices(){
-  return {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
-}
-
-function watchTotal(){
-  const p=watchPrices();
-  let t=0;
-  for(let k in S.watches){
-    t += (S.watches[k]||0)*p[k];
-  }
-  return t;
-}
-
 function changeWatch(type,delta){
-  S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
-  const el=document.getElementById('qty-'+type);
-  if(el) el.innerText=S.watches[type];
-
-  // inject into APO input total visually
-  const devices = deviceLineCount();
-  const base = (S.apoPerDevice||0)*devices;
-  const total = base + watchTotal();
-
-  const hint = document.getElementById('apo-hint');
-  if(hint && devices>0){
-    hint.textContent = `$${S.apoPerDevice} × ${devices} + watches = $${total.toFixed(2)}`;
-  }
-
-  update();
+ if(!S.watches) return;
+ S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
+ const el=document.getElementById('qty-'+type);
+ if(el) el.innerText=S.watches[type];
+ update();
 }
-</script>
-
-
-<script>
-function injectWatchIntoSummary(){
-  const wt = watchTotal();
-  if(!wt) return;
-
-  // find all summary value nodes
-  const rows = document.querySelectorAll('.sr');
-  rows.forEach(r=>{
-    if(r.innerText && r.innerText.toLowerCase().includes('accessories')){
-      const val = r.querySelector('.sv');
-      if(val && !val.dataset.watchApplied){
-        let current = parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
-        let newVal = current + wt;
-        val.innerText = '$' + newVal.toFixed(2);
-        val.dataset.watchApplied = "true";
-      }
-    }
-  });
-}
-
-// hook AFTER update runs (safe)
-const _u = update;
-update = function(){
-  _u();
-  injectWatchIntoSummary();
-};
-</script>
-
-
-<script>
-function renderWatchRow(){
-  const wt = watchTotal();
-  const summary = document.getElementById('summary');
-  if(!summary || wt<=0) return;
-
-  // prevent duplicate
-  if(document.getElementById('watch-row')) return;
-
-  const div = document.createElement('div');
-  div.className = 'sr';
-  div.id = 'watch-row';
-  div.innerHTML = `<div class="sl">Watch Add-ons</div><div class="sv">$${wt.toFixed(2)}</div>`;
-
-  summary.appendChild(div);
-}
-
-const _u2 = update;
-update = function(){
-  _u2();
-  renderWatchRow();
-};
 </script>
 
 </body>
