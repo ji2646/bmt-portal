@@ -194,6 +194,22 @@ select option,select optgroup{background:#1e1e1e}
 .reset-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--bd);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .reset-btn:hover{border-color:var(--err);color:var(--err)}
 </style>
+
+<style>
+.watch-btn{
+  border:1px solid #3a3a3a;
+  padding:8px 12px;
+  border-radius:10px;
+  margin:4px;
+  cursor:pointer;
+  display:inline-block;
+}
+.watch-btn.active{
+  border-color:#00a94f;
+  background:rgba(0,169,79,.15);
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -308,13 +324,16 @@ select option,select optgroup{background:#1e1e1e}
     </div>
     <div 
 <div style="margin-top:10px">
-<div style="font-weight:700">Skeiwatch</div>
-<div>C30 $99.99 <button onclick="changeWatch('c30',-1)">-</button> <span id="qty-c30">0</span> <button onclick="changeWatch('c30',1)">+</button></div>
-<div>C70 $159.99 <button onclick="changeWatch('c70',-1)">-</button> <span id="qty-c70">0</span> <button onclick="changeWatch('c70',1)">+</button></div>
-<div>S40 $109.99 <button onclick="changeWatch('s40',-1)">-</button> <span id="qty-s40">0</span> <button onclick="changeWatch('s40',1)">+</button></div>
-<div>C80 $159.99 <button onclick="changeWatch('c80',-1)">-</button> <span id="qty-c80">0</span> <button onclick="changeWatch('c80',1)">+</button></div>
-<div>C62 $139.99 <button onclick="changeWatch('c62',-1)">-</button> <span id="qty-c62">0</span> <button onclick="changeWatch('c62',1)">+</button></div>
-<div>Kids $39.99 <button onclick="changeWatch('kids',-1)">-</button> <span id="qty-kids">0</span> <button onclick="changeWatch('kids',1)">+</button></div>
+<div style="font-weight:700;margin-bottom:6px">Skeiwatch</div>
+
+<div>
+  <span class="watch-btn" onclick="toggleWatch('c30',99.99,this)">C30 $99</span>
+  <span class="watch-btn" onclick="toggleWatch('c70',159.99,this)">C70 $159</span>
+  <span class="watch-btn" onclick="toggleWatch('s40',109.99,this)">S40 $109</span>
+  <span class="watch-btn" onclick="toggleWatch('c80',159.99,this)">C80 $159</span>
+  <span class="watch-btn" onclick="toggleWatch('c62',139.99,this)">C62 $139</span>
+  <span class="watch-btn" onclick="toggleWatch('kids',39.99,this)">Kids $39</span>
+</div>
 </div>
 
 <div id="apo-fin-opts" style="margin-top:10px;display:none">
@@ -1331,53 +1350,26 @@ try {
 </script>
 
 <script>
-S.watches={c30:0,c70:0,s40:0,c80:0,c62:0,kids:0};
+S.watches = {};
 
-function watchPrices(){return {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};}
-
-function watchTotal(){
- let t=0,p=watchPrices();
- for(let k in S.watches){t+=(S.watches[k]||0)*p[k];}
- return t;
-}
-
-function changeWatch(type,delta){
- S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
- document.getElementById('qty-'+type).innerText=S.watches[type];
- update();
-}
-
-function applyWatchToTotals(){
- const wt=watchTotal();
- if(!wt) return;
-
- const taxRate=0.0825;
- const wtTax=wt*taxRate;
- const totalAdd=wt+wtTax;
-
- // update tax row
- document.querySelectorAll('.sr').forEach(r=>{
-  if(r.innerText.toLowerCase().includes('tax')){
-    let val=r.querySelector('.sv');
-    if(val){
-      let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
-      val.innerText='$'+(cur+wtTax).toFixed(2);
-    }
+function toggleWatch(type,price,el){
+  if(S.watches[type]){
+    delete S.watches[type];
+    el.classList.remove('active');
+  }else{
+    S.watches[type]=price;
+    el.classList.add('active');
   }
- });
-
- // update due today
- document.querySelectorAll('.stv').forEach(el=>{
-  let cur=parseFloat(el.innerText.replace(/[^0-9.]/g,''))||0;
-  el.innerText='$'+(cur+totalAdd).toFixed(2);
- });
+  update();
 }
 
-const _u=update;
-update=function(){
- _u();
- applyWatchToTotals();
-};
+function getWatchTotal(){
+  let t=0;
+  for(let k in S.watches){
+    t+=S.watches[k];
+  }
+  return t;
+}
 </script>
 
 </body>
