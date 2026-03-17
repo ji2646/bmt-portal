@@ -242,6 +242,24 @@ select option,select optgroup{background:#1e1e1e}
   }
 }
 
+
+.qty-box{
+  min-width:36px;
+  text-align:center;
+  padding:6px 10px;
+  border-radius:8px;
+  background:#1f1f1f;
+  border:1px solid #3a3a3a;
+  font-weight:700;
+}
+.qty-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  background:#2a2a2a;
+  border:1px solid #3a3a3a;
+  cursor:pointer;
+}
+
 </style>
 </head>
 <body>
@@ -365,42 +383,61 @@ select option,select optgroup{background:#1e1e1e}
 <div style="margin-top:10px;text-align:center">
   <div style="font-size:11px;color:var(--t2);margin-bottom:6px">
     
+
 + Add Skeiwatch (optional)
-<div style="display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:6px">
 
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px">
 
-<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+<div style="display:flex;gap:10px;align-items:center">
   <span>C30 $99</span>
-  <button onclick="changeWatch('c30',-1)">-</button>
-  <span id="qty-c30">0</span>
-  <button onclick="changeWatch('c30',1)">+</button>
+  <button class="qty-btn" onclick="changeWatch('c30',-1)">-</button>
+  <span class="qty-box" id="qty-c30">0</span>
+  <button class="qty-btn" onclick="changeWatch('c30',1)">+</button>
 </div>
 
-<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+<div style="display:flex;gap:10px;align-items:center">
   <span>C70 $159</span>
-  <button onclick="changeWatch('c70',-1)">-</button>
-  <span id="qty-c70">0</span>
-  <button onclick="changeWatch('c70',1)">+</button>
+  <button class="qty-btn" onclick="changeWatch('c70',-1)">-</button>
+  <span class="qty-box" id="qty-c70">0</span>
+  <button class="qty-btn" onclick="changeWatch('c70',1)">+</button>
 </div>
 
-<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+<div style="display:flex;gap:10px;align-items:center">
   <span>S40 $109</span>
-  <button onclick="changeWatch('s40',-1)">-</button>
-  <span id="qty-s40">0</span>
-  <button onclick="changeWatch('s40',1)">+</button>
+  <button class="qty-btn" onclick="changeWatch('s40',-1)">-</button>
+  <span class="qty-box" id="qty-s40">0</span>
+  <button class="qty-btn" onclick="changeWatch('s40',1)">+</button>
 </div>
 
-<div style="display:flex;gap:10px;align-items:center;justify-content:center">
+<div style="display:flex;gap:10px;align-items:center">
   <span>C80 $159</span>
-  <button onclick="changeWatch('c80',-1)">-</button>
-  <span id="qty-c80">0</span>
-  <button onclick="changeWatch('c80',1)">+</button>
+  <button class="qty-btn" onclick="changeWatch('c80',-1)">-</button>
+  <span class="qty-box" id="qty-c80">0</span>
+  <button class="qty-btn" onclick="changeWatch('c80',1)">+</button>
 </div>
 
-<div style="display:flex;gap:10px;align-items:center;justify-content:center">
-  <span>C62 $139
+<div style="display:flex;gap:10px;align-items:center">
+  <span>C62 $139</span>
+  <button class="qty-btn" onclick="changeWatch('c62',-1)">-</button>
+  <span class="qty-box" id="qty-c62">0</span>
+  <button class="qty-btn" onclick="changeWatch('c62',1)">+</button>
+</div>
 
-Total Accessories</div>
+
+<div style="display:flex;gap:10px;align-items:center">
+  <span>Kids $39.99</span>
+  <button class="qty-btn" onclick="changeWatch('kids',-1)">-</button>
+  <span class="qty-box" id="qty-kids">0</span>
+  <button class="qty-btn" onclick="changeWatch('kids',1)">+</button>
+</div>
+
+</div>
+
+<div style="text-align:center;border-top:1px solid var(--bd);padding-top:10px;margin-top:10px">
+  <div style="font-size:10px;color:var(--t3)">Total Accessories</div>
+  <div id="apo-total-big" style="font-family:'Bebas Neue';font-size:34px;color:var(--g)">$0</div>
+</div>
+</div>
     
 
 </div>
@@ -1434,7 +1471,7 @@ function updateApoDisplay(){
 
   const base = (S.apoPerDevice || 0) * devices;
 
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
 
   let watchTotal = 0;
   for(const k in S.watches){
@@ -1480,7 +1517,7 @@ function updateApoDisplay(){
 
   const base = (S.apoPerDevice || 0) * devices;
 
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
 
   let watchTotal = 0;
   for(const k in S.watches){
@@ -1528,7 +1565,7 @@ function updateApoDisplay(){
 
   const base = (S.apoPerDevice || 0) * devices;
 
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
 
   let watchTotal = 0;
   for(const k in S.watches){
@@ -1596,7 +1633,7 @@ function updateApoDisplay(){
 
   const base = (S.apoPerDevice || 0) * devices;
 
-  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99};
+  const prices = {c30:99.99,c70:159.99,s40:109.99,c80:159.99,c62:139.99,kids:39.99};
 
   let watchTotal = 0;
   for(const k in S.watches){
