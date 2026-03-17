@@ -1366,12 +1366,12 @@ function toggleWatch(type,price,el){
     S.watches[type]=price;
     el.classList.add('active');
   }
-  setTimeout(applyWatchTotals,50);
+  safeRecalc();
 }
 
 function toggleWatchPPP(val){
   S.watchPPP = val;
-  setTimeout(applyWatchTotals,50);
+  safeRecalc();
 }
 
 function getWatchTotal(){
@@ -1382,31 +1382,35 @@ function getWatchTotal(){
   return t;
 }
 
-function applyWatchTotals(){
-  const wt = getWatchTotal();
-  if(!wt) return;
+// SAFE injection into existing totals
+function safeRecalc(){
+  try{
+    const wt = getWatchTotal();
+    if(!wt) return;
 
-  const taxRate = 0.0825;
+    const taxRate = 0.0825;
 
-  if(!S.watchPPP){
-    const taxAdd = wt * taxRate;
-    const totalAdd = wt + taxAdd;
+    if(!S.watchPPP){
+      const taxAdd = wt * taxRate;
+      const totalAdd = wt + taxAdd;
 
-    document.querySelectorAll('.stv').forEach(el=>{
-      let cur=parseFloat(el.innerText.replace(/[^0-9.]/g,''))||0;
-      el.innerText='$'+(cur+totalAdd).toFixed(2);
-    });
-
-    document.querySelectorAll('.sr').forEach(r=>{
-      if(r.innerText.toLowerCase().includes('tax')){
-        let val=r.querySelector('.sv');
-        if(val){
-          let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
-          val.innerText='$'+(cur+taxAdd).toFixed(2);
-        }
+      const due = document.querySelector('.stv');
+      if(due){
+        let cur=parseFloat(due.innerText.replace(/[^0-9.]/g,''))||0;
+        due.innerText='$'+(cur+totalAdd).toFixed(2);
       }
-    });
-  }
+
+      document.querySelectorAll('.sr').forEach(r=>{
+        if(r.innerText.toLowerCase().includes('tax')){
+          let val=r.querySelector('.sv');
+          if(val){
+            let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
+            val.innerText='$'+(cur+taxAdd).toFixed(2);
+          }
+        }
+      });
+    }
+  }catch(e){}
 }
 </script>
 
