@@ -196,13 +196,14 @@ select option,select optgroup{background:#1e1e1e}
 </style>
 
 <style>
+.watch-wrap{margin-top:12px}
+.watch-title{font-weight:700;margin-bottom:6px}
+.watch-grid{display:flex;flex-wrap:wrap;gap:6px}
 .watch-btn{
   border:1.5px solid #3a3a3a;
   padding:10px 14px;
   border-radius:12px;
-  margin:4px;
   cursor:pointer;
-  display:inline-block;
   font-weight:600;
 }
 .watch-btn.active{
@@ -324,10 +325,10 @@ select option,select optgroup{background:#1e1e1e}
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
     <div 
-<div style="margin-top:10px">
-<div style="font-weight:700;margin-bottom:6px">Skeiwatch</div>
+<div class="watch-wrap">
+<div class="watch-title">Skeiwatch</div>
 
-<div style="display:flex;flex-wrap:wrap">
+<div class="watch-grid">
   <div class="watch-btn" onclick="toggleWatch('c30',99.99,this)">C30 $99</div>
   <div class="watch-btn" onclick="toggleWatch('c70',159.99,this)">C70 $159</div>
   <div class="watch-btn" onclick="toggleWatch('s40',109.99,this)">S40 $109</div>
@@ -337,7 +338,7 @@ select option,select optgroup{background:#1e1e1e}
 </div>
 
 <div style="margin-top:6px">
-  <label><input type="checkbox" onchange="toggleWatchPPP(this.checked)"> Add to PPP</label>
+  <label><input type="checkbox" onchange="S.watchPPP=this.checked; update();"> Add to PPP</label>
 </div>
 </div>
 
@@ -1052,7 +1053,19 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const apoTotal=S.apoPerDevice*deviceLineCount();
+  const baseApoTotal = S.apoPerDevice * deviceLineCount();
+const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
+
+let apoTotal = baseApoTotal + watchTotal;
+
+// PPP split
+let accessoriesOTD = apoTotal;
+let accessoriesPPP = 0;
+
+if(S.watchPPP){
+  accessoriesPPP = watchTotal;
+  accessoriesOTD = baseApoTotal;
+}
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1366,51 +1379,13 @@ function toggleWatch(type,price,el){
     S.watches[type]=price;
     el.classList.add('active');
   }
-  safeRecalc();
-}
-
-function toggleWatchPPP(val){
-  S.watchPPP = val;
-  safeRecalc();
+  update();
 }
 
 function getWatchTotal(){
   let t=0;
-  for(let k in S.watches){
-    t+=S.watches[k];
-  }
+  for(let k in S.watches){ t+=S.watches[k]; }
   return t;
-}
-
-// SAFE injection into existing totals
-function safeRecalc(){
-  try{
-    const wt = getWatchTotal();
-    if(!wt) return;
-
-    const taxRate = 0.0825;
-
-    if(!S.watchPPP){
-      const taxAdd = wt * taxRate;
-      const totalAdd = wt + taxAdd;
-
-      const due = document.querySelector('.stv');
-      if(due){
-        let cur=parseFloat(due.innerText.replace(/[^0-9.]/g,''))||0;
-        due.innerText='$'+(cur+totalAdd).toFixed(2);
-      }
-
-      document.querySelectorAll('.sr').forEach(r=>{
-        if(r.innerText.toLowerCase().includes('tax')){
-          let val=r.querySelector('.sv');
-          if(val){
-            let cur=parseFloat(val.innerText.replace(/[^0-9.]/g,''))||0;
-            val.innerText='$'+(cur+taxAdd).toFixed(2);
-          }
-        }
-      });
-    }
-  }catch(e){}
 }
 </script>
 
