@@ -193,6 +193,55 @@ select option,select optgroup{background:#1e1e1e}
 .empty-txt{font-size:11px;line-height:1.7}
 .reset-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--bd);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .reset-btn:hover{border-color:var(--err);color:var(--err)}
+
+/* APO BUTTON STYLE */
+.apo-btn{
+  border:1.5px solid var(--bd2);
+  background:var(--s3);
+  color:var(--t1);
+  border-radius:8px;
+  padding:8px 14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.15s;
+}
+.apo-btn:hover{border-color:var(--g);}
+.apo-btn.active{
+  border-color:var(--g);
+  background:rgba(0,169,79,.15);
+}
+
+/* MOBILE FIX — APO */
+@media(max-width:600px){
+  .apo-wrap{
+    flex-direction:column !important;
+    align-items:center !important;
+    text-align:center;
+    gap:12px;
+  }
+
+  #apo-presets{
+    width:100%;
+    justify-content:center;
+  }
+
+  .apo-btn{
+    flex:1 1 40%;
+    padding:10px;
+    font-size:14px;
+  }
+
+  .apo-inp{
+    width:100% !important;
+    max-width:200px;
+    font-size:18px;
+  }
+
+  #apo-total-big{
+    font-size:36px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -310,24 +359,34 @@ select option,select optgroup{background:#1e1e1e}
     <button class="apo-btn" onclick="setApoPreset(190)">$190</button>
   </div>
 
-  <input class="apo-inp"
-    type="number"
-    id="apo-inp"
-    min="0"
-    step="5"
-    value="0"
-    oninput="setAPO(this.value)"
-    style="text-align:center;width:140px">
+<div style="display:flex;justify-content:center;margin-top:8px">
+<input class="apo-inp" style="width:160px;text-align:center" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
+</div>
+<div style="margin-top:10px;text-align:center">
+  <div style="font-size:11px;color:var(--t2);margin-bottom:6px">
+    + Add Skeiwatch (optional)
+  </div>
+  <div id="watch-select" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+    <button class="apo-btn" onclick="setWatch(0)">None</button>
+    <button class="apo-btn" onclick="setWatch(99.99)">C30 $99</button>
+    <button class="apo-btn" onclick="setWatch(159.99)">C70 $159</button>
+    <button class="apo-btn" onclick="setWatch(109.99)">S40 $109</button>
+    <button class="apo-btn" onclick="setWatch(159.99)">C80 $159</button>
+    <button class="apo-btn" onclick="setWatch(139.99)">C62 $139</button>
+  </div>
+</div>
+
+
+  
 
   <div style="text-align:center;border-top:1px solid var(--bd);padding-top:8px;width:100%">
     <div style="font-size:10px;color:var(--t3)">Total Accessories</div>
-    <div id="apo-total-big" style="font-family:'Bebas Neue';font-size:32px;color:var(--g)">$0</div>
-  </div>
+    
 
 </div>
         <div class="apo-hint" id="apo-hint">Enter $ per device — auto-multiplies by device count</div>
       </div>
-      <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
+      
     </div>
     <div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
@@ -345,7 +404,7 @@ select option,select optgroup{background:#1e1e1e}
               <div class="apo-lbl">Amount on lease ($)</div>
               <div class="apo-hint" id="apo-split-hint">Remainder goes to cash OTD</div>
             </div>
-            <input class="apo-inp" type="number" id="apo-lease-amt" min="0" step="5" value="0" oninput="setApoLease(this.value)">
+            
           </div>
         </div>
       </div>
@@ -539,7 +598,7 @@ function setAcct(a){
   $('plan-sec').style.display=a==='new'?'block':'none';
   $('aal-sec').style.display=a==='aal'?'block':'none';
   if(a==='new') S.lines=S.lines.filter(l=>l.lt!=='upgrade');
-  renderLines();update(); updateApoDisplay();
+  renderLines();update(); updateApoDisplay(); updateApoDisplay();
 }
 function setTxnType(t){
   S.txnType=t;
@@ -550,10 +609,10 @@ function setTxnType(t){
   $('both-disclaimer').style.display=(t==='both')?'block':'none';
   // If upgrade-only, strip AAL lines; if aal-only, strip upgrades
   if(t==='upgrade') S.lines=S.lines.filter(l=>l.lt==='upgrade'||l.lt==='new'&&false||true);
-  renderLines();update(); updateApoDisplay();
+  renderLines();update(); updateApoDisplay(); updateApoDisplay();
 }
-function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateApoDisplay(); }
-function setAalLines(v){ S.aalLines=parseInt(v); update(); updateApoDisplay(); }
+function setAalPlan(v){ S.aalPlan=v; renderLines(); update(); updateApoDisplay(); updateApoDisplay(); }
+function setAalLines(v){ S.aalLines=parseInt(v); update(); updateApoDisplay(); updateApoDisplay(); }
 
 // ============================================================
 // PLAN
@@ -603,7 +662,7 @@ function setPlan(id){
   S.plan=id;
   if(id==='byod') S.lines.filter(l=>l.cat==='v').forEach(l=>{l.intl=false;l.passport=false;l.hotspot=false;});
   showPlanNote(id);
-  renderPlanGrid();renderLines();update(); updateApoDisplay();
+  renderPlanGrid();renderLines();update(); updateApoDisplay(); updateApoDisplay();
 }
 
 // ============================================================
@@ -615,7 +674,7 @@ function addLine(cat, clone=null){
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
-  renderLines();renderPlanGrid();update(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
 }
 function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
@@ -628,36 +687,36 @@ function dupeLine(id){
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
   S.lines.splice(srcIdx+1,0,clone);
-  renderLines();renderPlanGrid();update(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
 }
 function removeLine(id){
   S.lines=S.lines.filter(l=>l.id!==id);
-  renderLines();renderPlanGrid();update(); updateApoDisplay();
+  renderLines();renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
 }
 function setProtect(id, tier){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   if(l.protect && l.protectTier===tier){ l.protect=false; } // tap active = toggle off
   else { l.protect=true; l.protectTier=tier; }
-  renderLines(); update(); updateApoDisplay();
+  renderLines(); update(); updateApoDisplay(); updateApoDisplay();
 }
 function setUpQual(id, val){
   const l=S.lines.find(l=>l.id===id); if(!l) return;
   l.upQual=(val===true||val==='true');
-  renderLines(); update(); updateApoDisplay();
+  renderLines(); update(); updateApoDisplay(); updateApoDisplay();
 }
 function setFinInclude(id, val){
   const l=S.lines.find(l=>l.id===id);
   if(!l) return;
   l.finInclude = (val===true||val==='true');
   renderLines();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function lu(id,k,v){
   const l=S.lines.find(l=>l.id===id);if(!l)return;
   l[k]=v;
   if(k==='byod'&&v){l.intl=false;l.passport=false;l.hotspot=false;}
   if(['lt','byod','device'].includes(k)){renderLines();}
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 // Toggle boolean feature
 function tog(id,k){
@@ -665,7 +724,7 @@ function tog(id,k){
   l[k]=!l[k];
   // Always re-render full line to keep fin toggle + chips consistent
   renderLines();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 
 function renderLines(){
@@ -897,7 +956,7 @@ function updateAddBtns(){
 function setAPO(val){
   S.apoPerDevice=parseFloat(val)||0;
   updateApoHint();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function updateApoHint(){
   const cnt=deviceLineCount();
@@ -919,19 +978,19 @@ function toggleApoFin(){
   S.apoFin=$('apo-fin-chk').checked;
   $('apo-split-opts').style.display=S.apoFin?'block':'none';
   if(!S.apoFin){S.apoSplit=false;if($('apo-split-chk'))$('apo-split-chk').checked=false;$('apo-split-input').style.display='none';}
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function toggleApoSplit(){
   S.apoSplit=$('apo-split-chk').checked;
   $('apo-split-input').style.display=S.apoSplit?'block':'none';
   if(!S.apoSplit)S.apoLeaseAmt=0;
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function setApoLease(val){
   const total=S.apoPerDevice*deviceLineCount();
   S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
   updateApoHint();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 
 // ============================================================
@@ -945,7 +1004,7 @@ function toggleFin(){
     S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
   }
   renderLines();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function setFinType(t){
   S.finType=t;
@@ -953,20 +1012,20 @@ function setFinType(t){
   $('ft-bread').classList.toggle('on',t==='bread');
   $('apr-sec').style.display=t==='bread'?'block':'none';
   $('prog-freq-sec').style.display=t==='prog'?'block':'none';
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function setProgFreq(f){
   S.progFreq=f;
   ['weekly','biweekly','monthly'].forEach(x=>$('pf-'+x).classList.toggle('on',x===f));
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
 function setAPR(r){
   S.breadAPR=r;
   $('apr0').classList.toggle('on',r===0);
   $('apr14').classList.toggle('on',r===14.99);
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 }
-$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateApoDisplay();});
+$('ap-chk').addEventListener('change',e=>{S.ap=e.target.checked;renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();});
 
 // ============================================================
 // CALC
@@ -1320,7 +1379,7 @@ function resetAll(){
   $('aal-plan-sel').value='supreme';
   $('aal-lines-sel').value='1';
   $('lines-container').innerHTML='';
-  renderPlanGrid();update(); updateApoDisplay();
+  renderPlanGrid();update(); updateApoDisplay(); updateApoDisplay();
 }
 
 // INIT
@@ -1333,7 +1392,7 @@ window.onerror = function(msg, src, line, col, err) {
 };
 try {
   renderPlanGrid();
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
 } catch(e) {
   document.body.insertAdjacentHTML('beforeend',
     `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
@@ -1345,7 +1404,7 @@ function setApoPreset(val){
   S.apoPerDevice = val;
   const inp = document.getElementById('apo-inp');
   if(inp) inp.value = val;
-  update(); updateApoDisplay();
+  update(); updateApoDisplay(); updateApoDisplay();
   updateApoDisplay();
 }
 
@@ -1355,6 +1414,27 @@ function updateApoDisplay(){
   const el = document.getElementById('apo-total-big');
   if(el){
     el.innerText = total > 0 ? '$' + total : '$0';
+  }
+}
+
+
+S.watchPrice = 0;
+
+function setWatch(price){
+  S.watchPrice = price;
+  update(); updateApoDisplay();
+  updateApoDisplay();
+}
+
+function updateApoDisplay(){
+  const devices = typeof deviceLineCount==='function' ? deviceLineCount() : 0;
+  const base = (S.apoPerDevice || 0) * devices;
+  const watch = S.watchPrice || 0;
+  const total = base + watch;
+
+  const el = document.getElementById('apo-total-big');
+  if(el){
+    el.innerText = total > 0 ? '$' + total.toFixed(2) : '$0';
   }
 }
 
