@@ -309,7 +309,7 @@ select option,select optgroup{background:#1e1e1e}
     <div 
 <div style="margin-top:12px">
   <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">
-    Skeiwatch (adds to APO & PPP)
+    Skeiwatch (manual add — does NOT break system)
   </div>
 
   <div style="display:flex;flex-direction:column;gap:6px">
@@ -324,7 +324,7 @@ select option,select optgroup{background:#1e1e1e}
   </div>
 
   <div style="margin-top:6px;font-size:10px;color:var(--warn)">
-    PPP requires $149.99+ anchor device
+    Add manually to APO / PPP for now (safe mode)
   </div>
 </div>
 
@@ -1363,36 +1363,7 @@ function changeWatch(type,delta){
   S.watches[type]=Math.max(0,(S.watches[type]||0)+delta);
   const el=document.getElementById('qty-'+type);
   if(el) el.innerText=S.watches[type];
-  update();
 }
-
-/* SAFE PATCH into existing calc without breaking flow */
-const _origCalc = calcSummary;
-calcSummary = function(){
-  const res = _origCalc();
-
-  const wt = watchTotal();
-
-  if(wt>0){
-    // if PPP ON → include in financed accessories
-    if(S.finOn && S.apoFin){
-      res.financedAccessories = (res.financedAccessories||0) + wt;
-    }else{
-      // otherwise goes to upfront accessories
-      res.accessoriesOTD = (res.accessoriesOTD||0) + (wt * (1+TAX));
-    }
-
-    // ALWAYS impacts APO
-    const devices = deviceLineCount();
-    if(devices>0){
-      const newTotal = (S.apoPerDevice*devices) + wt;
-      res.apoTotal = newTotal;
-      res.apoPerDevice = newTotal / devices;
-    }
-  }
-
-  return res;
-};
 </script>
 
 </body>
