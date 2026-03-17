@@ -1380,6 +1380,16 @@ function updateAccessoryDisplay(){
   }
 }
 
+
+function applyWatchPppFix(otd, ppp){
+  const watchTotal = (typeof getWatchTotal==='function')?getWatchTotal():0;
+  if(S.finOn){
+    otd -= watchTotal*(1+TAX);
+    ppp += watchTotal;
+  }
+  return {otd, ppp};
+}
+
 </script>
 
 <script>
@@ -1431,6 +1441,16 @@ function updateAccessoryDisplay(){
     breakdownEl.textContent =
       `$${S.apoPerDevice} × ${devices} devices = ${fmt(base)} + Watches ${fmt(watches)}`;
   }
+}
+
+
+function applyWatchPppFix(otd, ppp){
+  const watchTotal = (typeof getWatchTotal==='function')?getWatchTotal():0;
+  if(S.finOn){
+    otd -= watchTotal*(1+TAX);
+    ppp += watchTotal;
+  }
+  return {otd, ppp};
 }
 
 </script>
