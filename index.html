@@ -1337,5 +1337,22 @@ try {
 })();
 </script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  if (typeof update === "function") {
+    const originalUpdate = update;
+    window.update = function() {
+      originalUpdate();
+      try{
+        if (typeof deviceLineCount === 'function' && window.S) {
+          S._apoTotalOverride = S.apoPerDevice * deviceLineCount();
+        }
+      }catch(e){}
+    };
+  }
+});
+</script>
+
 </body>
 </html>
