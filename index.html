@@ -872,23 +872,23 @@ function updateAddBtns(){
 // APO
 // ============================================================
 function setAPO(val){
-  S.apoPerDevice=parseFloat(val)||0;
+  (S.apoPerDevice * deviceLineCount())=parseFloat(val)||0;
   updateApoHint();
   update();
 }
 function updateApoHint(){
   const cnt=deviceLineCount();
-  const total=S.apoPerDevice*cnt;
+  const total=(S.apoPerDevice * deviceLineCount())*cnt;
   $('apo-hint').textContent=cnt>0
-    ?`$${S.apoPerDevice} × ${cnt} device${cnt>1?'s':''} = ${fmt(total)} total`
+    ?`$${(S.apoPerDevice * deviceLineCount())} × ${cnt} device${cnt>1?'s':''} = ${fmt(total)} total`
     :'Enter $ per device — auto-multiplies by device count';
   // Show/hide finance opts
   const hasApo=total>0&&S.finOn;
   $('apo-fin-opts').style.display=hasApo?'block':'none';
   if(!hasApo){S.apoFin=false;S.apoSplit=false;if($('apo-fin-chk'))$('apo-fin-chk').checked=false;}
   if($('apo-split-hint')){
-    const leasePart=S.apoSplit?S.apoLeaseAmt:total;
-    const cashPart=S.apoSplit?Math.max(0,total-S.apoLeaseAmt):0;
+    const leasePart=S.apoSplit?(S.apoLeaseAmt || (S.apoPerDevice * deviceLineCount())):total;
+    const cashPart=S.apoSplit?Math.max(0,total-(S.apoLeaseAmt || (S.apoPerDevice * deviceLineCount()))):0;
     $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On lease: ${fmt(leasePart)}`;
   }
 }
@@ -901,12 +901,12 @@ function toggleApoFin(){
 function toggleApoSplit(){
   S.apoSplit=$('apo-split-chk').checked;
   $('apo-split-input').style.display=S.apoSplit?'block':'none';
-  if(!S.apoSplit)S.apoLeaseAmt=0;
+  if(!S.apoSplit)(S.apoLeaseAmt || (S.apoPerDevice * deviceLineCount()))=0;
   update();
 }
 function setApoLease(val){
-  const total=S.apoPerDevice*deviceLineCount();
-  S.apoLeaseAmt=Math.min(parseFloat(val)||0,total);
+  const total=(S.apoPerDevice * deviceLineCount())*deviceLineCount();
+  (S.apoLeaseAmt || (S.apoPerDevice * deviceLineCount()))=Math.min(parseFloat(val)||0,total);
   updateApoHint();
   update();
 }
@@ -1017,7 +1017,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const apoTotal=S.apoPerDevice*deviceLineCount();
+  const apoTotal=(S.apoPerDevice * deviceLineCount())*deviceLineCount();
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1041,7 +1041,7 @@ function calc(){
   });
 
   // APO split
-  const apoLeased=S.finOn&&S.apoFin?(S.apoSplit?Math.min(S.apoLeaseAmt,apoTotal):apoTotal):0;
+  const apoLeased=S.finOn&&S.apoFin?(S.apoSplit?Math.min((S.apoLeaseAmt || (S.apoPerDevice * deviceLineCount())),apoTotal):apoTotal):0;
   const apoCash=apoTotal-apoLeased;
 
   const finBase=deviceFinanced+apoLeased;
