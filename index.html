@@ -273,7 +273,7 @@ select option,select optgroup{background:#1a1a1a}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 10:50 AM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 11:07 AM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -384,19 +384,18 @@ select option,select optgroup{background:#1a1a1a}
   <div class="sec-body">
     <!-- Transaction type -->
     <div style="margin-bottom:12px">
-      <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Transaction Type</div>
-      <div style="display:flex;gap:6px">
-        <div class="ftype on" id="txn-aal" onclick="setTxnType('aal')">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid var(--bd);border-radius:var(--r2);overflow:hidden">
+        <div class="wiz-tile ftype on" id="txn-aal" onclick="setTxnType('aal')" style="border-right:1px solid var(--bd);padding:12px 6px">
           <div class="fn">Add-A-Line</div>
-          <div class="fd">New or switcher lines</div>
+          <div class="fd" style="font-size:9px;color:var(--t3);margin-top:2px">SW or new lines</div>
         </div>
-        <div class="ftype" id="txn-up" onclick="setTxnType('upgrade')">
+        <div class="wiz-tile ftype" id="txn-up" onclick="setTxnType('upgrade')" style="border-right:1px solid var(--bd);padding:12px 6px">
           <div class="fn">Upgrade</div>
-          <div class="fd">Existing lines only</div>
+          <div class="fd" style="font-size:9px;color:var(--t3);margin-top:2px">Existing lines</div>
         </div>
-        <div class="ftype" id="txn-both" onclick="setTxnType('both')">
+        <div class="wiz-tile ftype" id="txn-both" onclick="setTxnType('both')" style="padding:12px 6px">
           <div class="fn">Both</div>
-          <div class="fd">Mix AAL + upgrades</div>
+          <div class="fd" style="font-size:9px;color:var(--t3);margin-top:2px">AAL + upgrades</div>
         </div>
       </div>
     </div>
@@ -581,8 +580,6 @@ const PLANS=[
 const PHONES=[
   // Apple
   {id:'i13_128', n:'iPhone 13 128GB',      sw:0,      nw:49.99,   up:629.99,  sw_o:99.99,  nw_o:149.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i13_256', n:'iPhone 13 256GB',      sw:0,      nw:49.99,   up:729.99,  sw_o:99.99,  nw_o:149.99, up_o:729.99,  frp:729.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i13_512', n:'iPhone 13 512GB',      sw:0,      nw:49.99,   up:929.99,  sw_o:99.99,  nw_o:149.99, up_o:929.99,  frp:929.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i15_128', n:'iPhone 15 128GB',      sw:629.99, nw:629.99,  up:629.99,  frp:629.99,  brand:'Apple',    promoReq:'any'},
   {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
@@ -845,9 +842,7 @@ function lu(id,k,v){
     const dev=PHONES.find(p=>p.id===v)||TABLETS.find(t=>t.id===v);
     if(dev){
       const pr=l.lt==='sw'||l.lt==='switcher'?dev.sw:(l.lt==='upgrade'?(dev.up??dev.frp):dev.nw);
-      // Always free-shipping devices (regardless of price) + any device ≥$249.99
-      const alwaysShip=['i16_128'];
-      if(alwaysShip.includes(v)||(typeof pr==='number'&&pr>=249.99)) showShipToast(dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''));
+
     }
   }
   update();
@@ -957,8 +952,8 @@ function buildCard(l,idx){
     }
   }
 
-  // Qual badge
-  let qual='';
+  // Qual badge + ship note
+  let qual='', shipNote='';
   if(!isH&&l.device&&l.device!=='byod_v'&&l.device!=='byod_w'&&l.device!=='byod_t'){
     const dev=devById(l.device,l.cat);
     if(dev){
@@ -970,6 +965,13 @@ function buildCard(l,idx){
       else if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
       else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99</span>`;
       else qual=`<span class="qpill q-free">FREE</span>`;
+      // Ship note: free-ship-only devices OR transaction price ≥ $249.99
+      const FREE_SHIP_ONLY=['i16_128','i16_256','s26u'];
+      if(FREE_SHIP_ONLY.includes(l.device)){
+        shipNote=`<div class="note-warn" style="margin-top:5px;font-size:9px;padding:5px 8px">📦 <b>Free Shipping Only</b> — If you are doing a Free Shipping on this device, process any in-store transactions FIRST.</div>`;
+      } else if(pr>=249.99){
+        shipNote=`<div class="note-warn" style="margin-top:5px;font-size:9px;padding:5px 8px">📦 If you are doing a Free Shipping on this device, process any in-store transactions FIRST.</div>`;
+      }
     }
   } else if(l.byod){
     qual=`<span class="qpill q-free">BYOD</span>`;
@@ -1039,7 +1041,8 @@ function buildCard(l,idx){
         <label>Device</label>
         <select onchange="lu(${l.id},'device',this.value)">${devHtml}</select>
       </div>
-      ${!isH?`<div class="f" style="justify-content:flex-end;padding-top:18px">${qual}</div>`:''}
+      ${!isH?`<div class="f" style="justify-content:flex-end;padding-top:18px">${qual}</div>`:''}\
+      ${shipNote?`<div class="f full">${shipNote}</div>`:''}
       ${hsData}
       ${upQualRow}
       ${skeiSection}
@@ -1143,9 +1146,10 @@ function updateApoHint(){
     const sk=SKEIWATCHES.find(s=>s.id===l.skeiwatch); return sum+(sk?sk.price:0);
   },0);
   const accTotal=apoTotal+skeiwatchTotal;
+  const effectivePerDev=cnt>0?accTotal/cnt:0;
 
   $('apo-hint').textContent=cnt>0
-    ?`$${S.apoPerDevice} × ${cnt} device${cnt>1?'s':''} = ${fmt(apoTotal)} total`
+    ?`$${S.apoPerDevice} × ${cnt} device${cnt>1?'s':''} = ${fmt(apoTotal)}`
     :'Enter $ per device — auto-multiplies by device count';
 
   // Total accessories row
@@ -1154,8 +1158,12 @@ function updateApoHint(){
   if(accTotal>0){
     totalRow.style.display='flex';
     let breakdown='';
-    if(apoTotal>0&&skeiwatchTotal>0) breakdown=` <span style="font-size:9px;color:var(--t3)">(APO ${fmt(apoTotal)} + Skeiwatch ${fmt(skeiwatchTotal)})</span>`;
-    totalVal.innerHTML=fmt(accTotal)+breakdown;
+    if(skeiwatchTotal>0&&cnt>0){
+      breakdown=`<div style="font-size:9px;color:var(--t3);margin-top:4px">`
+        +`APO ${fmt(apoTotal)} + Skeiwatch(es) ${fmt(skeiwatchTotal)} = `
+        +`<b style="color:var(--warn)">New APO ${fmt(effectivePerDev)}</b></div>`;
+    }
+    totalVal.innerHTML=fmt(accTotal)+(breakdown?'':'')+breakdown;
   } else {
     totalRow.style.display='none';
   }
@@ -1972,6 +1980,55 @@ function launchWizard(){
   document.getElementById('lines-container').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
+function resetAll(){
+  S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+  $('btn-new').classList.add('active');$('btn-aal').classList.remove('active');
+  $('plan-sec').style.display='block';
+  $('aal-sec').style.display='none';
+  ['aal','up','both'].forEach(x=>$('txn-'+x).classList.toggle('on',x==='aal'));
+  $('lines-title').textContent='Step 3 — Lines';
+  $('ap-chk').checked=true;$('ap-chk').disabled=false;$('ap-slide').classList.remove('off');
+  $('fin-chk').checked=false;$('fin-chk').disabled=true;$('fin-opts').style.display='none';
+  $('fin-slide').classList.add('off');
+  $('ft-prog').classList.add('on');$('ft-bread').classList.remove('on');
+  $('apr-sec').style.display='none';
+  $('apo-inp').value=0; updateApoTiles(0);
+  $('aal-plan-sel').value='supreme';
+  $('aal-lines-sel').value='1';
+  $('lines-container').innerHTML='';
+  renderPlanGrid();update();
+}
+
+function autoIncludeAllPPP(){
+  S.lines.forEach(l=>{
+    if(l.cat==='h') return;
+    const dev2=l.byod?null:devById(l.device,l.cat);
+    const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
+    const pr=l.cat==='v'&&dev2?devPrice(dev2,l.lt,linePos,l.upQual!==false):(dev2?dev2.price:0);
+    l.finInclude=!dev2||pr>=149.99;
+    if(l.skeiwatch) l.skeiwatchFin=true;
+  });
+  if(S.apoPerDevice>0){
+    S.apoFin=true;
+    if($('apo-fin-chk'))$('apo-fin-chk').checked=true;
+    $('apo-split-opts').style.display='block';
+  }
+}
+
+function resetWiz(){
+  W={ppp:null,ppptype:null,approval:0,lines:null,brand:null,lt:null,tab:null};
+  ['ppp-yes','ppp-no','pt-prog','pt-bread0','pt-bread14',
+   'lines-1','lines-2','lines-3','lines-4','lines-5',
+   'brand-iphone','brand-android','brand-mix',
+   'lt-sw','lt-new','tab-a9','tab-a11'
+  ].forEach(id=>{const el=$('wiz-'+id);if(el)el.classList.remove('on');});
+  ['ppptype-row','approval-row','tab-row'].forEach(id=>{
+    const el=$('wiz-'+id);if(el)el.style.display='none';
+  });
+  if($('wiz-result'))$('wiz-result').style.display='none';
+  if($('wiz-approval-inp'))$('wiz-approval-inp').value='';
+}
+
 window.onerror=function(msg,src,line,col,err){
   document.body.insertAdjacentHTML('beforeend',
     `<div style="position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font-size:12px;z-index:9999;word-break:break-all">
@@ -1990,5 +2047,11 @@ try {
     </div>`);
 }
 </script>
+<div style="text-align:center;padding:16px 14px 24px">
+  <a href="Quote Tool Feedback – Fill out form" target="_blank"
+    style="display:inline-flex;align-items:center;gap:7px;padding:10px 20px;background:var(--s2);border:1px solid var(--bd2);border-radius:var(--r);color:var(--t2);text-decoration:none;font-size:11px;font-weight:700;letter-spacing:.3px">
+    📝 Quote Tool Feedback
+  </a>
+</div>
 </body>
 </html>
