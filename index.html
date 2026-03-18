@@ -262,18 +262,20 @@ select option,select optgroup{background:#1a1a1a}
     <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:1px">📡 AT&T Internet Air</div>
     <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$47/mo + taxes w/ AutoPay!</div>
     <div style="font-size:8px;color:rgba(255,255,255,.5);line-height:1.3">Any Govt ID Accepted · Only at Cricket</div>
+    <div style="font-size:7px;color:rgba(255,255,255,.3);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
   </div>
   <div style="padding:8px 14px;display:flex;flex-direction:column;gap:2px;background:rgba(0,169,79,.04)">
     <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin-bottom:1px">🌐 AT&T Fiber</div>
     <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$20 OFF 300 Mbps+!</div>
     <div style="font-size:8px;color:rgba(255,255,255,.5);line-height:1.3">New customers · +taxes · Only at Cricket</div>
+    <div style="font-size:7px;color:rgba(255,255,255,.3);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
   </div>
 </div>
 <header>
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 11:07 AM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 12:09 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -352,7 +354,16 @@ select option,select optgroup{background:#1a1a1a}
       </div>
     </div>
 
-    <!-- Q7: Tablet anchor picker (shown when PPP + device under $149.99) -->
+    <!-- Q7: Anchor type (Android/Mix PPP when device can self-qualify) -->
+    <div id="wiz-anchortype-row" style="display:none;border-bottom:1px solid var(--bd)">
+      <div style="padding:10px 14px 6px;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">PPP Anchor?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bd)">
+        <div class="wiz-tile" id="wiz-at-device" onclick="setWiz('anchortype','device')" style="border-right:1px solid var(--bd)">📱 Device<div style="font-size:9px;font-weight:400;color:var(--t3);margin-top:1px">S25 anchors + cheaper fills</div></div>
+        <div class="wiz-tile" id="wiz-at-tablet" onclick="setWiz('anchortype','tablet')">📟 Tablet<div style="font-size:9px;font-weight:400;color:var(--t3);margin-top:1px">All same device + tab</div></div>
+      </div>
+    </div>
+
+    <!-- Q8: Tablet anchor picker -->
     <div id="wiz-tab-row" style="display:none;border-bottom:1px solid var(--bd)">
       <div style="padding:10px 14px 6px;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--warn)">⚓ Tablet Anchor for PPP</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bd)">
@@ -1730,9 +1741,11 @@ function launchDeal(type){
 // WIZARD
 // ============================================================
 const WIZ_IPHONES=['i16e_128','i13_128'];
-const WIZ_ANDROID=['s25','medge','mgsty'];
+const WIZ_IPHONES_SW=['i16e_128','i13_128']; // SW: 16e first
+const WIZ_IPHONES_NW=['i13_128','i16e_128']; // NEW: 13 first
+const WIZ_ANDROID=['s25','medge','mgsty']; // s25=anchor, edge/stylus=fill
 
-let W={ppp:null,pa:null,approval:0,lines:null,brand:null,lt:null,tab:null};
+let W={ppp:null,ppptype:null,approval:0,lines:null,brand:null,lt:null,tab:null,anchortype:null};
 
 function toggleWizard(){
   const body=$('wizard-body'),chev=$('wizard-chevron');
@@ -1762,7 +1775,14 @@ function setWiz(key,val){
   if(key==='lines'){[1,2,3,4,5].forEach(n=>hi('wiz-lines-'+n,n===val));W.tab=null;}
   if(key==='brand'){hi('wiz-brand-iphone',val==='iphone');hi('wiz-brand-android',val==='android');hi('wiz-brand-mix',val==='mix');W.tab=null;}
   if(key==='lt'){hi('wiz-lt-sw',val==='sw');hi('wiz-lt-new',val==='new');W.tab=null;}
+  if(key==='anchortype'){
+    const hi2=(id,on)=>{const el=$(id);if(el)el.classList.toggle('on',on);};
+    hi2('wiz-at-device',val==='device'); hi2('wiz-at-tablet',val==='tablet');
+    W.tab=null; hi2('wiz-tab-a9',false); hi2('wiz-tab-a11',false);
+  }
   if(key==='tab'){hi('wiz-tab-a9',val==='taba9p');hi('wiz-tab-a11',val==='taba11p');}
+  // Reset anchortype when key inputs change
+  if(['ppp','lines','brand','lt','ppptype'].includes(key)){W.anchortype=null;W.tab=null;}
   refreshWizTabRow();
   buildWizResult();
 }
@@ -1780,28 +1800,126 @@ function wizLineBudget(){
 }
 
 function wizPickBest(list,lt,ppp,lineBudget,apo){
-  for(const id of list){
-    const p=PHONES.find(ph=>ph.id===id);if(!p) continue;
-    const price=lt==='sw'?p.sw:p.nw;
-    const maxL=lt==='new'?(p.maxLinesNw||p.maxLines):p.maxLines;
-    if(maxL&&W.lines>maxL) continue;
-    if(ppp&&price<149.99) continue;
-    if(ppp&&(price+apo)>lineBudget) continue;
-    return {id,p,price};
+  const lineCount=W.lines||1;
+
+  if(!ppp){
+    // Cash OTD: pick first device, handle over-limit positionally
+    for(const id of list){
+      const p=PHONES.find(ph=>ph.id===id);if(!p) continue;
+      const promoPrice=lt==='sw'?p.sw:p.nw;
+      const otherPrice=lt==='sw'?(p.sw_o??promoPrice):(p.nw_o??promoPrice);
+      const maxL=lt==='new'?(p.maxLinesNw||p.maxLines):p.maxLines;
+      return {id,p,price:promoPrice,otherPrice,maxL,fillId:null,fillPrice:null};
+    }
+    return null;
+  }
+
+  // PPP mode: anchor on line 1 (≥$149.99), cheapest device fills rest
+  for(const anchorId of list){
+    const a=PHONES.find(ph=>ph.id===anchorId);if(!a) continue;
+    const anchorPrice=lt==='sw'?a.sw:a.nw;
+    if(anchorPrice<149.99) continue;
+    const anchorMaxL=lt==='new'?(a.maxLinesNw||a.maxLines):a.maxLines;
+
+    // Find cheapest fill device for remaining lines
+    let fillDev=null,fillPrice=Infinity,fillMaxL=null;
+    for(const fillId of list){
+      const f=PHONES.find(ph=>ph.id===fillId);if(!f) continue;
+      const fp=lt==='sw'?f.sw:f.nw;
+      const fMaxL=lt==='new'?(f.maxLinesNw||f.maxLines):f.maxLines;
+      if(fMaxL&&fMaxL<lineCount-1) continue; // must cover remaining lines
+      if(fp<fillPrice){fillPrice=fp;fillDev=f;fillMaxL=fMaxL;}
+    }
+    if(!fillDev){fillDev=a;fillPrice=anchorPrice;fillMaxL=anchorMaxL;}
+
+    // Budget check: 1×anchor + (lineCount-1)×fill + all apo ≤ approval
+    if(W.approval>0){
+      const cap=W.approval/(W.ppptype==='bread'?(1+TAX):1);
+      if(anchorPrice+(lineCount-1)*fillPrice+apo*lineCount>cap) continue;
+    }
+
+    return {id:anchorId,p:a,price:anchorPrice,otherPrice:anchorPrice,maxL:anchorMaxL,
+            fillId:fillDev.id,fillDev,fillPrice,fillMaxL};
   }
   return null;
 }
 
+function wizCanQualifyPPP(brand,lt){
+  // Check if a valid PPP deal can be built without a tablet anchor
+  // For mixed-device scenarios: 1 anchor line + remaining cheap lines must fit budget
+  const cap=W.approval>0?W.approval/(W.ppptype==='bread'?(1+TAX):1):Infinity;
+  const apo=brand==='iphone'?(lt==='sw'?75:50):45;
+  const list=brand==='iphone'?(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW):WIZ_ANDROID;
+  const cheapList=brand==='iphone'?(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW):WIZ_ANDROID;
+
+  // Try each device as anchor on line 1, cheapest qualifying device on remaining lines
+  for(const anchorId of list){
+    const a=PHONES.find(p=>p.id===anchorId);if(!a) continue;
+    const ap=lt==='sw'?a.sw:a.nw;
+    if(ap<149.99) continue; // anchor must be ≥$149.99
+    // Find cheapest device for remaining lines (can be same or cheaper)
+    let cheapPrice=ap;
+    for(const cid of cheapList){
+      const c=PHONES.find(p=>p.id===cid);if(!c) continue;
+      const cp=lt==='sw'?c.sw:c.nw;
+      const maxL=lt==='new'?(c.maxLinesNw||c.maxLines):c.maxLines;
+      if(maxL&&maxL<W.lines-1) continue; // can't cover remaining lines
+      cheapPrice=cp; break;
+    }
+    const totalNeeded=ap+cheapPrice*(W.lines-1)+apo*W.lines;
+    if(cap===Infinity||totalNeeded<=cap) return true;
+  }
+  // Also check positional (e.g. 5× same device where line 5 hits $149.99)
+  for(const id of list){
+    const p=PHONES.find(ph=>ph.id===id);if(!p) continue;
+    const price=lt==='sw'?p.sw:p.nw;
+    const otherPrice=lt==='sw'?(p.sw_o??price):(p.nw_o??price);
+    const maxL=lt==='new'?(p.maxLinesNw||p.maxLines):p.maxLines;
+    if(maxL&&W.lines>maxL&&otherPrice>=149.99){
+      let tot=0;
+      for(let i=1;i<=W.lines;i++) tot+=(i>maxL?otherPrice:price)+apo;
+      if(cap===Infinity||tot<=cap) return true;
+    }
+  }
+  return false;
+}
+
 function refreshWizTabRow(){
-  const row=$('wiz-tab-row');if(!row)return;
-  if(!W.ppp||!W.ppptype||!W.lines||!W.brand||!W.lt){row.style.display='none';return;}
+  const row=$('wiz-tab-row');
+  const atRow=$('wiz-anchortype-row');
+  if(!row||!atRow) return;
+  if(!W.ppp||!W.ppptype||!W.lines||!W.brand||!W.lt){
+    row.style.display='none'; atRow.style.display='none'; return;
+  }
   const apo=W.brand==='iphone'?(W.lt==='sw'?75:50):45;
   const lb=wizLineBudget();
-  const iphSelf=wizPickBest(WIZ_IPHONES,W.lt,true,lb,apo);
+
+  // Check if Android/Mix has a qualifying device anchor
   const andSelf=wizPickBest(WIZ_ANDROID,W.lt,true,lb,apo);
-  const needsTab=(W.brand==='iphone'&&!iphSelf)||(W.brand==='android'&&!andSelf)||(W.brand==='mix'&&!iphSelf&&!andSelf);
-  row.style.display=needsTab?'block':'none';
-  if(!needsTab) W.tab=null;
+  const iphList=W.lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW;
+  const iphSelf=wizPickBest(iphList,W.lt,true,lb,apo);
+
+  const isIphonePPP=(W.brand==='iphone');
+  const androidCanSelfQual=(W.brand==='android'||W.brand==='mix')&&!!andSelf;
+
+  if(androidCanSelfQual&&!isIphonePPP){
+    // Show anchor type question: device vs tablet
+    atRow.style.display='block';
+    if(W.anchortype==='tablet'){
+      // Show tablet picker
+      row.style.display='block';
+    } else {
+      row.style.display='none';
+      if(W.anchortype==='device') W.tab=null;
+    }
+  } else {
+    // iPhone PPP or no self-qualifying device — go straight to tablet picker
+    atRow.style.display='none';
+    W.anchortype=null;
+    const needsTab=isIphonePPP?!iphSelf:(!andSelf&&!iphSelf);
+    row.style.display=needsTab?'block':'none';
+    if(!needsTab) W.tab=null;
+  }
 }
 
 function buildWizResult(){
@@ -1809,10 +1927,13 @@ function buildWizResult(){
   if(W.ppp===null||W.lines===null||W.brand===null||W.lt===null){el.style.display='none';return;}
   if(W.ppp&&!W.ppptype){el.style.display='none';return;}
   if(W.ppp&&W.approval<=0&&!W.tab){el.style.display='none';return;}
+  // For android/mix PPP: need anchortype decision before proceeding
+  const atRowVis=$('wiz-anchortype-row')&&$('wiz-anchortype-row').style.display==='block';
+  if(atRowVis&&!W.anchortype){el.style.display='none';return;}
   const tabRowVisible=$('wiz-tab-row')&&$('wiz-tab-row').style.display==='block';
   if(tabRowVisible&&!W.tab){el.style.display='none';return;}
 
-  const {lines,brand,lt,ppp,pa,tab}=W;
+  const {lines,brand,lt,ppp,tab,anchortype}=W;
   const ppptype=wizPPPType(),apr=wizAPR();
   const apo=brand==='iphone'?(lt==='sw'?75:50):45;
   const lb=wizLineBudget();
@@ -1821,34 +1942,85 @@ function buildWizResult(){
 
   let voiceLines=[],tabAnchor=null;
 
+  // Helper: build per-line price array respecting maxLines (over-limit uses other price)
+  function buildLineArr(res, cnt){
+    if(!res) return [];
+    const arr=[];
+    for(let i=0;i<cnt;i++){
+      const overLimit=res.maxL&&(i+1)>res.maxL;
+      arr.push({id:res.id,price:overLimit?res.otherPrice:res.price,n:res.p.n,overLimit});
+    }
+    return arr;
+  }
+
   if(brand==='iphone'){
-    const self=ppp?wizPickBest(WIZ_IPHONES,lt,true,lb,apo):wizPickBest(WIZ_IPHONES,lt,false,Infinity,apo);
+    const self=ppp?wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,true,lb,apo):wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,false,Infinity,apo);
     if(self){
-      for(let i=0;i<lines;i++) voiceLines.push({id:self.id,price:self.price,n:self.p.n});
+      voiceLines=buildLineArr(self,lines);
     } else if(tab){
-      const primId=lt==='sw'?'i16e_128':'i13_128';
+      const primId=lt==='sw'?'i16e_128':'i13_128'; // SW→16e, NEW→13
       const prim=PHONES.find(p=>p.id===primId);
       const pp=lt==='sw'?prim.sw:prim.nw;
-      for(let i=0;i<lines;i++) voiceLines.push({id:primId,price:pp,n:prim.n});
+      const maxL2=lt==='new'?(prim.maxLinesNw||prim.maxLines):prim.maxLines;
+      for(let i=0;i<lines;i++){
+        const ov=maxL2&&(i+1)>maxL2;
+        voiceLines.push({id:primId,price:ov?(lt==='sw'?(prim.sw_o??pp):(prim.nw_o??pp)):pp,n:prim.n,overLimit:ov});
+      }
       tabAnchor=TABLETS.find(t=>t.id===tab);
     } else {el.style.display='none';return;}
   } else if(brand==='android'){
-    const self=ppp?wizPickBest(WIZ_ANDROID,lt,true,lb,apo):wizPickBest(WIZ_ANDROID,lt,false,Infinity,apo);
-    if(self){
-      for(let i=0;i<lines;i++) voiceLines.push({id:self.id,price:self.price,n:self.p.n});
+    const useTabAnchor=anchortype==='tablet'||(!anchortype&&tab);
+    const self=ppp&&!useTabAnchor?wizPickBest(WIZ_ANDROID,lt,true,lb,apo):wizPickBest(WIZ_ANDROID,lt,false,Infinity,apo);
+    if(self&&!useTabAnchor){
+      if(ppp&&lines>1&&self.fillId&&self.fillId!==self.id){
+        voiceLines.push({id:self.id,price:self.price,n:self.p.n,anchor:true});
+        for(let i=1;i<lines;i++){
+          const fMaxL=self.fillMaxL;
+          const ov=fMaxL&&i>=fMaxL;
+          const fp=ov?(lt==='sw'?(self.fillDev.sw_o??self.fillPrice):(self.fillDev.nw_o??self.fillPrice)):self.fillPrice;
+          voiceLines.push({id:self.fillId,price:fp,n:self.fillDev.n,overLimit:ov});
+        }
+      } else {
+        voiceLines=buildLineArr(self,lines);
+      }
+    } else if(useTabAnchor||tab){
+      // Tablet anchors PPP — voice lines use cheapest qualifying device
+      // Pick cheapest from end of list for variety, must cover all lines
+      const tabFillCandidates=[...WIZ_ANDROID].reverse(); // cheapest first (mgsty, medge, s25)
+      let fillId=null,fillDev=null,fillPr=0,fillMaxL=null;
+      for(const fid of tabFillCandidates){
+        const f=PHONES.find(p=>p.id===fid);if(!f) continue;
+        const fp=lt==='sw'?f.sw:f.nw;
+        const fml=lt==='new'?(f.maxLinesNw||f.maxLines):f.maxLines;
+        // Must cover at least 1 line at promo price
+        fillId=fid; fillDev=f; fillPr=fp; fillMaxL=fml; break;
+      }
+      if(!fillDev){fillId=WIZ_ANDROID[WIZ_ANDROID.length-1];fillDev=PHONES.find(p=>p.id===fillId);fillPr=lt==='sw'?fillDev.sw:fillDev.nw;}
+      for(let i=0;i<lines;i++){
+        const ov=fillMaxL&&(i+1)>fillMaxL;
+        const fp2=ov?(lt==='sw'?(fillDev.sw_o??fillPr):(fillDev.nw_o??fillPr)):fillPr;
+        voiceLines.push({id:fillId,price:fp2,n:fillDev.n,overLimit:ov});
+      }
+      tabAnchor=TABLETS.find(t=>t.id===tab);
     } else if(tab){
       const primId=WIZ_ANDROID[WIZ_ANDROID.length-1];
       const prim=PHONES.find(p=>p.id===primId);
       const pp=lt==='sw'?prim.sw:prim.nw;
-      for(let i=0;i<lines;i++) voiceLines.push({id:primId,price:pp,n:prim.n});
+      const maxL2=lt==='new'?(prim.maxLinesNw||prim.maxLines):prim.maxLines;
+      for(let i=0;i<lines;i++){
+        const ov=maxL2&&(i+1)>maxL2;
+        voiceLines.push({id:primId,price:ov?(lt==='sw'?(prim.sw_o??pp):(prim.nw_o??pp)):pp,n:prim.n,overLimit:ov});
+      }
       tabAnchor=TABLETS.find(t=>t.id===tab);
     } else {el.style.display='none';return;}
   } else {
     const half=Math.ceil(lines/2),rest=lines-half;
-    const id1=lt==='sw'?'i16e_128':'i13_128',p1=PHONES.find(p=>p.id===id1),pr1=lt==='sw'?p1.sw:p1.nw;
+    const id1=lt==='sw'?'i16e_128':'i13_128',p1=PHONES.find(p=>p.id===id1); // SW→16e, NEW→13
+    const maxL1=lt==='new'?(p1.maxLinesNw||p1.maxLines):p1.maxLines;
+    const pr1=lt==='sw'?p1.sw:p1.nw;
     const ad=PHONES.find(p=>p.id==='s25')||PHONES.find(p=>p.id==='medge');
     const pr2=lt==='sw'?ad.sw:ad.nw;
-    for(let i=0;i<half;i++) voiceLines.push({id:id1,price:pr1,n:p1.n});
+    for(let i=0;i<half;i++){const ov=maxL1&&(i+1)>maxL1;voiceLines.push({id:id1,price:ov?(lt==='sw'?(p1.sw_o??pr1):(p1.nw_o??pr1)):pr1,n:p1.n,overLimit:ov});}
     for(let i=0;i<rest;i++) voiceLines.push({id:ad.id,price:pr2,n:ad.n});
     if(ppp&&tab) tabAnchor=TABLETS.find(t=>t.id===tab);
   }
@@ -1859,6 +2031,15 @@ function buildWizResult(){
   const tabPlan=tabAnchor?TABLET_PLAN:0;
   const finBase=totalDev+tabPrice+apo*lines;
   const totalLines=lines+(tabAnchor?1:0);
+  // Budget warning
+  if(ppp&&W.approval>0){
+    const cap=W.approval/(ppptype==='bread'?(1+TAX):1);
+    if(finBase>cap){
+      el.style.display='block';
+      el.innerHTML=`<div style="padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--r2);font-size:10px;color:var(--err)">⚠ Total devices+acc ${fmt(finBase)} exceeds ${fmt(cap)} approval. Try fewer lines or a lower-cost device.</div>`;
+      return;
+    }
+  }
   const iphLines=voiceLines.filter(l=>WIZ_IPHONES.includes(l.id));
   const andQLines=voiceLines.filter(l=>WIZ_ANDROID.includes(l.id)&&l.price>=149.99);
   const protCost=iphLines.length*12+andQLines.length*8;
@@ -1905,7 +2086,7 @@ function buildWizResult(){
           <div style="font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">OTD Today</div>
           <div style="font-family:'Bebas Neue';font-size:30px;color:var(--g);line-height:1">${fmt(Math.round(otd*100)/100)}</div>
           <div style="font-size:9px;color:var(--t3);margin-top:4px;line-height:1.7">
-            ${voiceLines.map((l,i)=>'Line '+(i+1)+': '+(l.price===0?'FREE':'$'+l.price)).join('<br>')}
+            ${voiceLines.map((l,i)=>{const dn=l.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');return 'Line '+(i+1)+': '+dn+' '+(l.price===0?'FREE':'$'+l.price)+(l.anchor?' <span style="color:var(--ok);font-size:8px">(anchor)</span>':(l.overLimit?' <span style="color:var(--warn);font-size:8px">(other plan)</span>':''));}).join('<br>')}
             ${tabAnchor?'<br>'+tabAnchor.n.replace(/^Samsung /,'')+': $'+tabPrice+' +$'+TABLET_PLAN+'/mo':''}<br>
             $${apo} acc ×${lines}<br>
             ${lt==='sw'?'Act waived (promo)':fmt(actFee)+' act ×'+lines}<br>
@@ -1949,13 +2130,16 @@ function launchWizard(){
   const lb=wizLineBudget();
   let assignments=[];
   if(brand==='iphone'){
-    const self=ppp?wizPickBest(WIZ_IPHONES,lt,true,lb,apo):wizPickBest(WIZ_IPHONES,lt,false,Infinity,apo);
-    const devId=self?self.id:(lt==='sw'?'i16e_128':'i13_128');
+    const self=ppp?wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,true,lb,apo):wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,false,Infinity,apo);
+    const devId=self?self.id:(lt==='sw'?'i16e_128':'i13_128'); // SW→16e, NEW→13
     for(let i=0;i<lines;i++) assignments.push({cat:'v',device:devId,protect:true,tier:12});
   } else if(brand==='android'){
     const self=ppp?wizPickBest(WIZ_ANDROID,lt,true,lb,apo):wizPickBest(WIZ_ANDROID,lt,false,Infinity,apo);
     const devId=self?self.id:WIZ_ANDROID[0];
-    for(let i=0;i<lines;i++) assignments.push({cat:'v',device:devId,protect:true});
+    const restId=(ppp&&self&&self.id==='s25'&&lines>1)
+      ?(WIZ_ANDROID.slice(1).find(id=>{const p2=PHONES.find(ph=>ph.id===id);if(!p2)return false;const ml=lt==='new'?(p2.maxLinesNw||p2.maxLines):p2.maxLines;return !ml||(lines-1)<=ml;})||devId)
+      :devId;
+    for(let i=0;i<lines;i++) assignments.push({cat:'v',device:i===0?devId:restId,protect:!BUDGET_ANDROID.includes(i===0?devId:restId)});
   } else {
     const half=Math.ceil(lines/2),rest=lines-half;
     const id1=lt==='sw'?'i16e_128':'i13_128';
@@ -1966,14 +2150,14 @@ function launchWizard(){
   assignments.forEach(a=>{
     addLine(a.cat);
     const l=S.lines[S.lines.length-1];
-    l.lt=lt==='sw'?'sw':'nw';l.device=a.device;
+    l.lt=lt==='sw'?'switcher':'new';l.device=a.device;
     if(a.protect){l.protect=true;l.protectTier=a.tier||8;}
     if(ppp) l.finInclude=true;
   });
   if(tab&&ppp){
     addLine('t');
     const tl=S.lines[S.lines.length-1];
-    tl.lt=lt==='sw'?'sw':'nw';tl.device=tab;tl.finInclude=true;
+    tl.lt=lt==='sw'?'switcher':'new';tl.device=tab;tl.finInclude=true;
   }
   if(ppp) autoIncludeAllPPP();
   renderLines();renderPlanGrid();update();
@@ -2016,7 +2200,7 @@ function autoIncludeAllPPP(){
 }
 
 function resetWiz(){
-  W={ppp:null,ppptype:null,approval:0,lines:null,brand:null,lt:null,tab:null};
+  W={ppp:null,ppptype:null,approval:0,lines:null,brand:null,lt:null,tab:null,anchortype:null};
   ['ppp-yes','ppp-no','pt-prog','pt-bread0','pt-bread14',
    'lines-1','lines-2','lines-3','lines-4','lines-5',
    'brand-iphone','brand-android','brand-mix',
