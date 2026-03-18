@@ -233,7 +233,7 @@ select option,select optgroup{background:#1a1a1a}
 .pf-tile.on{background:var(--prog)!important;color:#fff!important;font-weight:900}
 
 /* DEAL STRIP — window pane */
-.deal-strip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:0;margin-bottom:14px;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.deal-strip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:0;border-top:1px solid var(--bd)}
 .deal-card{background:var(--s1);padding:10px 12px;position:relative;cursor:pointer;transition:background .15s;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
 .deal-card:nth-child(2){border-right:none}
 .deal-card:nth-child(3){border-right:1px solid var(--bd);border-bottom:none}
@@ -275,13 +275,18 @@ select option,select optgroup{background:#1a1a1a}
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 12:09 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 12:42 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
 
 <!-- DEAL STRIP -->
-<div class="deal-strip" id="deal-strip"></div>
+<div class="sec" style="margin-bottom:12px">
+  <div class="sec-head">
+    <div class="sec-title">⚡ Quick Pricing</div>
+  </div>
+  <div class="deal-strip" id="deal-strip"></div>
+</div>
 
 
 <!-- FIND BEST DEAL WIZARD -->
@@ -512,13 +517,13 @@ select option,select optgroup{background:#1a1a1a}
       </div>
       <div id="apo-split-opts" style="display:none">
         <div class="fin-hdr" style="margin-bottom:6px">
-          <div class="fin-hdr-lbl">Split accessories<small>Part on lease, part cash OTD</small></div>
+          <div class="fin-hdr-lbl">Split accessories<small>Part on PPP, part cash OTD</small></div>
           <label class="toggle"><input type="checkbox" id="apo-split-chk" onchange="toggleApoSplit()"><span class="tslide"></span></label>
         </div>
         <div id="apo-split-input" style="display:none">
           <div class="apo-wrap" style="margin-top:0">
             <div class="apo-info">
-              <div class="apo-lbl">Amount on lease ($)</div>
+              <div class="apo-lbl">Amount on PPP ($)</div>
               <div class="apo-hint" id="apo-split-hint">Remainder goes to cash OTD</div>
             </div>
             <input class="apo-inp" type="number" id="apo-lease-amt" min="0" step="5" value="0" oninput="setApoLease(this.value)">
@@ -1004,7 +1009,7 @@ function buildCard(l,idx){
         </div>
         ${l.skeiwatch&&S.finOn?`
         <div class="fin-hdr" style="margin:6px 0 0">
-          <div class="fin-hdr-lbl">Skeiwatch in PPP<small>${l.skeiwatchFin?'Included in lease':'Cash OTD'}</small></div>
+          <div class="fin-hdr-lbl">Skeiwatch in PPP<small>${l.skeiwatchFin?'Included in PPP':'Cash OTD'}</small></div>
           <label class="toggle" onclick="setSkeiwatchFin(${l.id},${!l.skeiwatchFin})">
             <input type="checkbox" ${l.skeiwatchFin?'checked':''} onclick="event.preventDefault()">
             <span class="tslide" style="${l.skeiwatchFin?'background:var(--prog)':''}"></span>
@@ -1029,7 +1034,7 @@ function buildCard(l,idx){
   const finRow=(!isH&&S.finOn)?`
     <div class="f full">
       <div class="fin-hdr" style="margin:0">
-        <div class="fin-hdr-lbl">Include in PPP<small>${isFinanced?'Device on Phone Payment Plan':'Not on PPP — cash OTD'}</small></div>
+        <div class="fin-hdr-lbl">Include in PPP<small>${isFinanced?'Device in PPP':'Not on PPP — cash OTD'}</small></div>
         <label class="toggle" onclick="setFinInclude(${l.id},${!isFinanced})">
           <input type="checkbox" ${isFinanced?'checked':''} onclick="event.preventDefault()">
           <span class="tslide" style="${isFinanced?'background:var(--prog)':''}"></span>
@@ -1185,7 +1190,7 @@ function updateApoHint(){
   if($('apo-split-hint')){
     const leasePart=S.apoSplit?S.apoLeaseAmt:apoTotal;
     const cashPart=S.apoSplit?Math.max(0,apoTotal-S.apoLeaseAmt):0;
-    $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On lease: ${fmt(leasePart)}`;
+    $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On PPP: ${fmt(leasePart)}`;
   }
 }
 function toggleApoFin(){
