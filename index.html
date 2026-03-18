@@ -194,30 +194,13 @@ select option,select optgroup{background:#1e1e1e}
 .reset-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--bd);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
 .reset-btn:hover{border-color:var(--err);color:var(--err)}
 </style>
-
-<style>
-.watch-btn{
-  border:1.5px solid #3a3a3a;
-  padding:10px 14px;
-  border-radius:12px;
-  margin:4px;
-  cursor:pointer;
-  display:inline-block;
-  font-weight:600;
-}
-.watch-btn.active{
-  border-color:#00a94f;
-  background:rgba(0,169,79,.15);
-}
-</style>
-
 </head>
 <body>
 <header>
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/27/2026 12:33 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/16/2026 7:15 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -323,10 +306,7 @@ select option,select optgroup{background:#1e1e1e}
       </div>
       <input class="apo-inp" type="number" id="apo-inp" min="0" step="5" value="0" oninput="setAPO(this.value)">
     </div>
-    
-</div>
-
-<div id="apo-fin-opts" style="margin-top:10px;display:none">
+    <div id="apo-fin-opts" style="margin-top:10px;display:none">
       <div class="fin-hdr" style="margin-bottom:8px">
         <div class="fin-hdr-lbl">PPP — Accessories<small id="apo-fin-note">Include accessories in Phone Payment Plan</small></div>
         <label class="toggle"><input type="checkbox" id="apo-fin-chk" onchange="toggleApoFin()"><span class="tslide"></span></label>
@@ -444,7 +424,13 @@ const PHONES=[
   {id:'iconpr', n:'Icon Pro 2026',         sw:0,      nw:0,       up:124.99,  sw_o:29.99,  nw_o:29.99,  up_o:124.99,  frp:124.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
 ];
 
-const WATCHES = [];
+const WATCHES=[
+  {id:'wse3_40',n:'Watch SE 3 – 40mm',  price:289.99,frp:299.99,posOff:10,credit:10,creditMo:6},
+  {id:'wse3_44',n:'Watch SE 3 – 44mm',  price:319.99,frp:329.99,posOff:10,credit:10,creditMo:6},
+  {id:'ws11_42',n:'Watch Series 11 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
+  {id:'ws11_46',n:'Watch Series 11 – 46mm',price:519.99,frp:529.99,posOff:10,credit:10,creditMo:10},
+  {id:'wu3',    n:'Watch Ultra 3 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
+];
 
 const TABLETS=[
   {id:'taba9p', n:'Galaxy Tab A9+',  price:149.99,frp:249.99},
@@ -476,7 +462,7 @@ const fmtMo=n=>fmt(n)+'/mo';
 
 function devById(id,cat){
   if(cat==='v')return PHONES.find(p=>p.id===id);
-  if(false)return WATCHES.find(w=>w.id===id);
+  if(cat==='w')return WATCHES.find(w=>w.id===id);
   if(cat==='t')return TABLETS.find(t=>t.id===id);
   if(cat==='h')return HS_DEVICES.find(h=>h.id===id);
 }
@@ -556,7 +542,7 @@ function renderPlanGrid(){
     const ap=(vn<=1&&S.ap&&!p.byod)?-5:0;
     const display=base+ap;
     const sub=ap<0?`$${base} w/o AutoPay`:(vn>1?vn+' lines':'1 line');
-    return`<div class="plan-btn${p.byod?' byod-btn':''} " onclick="setPlan('${p.id}')">
+    return`<div class="plan-btn${p.byod?' byod-btn':''} ${S.plan===p.id?'active':''}" onclick="setPlan('${p.id}')">
       <span class="pn">${p.n}</span>
       <span class="pp">$${display}</span>
       <span class="ps">${sub}</span>
@@ -602,7 +588,7 @@ function setPlan(id){
 // ============================================================
 function addLine(cat, clone=null){
   if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(false&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,passport:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true};
   S.lines.push({...base,id:S.nid++,cat});
@@ -613,7 +599,7 @@ function dupeLine(id){
   if(!src) return;
   const cat=src.cat;
   if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(false&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
   if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line.');return;}
   // Clone and insert right after source line
   const clone={...src, id:S.nid++};
@@ -680,9 +666,9 @@ function buildCard(l,idx){
   const showUp=S.acct==='aal'&&(txn==='upgrade'||txn==='both');
   const hasSw=isV; // only voice can be switcher
   const typeBtns=`
-    " onclick="lu(${l.id},'lt','switcher')">SW</span>`:''}
-    " onclick="lu(${l.id},'lt','new')">NEW</span>`:''}
-    " onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
+    ${showSw&&hasSw?`<span class="lt sw ${l.lt==='switcher'?'on':''}" onclick="lu(${l.id},'lt','switcher')">SW</span>`:''}
+    ${showNew?`<span class="lt nw ${l.lt==='new'?'on':''}" onclick="lu(${l.id},'lt','new')">NEW</span>`:''}
+    ${showUp?`<span class="lt up ${l.lt==='upgrade'?'on':''}" onclick="lu(${l.id},'lt','upgrade')">UP</span>`:''}`;
 
   // Auto-set default line type based on txn
   if(S.acct==='aal'&&txn==='upgrade'&&l.lt!=='upgrade') l.lt='upgrade';
@@ -706,7 +692,7 @@ function buildCard(l,idx){
   let devHtml='<option value="">-- Select --</option>';
   if(isV){
     if(l.byod){
-      devHtml+=`<option value="byod_v" >Customer's Own Device</option>`;
+      devHtml+=`<option value="byod_v" ${l.device==='byod_v'?'selected':''}>Customer's Own Device</option>`;
     } else {
       const phones=visiblePhones();
       const brands=[...new Set(phones.map(p=>p.brand))];
@@ -718,39 +704,39 @@ function buildCard(l,idx){
           const lbl=pr===0?'FREE':fmt(pr);
           const displayName=p.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
           const limitNote=p.maxLines&&linePos>p.maxLines?` ⚠ over limit`:'';
-          devHtml+=`<option value="${p.id}" >${displayName} — ${lbl}${limitNote}</option>`;
+          devHtml+=`<option value="${p.id}" ${l.device===p.id?'selected':''}>${displayName} — ${lbl}${limitNote}</option>`;
         });
         devHtml+=`</optgroup>`;
       });
     }
   } else if(isW){
     if(l.byod){
-      devHtml+=`<option value="byod_w" >Customer's Own Watch</option>`;
+      devHtml+=`<option value="byod_w" ${l.device==='byod_w'?'selected':''}>Customer's Own Watch</option>`;
     } else {
       WATCHES.forEach(w=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?w.price:w.price):w.price;
-        const tag=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
-        devHtml+=`<option value="${w.id}" >${w.n} — ${fmt(pr)}${tag}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?w.price:w.frp):w.price;
+        const tag=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        devHtml+=`<option value="${w.id}" ${l.device===w.id?'selected':''}>${w.n} — ${fmt(pr)}${tag}</option>`;
       });
     }
   } else if(isT){
     if(l.byod){
-      devHtml+=`<option value="byod_t" >Customer's Own Tablet</option>`;
+      devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?t.price:t.price):t.price;
-        const tagT=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
-        devHtml+=`<option value="${t.id}" >${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?t.price:t.frp):t.price;
+        const tagT=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
     }
   } else if(isH){
     if(l.byod){
-      devHtml+=`<option value="byod_h" >Customer's Own Hotspot (SIM only)</option>`;
+      devHtml+=`<option value="byod_h" ${l.device==='byod_h'?'selected':''}>Customer's Own Hotspot (SIM only)</option>`;
     } else {
       HS_DEVICES.filter(h=>!h.byod).forEach(h=>{ 
-        const pr=l.lt==='upgrade'?(l.upQual!==false?h.price:h.price):h.price;
-        const tagH=l.lt==='upgrade'?(l.upQual!==false?' ':' (FRP)'):'';
-        devHtml+=`<option value="${h.id}" >${h.n} — ${fmt(pr)}${tagH}</option>`;
+        const pr=l.lt==='upgrade'?(l.upQual!==false?h.price:h.frp):h.price;
+        const tagH=l.lt==='upgrade'?(l.upQual!==false?' (qualified)':' (FRP)'):'';
+        devHtml+=`<option value="${h.id}" ${l.device===h.id?'selected':''}>${h.n} — ${fmt(pr)}${tagH}</option>`;
       });
     }
   }
@@ -776,7 +762,7 @@ function buildCard(l,idx){
   // Hotspot data plan
   const hsData=isH?`<div class="f full"><label>Data Plan</label>
     <select onchange="lu(${l.id},'hsPlan',this.value)">
-      ${SD_PLANS.map(s=>`<option value="${s.id}" >${s.n} — ${fmt(s.price)}/mo</option>`).join('')}
+      ${SD_PLANS.map(s=>`<option value="${s.id}" ${l.hsPlan===s.id?'selected':''}>${s.n} — ${fmt(s.price)}/mo</option>`).join('')}
     </select></div>`:'';
 
   const isQual=l.upQual!==false;
@@ -785,7 +771,7 @@ function buildCard(l,idx){
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Upgrade pricing<small>${isQual?'Discounted upgrade price':'Non-qualified — FRP'}</small></div>
         <label class="toggle" onclick="setUpQual(${l.id},${!isQual})">
-          <input type="checkbox" ${isQual?'checked':''} onclick="">
+          <input type="checkbox" ${isQual?'checked':''} onclick="event.preventDefault()">
           <span class="tslide" style="${isQual?'background:var(--g)':''}"></span>
         </label>
       </div>
@@ -797,7 +783,7 @@ function buildCard(l,idx){
       <div class="fin-hdr" style="margin:0">
         <div class="fin-hdr-lbl">Include in PPP<small>${isFinanced?'Device on Phone Payment Plan':'Not on PPP — cash OTD'}</small></div>
         <label class="toggle" onclick="setFinInclude(${l.id},${!isFinanced})">
-          <input type="checkbox" ${isFinanced?'checked':''} onclick="">
+          <input type="checkbox" ${isFinanced?'checked':''} onclick="event.preventDefault()">
           <span class="tslide" style="${isFinanced?'background:var(--prog)':''}"></span>
         </label>
       </div>
@@ -840,8 +826,8 @@ function buildFeats(l){
   // Protect chip
   if(isByodLine){
     const tier=l.protectTier||8;
-    chips+=`<span class="chip protect " onclick="setProtect(${l.id},8)">Protection $8/mo</span>`;
-    chips+=`<span class="chip protect " onclick="setProtect(${l.id},12)">Protection $12/mo</span>`;
+    chips+=`<span class="chip protect ${l.protect&&tier===8?'on protect':''}" onclick="setProtect(${l.id},8)">Protection $8/mo</span>`;
+    chips+=`<span class="chip protect ${l.protect&&tier===12?'on protect':''}" onclick="setProtect(${l.id},12)">Protection $12/mo</span>`;
   } else {
     const pc=protectCost(frp);
     chips+=`<span class="chip protect ${l.protect?'on protect':''}" onclick="tog(${l.id},'protect')">Protection $${pc}/mo</span>`;
@@ -900,21 +886,21 @@ function updateApoHint(){
   const hasApo=total>0&&S.finOn;
   $('apo-fin-opts').style.display=hasApo?'block':'none';
   if(!hasApo){S.apoFin=false;S.apoSplit=false;if($('apo-fin-chk'))$('apo-fin-chk').checked=false;}
-  if(// fixed broken line $('apo-split-hint')){
+  if($('apo-split-hint')){
     const leasePart=S.apoSplit?S.apoLeaseAmt:total;
     const cashPart=S.apoSplit?Math.max(0,total-S.apoLeaseAmt):0;
-    // fixed broken line $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On lease: ${fmt(leasePart)}`;
+    $('apo-split-hint').textContent=`Cash OTD: ${fmt(cashPart)} · On lease: ${fmt(leasePart)}`;
   }
 }
 function toggleApoFin(){
   S.apoFin=$('apo-fin-chk').checked;
-  // fixed broken line $('apo-split-opts').style.display=S.apoFin?'block':'none';
-  if(!S.apoFin){S.apoSplit=false;if(// fixed broken line $('apo-split-chk'))// fixed broken line $('apo-split-chk').checked=false;// fixed broken line $('apo-split-input').style.display='none';}
+  $('apo-split-opts').style.display=S.apoFin?'block':'none';
+  if(!S.apoFin){S.apoSplit=false;if($('apo-split-chk'))$('apo-split-chk').checked=false;$('apo-split-input').style.display='none';}
   update();
 }
 function toggleApoSplit(){
-  S.apoSplit=// fixed broken line $('apo-split-chk').checked;
-  // fixed broken line $('apo-split-input').style.display=S.apoSplit?'block':'none';
+  S.apoSplit=$('apo-split-chk').checked;
+  $('apo-split-input').style.display=S.apoSplit?'block':'none';
   if(!S.apoSplit)S.apoLeaseAmt=0;
   update();
 }
@@ -1031,11 +1017,7 @@ function calc(){
 
   // Device totals — split into financed vs cash per line
   let deviceFinanced=0,deviceCash=0,hsDeviceTotal=0,hasQual=false;
-  const baseAccessories = S.apoPerDevice * deviceLineCount();
-const watchTotal = (typeof getWatchTotal==='function') ? getWatchTotal() : 0;
-
-// combine watches into accessories ALWAYS
-const apoTotal = baseAccessories + watchTotal;
+  const apoTotal=S.apoPerDevice*deviceLineCount();
 
   S.lines.forEach(l=>{
     if(l.byod) return; // BYOD = $0 device cost
@@ -1272,11 +1254,11 @@ function renderSummary(c){
     </div>
 
     <div class="scard">
-      <div class="scard-head"><div class="stitle"></div></div>
+      <div class="scard-head"><div class="stitle">${S.acct==='aal'?'Added to Monthly Bill':'Est. Monthly Recurring'}</div></div>
       <div class="sbody">
         ${moRows||'<div class="sr"><span class="sl" style="color:var(--t3)">No monthly charges yet</span></div>'}
         <hr class="sdiv">
-        <div class="stot"><div class="stl"></div><div class="stv">${fmt(c.planMoTotal)}</div></div>
+        <div class="stot"><div class="stl">${S.acct==='aal'?'Bill Increase':'Plan + Features'}</div><div class="stv">${fmt(c.planMoTotal)}</div></div>
       </div>
     </div>
 
@@ -1288,9 +1270,9 @@ function renderSummary(c){
     ${passportHtml}
 
     <div class="tm-card">
-      <div class="tm-lbl"></div>
+      <div class="tm-lbl">${S.acct==='aal'?'Est. Total Added to Bill':'Est. Total Monthly'}</div>
       <div class="tm-val">${fmt(c.grandMo)}</div>
-      <div class="tm-sub">${S.finOn&&c.hasQual?' + PPP (mo. equiv)':''}</div>
+      <div class="tm-sub">${S.acct==='aal'?'Added to existing bill':'Plan + features'}${S.finOn&&c.hasQual?' + PPP (mo. equiv)':''}</div>
     </div>
 
     <button class="reset-btn" onclick="resetAll()">↺ Reset Calculator</button>`;
@@ -1335,26 +1317,16 @@ try {
       <b>Init Error:</b> ${e.message}<br>${e.stack}
     </div>`);
 }
-</script>
 
-<script>
-S.watches = {};
-
-function toggleWatch(type,price,el){
-  if(S.watches[type]){
-    delete S.watches[type];
-    el.classList.remove('active');
-  } else {
-    S.watches[type] = price;
-    el.classList.add('active');
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (typeof renderPlanGrid === 'function') renderPlanGrid();
+    if (typeof renderLines === 'function') renderLines();
+    if (typeof update === 'function') update();
+  } catch(e) {
+    console.error(e);
   }
-  update();
-}
-
-function getWatchTotal(){
-  return Object.values(S.watches).reduce((a,b)=>a+b,0);
-}
+});
 </script>
-
 </body>
 </html>
