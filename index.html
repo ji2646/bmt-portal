@@ -208,7 +208,7 @@ select option,select optgroup{background:#1a1a1a}
 /* HOME INTERNET BANNER */
 .hi-banner{background:linear-gradient(90deg,#0a0a1e,#1a0a2e,#0a1e0a);border-bottom:2px solid var(--purple);position:sticky;top:0;z-index:201;display:grid;grid-template-columns:1fr 1fr}
 /* APO TILES */
-.apo-tile{padding:10px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;transition:all .12s;user-select:none;border-right:1px solid var(--bd);background:var(--s3)}
+.apo-tile{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;transition:all .12s;user-select:none;border-right:1px solid var(--bd);background:var(--s3)}
 .apo-tile:last-child{border-right:none}
 .apo-tile:hover{background:var(--s4);color:var(--t2)}
 .apo-tile.active{background:var(--g)!important;color:#000!important;font-weight:900;box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)}
@@ -914,12 +914,16 @@ function lu(id,k,v){
   l[k]=v;
   if(k==='byod'&&v){l.intl=false;l.upgplus=false;l.hotspot=false;}
   if(['lt','byod','device'].includes(k)){renderLines();}
+  // Re-render feats section for feature/skeiwatch changes without full re-render
+  else if(['hsRecur','intl','intl15','upgplus','hotspot','protect','protectTier','skeiwatch','skeiwatchFin'].includes(k)){
+    const featsEl=$('feats-'+id);
+    if(featsEl) featsEl.innerHTML=buildFeats(l);
+  }
   // Shipping warning for high-value devices
   if(k==='device'&&v){
     const dev=PHONES.find(p=>p.id===v)||TABLETS.find(t=>t.id===v);
     if(dev){
       const pr=l.lt==='sw'||l.lt==='switcher'?dev.sw:(l.lt==='upgrade'?(dev.up??dev.frp):dev.nw);
-
     }
   }
   update();
@@ -1062,14 +1066,14 @@ function buildCard(l,idx){
 
   // Skeiwatch section — voice lines only, accessory only
   const skeiSection=isV?`
-    <div class="f full">
-      <div style="border-top:1px solid var(--bd);padding-top:8px;margin-top:2px">
-        <div class="feat-lbl">Skeiwatch <span style="color:var(--t3);font-weight:400;font-size:9px">(accessory)</span></div>
-        <div class="feat-chips" style="margin-top:5px">
-          ${SKEIWATCHES.map(sk=>`<span class="chip ${l.skeiwatch===sk.id?'on hotspot':''}" style="border-radius:12px" onclick="setSkeiwatch(${l.id},'${sk.id}')">${sk.n.replace('Skeiwatch ','')} <span class="chip-sub">${fmt(sk.price)}</span></span>`).join('')}
+    <div class="f full" style="margin:4px -12px 0">
+      <div style="border-top:1px solid var(--bd)">
+        <div class="feat-lbl" style="padding:8px 12px 4px">Skeiwatch <span style="color:var(--t3);font-weight:400;font-size:9px">(accessory)</span></div>
+        <div style="display:grid;grid-template-columns:repeat(${SKEIWATCHES.length},1fr);gap:0;border-top:1px solid var(--bd)">
+          ${SKEIWATCHES.map(sk=>`<div class="apo-tile${l.skeiwatch===sk.id?' active':''}" onclick="setSkeiwatch(${l.id},'${sk.id}')"><div style="font-weight:800">${sk.n.replace('Skeiwatch ','')}</div><div style="font-size:9px;font-weight:400;margin-top:1px">${fmt(sk.price)}</div></div>`).join('')}
         </div>
         ${l.skeiwatch&&S.finOn?`
-        <div class="fin-hdr" style="margin:6px 0 0">
+        <div class="fin-hdr" style="margin:0;padding:8px 12px;border-top:1px solid var(--bd)">
           <div class="fin-hdr-lbl">Skeiwatch in PPP<small>${l.skeiwatchFin?'Included in PPP':'Cash OTD'}</small></div>
           <label class="toggle" onclick="setSkeiwatchFin(${l.id},${!l.skeiwatchFin})">
             <input type="checkbox" ${l.skeiwatchFin?'checked':''} onclick="event.preventDefault()">
@@ -1129,48 +1133,70 @@ function buildCard(l,idx){
   </div>`;
 }
 
+function featTile(label,sub,on,onclick,color){
+  const bg=on?color:'var(--s3)';
+  const fg=on?'#000':'var(--t3)';
+  const shadow=on?';box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)':'';
+  return `<div class="apo-tile${on?' active':''}" onclick="${onclick}" style="border-right:1px solid var(--bd);background:${bg}${shadow}">
+    <div style="font-weight:800;color:${fg}">${label}</div>
+    ${sub?`<div style="font-size:9px;font-weight:400;color:${on?'rgba(0,0,0,.6)':'var(--t3)'};margin-top:1px">${sub}</div>`:''}
+  </div>`;
+}
+
 function buildFeats(l){
   const isV=l.cat==='v',isW=l.cat==='w',isT=l.cat==='t',isH=l.cat==='h';
-  if(isH||isT) return ''; // tablets: no protect, no intl
+  if(isH||isT) return '';
 
   const dev=l.byod?null:devById(l.device,l.cat);
   const frp=dev?dev.frp:0;
   const isByodLine=l.byod;
 
-  let chips='';
+  const tileRow=(tiles,lbl,extra,isLast)=>`
+    <div class="feat-section">
+      ${lbl?`<div class="feat-lbl" style="padding:8px 12px 4px">${lbl}</div>`:''}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:0;border-top:1px solid var(--bd)${isLast&&!extra?'':';border-bottom:1px solid var(--bd)'}">
+        ${tiles}
+      </div>
+      ${extra||''}
+    </div>`;
 
-  // Protect chip
+  // ── Protect ──
+  let protTiles='';
   if(isByodLine){
     const tier=l.protectTier||8;
-    chips+=`<span class="chip protect ${l.protect&&tier===8?'on protect':''}" onclick="setProtect(${l.id},8)">Protection $8/mo</span>`;
-    chips+=`<span class="chip protect ${l.protect&&tier===12?'on protect':''}" onclick="setProtect(${l.id},12)">Protection $12/mo</span>`;
+    protTiles+=featTile('Protect $8/mo','',l.protect&&tier===8,'setProtect('+l.id+',8)','var(--bread)');
+    protTiles+=featTile('Protect $12/mo','',l.protect&&tier===12,'setProtect('+l.id+',12)','var(--bread)');
   } else {
     const pc=protectCost(frp);
-    chips+=`<span class="chip protect ${l.protect?'on protect':''}" onclick="tog(${l.id},'protect')">Protection $${pc}/mo</span>`;
+    protTiles+=featTile('Protect','$'+pc+'/mo',l.protect,'tog('+l.id+",'protect')",'var(--bread)');
   }
+  // Remove last border-right
+  protTiles=protTiles.replace(/border-right:1px solid var\(--bd\)(?=[^;]*<\/div>\s*$)/,'');
 
+  // ── Voice features ──
+  let voiceTiles='',hsSubHtml='';
   if(isV){
-    // Intl Calling — BYOD gets it too, non-BYOD only
-    chips+=`<span class="chip intl ${l.intl?'on intl':''}" onclick="tog(${l.id},'intl')">Intl Calling $10/mo</span>`;
-    if(l.intl){
-      // $15 stacked on top of $10
-      chips+=`<span class="chip intl ${l.intl15?'on intl':''}" style="${l.intl15?'':'opacity:.7'}" onclick="tog(${l.id},'intl15')">+ Intl $15/mo</span>`;
-    }
-    chips+=`<span class="chip upgplus ${l.upgplus?'on upgplus':''}" onclick="tog(${l.id},'upgplus')">Upgrade Plus $5/mo</span>`;
-    chips+=`<span class="chip hotspot ${l.hotspot?'on hotspot':''}" onclick="tog(${l.id},'hotspot')">Hotspot +10GB</span>`;
-  }
+    voiceTiles+=featTile('Intl Calling','$10/mo',l.intl,'tog('+l.id+",'intl')",'var(--warn)');
+    if(l.intl) voiceTiles+=featTile('+Intl $15','add-on',l.intl15,'tog('+l.id+",'intl15')",'var(--warn)');
+    voiceTiles+=featTile('Upgrade Plus','$5/mo',l.upgplus,'tog('+l.id+",'upgplus')",'var(--purple)');
+    voiceTiles+=featTile('Hotspot','+10GB',l.hotspot,'tog('+l.id+",'hotspot')",'var(--prog)');
+    // Remove last border-right
+    voiceTiles=voiceTiles.replace(/border-right:1px solid var\(--bd\)(?=[^;]*<\/div>\s*$)/,'');
 
-  const hsSubHtml=l.hotspot&&isV?`
-    <div class="hs-sub" style="margin-top:6px">
-      <span style="font-size:10px;color:var(--t3);margin-right:6px">Frequency:</span>
-      <span class="hso ${l.hsRecur?'on':''}" onclick="lu(${l.id},'hsRecur',true)">Monthly</span>
-      <span class="hso ${!l.hsRecur?'on':''}" onclick="lu(${l.id},'hsRecur',false)">One-time</span>
-    </div>`:'';
+    if(l.hotspot){
+      let hsTiles='';
+      const hsTilesHtml=`
+        <div style="font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.5px;padding:6px 12px 3px;margin:0 -12px;text-transform:uppercase">Hotspot +10GB — Billing</div>`;
+      hsTiles+=featTile('Monthly +$10/mo','',l.hsRecur,'lu('+l.id+",'hsRecur',true)",'var(--prog)');
+      hsTiles+=featTile('One-time only','',!l.hsRecur,'lu('+l.id+",'hsRecur',false)",'var(--prog)');
+      hsTiles=hsTiles.replace(/border-right:1px solid var\(--bd\)(?=[^;]*<\/div>\s*$)/,'');
+      hsSubHtml=hsTilesHtml+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bd)">${hsTiles}</div>`;
+    }
+  }
 
   return `<div class="feat-section">
-    <div class="feat-lbl">Features</div>
-    <div class="feat-chips">${chips}</div>
-    ${hsSubHtml}
+    ${tileRow(protTiles,'Features',null,!voiceTiles)}
+    ${voiceTiles?tileRow(voiceTiles,'',hsSubHtml,true):''}
   </div>`;
 }
 
