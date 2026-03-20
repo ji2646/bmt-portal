@@ -1667,10 +1667,6 @@ function renderSummary(c){
     if(l.intl15) moRows+=`<div class="sr"><span class="sl">Intl Calling $15 — Line ${lineIdx}</span><span class="sv">$15.00</span></div>`;
     if(l.upgplus) moRows+=`<div class="sr"><span class="sl">Upgrade Plus — Line ${lineIdx}</span><span class="sv">$5.00</span></div>`;
     if(l.hotspot&&l.hsRecur) moRows+=`<div class="sr"><span class="sl">Hotspot +10GB — Line ${lineIdx}</span><span class="sv">${fmt(HS_ADD)}</span></div>`;
-    if(l.skeiwatch){
-      const sk=SKEIWATCHES.find(s=>s.id===l.skeiwatch);
-      if(sk) moRows+=`<div class="sr"><span class="sl" style="color:var(--t3)">${sk.n} — Line ${lineIdx}${S.finOn&&l.skeiwatchFin?' (in PPP)':' (OTD)'}</span><span class="sv">${S.finOn&&l.skeiwatchFin?'—':fmt(sk.price)}</span></div>`;
-    }
   });
 
   // PPP section
