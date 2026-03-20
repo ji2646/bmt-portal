@@ -336,7 +336,7 @@ document.body.style.overflow='hidden';
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/18/2026 12:42 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 12:00 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -691,6 +691,7 @@ const PHONES=[
   // Cricket
   {id:'icon',   n:'Icon 2026',             sw:0,      nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
   {id:'iconp',  n:'Icon Plus 2026',        sw:0,      nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'debs3',  n:'Debut S3',              sw:0,      nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
   {id:'iconpr', n:'Icon Pro 2026',         sw:0,      nw:0,       up:124.99,  sw_o:29.99,  nw_o:29.99,  up_o:124.99,  frp:124.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
 ];
 
@@ -1746,9 +1747,7 @@ function renderDealStrip(){
   // SW + AutoPay OFF → Icon Plus   ($29.99 sw_o on Select)
   // NEW + AutoPay ON → moto g play ($29.99 nw_o on Select)
   // NEW + AutoPay OFF→ Icon 2026   ($29.99 nw_o on Select)
-  const selDevId = sel_sw
-    ? (_dealSelAp ? 'mgplay' : 'iconp')
-    : (_dealSelAp ? 'mgplay' : 'icon');
+  const selDevId = 'debs3';
   const selDev=PHONES.find(p=>p.id===selDevId);
   // On Select, these devices req min Smart → use other plan price
   const sel_device=sel_sw?(selDev.sw_o??selDev.sw):(selDev.nw_o??selDev.nw);
@@ -1757,8 +1756,9 @@ function renderDealStrip(){
   const sel_act=sel_sw?0:ACT_FEE;
   const sel_sim=0;
   const sel_apo=sel_sw?25:0; // $25 min acc bundle for SW
+  const sel_protect=8;
   const sel_taxable=sel_device+sel_act+sel_sim+sel_apo;
-  const sel_otd=sel_device+sel_plan+sel_act+sel_sim+sel_apo+sel_taxable*TAX;
+  const sel_otd=sel_device+sel_plan+sel_act+sel_sim+sel_apo+sel_protect+sel_taxable*TAX;
   const sel_name=selDev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
 
   const ltToggle=(card,lt)=>`<div onclick="event.stopPropagation();toggleDealLt('${card}')" style="display:inline-flex;gap:0;border:1px solid var(--bd2);border-radius:20px;overflow:hidden;margin-bottom:6px;cursor:pointer">
@@ -1794,8 +1794,7 @@ function renderDealStrip(){
         </span>
       </div>
       <div class="deal-price" style="color:var(--warn)">${fmt(Math.round(sel_otd*100)/100)}</div>
-      <div class="deal-sub">${sel_name} · $40 Select${sel_sw?' · $25 acc':''}</div>
-      <div style="font-size:8px;color:var(--t3);margin-top:3px">· No Protect</div>
+      <div class="deal-sub">${sel_name} · $40 Select${sel_sw?' · $25 acc':''} · Protect</div>
     </div>`;
 }
 
@@ -1820,7 +1819,7 @@ function launchDeal(type){
     setPlan('select');
     S.ap=_dealSelAp;
     addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:'';
+    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:''; l.protect=true; l.protectTier=8;
     renderPlanGrid();
   }
   // Re-render lines so device dropdown shows selected value
@@ -2449,11 +2448,7 @@ function renderDealStrip(){
   // --- Card 4: Select UNL ---
   const sel_lt=_dealLt.sel;
   const sel_sw=sel_lt==='switcher';
-  // SW + AP ON  → moto g play | SW + AP OFF → Icon Plus
-  // NW + AP ON  → moto g play | NW + AP OFF → Debut S3
-  const selDevId = sel_sw
-    ? (_dealSelAp ? 'mgplay' : 'iconp')
-    : (_dealSelAp ? 'mgplay' : 'debs3');
+  const selDevId = 'debs3';
   const selDev=PHONES.find(p=>p.id===selDevId)||PHONES.find(p=>p.id==='icon');
   const sel_device=sel_sw?(selDev.sw_o??selDev.sw):(selDev.nw_o??selDev.nw);
   _lowestSelDeal={p:selDev, price:sel_device};
@@ -2461,8 +2456,9 @@ function renderDealStrip(){
   const sel_act=sel_sw?0:ACT_FEE;
   const sel_sim=0;
   const sel_apo=sel_sw?25:0; // $25 min acc bundle for SW
+  const sel_protect=8;
   const sel_taxable=sel_device+sel_act+sel_sim+sel_apo;
-  const sel_otd=sel_device+sel_plan+sel_act+sel_sim+sel_apo+sel_taxable*TAX;
+  const sel_otd=sel_device+sel_plan+sel_act+sel_sim+sel_apo+sel_protect+sel_taxable*TAX;
   const sel_name=selDev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
 
   const ltToggle=(card,lt)=>`<div onclick="event.stopPropagation();toggleDealLt('${card}')" style="display:inline-flex;gap:0;border:1px solid var(--bd2);border-radius:var(--r2);overflow:hidden;margin-bottom:6px;cursor:pointer">
@@ -2498,8 +2494,7 @@ function renderDealStrip(){
         </span>
       </div>
       <div class="deal-price" style="color:var(--warn)">${fmt(Math.round(sel_otd*100)/100)}</div>
-      <div class="deal-sub">${sel_name} · $40 Select${sel_sw?' · $25 acc':''}</div>
-      <div style="font-size:8px;color:var(--t3);margin-top:3px">· No Protect</div>
+      <div class="deal-sub">${sel_name} · $40 Select${sel_sw?' · $25 acc':''} · Protect</div>
     </div>`;
 }
 
@@ -2524,7 +2519,7 @@ function launchDeal(type){
     setPlan('select');
     S.ap=_dealSelAp;
     addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:'';
+    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:''; l.protect=true; l.protectTier=8;
     renderPlanGrid();
   }
   // Re-render lines so device dropdown shows selected value
