@@ -337,7 +337,7 @@ document.body.style.overflow='hidden';
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 1:44 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 3:15 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -601,11 +601,11 @@ document.body.style.overflow='hidden';
   <div class="sec-body">
     <div class="fin-hdr">
       <div class="fin-hdr-lbl">Phone Payment Plan<small id="fin-note">Add a qualifying device ($149.99+) to enable</small></div>
-      <label class="toggle"><input type="checkbox" id="fin-chk" onchange="toggleFin()" disabled><span class="tslide" id="fin-slide"></span></label>
+      <label class="toggle"><input type="checkbox" id="fin-chk" onchange="toggleFin()" disabled><span class="tslide" id="fin-slide" style=""></span></label>
     </div>
     <div id="fin-opts" style="display:none">
       <div class="fin-types">
-        <div class="ftype prog on" id="ft-prog" onclick="setFinType('prog')"><div class="fn">Progressive</div><div class="fd">$1 today · 18.25% fee · No credit check · Flexible payoff</div></div>
+        <div class="ftype prog on" id="ft-prog" onclick="setFinType('prog')"><div class="fn">Progressive</div><div class="fd">$1 today · 10% lease fee + 8.25% tax · No credit check · Flexible payoff</div></div>
         <div class="ftype bread" id="ft-bread" onclick="setFinType('bread')"><div class="fn">Bread Pay</div><div class="fd">$0 down · Finances incl. tax · 24 months</div></div>
       </div>
       <div id="apr-sec" style="display:none">
@@ -624,6 +624,11 @@ document.body.style.overflow='hidden';
         </div>
       </div>
     </div>
+    <div id="fin-approval-display" style="display:none;margin:8px 0;padding:10px 14px;background:rgba(0,169,79,.08);border:1px solid rgba(0,169,79,.2);border-radius:var(--r2)">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Approval Needed</div>
+      <div id="fin-approval-amt" style="font-family:'Bebas Neue';font-size:28px;color:var(--g);line-height:1"></div>
+      <div id="fin-approval-sub" style="font-size:9px;color:var(--t3);margin-top:2px"></div>
+    </div>
   </div>
 </div>
 </div><!-- end left -->
@@ -636,7 +641,7 @@ document.body.style.overflow='hidden';
 // ============================================================
 // CONSTANTS
 // ============================================================
-const TAX=0.0825,PROG_FEE=0.1825,PROG_INIT=1,WATCH_PLAN=10,WATCH_ACT=25,TABLET_PLAN=15,ACT_FEE=25,SIM_FEE=9.99,INTL_CALL=10,HS_ADD=10;
+const TAX=0.0825,PROG_LEASE_FEE=0.10,PROG_FEE=PROG_LEASE_FEE+TAX,PROG_INIT=1,WATCH_PLAN=10,WATCH_ACT=25,TABLET_PLAN=15,ACT_FEE=25,SIM_FEE=9.99,INTL_CALL=10,HS_ADD=10;
 
 const SKEIWATCHES=[
   {id:'skei_c30',n:'Skeiwatch C30',price:99.99},
@@ -1079,7 +1084,7 @@ function buildCard(l,idx){
           <div class="fin-hdr-lbl">Skeiwatch in PPP<small>${l.skeiwatchFin?'Included in PPP':'Cash OTD'}</small></div>
           <label class="toggle" onclick="setSkeiwatchFin(${l.id},${!l.skeiwatchFin})">
             <input type="checkbox" ${l.skeiwatchFin?'checked':''} onclick="event.preventDefault()">
-            <span class="tslide" style="${l.skeiwatchFin?'background:var(--prog)':''}"></span>
+            <span class="tslide" style="${l.skeiwatchFin?'background:var(--g)':''}"></span>
           </label>
         </div>`:''}
       </div>
@@ -1128,8 +1133,8 @@ function buildCard(l,idx){
       ${shipNote?`<div class="f full">${shipNote}</div>`:''}
       ${hsData}
       ${upQualRow}
-      ${skeiSection}
       ${finRow}
+      ${skeiSection}
       <div class="f full" id="feats-${l.id}">${buildFeats(l)}</div>
     </div>
   </div>`;
@@ -1257,18 +1262,29 @@ function updateApoHint(){
     ?`$${S.apoPerDevice} × ${cnt} device${cnt>1?'s':''} = ${fmt(apoTotal)}`
     :'Enter $ per device — auto-multiplies by device count';
 
-  // Total accessories row
+  // Total accessories row — half and half
   const totalRow=$('acc-total-row');
   const totalVal=$('acc-total-val');
   if(accTotal>0){
     totalRow.style.display='flex';
-    let breakdown='';
+    totalRow.style.flexDirection='column';
+    totalRow.style.alignItems='stretch';
     if(skeiwatchTotal>0&&cnt>0){
-      breakdown=`<div style="font-size:9px;color:var(--t3);margin-top:4px">`
-        +`APO ${fmt(apoTotal)} + Skeiwatch(es) ${fmt(skeiwatchTotal)} = `
-        +`<b style="color:var(--warn)">New APO ${fmt(effectivePerDev)}</b></div>`;
+      totalVal.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin:-10px -16px;border-top:1px solid rgba(0,169,79,.15)">
+          <div style="padding:10px 16px;border-right:1px solid rgba(0,169,79,.15)">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:2px">Total Accessories</div>
+            <div style="font-family:'Bebas Neue';font-size:24px;color:var(--g)">${fmt(accTotal)}</div>
+          </div>
+          <div style="padding:10px 16px">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:2px">New APO</div>
+            <div style="font-family:'Bebas Neue';font-size:24px;color:var(--warn)">${fmt(effectivePerDev)}</div>
+          </div>
+        </div>`;
+      totalRow.querySelector('span:first-child') && (totalRow.querySelector('span:first-child').style.display='none');
+    } else {
+      totalVal.innerHTML=fmt(accTotal);
     }
-    totalVal.innerHTML=fmt(accTotal)+(breakdown?'':'')+breakdown;
   } else {
     totalRow.style.display='none';
   }
@@ -1307,9 +1323,13 @@ function setApoLease(val){
 function toggleFin(){
   S.finOn=$('fin-chk').checked;
   $('fin-opts').style.display=S.finOn?'block':'none';
-  // Auto-include all non-hotspot lines in financing when turned on
   if(S.finOn){
-    S.lines.forEach(l=>{ if(l.cat!=='h') l.finInclude=true; });
+    S.lines.forEach(l=>{
+      if(l.cat!=='h') l.finInclude=true;
+      if(l.skeiwatch) l.skeiwatchFin=true;
+    });
+    S.apoFin=true;
+    if($('apo-fin-chk')) $('apo-fin-chk').checked=true;
   }
   renderLines();
   update();
@@ -1455,7 +1475,7 @@ function calc(){
   let breadTotal=0,breadMo=0;
   if(S.finOn&&hasQual){
     progFeeAmt=finBase*PROG_FEE;
-    progTotalWithTax=finBase+progFeeAmt; // 18.25% is all-in, no separate tax
+    progTotalWithTax=finBase+progFeeAmt; // 10% lease fee + 8.25% tax
     progTotal=progTotalWithTax;
     const divisor=S.progFreq==='weekly'?12:S.progFreq==='biweekly'?6:3;
     const rawPayment=progTotal/divisor;
@@ -1551,6 +1571,29 @@ function update(){
   }
 
   renderSummary(c);
+
+  // Approval amount display in step 5
+  const approvalDisp=$('fin-approval-display');
+  const approvalAmt=$('fin-approval-amt');
+  const approvalSub=$('fin-approval-sub');
+  if(approvalDisp&&S.finOn&&c.hasQual){
+    const finBase=c.finBase||0;
+    approvalDisp.style.display='block';
+    if(S.finType==='prog'){
+      approvalAmt.textContent=fmt(finBase);
+      approvalSub.textContent='Pre-tax · 90-Day Cost: '+fmt(finBase*(1+PROG_FEE));
+    } else {
+      const breadTotal=c.breadTotal||finBase*(1+TAX);
+      const r=14.99/100/12;
+      const bread14Mo=Math.ceil(breadTotal*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
+      const bread14Total=Math.round(bread14Mo*24*100)/100;
+      const approvalAmt2=S.breadAPR===0?breadTotal:bread14Total;
+      approvalAmt.textContent=fmt(approvalAmt2);
+      approvalSub.textContent='Incl. tax · '+(S.breadAPR===0?'0%':'14.99%')+' APR · 24 months';
+    }
+  } else if(approvalDisp){
+    approvalDisp.style.display='none';
+  }
 }
 
 // ============================================================
@@ -1633,18 +1676,20 @@ function renderSummary(c){
       pppHtml=`<div class="ppp-card prog">
         <div class="ppp-lbl">Progressive Leasing · ${freqLabel}</div>
         <div class="ppp-val">$${c.progPayment.toFixed(2)}${freqUnit}</div>
-        <div class="ppp-sub">Total lease: ${fmt(c.progTotal)} · 90 days${lastNote}</div>
+        <div class="ppp-sub">Approval Needed: ${fmt(c.finBase)} (pre-tax)</div>
+        <div class="ppp-sub">90-day Lease to Own Cost Est.: ${fmt(c.progTotal)}${lastNote}</div>
         <div class="ppp-sub" style="margin-top:2px">Mo. equiv: ${fmtMo(c.progMoEquiv)}</div>
       </div>
       <div class="sr"><span class="sl">Devices + acc</span><span class="sv">${fmt(c.finBase)}</span></div>
-      <div class="sr"><span class="sl">18.25% (all-in lease cost)</span><span class="sv o">+${fmt(c.progFeeAmt)}</span></div>
+      <div class="sr"><span class="sl">10% lease fee + 8.25% tax</span><span class="sv o">+${fmt(c.progFeeAmt)}</span></div>
       <div class="sr"><span class="sl">Total lease amount</span><span class="sv">${fmt(c.progTotal)}</span></div>`;
     } else {
       const aprLbl=S.breadAPR===0?'0% APR · 24 months':'14.99% APR · 24 months';
       pppHtml=`<div class="ppp-card bread">
         <div class="ppp-lbl">Bread Pay · ${aprLbl}</div>
         <div class="ppp-val">${fmtMo(c.breadMo)}</div>
-        <div class="ppp-sub">Total financed: ${fmt(c.breadTotal)} (incl. tax)</div>
+        <div class="ppp-sub">Approval Needed: ${fmt(c.breadTotal)} (incl. tax)</div>
+        <div class="ppp-sub">24-Month Cost: ${fmt(c.breadTotal)}</div>
       </div>
       <div class="sr"><span class="sl">Devices + acc</span><span class="sv">${fmt(c.finBase)}</span></div>
       <div class="sr"><span class="sl">Tax financed in</span><span class="sv b">+${fmt(c.finBase*TAX)}</span></div>`;
@@ -2144,7 +2189,7 @@ function buildWizResult(){
       const tot=finBase*(1+PROG_FEE);
       pppOTD=PROG_INIT;
       pppMoLine='Progressive: '+fmt(Math.floor(tot/3*100)/100)+'/mo × 3 (total '+fmt(tot)+')';
-      pppNote='$1 today · 18.25% · '+fmt(finBase)+' financed';
+      pppNote='$1 today · 10% fee + 8.25% tax · '+fmt(finBase)+' financed';
     } else {
       const bt=finBase*(1+TAX);
       const r=apr>0?apr/100/12:0;
@@ -2901,7 +2946,7 @@ function buildWizResult(){
     const tot=finBase*(1+PROG_FEE);
     pppOTD=PROG_INIT;
     pppMoLine='Progressive: '+fmt(Math.floor(tot/3*100)/100)+'/mo × 3 (total '+fmt(tot)+')';
-    pppNote='$1 today · 18.25% · '+fmt(finBase)+' financed';
+    pppNote='$1 today · 10% fee + 8.25% tax · '+fmt(finBase)+' financed';
   } else {
     const bt=finBase*(1+TAX);
     const r=apr>0?apr/100/12:0;
@@ -3105,19 +3150,49 @@ function showDMCard(){
   const hotspotLines=S.lines.filter(l=>l.cat==='h');
   const isUp=voiceLines.length>0&&voiceLines.every(l=>l.lt==='upgrade');
 
-  function buildCard(ltOverride,upQualOverride){
-    const lines=voiceLines.map(l=>({...l,lt:ltOverride||l.lt,upQual:upQualOverride!==undefined?upQualOverride:l.upQual}));
+  function buildCard(ltOverride,upQualOverride,linesOverride){
+    const sourceLines=linesOverride||voiceLines;
+    const lines=sourceLines.map(l=>({...l,lt:ltOverride||l.lt,upQual:upQualOverride!==undefined?upQualOverride:l.upQual}));
+    const lt=ltOverride||(sourceLines.length===1?sourceLines[0].lt:(sourceLines.every(l=>l.lt==='upgrade')?'upgrade':sourceLines.some(l=>l.lt==='switcher')?'switcher':'new'));
+
+    // Group all lines by transaction label — upgrades split by qual status
     const txnGroups={};
-    const addGroup=(arr)=>{
+    const addGroup=(arr,catOverride)=>{
       arr.forEach(l=>{
         const dev=l.byod?null:devById(l.device,l.cat||'v');
         const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'BYOD';
-        const txn=l.lt==='switcher'?'Switcher':l.lt==='upgrade'?'Upgrade':'New Line';
+        let txn;
+        if(l.lt==='switcher') txn='Switcher';
+        else if(l.lt==='upgrade') txn=l.upQual!==false?'Qualified Upgrade':'Non-Qualified Upgrade';
+        else txn='New Line';
+        if(catOverride) txn=catOverride; // tablets, hotspots always just "Add-on"
         txnGroups[txn]=txnGroups[txn]||{};
         txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
       });
     };
-    addGroup(lines); addGroup(tabLines); addGroup(watchLines); addGroup(hotspotLines);
+    addGroup(lines);
+    // Watches: new service vs upgrade vs BYOD
+    watchLines.forEach(l=>{
+      const dev=devById(l.device,'w');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,''):'Watch';
+      const txn=l.lt==='upgrade'?'Watch Upgrade':l.byod?'Watch BYOD':'Watch New Service';
+      txnGroups[txn]=txnGroups[txn]||{};
+      txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
+    });
+    tabLines.forEach(l=>{
+      const dev=devById(l.device,'t');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Tablet';
+      const txn=l.lt==='upgrade'?'Tablet Upgrade':'Tablet Add-on';
+      txnGroups[txn]=txnGroups[txn]||{};
+      txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
+    });
+    hotspotLines.forEach(l=>{
+      const dev=devById(l.device,'h');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Hotspot';
+      txnGroups['Hotspot Add-on']=txnGroups['Hotspot Add-on']||{};
+      txnGroups['Hotspot Add-on'][n]=(txnGroups['Hotspot Add-on'][n]||0)+1;
+    });
+
     const txnKeys=Object.keys(txnGroups);
     let fullDevStr='';
     txnKeys.forEach(txn=>{
@@ -3126,7 +3201,6 @@ function showDMCard(){
     });
 
     // OTD for this specific lt
-    const lt=ltOverride||voiceLines[0]?.lt;
     let frpTotal=0,devPriceTotal=0;
     lines.forEach((l,i)=>{
       const dev=l.byod?null:devById(l.device,'v');
@@ -3138,27 +3212,41 @@ function showDMCard(){
     const savingsStr=savings>1?fmt(savings):null;
 
     // Accessories
-    const allV=S.lines.filter(l=>l.cat==='v');
+    const allV=sourceLines;
     const apoTotal=S.apoPerDevice*allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
     const skeiwatchTotal=allV.reduce((s,l)=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
     const totalAcc=apoTotal+skeiwatchTotal;
     const hasProtect=allV.some(l=>l.protect);
     const needsIdCheck=lt==='switcher'&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
 
-    // Recalculate OTD for this specific lt/upQual combo
+    // Recalculate OTD — if PPP selected, devices cost $1 (prog) or $0 (bread) today
     let otdAmt=0;
-    lines.forEach((l,i)=>{
-      const dev=l.byod?null:devById(l.device,'v');
-      if(!dev) return;
-      const dp=devPrice(dev,l.lt,i+1,l.upQual!==false);
-      otdAmt+=dp+dp*TAX;
-    });
-    if(lt!=='upgrade'){
-      const planCost=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
-      const actFee=lt==='switcher'?0:ACT_FEE*voiceLines.length;
-      otdAmt+=planCost+actFee+(apoTotal+skeiwatchTotal)*(1+TAX);
+    const devT=lines.reduce((s,l,i)=>{const dev=l.byod?null:devById(l.device,'v');return s+(dev?devPrice(dev,l.lt,i+1,l.upQual!==false):0);},0);
+    const tabT=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
+    const fb=devT+tabT+totalAcc;
+    if(S.finOn&&c.hasQual){
+      // Device cost replaced by down payment; acc tax still due today
+      const downPayment=S.finType==='prog'?PROG_INIT:0;
+      otdAmt+=downPayment;
+      // Non-device cash items: protect, plan, act fees — no acc in OTD (financed)
+      const protCost=allV.reduce((s,l)=>{if(!l.protect)return s;const dev=l.byod?null:devById(l.device,'v');return s+protectCost(dev?dev.frp:0);},0);
+      const planCost2=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
+      const actFee2=lt==='switcher'?0:ACT_FEE*voiceLines.length;
+      otdAmt+=planCost2+actFee2*(1+TAX)+protCost;
     } else {
-      otdAmt+=(apoTotal+skeiwatchTotal)*(1+TAX);
+      lines.forEach((l,i)=>{
+        const dev=l.byod?null:devById(l.device,'v');
+        if(!dev) return;
+        const dp=devPrice(dev,l.lt,i+1,l.upQual!==false);
+        otdAmt+=dp+dp*TAX;
+      });
+      if(lines.some(l=>l.lt!=='upgrade')||tabLines.length||hotspotLines.length){
+        const planCost=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
+        const actFee=lt==='switcher'?0:ACT_FEE*voiceLines.length;
+        otdAmt+=planCost+actFee*(1+TAX)+(totalAcc)*(1+TAX);
+      } else {
+        otdAmt+=(totalAcc)*(1+TAX);
+      }
     }
 
     // Skeiwatch detail
@@ -3181,58 +3269,153 @@ function showDMCard(){
       }
     });
 
-    // Headline + badges
     const headline=`Only ${fmt(otdAmt)} Today!`;
     const badges=[];
-    if(upQualOverride===true) badges.push('Qualified Upgrade');
-    else if(upQualOverride===false) badges.push('Non-Qualified — FRP Pricing');
-    else if(lt==='switcher') badges.push('Switcher');
-    else badges.push('New Line');
+    // Transaction type badges
+    const hasQualUp=lines.some(l=>l.lt==='upgrade'&&l.upQual!==false);
+    const hasNonQualUp=lines.some(l=>l.lt==='upgrade'&&l.upQual===false);
+    const hasSW=lines.some(l=>l.lt==='switcher');
+    const hasNW=lines.some(l=>l.lt==='new');
+    if(hasSW) badges.push('Switcher');
+    if(hasNW) badges.push('New Line');
+    if(hasQualUp&&!hasNonQualUp) badges.push('Qualified Upgrade');
+    if(!hasQualUp&&hasNonQualUp) badges.push('Non-Qualified Upgrade');
+    if(hasQualUp&&hasNonQualUp) badges.push('Qualified + Non-Qualified');
+    if(watchLines.length>0) badges.push(watchLines.some(l=>l.lt!=='upgrade')&&watchLines.some(l=>l.lt==='upgrade')?'Watch Mix':(watchLines.every(l=>l.lt==='upgrade')?'Watch Upgrade':'Watch New'));
     if(savingsStr) badges.push('Save '+savingsStr);
     const badgeHtml=badges.map(b=>`<span style="background:rgba(0,0,0,.18);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:800;white-space:nowrap">${b}</span>`).join('');
     const sub=`<div style="font-size:18px;font-weight:900;color:rgba(0,0,0,.85);line-height:1.3;margin-bottom:6px">${fullDevStr}</div><div style="display:flex;gap:5px;flex-wrap:wrap">${badgeHtml}</div>`;
 
     // Tiles
     const tileData=[];
-    if(lt!=='upgrade') tileData.push({l:'Monthly',v:fmt(c.grandMo)+'/mo',c:'rgba(255,255,255,.4)'});
-    if(c.hasQual){
-      const devT=lines.reduce((s,l,i)=>{const dev=l.byod?null:devById(l.device,'v');return s+(dev?devPrice(dev,l.lt,i+1,l.upQual!==false):0);},0);
-      const tabT=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
-      const fb=devT+tabT+totalAcc;
+    if(lines.some(l=>l.lt!=='upgrade')||tabLines.length||watchLines.filter(l=>l.lt!=='upgrade').length||hotspotLines.length){
+      // Build monthly breakdown
+      const planObj=S.plan?PLANS.find(p=>p.id===S.plan):null;
+      const planName=planObj?planObj.full||planObj.n:'';
+      const lineCount=Math.min(voiceLines.length,5);
+      const planCost=planObj?planObj.lines[lineCount-1]:0;
+      const monthlyIncludes=[];
+      monthlyIncludes.push(planName+(lineCount>1?` — ${lineCount} for ${fmt(planCost)}`:`— ${fmt(planCost)}/mo`));
+      // Protect breakdown: group by actual cost based on device FRP
+      const protGroups={};
+      allV.forEach(l=>{
+        if(!l.protect) return;
+        const dev=l.byod?null:devById(l.device,'v');
+        const tier=l.byod?(l.protectTier||8):protectCost(dev?dev.frp:0);
+        protGroups[tier]=(protGroups[tier]||0)+1;
+      });
+      Object.entries(protGroups).sort((a,b)=>a[0]-b[0]).forEach(([tier,cnt])=>{
+        monthlyIncludes.push(cnt+'x Protect ($'+tier+'/mo) — '+fmt(cnt*Number(tier)));
+      });
+      // Other monthly features
+      allV.forEach(l=>{
+        if(l.upgplus) monthlyIncludes.push('Upgrade Plus — $5/mo');
+        if(l.intl) monthlyIncludes.push('Intl Calling — $10/mo');
+        if(l.hotspot&&l.hsRecur) monthlyIncludes.push('Hotspot — $10/mo');
+      });
+      const monthlyIncludesHtml=[...new Set(monthlyIncludes)].join('<br>');
+      const planOnlyMo=planCost+allV.reduce((s,l)=>{if(l.protect){const dev=l.byod?null:devById(l.device,'v');s+=protectCost(dev?dev.frp:0);}if(l.upgplus)s+=5;if(l.intl)s+=10;if(l.hotspot&&l.hsRecur)s+=10;return s;},0);tileData.push({l:'Monthly Service Charges',v:fmt(planOnlyMo)+'/mo',sub:monthlyIncludesHtml,c:'rgba(255,255,255,.4)',span:true});
+    }
+    let pppSection='';
+    if(c.hasQual&&S.finOn){
+      const fbTax=fb*TAX;
+      const fbWithTax=fb+fbTax;
+
+      // Device list for PPP section
+      const pppDevList=lines.map((l,i)=>{
+        const dev=l.byod?null:devById(l.device,'v');
+        if(!dev) return '';
+        const n=dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
+        return `<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${n}</span><span style="color:#fff;font-weight:800">${fmt(devPrice(dev,l.lt,i+1,l.upQual!==false))}</span></div>`;
+      }).filter(Boolean).join('');
+
+      // Accessories line
+      const pppAccLine=totalAcc>0?`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>Accessories</span><span style="color:#fff;font-weight:800">${fmt(totalAcc)}</span></div>`:'';
+
+      // Progressive
+      const prog90Fee=Math.round(fb*PROG_LEASE_FEE*100)/100;
+      const prog90Tax=Math.round(fb*TAX*100)/100;
       const progTotal=fb*(1+PROG_FEE);
       const progDivisor={weekly:12,biweekly:6,monthly:3}[S.progFreq]||3;
-      const progLabel={weekly:'Weekly × 12',biweekly:'Bi-Weekly × 6',monthly:'Monthly × 3'}[S.progFreq]||'Monthly × 3';
+      const progFreqLabel={weekly:'Weekly',biweekly:'Bi-Weekly',monthly:'Monthly'}[S.progFreq]||'Monthly';
       const progFreqSuffix={weekly:'wk',biweekly:'2wk',monthly:'mo'}[S.progFreq]||'mo';
       const progPmt=Math.ceil(progTotal/progDivisor*100)/100;
-      tileData.push({l:'Progressive',v:'$'+progPmt.toFixed(2)+'/'+progFreqSuffix+' · '+progLabel,c:'#f97316',small:true,span:true});
-      const bt0=fb*(1+TAX);
-      tileData.push({l:'Bread 0% APR',v:'$'+(Math.ceil(bt0/24*100)/100).toFixed(2)+' × 24',c:'#3b82f6'});
+
+      // Bread
+      const bread0Mo=Math.ceil(fbWithTax/24*100)/100;
       const r=14.99/100/12;
-      tileData.push({l:'Bread 14.99% APR',v:'$'+(Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100).toFixed(2)+' × 24',c:'#6366f1'});
+      const bread14Mo=Math.ceil(fbWithTax*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
+      const bread0Total=Math.round(fbWithTax*100)/100;
+      const bread14Total=Math.round(bread14Mo*24*100)/100;
+
+      const tileStyle=(color,border)=>`background:#111;border:1px solid ${border||color+'44'};border-radius:8px;padding:12px 14px;`;
+      const lbl=(t,c2)=>`<div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${c2};margin-bottom:4px">${t}</div>`;
+      const val=(v,c2)=>`<div style="font-family:'Bebas Neue';font-size:28px;color:${c2||'#fff'};line-height:1;margin-bottom:4px">${v}</div>`;
+      const sub2=(t)=>`<div style="font-size:9px;color:rgba(255,255,255,.35);line-height:1.5">${t}</div>`;
+
+
+
+      pppSection=`
+        <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px">Phone Payment Plan</div>
+
+          <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.8">
+            <div style="font-weight:700;color:rgba(255,255,255,.25);font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Device(s) — Pre-tax</div>
+            ${pppDevList}
+            ${pppAccLine}
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:4px"><span style="font-weight:700;color:rgba(255,255,255,.5)">Total Pre-tax</span><span style="color:#fff;font-weight:900">${fmt(fb)}</span></div>
+          </div>
+
+          <!-- Progressive: full width -->
+          <div style="${tileStyle('#f97316')}margin-bottom:8px">
+            ${lbl('Progressive Leasing','#f97316')}
+
+            ${val('$'+progPmt.toFixed(2)+'/'+progFreqSuffix,'#f97316')}
+            ${sub2('Approval Needed: '+fmt(fb)+' (pre-tax)<br>90-Day Cost: '+fmt(progTotal)+'<br>Lease fee: '+fmt(prog90Fee)+' (10%) · Est. tax: '+fmt(prog90Tax)+' (8.25%)<br>'+progFreqLabel+' × '+progDivisor+' payments')}
+          </div>
+
+          <!-- Bread: 2 columns -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="${tileStyle('#3b82f6')}">
+              ${lbl('Bread Pay 0% APR','#3b82f6')}
+  
+              ${val('$'+bread0Mo.toFixed(2)+'/mo')}
+              ${sub2('Approval Needed: '+fmt(fbWithTax)+'<br>24-Month Cost: '+fmt(bread0Total)+'<br>Est. tax: '+fmt(fbTax)+' (8.25%)<br>APR: 0%')}
+            </div>
+            <div style="${tileStyle('#6366f1')}">
+              ${lbl('Bread Pay 14.99% APR','#8b5cf6')}
+
+              ${val('$'+bread14Mo.toFixed(2)+'/mo')}
+              ${sub2('Approval Needed: '+fmt(bread14Total)+'<br>24-Month Cost: '+fmt(bread14Total)+'<br>Est. tax: '+fmt(fbTax)+' (8.25%)<br>APR: 14.99%')}
+            </div>
+          </div>
+        </div>`;
     }
     // APO: effective per-device = (apo bundle + skeiwatch) / device count — matches step 4 logic
     const apoDevCount=allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
     const effectivePerDev=apoDevCount>0?totalAcc/apoDevCount:0;
     if(S.apoPerDevice>0||skeiwatchTotal>0){
       const includes=[];
-      if(S.apoPerDevice>0) includes.push(fmt(apoTotal)+' APO');
+      if(S.apoPerDevice>0) includes.push(fmt(S.apoPerDevice)+' APO');
       Object.values(swCounts).forEach(s=>includes.push(s.count+'x '+s.n+' — '+fmt(s.price*(s.count||1))));
       const includesHtml=includes.join('<br>');
       tileData.push({l:'Total Accessories',v:fmt(totalAcc),sub:includesHtml,c:'rgba(255,255,255,.4)'});
       tileData.push({l:'Total APO',v:fmt(effectivePerDev),sub:includesHtml,c:'rgba(255,255,255,.4)'});
     }
-    // Features tile — count all add-ons across lines
-    const featureCounts={};
-    allV.forEach(l=>{
-      if(l.protect) featureCounts['Protect']=(featureCounts['Protect']||0)+1;
-      if(l.upgplus) featureCounts['Upgrade Plus']=(featureCounts['Upgrade Plus']||0)+1;
-      if(l.intl) featureCounts['Intl Calling']=(featureCounts['Intl Calling']||0)+1;
-      if(l.hotspot) featureCounts['Hotspot']=(featureCounts['Hotspot']||0)+1;
-    });
-    const featKeys=Object.keys(featureCounts);
-    if(featKeys.length>0){
-      const featLines=featKeys.map(k=>featureCounts[k]+'x '+k).join('<br>');
-      tileData.push({l:'Features',v:featLines,c:'rgba(255,255,255,.4)',small:true,span:featKeys.length>2});
+    // Features tile — for upgrades (no monthly tile)
+    if(lt==='upgrade'){
+      const featureCounts={};
+      allV.forEach(l=>{
+        if(l.protect) featureCounts['Protect']=(featureCounts['Protect']||0)+1;
+        if(l.upgplus) featureCounts['Upgrade Plus']=(featureCounts['Upgrade Plus']||0)+1;
+        if(l.intl) featureCounts['Intl Calling']=(featureCounts['Intl Calling']||0)+1;
+        if(l.hotspot) featureCounts['Hotspot']=(featureCounts['Hotspot']||0)+1;
+      });
+      const featKeys=Object.keys(featureCounts);
+      if(featKeys.length>0){
+        const featLines=featKeys.map(k=>featureCounts[k]+'x '+k).join('<br>');
+        tileData.push({l:'Features',v:featLines,c:'rgba(255,255,255,.4)',small:true,span:featKeys.length>2});
+      }
     }
     if(tabLines.length) tileData.push({l:'Tablet Plan',v:fmt(tabLines.length*TABLET_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
     if(watchLines.length) tileData.push({l:'Watch Plan',v:fmt(watchLines.length*WATCH_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
@@ -3252,12 +3435,12 @@ function showDMCard(){
       if(needsIdCheck) req+=' + CheckID validation with US Govt ID';
       wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
     }
-    return {headline,sub,tilesHtml,wide};
+    return {headline,sub,tilesHtml,wide,pppSection};
   }
 
-  const cards=isUp?[buildCard('upgrade',true),buildCard('upgrade',false)]:[buildCard('switcher'),buildCard('new')];
+  const cards=[buildCard(null,undefined,voiceLines)];
 
-  const renderCardHtml=d=>`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25);margin-bottom:12px"><div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:18px 20px 14px"><div style="font-family:'Bebas Neue';font-size:42px;color:#000;line-height:1;letter-spacing:.5px">${d.headline}</div><div style="font-size:14px;font-weight:900;color:rgba(0,0,0,.75);margin-top:7px;line-height:1.4;letter-spacing:.2px">${d.sub}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>${d.wide}<div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div></div></div>`;
+  const renderCardHtml=d=>`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25);margin-bottom:12px"><div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:18px 20px 14px"><div style="font-family:'Bebas Neue';font-size:42px;color:#000;line-height:1;letter-spacing:.5px">${d.headline}</div><div style="font-size:14px;font-weight:900;color:rgba(0,0,0,.75);margin-top:7px;line-height:1.4;letter-spacing:.2px">${d.sub}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>${d.wide}${d.pppSection||''}<div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div></div></div>`;
 
   $('dm-cards-container').innerHTML=cards.map(renderCardHtml).join('');
   $('dm-overlay').style.display='block';
