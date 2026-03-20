@@ -1183,8 +1183,8 @@ function buildFeats(l){
   // ── Voice features ──
   let voiceTiles='',hsSubHtml='';
   if(isV){
-    voiceTiles+=featTile('Intl Calling','$10/mo',l.intl,'tog('+l.id+",'intl')",'var(--warn)');
-    if(l.intl) voiceTiles+=featTile('+Intl $15','add-on',l.intl15,'tog('+l.id+",'intl15')",'var(--warn)');
+    voiceTiles+=featTile('Intl Calling $10','$10/mo',l.intl,'tog('+l.id+",'intl')",'var(--warn)');
+    voiceTiles+=featTile('Intl Calling $15','$15/mo',l.intl15,'tog('+l.id+",'intl15')",'var(--warn)');
     voiceTiles+=featTile('Upgrade Plus','$5/mo',l.upgplus,'tog('+l.id+",'upgplus')",'var(--purple)');
     voiceTiles+=featTile('Hotspot','+10GB',l.hotspot,'tog('+l.id+",'hotspot')",'var(--prog)');
     // Remove last border-right
@@ -1656,7 +1656,7 @@ function renderSummary(c){
       moRows+=`<div class="sr"><span class="sl">Protection — ${devName}</span><span class="sv">${fmt(pc)}</span></div>`;
     }
     if(l.intl) moRows+=`<div class="sr"><span class="sl">Intl Calling — Line ${lineIdx}</span><span class="sv">${fmt(INTL_CALL)}</span></div>`;
-    if(l.intl15) moRows+=`<div class="sr"><span class="sl">Intl $15 add-on — Line ${lineIdx}</span><span class="sv">$15.00</span></div>`;
+    if(l.intl15) moRows+=`<div class="sr"><span class="sl">Intl Calling $15 — Line ${lineIdx}</span><span class="sv">$15.00</span></div>`;
     if(l.upgplus) moRows+=`<div class="sr"><span class="sl">Upgrade Plus — Line ${lineIdx}</span><span class="sv">$5.00</span></div>`;
     if(l.hotspot&&l.hsRecur) moRows+=`<div class="sr"><span class="sl">Hotspot +10GB — Line ${lineIdx}</span><span class="sv">${fmt(HS_ADD)}</span></div>`;
     if(l.skeiwatch){
@@ -3310,7 +3310,8 @@ function showDMCard(){
       // Other monthly features
       allV.forEach(l=>{
         if(l.upgplus) monthlyIncludes.push('Upgrade Plus — $5/mo');
-        if(l.intl) monthlyIncludes.push('Intl Calling — $10/mo');
+        if(l.intl) monthlyIncludes.push('Intl Calling $10 — $10/mo');
+        if(l.intl15) monthlyIncludes.push('Intl Calling $15 — $15/mo');
         if(l.hotspot&&l.hsRecur) monthlyIncludes.push('Hotspot — $10/mo');
       });
       const monthlyIncludesHtml=[...new Set(monthlyIncludes)].join('<br>');
@@ -3408,7 +3409,8 @@ function showDMCard(){
       allV.forEach(l=>{
         if(l.protect) featureCounts['Protect']=(featureCounts['Protect']||0)+1;
         if(l.upgplus) featureCounts['Upgrade Plus']=(featureCounts['Upgrade Plus']||0)+1;
-        if(l.intl) featureCounts['Intl Calling']=(featureCounts['Intl Calling']||0)+1;
+        if(l.intl) featureCounts['Intl $10']=(featureCounts['Intl $10']||0)+1;
+        if(l.intl15) featureCounts['Intl $15']=(featureCounts['Intl $15']||0)+1;
         if(l.hotspot) featureCounts['Hotspot']=(featureCounts['Hotspot']||0)+1;
       });
       const featKeys=Object.keys(featureCounts);
