@@ -109,7 +109,8 @@ input:checked+.tslide:before{transform:translateX(14px)}
 .lt.up.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .byod-chip{padding:3px 9px;border:1px solid var(--bd2);border-radius:6px;cursor:pointer;font-size:9px;font-weight:800;color:var(--t3);transition:all .12s;user-select:none;background:var(--s4);text-transform:uppercase;letter-spacing:.3px}
 .byod-chip.on{background:var(--purple);border-color:var(--purple);color:#fff}
-.rm{margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1;padding:3px 5px;border-radius:4px;transition:all .12s}
+.rm{background:none;border:1px solid transparent;color:var(--t3);cursor:pointer;font-size:13px;line-height:1;padding:4px 7px;border-radius:var(--r2);transition:all .12s;font-family:'DM Sans';font-weight:700}
+.rm:hover{border-color:var(--bd2);color:var(--t1);background:var(--s3)}
 .rm:hover{color:var(--err);background:rgba(239,68,68,.08)}
 .lbody{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .f{display:flex;flex-direction:column;gap:3px}
@@ -336,7 +337,7 @@ document.body.style.overflow='hidden';
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 12:00 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 1:44 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -1115,7 +1116,7 @@ function buildCard(l,idx){
       <div class="ltypes">${typeBtns}</div>
       ${byodChip}
       ${upQualChip}
-      <button class="rm" onclick="dupeLine(${l.id})" title="Duplicate line" style="color:var(--t3);font-size:13px;margin-left:2px">⧉</button>
+      <button class="rm" onclick="dupeLine(${l.id})" title="Duplicate line" style="margin-left:auto">⧉ Copy</button>
       <button class="rm" onclick="removeLine(${l.id})">×</button>
     </div>
     <div class="lbody">
@@ -3102,216 +3103,172 @@ function showDMCard(){
   const tabLines=S.lines.filter(l=>l.cat==='t');
   const watchLines=S.lines.filter(l=>l.cat==='w');
   const hotspotLines=S.lines.filter(l=>l.cat==='h');
-  const dc=dmDevSummary(voiceLines);
-  const entries=Object.entries(dc);
-  const isSW=voiceLines.some(l=>l.lt==='switcher');
-  const isUp=voiceLines.every(l=>l.lt==='upgrade'&&voiceLines.length>0);
-  const ltLabel=isUp?'Upgrade':isSW?'Switcher':'New Line';
+  const isUp=voiceLines.length>0&&voiceLines.every(l=>l.lt==='upgrade');
 
-  // Device strings per category
-  function catDevStr(lines){
-    const d={};
-    lines.forEach(l=>{
-      const dev=l.byod?null:devById(l.device,l.cat);
-      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'BYOD';
-      d[n]=(d[n]||0)+1;
-    });
-    return Object.entries(d).map(([n,c2])=>(c2>1?c2+'x ':'')+n).join(' + ');
-  }
-  const voiceDevStr=entries.map(([n,v])=>(v.count>1?v.count+'x ':'')+n).join('<br>');
-
-  // Savings: FRP vs promo price on voice lines
-  let totalFRP=0,totalDevPrice=0;
-  voiceLines.forEach((l,i)=>{
-    const dev=l.byod?null:devById(l.device,l.cat);
-    if(!dev) return;
-    totalFRP+=dev.frp||0;
-    totalDevPrice+=devPrice(dev,l.lt,i+1,l.upQual!==false);
-  });
-  const savings=totalFRP-totalDevPrice;
-  const savingsStr=savings>1?fmt(savings):null;
-
-  // Accessories — all voice lines including upgrades
-  const allVoice=S.lines.filter(l=>l.cat==='v');
-  const hasProtect=allVoice.some(l=>l.protect);
-  const apoDevCount=allVoice.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
-  const apoTotal=S.apoPerDevice*apoDevCount;
-  const skeiwatchTotal=allVoice.reduce((s,l)=>{
-    const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);
-    return s+(sk?sk.price:0);
-  },0);
-  const totalAcc=apoTotal+skeiwatchTotal;
-  const needsIdCheck=isSW&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
-
-  // Build headline and sub-header based on what's in the quote
-  const hasVoice=voiceLines.length>0;
-  const hasTab=tabLines.length>0;
-  const hasWatch=watchLines.length>0;
-  const hasHotspot=hotspotLines.length>0;
-
-  const headline=`Only ${fmt(c.otdTotal)} Today!`;
-
-  // Sub: device + badges
-  // Group ALL lines by transaction type
-  const txnGroups={};
-  const addToGroup=(lines,catLabel)=>{
-    lines.forEach(l=>{
-      const dev=l.byod?null:devById(l.device,l.cat);
-      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):(catLabel+' BYOD');
-      const txn=l.lt==='switcher'?'Switcher':l.lt==='upgrade'?'Upgrade':'New Line';
-      txnGroups[txn]=txnGroups[txn]||{};
-      txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
-    });
-  };
-  addToGroup(voiceLines,'Device');
-  addToGroup(tabLines,'Tablet');
-  addToGroup(watchLines,'Watch');
-  addToGroup(hotspotLines,'Hotspot');
-
-  const txnKeys=Object.keys(txnGroups);
-  const needsTxnSplit=txnKeys.length>1;
-
-  let fullDevStr='';
-  if(needsTxnSplit){
+  function buildCard(ltOverride,upQualOverride){
+    const lines=voiceLines.map(l=>({...l,lt:ltOverride||l.lt,upQual:upQualOverride!==undefined?upQualOverride:l.upQual}));
+    const txnGroups={};
+    const addGroup=(arr)=>{
+      arr.forEach(l=>{
+        const dev=l.byod?null:devById(l.device,l.cat||'v');
+        const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'BYOD';
+        const txn=l.lt==='switcher'?'Switcher':l.lt==='upgrade'?'Upgrade':'New Line';
+        txnGroups[txn]=txnGroups[txn]||{};
+        txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
+      });
+    };
+    addGroup(lines); addGroup(tabLines); addGroup(watchLines); addGroup(hotspotLines);
+    const txnKeys=Object.keys(txnGroups);
+    let fullDevStr='';
     txnKeys.forEach(txn=>{
       const devLine=Object.entries(txnGroups[txn]).map(([n,c2])=>(c2>1?c2+'x ':'')+n).join('<br>');
       fullDevStr+=`<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.5);margin-bottom:2px">${txn}</div><div>${devLine}</div></div>`;
     });
-  } else {
-    let devParts=[];
-    if(hasVoice) devParts.push(entries.map(([n,v])=>(v.count>1?v.count+'x ':'')+n).join('<br>'));
-    if(hasTab) devParts.push(catDevStr(tabLines));
-    if(hasWatch) devParts.push(catDevStr(watchLines));
-    if(hasHotspot) devParts.push(catDevStr(hotspotLines));
-    fullDevStr=devParts.map(p=>`<div>${p}</div>`).join('');
-  }
 
-  // Watch credits
-  let watchCreditStr='';
-  watchLines.forEach(l=>{
-    if(l.lt==='upgrade'||l.byod) return;
-    const dev=devById(l.device,'w');
-    if(dev&&dev.credit&&dev.creditMo){
-      const n=dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,'');
-      watchCreditStr+=(watchCreditStr?'<br>':'')+n+` — −$${dev.credit}/mo × ${dev.creditMo} mo`;
+    // OTD for this specific lt
+    const lt=ltOverride||voiceLines[0]?.lt;
+    let frpTotal=0,devPriceTotal=0;
+    lines.forEach((l,i)=>{
+      const dev=l.byod?null:devById(l.device,'v');
+      if(!dev) return;
+      frpTotal+=dev.frp||0;
+      devPriceTotal+=devPrice(dev,l.lt,i+1,l.upQual!==false);
+    });
+    const savings=frpTotal-devPriceTotal;
+    const savingsStr=savings>1?fmt(savings):null;
+
+    // Accessories
+    const allV=S.lines.filter(l=>l.cat==='v');
+    const apoTotal=S.apoPerDevice*allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
+    const skeiwatchTotal=allV.reduce((s,l)=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
+    const totalAcc=apoTotal+skeiwatchTotal;
+    const hasProtect=allV.some(l=>l.protect);
+    const needsIdCheck=lt==='switcher'&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
+
+    // Recalculate OTD for this specific lt/upQual combo
+    let otdAmt=0;
+    lines.forEach((l,i)=>{
+      const dev=l.byod?null:devById(l.device,'v');
+      if(!dev) return;
+      const dp=devPrice(dev,l.lt,i+1,l.upQual!==false);
+      otdAmt+=dp+dp*TAX;
+    });
+    if(lt!=='upgrade'){
+      const planCost=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
+      const actFee=lt==='switcher'?0:ACT_FEE*voiceLines.length;
+      otdAmt+=planCost+actFee+(apoTotal+skeiwatchTotal)*(1+TAX);
+    } else {
+      otdAmt+=(apoTotal+skeiwatchTotal)*(1+TAX);
     }
-  });
 
-  let badges=[];
-  if(hasVoice) badges.push(isUp?(voiceLines.filter(l=>l.upQual===false).length>0?`${voiceLines.filter(l=>l.upQual!==false).length} Qualified · ${voiceLines.filter(l=>l.upQual===false).length} Non-Qualified`:'Qualified Upgrade'):ltLabel);
-  if(hasTab) badges.push(tabLines.length+'x Tablet');
-  if(hasWatch) badges.push(watchLines.length+'x Watch');
-  if(hasHotspot) badges.push(hotspotLines.length+'x Hotspot');
-  if(savingsStr) badges.push(`Save ${savingsStr}`);
-
-  // Build skeiwatch tile (line-by-line format)
-  let skeiTileVal='';
-  const skeiwatchNames=voiceLines.filter(l=>l.skeiwatch).map(l=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return sk?sk.n.replace('Skeiwatch ',''):null;}).filter(Boolean);
-  if(skeiwatchNames.length>0){
+    // Skeiwatch detail
     const swCounts={};
-    voiceLines.filter(l=>l.skeiwatch).forEach(l=>{
+    allV.filter(l=>l.skeiwatch).forEach(l=>{
       const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);if(!sk)return;
       swCounts[l.skeiwatch]=swCounts[l.skeiwatch]||{n:sk.n.replace('Skeiwatch ',''),price:sk.price,count:0};
       swCounts[l.skeiwatch].count++;
     });
-    skeiTileVal=Object.values(swCounts).map(s=>(s.count>1?s.count+'x ':'')+s.n+' — '+fmt(s.price)).join('<br>');
-  }
+    const skeiTileVal=Object.keys(swCounts).length?Object.values(swCounts).map(s=>(s.count>1?s.count+'x ':'')+s.n+' — '+fmt(s.price)).join('<br>'):'';
 
-  const badgeHtml=badges.map(b=>`<span style="background:rgba(0,0,0,.18);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:800;white-space:nowrap">${b}</span>`).join('');
+    // Watch credits
+    let watchCreditStr='';
+    watchLines.forEach(l=>{
+      if(l.lt==='upgrade'||l.byod) return;
+      const dev=devById(l.device,'w');
+      if(dev&&dev.credit&&dev.creditMo){
+        const n=dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,'');
+        watchCreditStr+=(watchCreditStr?'<br>':'')+n+` — −$${dev.credit}/mo × ${dev.creditMo} mo`;
+      }
+    });
 
-  const sub=`<div style="font-size:18px;font-weight:900;color:rgba(0,0,0,.85);line-height:1.3;margin-bottom:6px">${fullDevStr}</div><div style="display:flex;gap:5px;flex-wrap:wrap">${badgeHtml}</div>`;
+    // Headline + badges
+    const headline=`Only ${fmt(otdAmt)} Today!`;
+    const badges=[];
+    if(upQualOverride===true) badges.push('Qualified Upgrade');
+    else if(upQualOverride===false) badges.push('Non-Qualified — FRP Pricing');
+    else if(lt==='switcher') badges.push('Switcher');
+    else badges.push('New Line');
+    if(savingsStr) badges.push('Save '+savingsStr);
+    const badgeHtml=badges.map(b=>`<span style="background:rgba(0,0,0,.18);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:800;white-space:nowrap">${b}</span>`).join('');
+    const sub=`<div style="font-size:18px;font-weight:900;color:rgba(0,0,0,.85);line-height:1.3;margin-bottom:6px">${fullDevStr}</div><div style="display:flex;gap:5px;flex-wrap:wrap">${badgeHtml}</div>`;
 
-  // Build tiles array — then render smartly (never orphan)
-  const tileData=[];
-  if(!isUp&&hasVoice) tileData.push({l:'Monthly',v:fmt(c.grandMo)+'/mo',c:'rgba(255,255,255,.4)'});
-  // Always show all PPP options when any device qualifies (≥$149.99)
-  if(c.hasQual){
-    const fb=c.finBase>0?c.finBase:(()=>{
-      // Recalc finBase from devices + acc if PPP not toggled
-      const devTotal=voiceLines.reduce((s,l)=>{
-        const dev=l.byod?null:devById(l.device,l.cat);
-        if(!dev) return s;
-        return s+devPrice(dev,l.lt,voiceLines.indexOf(l)+1,l.upQual!==false);
-      },0);
-      const tabTotal=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
-      return devTotal+tabTotal+totalAcc;
-    })();
-    const progTotal=fb*(1+PROG_FEE);
-    const progDivisor={weekly:12,biweekly:6,monthly:3}[S.progFreq]||3;
-    const progFreqLabel={weekly:'Weekly × 12',biweekly:'Bi-Weekly × 6',monthly:'Monthly × 3'}[S.progFreq]||'Monthly × 3';
-    const progPmt=Math.ceil(progTotal/progDivisor*100)/100;
-    tileData.push({l:'Progressive',v:'$'+progPmt.toFixed(2)+'/'+({weekly:'wk',biweekly:'2wk',monthly:'mo'}[S.progFreq]||'mo')+' · '+progFreqLabel,c:'#f97316',small:true,span:true});
-    const bt0=fb*(1+TAX);
-    const bread0=Math.ceil(bt0/24*100)/100;
-    tileData.push({l:'Bread 0% APR',v:'$'+bread0.toFixed(2)+' × 24',c:'#3b82f6'});
-    const r=14.99/100/12;
-    const bread14=Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
-    tileData.push({l:'Bread 14.99% APR',v:'$'+bread14.toFixed(2)+' × 24',c:'#6366f1'});
-  }
-  if(apoTotal>0||skeiwatchTotal>0){
-    if(apoTotal>0&&skeiwatchTotal>0){
-      // Both — show each + combined
-      tileData.push({l:'APO',v:fmt(apoTotal),c:'rgba(255,255,255,.3)'});
-      tileData.push({l:'Skeiwatch(es)',v:fmt(skeiwatchTotal),c:'rgba(255,255,255,.3)'});
-      tileData.push({l:'Total Accessories',v:fmt(totalAcc),c:'#00c85f',span:true});
-    } else if(apoTotal>0){
-      tileData.push({l:'APO',v:fmt(apoTotal),c:'rgba(255,255,255,.3)'});
-    } else {
-      // Skeiwatch only — still counts toward PPP
-      tileData.push({l:'Skeiwatch(es) — counts toward PPP',v:fmt(skeiwatchTotal),c:'rgba(255,255,255,.3)',span:true});
+    // Tiles
+    const tileData=[];
+    if(lt!=='upgrade') tileData.push({l:'Monthly',v:fmt(c.grandMo)+'/mo',c:'rgba(255,255,255,.4)'});
+    if(c.hasQual){
+      const devT=lines.reduce((s,l,i)=>{const dev=l.byod?null:devById(l.device,'v');return s+(dev?devPrice(dev,l.lt,i+1,l.upQual!==false):0);},0);
+      const tabT=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
+      const fb=devT+tabT+totalAcc;
+      const progTotal=fb*(1+PROG_FEE);
+      const progDivisor={weekly:12,biweekly:6,monthly:3}[S.progFreq]||3;
+      const progLabel={weekly:'Weekly × 12',biweekly:'Bi-Weekly × 6',monthly:'Monthly × 3'}[S.progFreq]||'Monthly × 3';
+      const progFreqSuffix={weekly:'wk',biweekly:'2wk',monthly:'mo'}[S.progFreq]||'mo';
+      const progPmt=Math.ceil(progTotal/progDivisor*100)/100;
+      tileData.push({l:'Progressive',v:'$'+progPmt.toFixed(2)+'/'+progFreqSuffix+' · '+progLabel,c:'#f97316',small:true,span:true});
+      const bt0=fb*(1+TAX);
+      tileData.push({l:'Bread 0% APR',v:'$'+(Math.ceil(bt0/24*100)/100).toFixed(2)+' × 24',c:'#3b82f6'});
+      const r=14.99/100/12;
+      tileData.push({l:'Bread 14.99% APR',v:'$'+(Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100).toFixed(2)+' × 24',c:'#6366f1'});
     }
-  }
-  if(skeiTileVal) tileData.push({l:'Skeiwatch',v:skeiTileVal,c:'rgba(255,255,255,.3)',small:true,span:true});
-  if(hasProtect) tileData.push({l:'Protect',v:'Included',c:'rgba(255,255,255,.3)'});
-  if(hasTab) tileData.push({l:'Tablet Plan',v:fmt(tabLines.length*TABLET_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
-  if(hasWatch) tileData.push({l:'Watch Plan',v:fmt(watchLines.length*WATCH_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
-  if(watchCreditStr) tileData.push({l:'Watch Credits',v:watchCreditStr,c:'#00c85f',small:true,span:true});
-
-  // Smart grid: 0 tiles = no grid; 1 tile = full width; odd = last goes full width; even = normal 2-col
-  let tilesHtml='';
-  if(tileData.length>0){
-    const mkTile=(d,span)=>`
-      <div style="background:#161616;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>
-        ${d.small
-          ?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`
-          :`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}
-      </div>`;
-    if(tileData.length===1){
-      tilesHtml=mkTile(tileData[0],true);
-    } else {
-      // Non-span tiles first, then span tiles at end
-      const normalTiles=tileData.filter(d=>!d.span);
-      const spanTiles=tileData.filter(d=>d.span);
-      const isOdd=normalTiles.length%2===1;
-      normalTiles.forEach((d,i)=>{
-        const isLast=i===normalTiles.length-1;
-        tilesHtml+=mkTile(d,isLast&&isOdd);
-      });
-      spanTiles.forEach(d=>tilesHtml+=mkTile(d,true));
+    // APO: effective per-device = (apo bundle + skeiwatch) / device count — matches step 4 logic
+    const apoDevCount=allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
+    const effectivePerDev=apoDevCount>0?totalAcc/apoDevCount:0;
+    if(S.apoPerDevice>0||skeiwatchTotal>0){
+      const includes=[];
+      if(S.apoPerDevice>0) includes.push(fmt(apoTotal)+' APO');
+      Object.values(swCounts).forEach(s=>includes.push(s.count+'x '+s.n+' — '+fmt(s.price*(s.count||1))));
+      const includesHtml=includes.join('<br>');
+      tileData.push({l:'Total Accessories',v:fmt(totalAcc),sub:includesHtml,c:'rgba(255,255,255,.4)'});
+      tileData.push({l:'Total APO',v:fmt(effectivePerDev),sub:includesHtml,c:'rgba(255,255,255,.4)'});
     }
+    // Features tile — count all add-ons across lines
+    const featureCounts={};
+    allV.forEach(l=>{
+      if(l.protect) featureCounts['Protect']=(featureCounts['Protect']||0)+1;
+      if(l.upgplus) featureCounts['Upgrade Plus']=(featureCounts['Upgrade Plus']||0)+1;
+      if(l.intl) featureCounts['Intl Calling']=(featureCounts['Intl Calling']||0)+1;
+      if(l.hotspot) featureCounts['Hotspot']=(featureCounts['Hotspot']||0)+1;
+    });
+    const featKeys=Object.keys(featureCounts);
+    if(featKeys.length>0){
+      const featLines=featKeys.map(k=>featureCounts[k]+'x '+k).join('<br>');
+      tileData.push({l:'Features',v:featLines,c:'rgba(255,255,255,.4)',small:true,span:featKeys.length>2});
+    }
+    if(tabLines.length) tileData.push({l:'Tablet Plan',v:fmt(tabLines.length*TABLET_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
+    if(watchLines.length) tileData.push({l:'Watch Plan',v:fmt(watchLines.length*WATCH_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
+    if(watchCreditStr) tileData.push({l:'Watch Credits',v:watchCreditStr,c:'#00c85f',small:true,span:true});
+
+    const mkTile=(d,span)=>`<div style="background:#161616;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>${d.small?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`:`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}${d.sub?`<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:5px;line-height:1.6">Includes:<br>${d.sub}</div>`:''}</div>`;
+    const normalTiles=tileData.filter(d=>!d.span);
+    const spanTiles=tileData.filter(d=>d.span);
+    const isOdd=normalTiles.length%2===1;
+    let tilesHtml='';
+    if(tileData.length===1){ tilesHtml=mkTile(tileData[0],true); }
+    else { normalTiles.forEach((d,i)=>tilesHtml+=mkTile(d,i===normalTiles.length-1&&isOdd)); spanTiles.forEach(d=>tilesHtml+=mkTile(d,true)); }
+
+    let wide='';
+    if(lt!=='upgrade'){
+      let req='Requires Supreme Unlimited Plan';
+      if(needsIdCheck) req+=' + CheckID validation with US Govt ID';
+      wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
+    }
+    return {headline,sub,tilesHtml,wide};
   }
 
-  // Req line
-  let wide='';
-  if(!isUp&&hasVoice){
-    let req='Requires Supreme Unlimited Plan';
-    if(needsIdCheck) req+=' + CheckID validation with US Govt ID';
-    wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
-  }
+  const cards=isUp?[buildCard('upgrade',true),buildCard('upgrade',false)]:[buildCard('switcher'),buildCard('new')];
 
-  $('dm-headline').textContent=headline;
-  $('dm-subheadline').innerHTML=sub;
-  $('dm-tiles').innerHTML=tilesHtml;
-  $('dm-wide').innerHTML=wide;
+  const renderCardHtml=d=>`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25);margin-bottom:12px"><div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:18px 20px 14px"><div style="font-family:'Bebas Neue';font-size:42px;color:#000;line-height:1;letter-spacing:.5px">${d.headline}</div><div style="font-size:14px;font-weight:900;color:rgba(0,0,0,.75);margin-top:7px;line-height:1.4;letter-spacing:.2px">${d.sub}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>${d.wide}<div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div></div></div>`;
+
+  $('dm-cards-container').innerHTML=cards.map(renderCardHtml).join('');
   $('dm-overlay').style.display='block';
   document.body.style.overflow='hidden';
 }
 
+
 function saveDMCard(){
   const btn=$('dm-save-btn');
   btn.textContent='Saving...';
-  const card=$('dm-card');
+  const card=$('dm-cards-container');
   // Load html2canvas dynamically if not loaded
   function doCapture(){
     html2canvas(card,{
@@ -3397,359 +3354,7 @@ function saveDMPng(){
   const btn=$('dm-save-btn');
   btn.textContent='Generating...';
   btn.disabled=true;
-  const card=$('dm-card');
-
-  function doCapture(){
-    html2canvas(card,{
-      backgroundColor:'#0d0d0d',
-      scale:3,
-      useCORS:true,
-      logging:false
-    }).then(canvas=>{
-      const imgUrl=canvas.toDataURL('image/png');
-      // Show full-screen so user can long-press to save to Photos
-      const overlay=document.createElement('div');
-      overlay.style.cssText='position:fixed;inset:0;background:#000;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
-      overlay.innerHTML=`
-        <div style="font-size:11px;font-weight:700;color:#aaa;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase">
-          Long press image to Save to Photos
-        </div>
-        <img src="${imgUrl}" style="max-width:100%;max-height:80vh;border-radius:10px;box-shadow:0 0 40px rgba(0,169,79,.2)"/>
-        <button onclick="this.parentElement.remove()" style="margin-top:16px;padding:12px 32px;background:#222;border:1px solid #444;border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Done</button>
-      `;
-      document.body.appendChild(overlay);
-      btn.textContent='Save PNG';
-      btn.disabled=false;
-    }).catch(()=>{
-      btn.textContent='Save PNG';
-      btn.disabled=false;
-    });
-  }
-
-  if(window.html2canvas){
-    doCapture();
-  } else {
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=doCapture;
-    document.head.appendChild(s);
-  }
-}
-
-
-function dmDevSummary(voiceLines){
-  const dc={};
-  voiceLines.forEach(l=>{
-    const dev=l.byod?null:devById(l.device,l.cat);
-    if(!dev) return;
-    const n=dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
-    dc[n]=dc[n]||{count:0,id:l.device,lt:l.lt};
-    dc[n].count++;
-  });
-  return dc;
-}
-
-function showDMCard(){
-  const c=calc();
-  if(!S.lines.length) return;
-  const voiceLines=S.lines.filter(l=>l.cat==='v');
-  const tabLines=S.lines.filter(l=>l.cat==='t');
-  const watchLines=S.lines.filter(l=>l.cat==='w');
-  const hotspotLines=S.lines.filter(l=>l.cat==='h');
-  const dc=dmDevSummary(voiceLines);
-  const entries=Object.entries(dc);
-  const isSW=voiceLines.some(l=>l.lt==='switcher');
-  const isUp=voiceLines.every(l=>l.lt==='upgrade'&&voiceLines.length>0);
-  const ltLabel=isUp?'Upgrade':isSW?'Switcher':'New Line';
-
-  // Device strings per category
-  function catDevStr(lines){
-    const d={};
-    lines.forEach(l=>{
-      const dev=l.byod?null:devById(l.device,l.cat);
-      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'BYOD';
-      d[n]=(d[n]||0)+1;
-    });
-    return Object.entries(d).map(([n,c2])=>(c2>1?c2+'x ':'')+n).join(' + ');
-  }
-  const voiceDevStr=entries.map(([n,v])=>(v.count>1?v.count+'x ':'')+n).join('<br>');
-
-  // Savings: FRP vs promo price on voice lines
-  let totalFRP=0,totalDevPrice=0;
-  voiceLines.forEach((l,i)=>{
-    const dev=l.byod?null:devById(l.device,l.cat);
-    if(!dev) return;
-    totalFRP+=dev.frp||0;
-    totalDevPrice+=devPrice(dev,l.lt,i+1,l.upQual!==false);
-  });
-  const savings=totalFRP-totalDevPrice;
-  const savingsStr=savings>1?fmt(savings):null;
-
-  // Accessories — all voice lines including upgrades
-  const allVoice=S.lines.filter(l=>l.cat==='v');
-  const hasProtect=allVoice.some(l=>l.protect);
-  const apoDevCount=allVoice.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
-  const apoTotal=S.apoPerDevice*apoDevCount;
-  const skeiwatchTotal=allVoice.reduce((s,l)=>{
-    const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);
-    return s+(sk?sk.price:0);
-  },0);
-  const totalAcc=apoTotal+skeiwatchTotal;
-  const needsIdCheck=isSW&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
-
-  // Build headline and sub-header based on what's in the quote
-  const hasVoice=voiceLines.length>0;
-  const hasTab=tabLines.length>0;
-  const hasWatch=watchLines.length>0;
-  const hasHotspot=hotspotLines.length>0;
-
-  const headline=`Only ${fmt(c.otdTotal)} Today!`;
-
-  // Sub: device + badges
-  // Group ALL lines by transaction type
-  const txnGroups={};
-  const addToGroup=(lines,catLabel)=>{
-    lines.forEach(l=>{
-      const dev=l.byod?null:devById(l.device,l.cat);
-      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):(catLabel+' BYOD');
-      const txn=l.lt==='switcher'?'Switcher':l.lt==='upgrade'?'Upgrade':'New Line';
-      txnGroups[txn]=txnGroups[txn]||{};
-      txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
-    });
-  };
-  addToGroup(voiceLines,'Device');
-  addToGroup(tabLines,'Tablet');
-  addToGroup(watchLines,'Watch');
-  addToGroup(hotspotLines,'Hotspot');
-
-  const txnKeys=Object.keys(txnGroups);
-  const needsTxnSplit=txnKeys.length>1;
-
-  let fullDevStr='';
-  if(needsTxnSplit){
-    txnKeys.forEach(txn=>{
-      const devLine=Object.entries(txnGroups[txn]).map(([n,c2])=>(c2>1?c2+'x ':'')+n).join('<br>');
-      fullDevStr+=`<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.5);margin-bottom:2px">${txn}</div><div>${devLine}</div></div>`;
-    });
-  } else {
-    let devParts=[];
-    if(hasVoice) devParts.push(entries.map(([n,v])=>(v.count>1?v.count+'x ':'')+n).join('<br>'));
-    if(hasTab) devParts.push(catDevStr(tabLines));
-    if(hasWatch) devParts.push(catDevStr(watchLines));
-    if(hasHotspot) devParts.push(catDevStr(hotspotLines));
-    fullDevStr=devParts.map(p=>`<div>${p}</div>`).join('');
-  }
-
-  // Watch credits
-  let watchCreditStr='';
-  watchLines.forEach(l=>{
-    if(l.lt==='upgrade'||l.byod) return;
-    const dev=devById(l.device,'w');
-    if(dev&&dev.credit&&dev.creditMo){
-      const n=dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,'');
-      watchCreditStr+=(watchCreditStr?'<br>':'')+n+` — −$${dev.credit}/mo × ${dev.creditMo} mo`;
-    }
-  });
-
-  let badges=[];
-  if(hasVoice) badges.push(isUp?(voiceLines.filter(l=>l.upQual===false).length>0?`${voiceLines.filter(l=>l.upQual!==false).length} Qualified · ${voiceLines.filter(l=>l.upQual===false).length} Non-Qualified`:'Qualified Upgrade'):ltLabel);
-  if(hasTab) badges.push(tabLines.length+'x Tablet');
-  if(hasWatch) badges.push(watchLines.length+'x Watch');
-  if(hasHotspot) badges.push(hotspotLines.length+'x Hotspot');
-  if(savingsStr) badges.push(`Save ${savingsStr}`);
-
-  // Build skeiwatch tile (line-by-line format)
-  let skeiTileVal='';
-  const skeiwatchNames=voiceLines.filter(l=>l.skeiwatch).map(l=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return sk?sk.n.replace('Skeiwatch ',''):null;}).filter(Boolean);
-  if(skeiwatchNames.length>0){
-    const swCounts={};
-    voiceLines.filter(l=>l.skeiwatch).forEach(l=>{
-      const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);if(!sk)return;
-      swCounts[l.skeiwatch]=swCounts[l.skeiwatch]||{n:sk.n.replace('Skeiwatch ',''),price:sk.price,count:0};
-      swCounts[l.skeiwatch].count++;
-    });
-    skeiTileVal=Object.values(swCounts).map(s=>(s.count>1?s.count+'x ':'')+s.n+' — '+fmt(s.price)).join('<br>');
-  }
-
-  const badgeHtml=badges.map(b=>`<span style="background:rgba(0,0,0,.18);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:800;white-space:nowrap">${b}</span>`).join('');
-
-  const sub=`<div style="font-size:18px;font-weight:900;color:rgba(0,0,0,.85);line-height:1.3;margin-bottom:6px">${fullDevStr}</div><div style="display:flex;gap:5px;flex-wrap:wrap">${badgeHtml}</div>`;
-
-  // Build tiles array — then render smartly (never orphan)
-  const tileData=[];
-  if(!isUp&&hasVoice) tileData.push({l:'Monthly',v:fmt(c.grandMo)+'/mo',c:'rgba(255,255,255,.4)'});
-  // Always show all PPP options when any device qualifies (≥$149.99)
-  if(c.hasQual){
-    const fb=c.finBase>0?c.finBase:(()=>{
-      // Recalc finBase from devices + acc if PPP not toggled
-      const devTotal=voiceLines.reduce((s,l)=>{
-        const dev=l.byod?null:devById(l.device,l.cat);
-        if(!dev) return s;
-        return s+devPrice(dev,l.lt,voiceLines.indexOf(l)+1,l.upQual!==false);
-      },0);
-      const tabTotal=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
-      return devTotal+tabTotal+totalAcc;
-    })();
-    const progTotal=fb*(1+PROG_FEE);
-    const progMo=Math.ceil(progTotal/3*100)/100;
-    tileData.push({l:'Progressive /mo',v:'$'+progMo.toFixed(2)+' × 3',c:'#f97316'});
-    const bt0=fb*(1+TAX);
-    const bread0=Math.ceil(bt0/24*100)/100;
-    tileData.push({l:'Bread 0% APR',v:'$'+bread0.toFixed(2)+' × 24',c:'#3b82f6'});
-    const r=14.99/100/12;
-    const bread14=Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
-    tileData.push({l:'Bread 14.99% APR',v:'$'+bread14.toFixed(2)+' × 24',c:'#6366f1'});
-  }
-  if(apoTotal>0||skeiwatchTotal>0){
-    if(apoTotal>0&&skeiwatchTotal>0){
-      // Both — show each + combined
-      tileData.push({l:'APO',v:fmt(apoTotal),c:'rgba(255,255,255,.3)'});
-      tileData.push({l:'Skeiwatch(es)',v:fmt(skeiwatchTotal),c:'rgba(255,255,255,.3)'});
-      tileData.push({l:'Total Accessories',v:fmt(totalAcc),c:'#00c85f',span:true});
-    } else if(apoTotal>0){
-      tileData.push({l:'APO',v:fmt(apoTotal),c:'rgba(255,255,255,.3)'});
-    } else {
-      // Skeiwatch only — still counts toward PPP
-      tileData.push({l:'Skeiwatch(es) — counts toward PPP',v:fmt(skeiwatchTotal),c:'rgba(255,255,255,.3)',span:true});
-    }
-  }
-  if(skeiTileVal) tileData.push({l:'Skeiwatch',v:skeiTileVal,c:'rgba(255,255,255,.3)',small:true,span:true});
-  if(hasProtect) tileData.push({l:'Protect',v:'Included',c:'rgba(255,255,255,.3)'});
-  if(hasTab) tileData.push({l:'Tablet Plan',v:fmt(tabLines.length*TABLET_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
-  if(hasWatch) tileData.push({l:'Watch Plan',v:fmt(watchLines.length*WATCH_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
-  if(watchCreditStr) tileData.push({l:'Watch Credits',v:watchCreditStr,c:'#00c85f',small:true,span:true});
-
-  // Smart grid: 0 tiles = no grid; 1 tile = full width; odd = last goes full width; even = normal 2-col
-  let tilesHtml='';
-  if(tileData.length>0){
-    const mkTile=(d,span)=>`
-      <div style="background:#161616;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}">
-        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>
-        ${d.small
-          ?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`
-          :`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}
-      </div>`;
-    if(tileData.length===1){
-      tilesHtml=mkTile(tileData[0],true);
-    } else {
-      // Non-span tiles first, then span tiles at end
-      const normalTiles=tileData.filter(d=>!d.span);
-      const spanTiles=tileData.filter(d=>d.span);
-      const isOdd=normalTiles.length%2===1;
-      normalTiles.forEach((d,i)=>{
-        const isLast=i===normalTiles.length-1;
-        tilesHtml+=mkTile(d,isLast&&isOdd);
-      });
-      spanTiles.forEach(d=>tilesHtml+=mkTile(d,true));
-    }
-  }
-
-  // Req line
-  let wide='';
-  if(!isUp&&hasVoice){
-    let req='Requires Supreme Unlimited Plan';
-    if(needsIdCheck) req+=' + CheckID validation with US Govt ID';
-    wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
-  }
-
-  $('dm-headline').textContent=headline;
-  $('dm-subheadline').innerHTML=sub;
-  $('dm-tiles').innerHTML=tilesHtml;
-  $('dm-wide').innerHTML=wide;
-  $('dm-overlay').style.display='block';
-  document.body.style.overflow='hidden';
-}
-
-function saveDMCard(){
-  const btn=$('dm-save-btn');
-  btn.textContent='Saving...';
-  const card=$('dm-card');
-  // Load html2canvas dynamically if not loaded
-  function doCapture(){
-    html2canvas(card,{
-      backgroundColor:null,
-      scale:3,
-      useCORS:true,
-      logging:false
-    }).then(canvas=>{
-      const link=document.createElement('a');
-      link.download='cricket-deal.png';
-      link.href=canvas.toDataURL('image/png');
-      link.click();
-      btn.textContent='Saved!';
-      setTimeout(()=>btn.textContent='Save Image',2000);
-    }).catch(()=>{
-      btn.textContent='Try Copy Text';
-      setTimeout(()=>btn.textContent='Save Image',2000);
-    });
-  }
-  if(window.html2canvas){
-    doCapture();
-  } else {
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=doCapture;
-    s.onerror=()=>{btn.textContent='Not available';setTimeout(()=>btn.textContent='Save Image',2000);};
-    document.head.appendChild(s);
-  }
-}
-
-function closeDMCard(){
-  $('dm-overlay').style.display='none';
-  document.body.style.overflow='';
-}
-
-function copyDMCard(){
-  const c=calc();
-  const voiceLines=S.lines.filter(l=>l.cat==='v');
-  const dc=dmDevSummary(voiceLines);
-  const entries=Object.entries(dc);
-  const isSW=voiceLines.some(l=>l.lt==='switcher');
-  const isUp=voiceLines.every(l=>l.lt==='upgrade');
-  const ltLabel=isUp?'Upgrade':isSW?'Switcher':'New Line';
-  const devStr=entries.map(([n,v])=>(v.count>1?v.count+'x ':'')+n).join(' + ');
-  let totalFRP=0,totalDevPrice=0;
-  voiceLines.forEach((l,i)=>{const dev=l.byod?null:devById(l.device,l.cat);if(!dev)return;totalFRP+=dev.frp||0;totalDevPrice+=devPrice(dev,l.lt,i+1,l.upQual!==false);});
-  const savings=totalFRP-totalDevPrice;
-  const needsIdCheck=isSW&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
-  const apoTotal=S.apoPerDevice*voiceLines.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
-  const skeiwatchTotal=voiceLines.reduce((s,l)=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
-  const hasProtect=voiceLines.some(l=>l.protect);
-
-  let txt=`Only ${fmt(c.otdTotal)} Today!\n`;
-  txt+=`${devStr} — ${ltLabel}\n`;
-  if(savings>0) txt+=`You save ${fmt(savings)} vs retail\n`;
-  txt+=`\n`;
-  txt+=`Monthly: ${fmt(c.grandMo)}/mo\n`;
-  if(S.finOn&&c.hasQual){
-    const fb=c.finBase;
-    const progMo=Math.ceil(fb*(1+PROG_FEE)/3*100)/100;
-    const bt0=fb*(1+TAX);
-    const bread0=Math.ceil(bt0/24*100)/100;
-    const r=14.99/100/12;
-    const bread14=Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
-    txt+=`Progressive: $${progMo.toFixed(2)}/mo x3\n`;
-    txt+=`Bread 0%: $${bread0.toFixed(2)}/mo x24\n`;
-    txt+=`Bread 14.99%: $${bread14.toFixed(2)}/mo x24\n`;
-  }
-  if(apoTotal+skeiwatchTotal>0) txt+=`Accessories: ${fmt(apoTotal+skeiwatchTotal)}\n`;
-  if(hasProtect) txt+=`Protect: Included\n`;
-  txt+=`\nRequires Supreme Unlimited Plan`;
-  if(needsIdCheck) txt+=` + CheckID validation with US Govt ID`;
-  txt+=`\n— Internal Use Only`;
-
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn=$('dm-copy-btn');
-    btn.textContent='Copied!';
-    setTimeout(()=>btn.textContent='Copy Text',2000);
-  });
-}
-
-function saveDMPng(){
-  const btn=$('dm-save-btn');
-  btn.textContent='Generating...';
-  btn.disabled=true;
-  const card=$('dm-card');
+  const card=$('dm-cards-container');
 
   function doCapture(){
     html2canvas(card,{
@@ -3866,24 +3471,10 @@ try {
 <!-- DM CARD MODAL -->
 <div id="dm-overlay" onclick="if(event.target===this)closeDMCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;overflow-y:auto;padding:20px;backdrop-filter:blur(4px)">
   <div style="max-width:400px;margin:0 auto">
-    <!-- Card -->
-    <div id="dm-card" style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25)">
-      <!-- Green header -->
-      <div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:18px 20px 14px">
-        <div id="dm-headline" style="font-family:'Bebas Neue';font-size:42px;color:#000;line-height:1;letter-spacing:.5px"></div>
-        <div id="dm-subheadline" style="font-size:14px;font-weight:900;color:rgba(0,0,0,.75);margin-top:7px;line-height:1.4;letter-spacing:.2px"></div>
-      </div>
-      <!-- Tile grid -->
-      <div id="dm-tiles" style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)"></div>
-      <!-- Wide tiles -->
-      <div id="dm-wide"></div>
-      <!-- Internal footer -->
-      <div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.05)">
-        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div>
-      </div>
-    </div>
+    <!-- Cards rendered here -->
+    <div id="dm-cards-container"></div>
     <!-- Buttons -->
-    <div style="display:flex;gap:8px;margin-top:10px">
+    <div style="display:flex;gap:8px;margin-top:4px">
       <button onclick="closeDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #333;border-radius:var(--r2);color:#aaa;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Close</button>
       <button id="dm-copy-btn" onclick="copyDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #444;border-radius:var(--r2);color:#ddd;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Copy Text</button>
       <button id="dm-save-btn" onclick="saveDMPng()" style="flex:2;padding:11px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:11px;font-weight:900;cursor:pointer">Save PNG</button>
