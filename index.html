@@ -3252,9 +3252,9 @@ function showDMCard(){
       // Device cost replaced by down payment; acc tax still due today
       const downPayment=S.finType==='prog'?PROG_INIT:0;
       otdAmt+=downPayment;
-      // Non-device cash items: protect, plan, act fees — no acc in OTD (financed)
       const protCost=allV.reduce((s,l)=>{if(!l.protect)return s;const dev=l.byod?null:devById(l.device,'v');return s+protectCost(dev?dev.frp:0);},0);
-      const planCost2=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
+      const isUpgradeOnly=lines.every(l=>l.lt==='upgrade');
+      const planCost2=isUpgradeOnly?0:(S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0);
       const actFee2=lt==='switcher'?0:ACT_FEE*voiceLines.length;
       otdAmt+=planCost2+actFee2*(1+TAX)+protCost;
     } else {
