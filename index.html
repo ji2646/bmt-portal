@@ -2580,7 +2580,7 @@ function showDMCard(){
         let txn;
         if(l.lt==='switcher') txn=planShort?`Switcher — ${planShort}`:'Switcher';
         else if(l.lt==='upgrade') txn=l.upQual!==false?'Qualified Upgrade':'Non-Qualified Upgrade';
-        else txn=planShort?`New Line — ${planShort}`:'New Line';
+        else txn=planShort?(S.acct==='aal'?`Add a Line — ${planShort}`:`New Line — ${planShort}`):(S.acct==='aal'?'Add a Line':'New Line');
         if(catOverride) txn=catOverride;
         txnGroups[txn]=txnGroups[txn]||{};
         txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
@@ -2681,8 +2681,17 @@ function showDMCard(){
     // ── OTD CALCULATION ──────────────────────────────────────────
     // Shared helpers
     const planObj2=S.plan?PLANS.find(p=>p.id===S.plan):null;
+    const aalPlanObj2=S.aalPlan?PLANS.find(p=>p.id===S.aalPlan):null;
     const voiceNewLines=voiceLines.filter(l=>l.lt!=='upgrade');
-    const planCostOTD=voiceNewLines.length>0&&planObj2?planObj2.lines[Math.min(voiceLines.length,5)-1]:0;
+    // For AAL: plan cost = delta between old and new tier; for new accounts: full plan cost
+    let planCostOTD=0;
+    if(voiceNewLines.length>0){
+      if(S.acct==='aal'){
+        planCostOTD=c.planDelta||0;
+      } else {
+        planCostOTD=planObj2?planObj2.lines[Math.min(voiceLines.length,5)-1]:0;
+      }
+    }
     const voiceActFeeOTD=(lt==='switcher'?0:ACT_FEE)*voiceLines.length; // SW = waived
     const tabActFeeOTD=ACT_FEE*tabLines.length;
     const watchNewLines=watchLines.filter(l=>l.lt!=='upgrade'&&!l.byod);
