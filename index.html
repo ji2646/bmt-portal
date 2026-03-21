@@ -335,9 +335,9 @@ document.body.style.overflow='hidden';
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/11/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 3/21/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 4:00 PM</div>
+  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 3/20/2026 8:30 PM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -668,8 +668,9 @@ const PHONES=[
   {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:0,      nw:99.99,   up:599.99,  sw_o:199.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:1,      nw:99.99,   up:599.99,  sw_o:199.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:299.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:599.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i17e_256',n:'iPhone 17e 256GB',     sw:599.99, nw:599.99,  up:599.99,  frp:599.99,  brand:'Apple',    promoReq:'any'},
   {id:'i17e_512',n:'iPhone 17e 512GB',     sw:799.99, nw:799.99,  up:799.99,  frp:799.99,  brand:'Apple',    promoReq:'any'},
   {id:'i17_256', n:'iPhone 17 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
@@ -1053,14 +1054,30 @@ function buildCard(l,idx){
       const overLimit=isV&&pr!==promoPrice&&pr>0; // price changed due to line limit
       if(pr>=149.99&&overLimit) qual=`<span class="qpill q-warn">Other plan price — Max 4</span>`;
       else if(pr>=149.99) qual=`<span class="qpill q-ok">✓ Qualifies</span>`;
-      else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99</span>`;
+      else if(pr>0) qual=`<span class="qpill q-warn">⚠ Below $149.99 — Requires anchor device for PPP</span>`;
       else qual=`<span class="qpill q-free">FREE</span>`;
       // Ship note: free-ship-only devices OR transaction price ≥ $249.99
       const FREE_SHIP_ONLY=['i16_128','i16_256','s26u'];
       if(FREE_SHIP_ONLY.includes(l.device)){
         shipNote=`<div class="note-warn" style="margin-top:5px;font-size:9px;padding:5px 8px">📦 <b>Free Shipping Only</b> — If you are doing a Free Shipping on this device, process any in-store transactions FIRST.</div>`;
-      } else if(pr>=249.99){
+      } else if(pr>=199.99){
         shipNote=`<div class="note-warn" style="margin-top:5px;font-size:9px;padding:5px 8px">📦 If you are doing a Free Shipping on this device, process any in-store transactions FIRST.</div>`;
+      }
+      // Notes for i16e and i13 Supreme SW
+      if(dev&&ID_CHECK_DEVS.includes(dev.id)&&l.lt==='switcher'){
+        const isAAL=S.acct==='aal';
+        const isI16e1dollar=dev.id==='i16e_128'&&devPrice(dev,'switcher',1,true)<=1;
+        let idNote='';
+        if(isI16e1dollar){
+          idNote=isAAL
+            ?'Requires port from eligible carrier. Max 4 every 3 years.'
+            :'Requires port from eligible carrier and CheckID validation. Max 4 every 3 years.';
+        } else {
+          idNote=isAAL
+            ?'Max 4 every 3 years.'
+            :'Requires CheckID validation. Max 4 every 3 years.';
+        }
+        shipNote+=`<div class="note-info" style="margin-top:5px;font-size:9px;padding:5px 8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:4px;color:#60a5fa">⚠ ${idNote}</div>`;
       }
     }
   } else if(l.byod){
@@ -1131,7 +1148,7 @@ function buildCard(l,idx){
         <label>Device</label>
         <select onchange="lu(${l.id},'device',this.value)">${devHtml}</select>
       </div>
-      ${!isH?`<div class="f" style="justify-content:flex-end;padding-top:18px">${qual}</div>`:''}\
+      ${!isH&&qual?`<div class="f full" style="padding-top:0">${qual}</div>`:''}\
       ${shipNote?`<div class="f full">${shipNote}</div>`:''}
       ${hsData}
       ${upQualRow}
@@ -1498,19 +1515,54 @@ function calc(){
     }
   });
 
-  // OTD build — everything due today at full price, no AutoPay discount
+  // OTD build — detailed per device
   const otd=[];
-  if(S.acct==='new'&&planCostFull>0) otd.push({l:`First month — ${plan.full}`,v:planCostFull,tax:false});
+  const planObj3=S.plan?PLANS.find(p=>p.id===S.plan):null;
+  const planFullName3=planObj3?planObj3.full||planObj3.n:'';
   const aalNewLines=S.lines.filter(l=>l.cat==='v'&&l.lt!=='upgrade').length;
-  if(S.acct==='aal'&&planDelta>0) otd.push({l:`First month plan increase (+${aalNewLines} line${aalNewLines>1?'s':''})`,v:planDelta,tax:false});
-  if(hsPlanCost>0) otd.push({l:'First month — Hotspot data plan',v:hsPlanCost,tax:false});
-  if(watchPlanMo>0) otd.push({l:`First month — Watch plan ×${watchNewLines}`,v:watchPlanMo,tax:false});
-  if(tabletPlanMo>0) otd.push({l:`First month — Tablet plan ×${tabletNewLines}`,v:tabletPlanMo,tax:false});
-  if(featMo>0) otd.push({l:'First month — Features',v:featMo,tax:false});
+
+  // Voice plan
+  if(S.acct==='new'&&planCostFull>0){
+    const lc=Math.min(aalNewLines,5);
+    otd.push({l:lc>1?`${planFullName3} — ${lc}×$${planCostFull}`:`${planFullName3} ($${planCostFull}/mo)`,v:planCostFull,tax:false});
+  }
+  if(S.acct==='aal'&&planDelta>0) otd.push({l:`Plan increase (+${aalNewLines} line${aalNewLines>1?'s':''}) — ${planFullName3}`,v:planDelta,tax:false});
+
+  // Tablet first month — per tablet
+  S.lines.filter(l=>l.cat==='t'&&l.lt!=='upgrade').forEach(l=>{
+    const dev=devById(l.device,'t');
+    const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Tablet';
+    otd.push({l:`Tablet Plan ($${TABLET_PLAN}/mo) — ${n}`,v:TABLET_PLAN,tax:false});
+  });
+  // Watch first month — per watch new service
+  S.lines.filter(l=>l.cat==='w'&&l.lt!=='upgrade'&&!l.byod).forEach(l=>{
+    const dev=devById(l.device,'w');
+    const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,''):'Watch';
+    otd.push({l:`Watch Plan ($${WATCH_PLAN}/mo) — ${n}`,v:WATCH_PLAN,tax:false});
+  });
+  // Hotspot plan — per hotspot
+  S.lines.filter(l=>l.cat==='h'&&l.lt!=='upgrade').forEach(l=>{
+    const sd=SD_PLANS.find(s=>s.id===l.hsPlan);
+    if(sd) otd.push({l:`Hotspot Plan ($${sd.price}/mo) — ${sd.n||'Data Plan'}`,v:sd.price,tax:false});
+  });
+  // Features — per device
+  S.lines.forEach(l=>{
+    if(l.cat!=='v') return;
+    const dev=l.byod?null:devById(l.device,'v');
+    const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):(l.byod?'BYOD':'Device');
+    if(l.protect){
+      const tier=l.byod?(l.protectTier||8):protectCost(dev?dev.frp:0);
+      otd.push({l:`Protect ($${tier}/mo) — ${n}`,v:tier,tax:false});
+    }
+    if(l.upgplus) otd.push({l:`Upgrade Plus ($5/mo) — ${n}`,v:5,tax:false});
+    if(l.intl) otd.push({l:`Intl Calling $10 ($10/mo) — ${n}`,v:INTL_CALL,tax:false});
+    if(l.intl15) otd.push({l:`Intl Calling $15 ($15/mo) — ${n}`,v:15,tax:false});
+    if(l.hotspot&&!l.hsRecur) otd.push({l:`Hotspot add-on (one-time) — ${n}`,v:HS_ADD,tax:true});
+  });
+
   if(actFees>0) otd.push({l:'Activation fee(s)',v:actFees,tax:true});
   if(watchActOTD>0) otd.push({l:`Watch activation ×${w}`,v:watchActOTD,tax:true});
   if(simFees>0) otd.push({l:'SIM fee(s)',v:simFees,tax:true});
-  if(featOneTime>0) otd.push({l:'Hotspot add-on (one-time)',v:featOneTime,tax:true});
 
   if(!S.finOn||!hasQual){
     const allDevices=deviceFinanced+deviceCash;
@@ -1737,7 +1789,7 @@ function renderSummary(c){
         style="padding:10px 14px;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;background:var(--s2)">
         <div>
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:2px">Phone Payment Plan</div>
-          <div style="font-family:'Bebas Neue';font-size:28px;color:${S.finType==='prog'?'var(--prog)':'var(--bread)'};line-height:1">${S.finType==='prog'?fmtMo(c.progMoEquiv):fmtMo(c.breadMo)}/mo equiv</div>
+          <div style="font-family:'Bebas Neue';font-size:28px;color:${S.finType==='prog'?'var(--prog)':'var(--bread)'};line-height:1">${S.finType==='prog'?fmt(c.progPayment)+({weekly:'/wk',biweekly:'/2wk',monthly:'/mo'}[S.progFreq]||'/mo'):fmt(c.breadMo)+'/mo'}</div>
         </div>
         <span id="ppp-i" style="color:var(--t3);font-size:12px;transition:transform .2s">▼</span>
       </div>
@@ -1749,7 +1801,7 @@ function renderSummary(c){
     <div class="tm-card">
       <div class="tm-lbl">${S.acct==='aal'?'Est. Total Added to Bill':'Est. Total Monthly'}</div>
       <div class="tm-val">${fmt(c.grandMo)}</div>
-      <div class="tm-sub">${S.acct==='aal'?'Added to existing bill':'Plan + features'}${S.finOn&&c.hasQual?' + PPP (mo. equiv)':''}</div>
+      <div class="tm-sub">${(()=>{const pppNote=S.finOn&&c.hasQual?' · PPP billed separately through '+(S.finType==='prog'?'Progressive Leasing':'Bread Pay'):'';return (S.acct==='aal'?'Monthly service charges billed through carrier':'Plan + features')+pppNote;})()} </div>
     </div>
 
     <button class="reset-btn" onclick="resetAll()">↺ Reset Calculator</button>
@@ -1873,22 +1925,33 @@ function launchDeal(type){
     setAcct('aal');
     setTxnType('upgrade');
     addLine('v');
-    const l=S.lines[0]; l.lt='upgrade'; l.device='iconp'; l.upQual=true;
+    const l=S.lines[0]; l.lt='upgrade'; l.device='iconp'; l.upQual=true; l.protect=true;
   } else if(type==='i13'){
+    setAcct('new');
     setPlan('supreme');
+    S.ap=true; $('ap-chk').checked=true;
     S.apoPerDevice=50; $('apo-inp').value=50; updateApoTiles(50);
     addLine('v');
     const l=S.lines[0]; l.lt=_dealLt.i13; l.device='i13_128'; l.protect=true; l.protectTier=12;
   } else if(type==='i16e'){
+    setAcct('new');
     setPlan('supreme');
+    S.ap=true; $('ap-chk').checked=true;
     S.apoPerDevice=75; $('apo-inp').value=75; updateApoTiles(75);
     addLine('v');
     const l=S.lines[0]; l.lt=_dealLt.i16e; l.device='i16e_128'; l.protect=true; l.protectTier=12;
   } else if(type==='select'){
+    setAcct('new');
     setPlan('select');
-    S.ap=_dealSelAp;
+    S.ap=_dealSelAp; $('ap-chk').checked=_dealSelAp;
+    // SW gets $25 APO bundle, NEW gets $0 APO default
+    const isSW=_dealLt.sel==='switcher';
+    if(isSW){ S.apoPerDevice=25; $('apo-inp').value=25; updateApoTiles(25); }
     addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:''; l.protect=true; l.protectTier=8;
+    const l=S.lines[0];
+    l.lt=_dealLt.sel;
+    l.device=_lowestSelDeal?_lowestSelDeal.p.id:'debs3';
+    l.protect=true; l.protectTier=8;
     renderPlanGrid();
   }
   // Re-render lines so device dropdown shows selected value
@@ -2396,7 +2459,7 @@ function renderPayout(c){
   const totalActableLines=voiceActs+nonVoiceActs+upgrades; // all lines get $2 act fee spiff
 
   // APO: total accessories × 20%
-  const apoTotal=S.apoPerDevice*allLines.filter(l=>l.cat==='v').length;
+  const apoTotal=S.apoPerDevice*allLines.filter(l=>l.device&&!l.byod).length;
   const skeiwatchTotal=allLines.filter(l=>l.cat==='v'&&l.skeiwatch).reduce((s,l)=>{
     const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
   const totalAcc=apoTotal+skeiwatchTotal;
@@ -2472,686 +2535,11 @@ function renderPayout(c){
 // DEAL STRIP
 // ============================================================
 
-function toggleDealLt(card){
-  _dealLt[card]=_dealLt[card]==='switcher'?'new':'switcher';
-  renderDealStrip();
-}
-function toggleDealSelAp(){
-  _dealSelAp=!_dealSelAp;
-  renderDealStrip();
-}
-function renderDealStrip(){
-  // --- Card 1: Icon Plus — lowest Android upgrade, just act + tax ---
-  const iconPlus=PHONES.find(p=>p.id==='iconp');
-  const ip_device=iconPlus.up; // $69.99 qualified upgrade
-  const ip_act=ACT_FEE; // $25
-  const ip_taxable=ip_device+ip_act;
-  const ip_otd=ip_taxable+ip_taxable*TAX;
-
-  // --- Card 2: iPhone 13 128GB ---
-  const i13=PHONES.find(p=>p.id==='i13_128');
-  const supremePlan=PLANS.find(p=>p.id==='supreme');
-  const i13_lt=_dealLt.i13;
-  const i13_sw=i13_lt==='switcher';
-  const i13_device=i13_sw?i13.sw:i13.nw;
-  const i13_plan=supremePlan.lines[0];
-  const i13_apo=50;
-  const i13_act=i13_sw?0:ACT_FEE;
-  const i13_sim=0;
-  const i13_protect=12;
-  const i13_taxable=i13_device+i13_apo+i13_act+i13_sim;
-  const i13_otd=i13_device+i13_plan+i13_apo+i13_act+i13_sim+i13_protect+i13_taxable*TAX;
-
-  // --- Card 3: iPhone 16e 128GB ---
-  const i16e=PHONES.find(p=>p.id==='i16e_128');
-  const i16e_lt=_dealLt.i16e;
-  const i16e_sw=i16e_lt==='switcher';
-  const i16e_device=i16e_sw?i16e.sw:i16e.nw;
-  const i16e_plan=supremePlan.lines[0];
-  const i16e_apo=75;
-  const i16e_act=i16e_sw?0:ACT_FEE;
-  const i16e_sim=0;
-  const i16e_protect=12;
-  const i16e_taxable=i16e_device+i16e_apo+i16e_act+i16e_sim;
-  const i16e_otd=i16e_device+i16e_plan+i16e_apo+i16e_act+i16e_sim+i16e_protect+i16e_taxable*TAX;
-
-  // --- Card 4: Select UNL ---
-  const sel_lt=_dealLt.sel;
-  const sel_sw=sel_lt==='switcher';
-  const selDevId = 'debs3';
-  const selDev=PHONES.find(p=>p.id===selDevId)||PHONES.find(p=>p.id==='icon');
-  const sel_device=sel_sw?(selDev.sw_o??selDev.sw):(selDev.nw_o??selDev.nw);
-  _lowestSelDeal={p:selDev, price:sel_device};
-  const sel_plan=PLANS.find(p=>p.id==='select').lines[0]; // $40
-  const sel_act=sel_sw?0:ACT_FEE;
-  const sel_sim=0;
-  const sel_apo=sel_sw?25:0; // $25 min acc bundle for SW
-  const sel_protect=8;
-  const sel_taxable=sel_device+sel_act+sel_sim+sel_apo;
-  const sel_otd=sel_device+sel_plan+sel_act+sel_sim+sel_apo+sel_protect+sel_taxable*TAX;
-  const sel_name=selDev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');
-
-  const ltToggle=(card,lt)=>`<div onclick="event.stopPropagation();toggleDealLt('${card}')" style="display:inline-flex;gap:0;border:1px solid var(--bd2);border-radius:var(--r2);overflow:hidden;margin-bottom:6px;cursor:pointer">
-    <span style="padding:2px 8px;font-size:9px;font-weight:800;background:${lt==='switcher'?'var(--warn)':'transparent'};color:${lt==='switcher'?'#000':'var(--t3)'}">SW</span>
-    <span style="padding:2px 8px;font-size:9px;font-weight:800;background:${lt==='new'?'var(--g)':'transparent'};color:${lt==='new'?'#000':'var(--t3)'}">NEW</span>
-  </div>`;
-
-  $('deal-strip').innerHTML=`
-    <div class="deal-card android" onclick="launchDeal('iconplus-up')">
-      <div class="deal-tag">📱 Android Upgrade</div>
-      <div class="deal-name">Icon Plus 2026</div>
-      <div class="deal-price">${fmt(Math.round(ip_otd*100)/100)}</div>
-      <div class="deal-sub">$${ip_device} + $25 act + tax</div>
-    </div>
-    <div class="deal-card select" onclick="launchDeal('i13')">
-      <div class="deal-tag">📱 iPhone 13</div>
-      ${ltToggle('i13',i13_lt)}
-      <div class="deal-price">${fmt(Math.round(i13_otd*100)/100)}</div>
-      <div class="deal-sub">${i13_sw?'FREE':'$49.99'} · Supreme · $50 acc · Protect</div>
-    </div>
-    <div class="deal-card iphone" onclick="launchDeal('i16e')">
-      <div class="deal-tag">📱 iPhone 16e</div>
-      ${ltToggle('i16e',i16e_lt)}
-      <div class="deal-price">${fmt(Math.round(i16e_otd*100)/100)}</div>
-      <div class="deal-sub">${i16e_sw?'FREE':'$99.99'} · Supreme · $75 acc · Protect</div>
-    </div>
-    <div class="deal-card android" onclick="launchDeal('select')">
-      <div class="deal-tag" style="color:var(--warn)">⭐ Select UNL</div>
-      <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
-        ${ltToggle('sel',sel_lt)}
-        <span onclick="event.stopPropagation();toggleDealSelAp()" style="display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1px solid var(--bd2);border-radius:6px;cursor:pointer;font-size:9px;font-weight:800;color:${_dealSelAp?'var(--g)':'var(--t3)'}">
-          ABP <span style="width:16px;height:9px;background:${_dealSelAp?'var(--g)':'var(--bd2)'};border-radius:20px;position:relative;display:inline-block"><span style="position:absolute;width:5px;height:5px;background:#fff;border-radius:50%;top:2px;left:${_dealSelAp?'9px':'2px'}"></span></span>
-        </span>
-      </div>
-      <div class="deal-price" style="color:var(--warn)">${fmt(Math.round(sel_otd*100)/100)}</div>
-      <div class="deal-sub">${sel_name} · $40 Select${sel_sw?' · $25 acc':''} · Protect</div>
-    </div>`;
-}
-
-function launchDeal(type){
-  resetAll();
-  if(type==='iconplus-up'){
-    setAcct('aal');
-    setTxnType('upgrade');
-    addLine('v');
-    const l=S.lines[0]; l.lt='upgrade'; l.device='iconp'; l.upQual=true;
-  } else if(type==='i13'){
-    setPlan('supreme');
-    S.apoPerDevice=50; $('apo-inp').value=50; updateApoTiles(50);
-    addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.i13; l.device='i13_128'; l.protect=true; l.protectTier=12;
-  } else if(type==='i16e'){
-    setPlan('supreme');
-    S.apoPerDevice=75; $('apo-inp').value=75; updateApoTiles(75);
-    addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.i16e; l.device='i16e_128'; l.protect=true; l.protectTier=12;
-  } else if(type==='select'){
-    setPlan('select');
-    S.ap=_dealSelAp;
-    addLine('v');
-    const l=S.lines[0]; l.lt=_dealLt.sel; l.device=_lowestSelDeal?_lowestSelDeal.p.id:''; l.protect=true; l.protectTier=8;
-    renderPlanGrid();
-  }
-  // Re-render lines so device dropdown shows selected value
-  renderLines();
-  update();
-  document.getElementById('lines-container').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-// ============================================================
-// ============================================================
-// ============================================================
-// WIZARD
-// ============================================================
-// ── Cash OTD suggestion pools ──
-// SW: iPhone 16e | Android: moto edge, moto g stylus (randomized)
-const CASH_SW_IPHONE  = ['i16e_128'];
-const CASH_SW_ANDROID = ['medge','mgsty'];
-// NEW: iPhone 13 | Android: moto g stylus, moto edge (randomized)
-const CASH_NW_IPHONE  = ['i13_128'];
-const CASH_NW_ANDROID = ['mgsty','medge'];
-
-
-
-function toggleWizard(){
-  const body=$('wizard-body'),chev=$('wizard-chevron');
-  const open=body.style.display==='none';
-  body.style.display=open?'block':'none';
-  chev.style.transform=open?'rotate(180deg)':'rotate(0deg)';
-}
-
-function wizPPPType(){return W.ppptype==='prog'?'prog':(W.ppptype?'bread':null);}
-function wizAPR(){return W.ppptype==='bread14'?14.99:0;}
-
-function setWiz(key,val){
-  W[key]=val;
-  const hi=(id,on)=>{const el=$(id);if(el)el.classList.toggle('on',on);};
-  if(key==='ppp'){
-    hi('wiz-ppp-yes',val===true);hi('wiz-ppp-no',val===false);
-    $('wiz-ppptype-row').style.display=val?'block':'none';
-    $('wiz-approval-row').style.display=val?'block':'none';
-    if(!val){W.ppptype=null;W.approval=0;W.tab=null;}
-  }
-  if(key==='ppptype'||key==='pa'){
-    W.ppptype=val; // always store in ppptype
-    hi('wiz-pt-prog',val==='prog');hi('wiz-pt-bread0',val==='bread0');hi('wiz-pt-bread14',val==='bread14');
-    updateWizApprovalHint();
-  }
-  if(key==='approval') updateWizApprovalHint();
-  if(key==='lines'){[1,2,3,4,5].forEach(n=>hi('wiz-lines-'+n,n===val));W.tab=null;}
-  if(key==='brand'){hi('wiz-brand-iphone',val==='iphone');hi('wiz-brand-android',val==='android');hi('wiz-brand-mix',val==='mix');W.tab=null;}
-  if(key==='lt'){hi('wiz-lt-sw',val==='sw');hi('wiz-lt-new',val==='new');W.tab=null;}
-  if(key==='anchortype'){
-    const hi2=(id,on)=>{const el=$(id);if(el)el.classList.toggle('on',on);};
-    hi2('wiz-at-device',val==='device'); hi2('wiz-at-tablet',val==='tablet');
-    W.tab=null; hi2('wiz-tab-a9',false); hi2('wiz-tab-a11',false);
-  }
-  if(key==='tab'){hi('wiz-tab-a9',val==='taba9p');hi('wiz-tab-a11',val==='taba11p');}
-  // Reset anchortype when key inputs change
-  if(['ppp','lines','brand','lt','ppptype'].includes(key)){W.anchortype=null;W.tab=null;}
-  refreshWizTabRow();
-  buildWizResult();
-}
-
-function updateWizApprovalHint(){
-  const hint=$('wiz-approval-hint');if(!hint||!W.ppptype||W.approval<=0)return;
-  if(W.ppptype==='prog') hint.textContent='Pre-tax budget';
-  else hint.textContent='Incl. tax'+(W.ppptype==='bread14'?' +14.99% APR':'');
-}
-
-function wizLineBudget(){
-  if(!W.ppp||!W.ppptype||W.approval<=0||!W.lines) return Infinity;
-  if(W.ppptype==='prog') return W.approval/W.lines;
-  return (W.approval/(1+TAX))/W.lines;
-}
-
-function wizPickBest(list,lt,ppp,lineBudget,apo){
-  const lineCount=W.lines||1;
-
-  if(!ppp){
-    // Cash OTD: pick first device, handle over-limit positionally
-    for(const id of list){
-      const p=PHONES.find(ph=>ph.id===id);if(!p) continue;
-      const promoPrice=lt==='sw'?p.sw:p.nw;
-      const otherPrice=lt==='sw'?(p.sw_o??promoPrice):(p.nw_o??promoPrice);
-      const maxL=lt==='new'?(p.maxLinesNw||p.maxLines):p.maxLines;
-      return {id,p,price:promoPrice,otherPrice,maxL,fillId:null,fillPrice:null};
-    }
-    return null;
-  }
-
-  // PPP mode: anchor on line 1 (≥$149.99), cheapest device fills rest
-  for(const anchorId of list){
-    const a=PHONES.find(ph=>ph.id===anchorId);if(!a) continue;
-    const anchorPrice=lt==='sw'?a.sw:a.nw;
-    if(anchorPrice<149.99) continue;
-    const anchorMaxL=lt==='new'?(a.maxLinesNw||a.maxLines):a.maxLines;
-
-    // Find cheapest fill device for remaining lines
-    let fillDev=null,fillPrice=Infinity,fillMaxL=null;
-    for(const fillId of list){
-      const f=PHONES.find(ph=>ph.id===fillId);if(!f) continue;
-      const fp=lt==='sw'?f.sw:f.nw;
-      const fMaxL=lt==='new'?(f.maxLinesNw||f.maxLines):f.maxLines;
-      if(fMaxL&&fMaxL<lineCount-1) continue; // must cover remaining lines
-      if(fp<fillPrice){fillPrice=fp;fillDev=f;fillMaxL=fMaxL;}
-    }
-    if(!fillDev){fillDev=a;fillPrice=anchorPrice;fillMaxL=anchorMaxL;}
-
-    // Budget check: 1×anchor + (lineCount-1)×fill + all apo ≤ approval
-    if(W.approval>0){
-      const cap=W.approval/(W.ppptype==='bread'?(1+TAX):1);
-      if(anchorPrice+(lineCount-1)*fillPrice+apo*lineCount>cap) continue;
-    }
-
-    return {id:anchorId,p:a,price:anchorPrice,otherPrice:anchorPrice,maxL:anchorMaxL,
-            fillId:fillDev.id,fillDev,fillPrice,fillMaxL};
-  }
-  return null;
-}
-
-function wizCanQualifyPPP(brand,lt){
-  // Check if a valid PPP deal can be built without a tablet anchor
-  // For mixed-device scenarios: 1 anchor line + remaining cheap lines must fit budget
-  const cap=W.approval>0?W.approval/(W.ppptype==='bread'?(1+TAX):1):Infinity;
-  const apo=brand==='iphone'?(lt==='sw'?75:50):45;
-  const list=brand==='iphone'?(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW):WIZ_ANDROID;
-  const cheapList=brand==='iphone'?(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW):WIZ_ANDROID;
-
-  // Try each device as anchor on line 1, cheapest qualifying device on remaining lines
-  for(const anchorId of list){
-    const a=PHONES.find(p=>p.id===anchorId);if(!a) continue;
-    const ap=lt==='sw'?a.sw:a.nw;
-    if(ap<149.99) continue; // anchor must be ≥$149.99
-    // Find cheapest device for remaining lines (can be same or cheaper)
-    let cheapPrice=ap;
-    for(const cid of cheapList){
-      const c=PHONES.find(p=>p.id===cid);if(!c) continue;
-      const cp=lt==='sw'?c.sw:c.nw;
-      const maxL=lt==='new'?(c.maxLinesNw||c.maxLines):c.maxLines;
-      if(maxL&&maxL<W.lines-1) continue; // can't cover remaining lines
-      cheapPrice=cp; break;
-    }
-    const totalNeeded=ap+cheapPrice*(W.lines-1)+apo*W.lines;
-    if(cap===Infinity||totalNeeded<=cap) return true;
-  }
-  // Also check positional (e.g. 5× same device where line 5 hits $149.99)
-  for(const id of list){
-    const p=PHONES.find(ph=>ph.id===id);if(!p) continue;
-    const price=lt==='sw'?p.sw:p.nw;
-    const otherPrice=lt==='sw'?(p.sw_o??price):(p.nw_o??price);
-    const maxL=lt==='new'?(p.maxLinesNw||p.maxLines):p.maxLines;
-    if(maxL&&W.lines>maxL&&otherPrice>=149.99){
-      let tot=0;
-      for(let i=1;i<=W.lines;i++) tot+=(i>maxL?otherPrice:price)+apo;
-      if(cap===Infinity||tot<=cap) return true;
-    }
-  }
-  return false;
-}
-
-function refreshWizTabRow(){
-  const row=$('wiz-tab-row');
-  const atRow=$('wiz-anchortype-row');
-  if(!row||!atRow) return;
-  if(!W.ppp||!W.ppptype||!W.lines||!W.brand||!W.lt){
-    row.style.display='none'; atRow.style.display='none'; return;
-  }
-  const apo=W.brand==='iphone'?(W.lt==='sw'?75:50):45;
-  const lb=wizLineBudget();
-
-  // Check if Android/Mix has a qualifying device anchor
-  const andSelf=wizPickBest(WIZ_ANDROID,W.lt,true,lb,apo);
-  const iphList=W.lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW;
-  const iphSelf=wizPickBest(iphList,W.lt,true,lb,apo);
-
-  const isIphonePPP=(W.brand==='iphone');
-  const androidCanSelfQual=(W.brand==='android'||W.brand==='mix')&&!!andSelf;
-
-  if(androidCanSelfQual&&!isIphonePPP){
-    // Show anchor type question: device vs tablet
-    atRow.style.display='block';
-    if(W.anchortype==='tablet'){
-      // Show tablet picker
-      row.style.display='block';
-    } else {
-      row.style.display='none';
-      if(W.anchortype==='device') W.tab=null;
-    }
-  } else {
-    // iPhone PPP or no self-qualifying device — go straight to tablet picker
-    atRow.style.display='none';
-    W.anchortype=null;
-    const needsTab=isIphonePPP?!iphSelf:(!andSelf&&!iphSelf);
-    row.style.display=needsTab?'block':'none';
-    if(!needsTab) W.tab=null;
-  }
-}
-
-function buildWizResult(){
-  const el=$('wiz-result');
-
-  // ── Gates ──
-  if(W.ppp===null||W.lines===null||W.brand===null||W.lt===null){el.style.display='none';return;}
-  if(W.ppp&&!W.ppptype){el.style.display='none';return;}
-  if(W.ppp&&W.approval<=0){el.style.display='none';return;}
-  const tabRowVis=$('wiz-tab-row')&&$('wiz-tab-row').style.display==='block';
-  if(tabRowVis&&!W.tab){el.style.display='none';return;}
-  const atRowVis=$('wiz-anchortype-row')&&$('wiz-anchortype-row').style.display==='block';
-  if(atRowVis&&!W.anchortype){el.style.display='none';return;}
-
-  const {lines,brand,lt,ppp,tab,anchortype}=W;
-  const isSW=lt==='sw';
-  const ppptype=wizPPPType(),apr=wizAPR();
-  const plan=PLANS.find(p=>p.id==='supreme');
-  const planCost=plan.lines[lines-1];
-
-  // ── Helpers ──
-  function devPrice2(dev,isSW2){
-    const pr=isSW2?dev.sw:dev.nw;
-    const maxL=isSW2?dev.maxLines:(dev.maxLinesNw||dev.maxLines);
-    return pr; // promo price; over-limit handled per-line
-  }
-  function lineArr(devId,cnt,isSW2){
-    const dev=PHONES.find(p=>p.id===devId); if(!dev) return [];
-    const pr=isSW2?dev.sw:dev.nw;
-    const prO=isSW2?(dev.sw_o??pr):(dev.nw_o??pr);
-    const maxL=isSW2?dev.maxLines:(dev.maxLinesNw||dev.maxLines);
-    const arr=[];
-    for(let i=0;i<cnt;i++){
-      const ov=maxL&&(i+1)>maxL;
-      arr.push({id:devId,n:dev.n,price:ov?prO:pr,ov});
-    }
-    return arr;
-  }
-  function calcOTD(lArr,apoEach,tabDev){
-    const actFeeEach=isSW?0:ACT_FEE;
-    const totalDev=lArr.reduce((s,l)=>s+l.price,0);
-    const tabPrice=tabDev?tabDev.price:0;
-    const totalApo=apoEach*lArr.length;
-    const taxable=totalDev+tabPrice+actFeeEach*lArr.length+totalApo;
-    const otd=planCost+totalDev+tabPrice+actFeeEach*lArr.length+totalApo+taxable*TAX;
-    return {otd,totalDev,tabPrice,totalApo,actFeeEach};
-  }
-  function shortName(n){return n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,'');}
-
-  // ── Card builder ──
-  function resultCard(title,color,lArr,apoEach,tabDev,pppInfo,devId2){
-    const {otd,totalApo,actFeeEach}=calcOTD(lArr,apoEach,tabDev);
-    const monthly=planCost+(tabDev?TABLET_PLAN:0);
-    const lineBreak=lArr.map((l,i)=>`Line ${i+1}: ${shortName(l.n)} ${l.price===0?'FREE':'$'+l.price}${l.ov?' <span style="color:var(--warn);font-size:8px">(other plan)</span>':''}`).join('<br>');
-    const tabLine=tabDev?`<br>${shortName(tabDev.n)}: $${tabDev.price} +$${TABLET_PLAN}/mo (anchor)`:'' ;
-    const apoLine=`<br>$${apoEach} acc ×${lArr.length}`;
-    const actLine=isSW?'<br>Act waived (SW promo)':`<br>$${actFeeEach} act ×${lArr.length}`;
-    const pppLine=pppInfo?`<br><span style="color:var(--prog)">${pppInfo}</span>`:'<br>Cash OTD + tax';
-    const buildBtn=devId2?
-      `<button onclick="launchWizardWith('${devId2}'${tabDev?`,'${tabDev.id}'`:''})" style="width:100%;padding:8px;background:${color};border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:10px;font-weight:900;cursor:pointer;text-transform:uppercase">▶ Build</button>`:
-      `<button onclick="launchWizard()" style="width:100%;padding:8px;background:${color};border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:10px;font-weight:900;cursor:pointer;text-transform:uppercase">▶ Build</button>`;
-    return `
-      <div style="background:var(--s2);border:1px solid ${color}44;border-radius:var(--r2);overflow:hidden;display:flex;flex-direction:column">
-        <div style="background:${color}11;padding:8px 12px;border-bottom:1px solid ${color}22">
-          <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${color}">${title}</div>
-          <div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${fmt(Math.round(otd*100)/100)}</div>
-          <div style="font-size:8px;color:var(--t3)">${pppInfo?'PPP':'OTD Today'} · Supreme</div>
-        </div>
-        <div style="padding:10px 12px;flex:1;font-size:9px;color:var(--t3);line-height:1.8">
-          ${lineBreak}${tabLine}${apoLine}${actLine}${pppLine}
-        </div>
-        <div style="padding:0 10px 10px">${buildBtn}</div>
-      </div>`;
-  }
-
-  // ── CASH OTD ──
-  if(!ppp){
-    const apoIph=isSW?75:50; // SW iPhone $75, New iPhone $50
-    const apoAnd=50; // edge/stylus $50
-
-    let card1='',card2='';
-
-    if(brand==='iphone'||brand==='mix'){
-      const iphId=isSW?'i16e_128':'i13_128';
-      const lA=lineArr(iphId,lines,isSW);
-      card1=resultCard('📱 '+(isSW?'16e SW':'iPhone 13 New'),'var(--g)',lA,apoIph,null,null,iphId);
-    }
-    if(brand==='android'||brand==='mix'){
-      const andPool=isSW?['medge','mgsty']:['mgsty','medge'];
-      const r=Math.random();
-      const pick1=andPool[r<0.5?0:1];
-      const pick2=andPool[r<0.5?1:0];
-      const lA1=lineArr(pick1,lines,isSW);
-      const lA2=lineArr(pick2,lines,isSW);
-      if(brand==='mix'){
-        card2=resultCard('🤖 Android Pick','var(--indigo)',lA1,apoAnd,null,null,pick1);
-      } else {
-        card1=resultCard('🤖 Option 1 — '+shortName(PHONES.find(p=>p.id===pick1).n),'var(--indigo)',lA1,apoAnd,null,null,pick1);
-        card2=resultCard('🤖 Option 2 — '+shortName(PHONES.find(p=>p.id===pick2).n),'var(--warn)',lA2,apoAnd,null,null,pick2);
-      }
-    }
-    if(brand==='iphone'&&!card2){
-      // iPhone only: show same device, no second option needed — show with and without APO
-      const iphId=isSW?'i16e_128':'i13_128';
-      const lA2=lineArr(iphId,lines,isSW);
-      card2=resultCard('📱 With Accessories','var(--bread)',lA2,apoIph,null,null,iphId);
-    }
-
-    el.style.display='block';
-    el.innerHTML=`
-      <div style="margin-bottom:4px;font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3)">
-        Cash OTD · ${lines} Line${lines>1?'s':''} · ${isSW?'Port-In (SW)':'New Line'}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${card1}${card2}</div>`;
-    return;
-  }
-
-  // ── PPP ──
-  const tabAnchor=tab?TABLETS.find(t=>t.id===tab):null;
-  const tabPrice=tabAnchor?tabAnchor.price:0;
-  const tabPlan=tabAnchor?TABLET_PLAN:0;
-  const totalLines=lines+(tabAnchor?1:0);
-
-  let voiceLines=[];
-
-  if(brand==='iphone'||brand==='mix'){
-    const iphId=isSW?'i16e_128':'i13_128';
-    const lA=lineArr(iphId,lines,isSW);
-    voiceLines=lA;
-  }
-
-  if(brand==='android'||brand==='mix'){
-    // S25 anchor strategy: fit as many S25 as budget allows, fill rest with edge/stylus
-    const cap=W.approval/(ppptype==='bread'?(1+TAX):1);
-    const s25=PHONES.find(p=>p.id==='s25');
-    const fillId=['medge','mgsty'].find(id=>{
-      const f=PHONES.find(p=>p.id===id);
-      const fml=isSW?f.maxLines:(f.maxLinesNw||f.maxLines);
-      return !fml||fml>=lines;
-    })||'medge';
-    const fillDev=PHONES.find(p=>p.id===fillId);
-    const s25Price=isSW?s25.sw:s25.nw;
-    const fillPrice=isSW?fillDev.sw:fillDev.nw;
-    const apo45=50; // edge/stylus fill = $50
-    // How many S25s fit?
-    let s25Count=0;
-    for(let n=lines;n>=1;n--){
-      const fillCount=lines-n;
-      const total=n*s25Price+fillCount*fillPrice+(tabAnchor?tabPrice:0)+apo45*lines;
-      if(total<=cap){s25Count=n;break;}
-    }
-    if(s25Count===0) s25Count=1; // always at least 1 anchor
-    const andLines=[];
-    for(let i=0;i<s25Count;i++) andLines.push({id:'s25',n:s25.n,price:s25Price,anchor:i===0});
-    for(let i=s25Count;i<lines;i++) andLines.push({id:fillId,n:fillDev.n,price:fillPrice});
-    if(brand==='mix') voiceLines=[...voiceLines.slice(0,Math.ceil(lines/2)),...andLines.slice(0,Math.floor(lines/2))];
-    else voiceLines=andLines;
-  }
-
-  // PPP calc
-  // APO per device: iPhone SW $75, iPhone 13 (new) $50, S25 $75, edge/stylus $50
-  const apoIphSW=75, apoIphNew=50, apoS25=75, apoAndFill=50;
-  const apo=brand==='iphone'?(isSW?apoIphSW:apoIphNew):apoAndFill;
-  const totalDev=voiceLines.reduce((s,l)=>s+l.price,0);
-  // Per-device APO: S25 = $75, others = $50
-  const totalApoCalc=voiceLines.reduce((s,l)=>s+(l.id==='s25'?apoS25:apo),0);
-  const finBase=totalDev+tabPrice+totalApoCalc;
-  const actFee=isSW?0:ACT_FEE;
-
-  // Budget overflow check
-  if(W.approval>0){
-    const cap2=W.approval/(ppptype==='bread'?(1+TAX):1);
-    if(finBase>cap2){
-      el.style.display='block';
-      el.innerHTML=`<div style="padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--r2);font-size:10px;color:var(--err)">⚠ Total devices+acc ${fmt(finBase)} exceeds approval. Try fewer lines or select tablet anchor mode.</div>`;
-      return;
-    }
-  }
-
-  let pppOTD=0,pppMoLine='',pppNote='';
-  if(ppptype==='prog'){
-    const tot=finBase*(1+PROG_FEE);
-    pppOTD=PROG_INIT;
-    pppMoLine='Progressive: '+fmt(Math.floor(tot/3*100)/100)+'/mo × 3 (total '+fmt(tot)+')';
-    pppNote='$1 today · 10% fee + 8.25% tax · '+fmt(finBase)+' financed';
-  } else {
-    const bt=finBase*(1+TAX);
-    const r=apr>0?apr/100/12:0;
-    const bmo=apr===0?bt/24:bt*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1);
-    pppOTD=0;
-    pppMoLine='Bread: '+fmt(bmo)+'/mo × 24 ('+apr+'% APR)';
-    pppNote='$0 down · '+fmt(bt)+' incl. tax';
-  }
-
-  const taxable=actFee*lines;
-  const otd=planCost+pppOTD+actFee*lines+taxable*TAX;
-  const monthly=planCost+tabPlan;
-
-  const dc={};
-  voiceLines.forEach(l=>{
-    dc[l.id]=dc[l.id]||{n:shortName(l.n),c:0};dc[l.id].c++;
-  });
-  const devStr=Object.values(dc).map(d=>(d.c>1?d.c+'× ':'')+d.n).join(' + ');
-
-  el.style.display='block';
-  el.innerHTML=`
-    <div style="background:var(--s2);border:1px solid rgba(0,169,79,.2);border-radius:var(--r2);overflow:hidden">
-      <div style="background:rgba(0,169,79,.08);padding:10px 14px;border-bottom:1px solid rgba(0,169,79,.15)">
-        <div style="font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:2px">PPP Deal — ${totalLines} Line${totalLines>1?'s':''}</div>
-        <div style="font-family:'Bebas Neue';font-size:14px;color:var(--t1);letter-spacing:.3px;line-height:1.3">Supreme · ${devStr}${tabAnchor?' + '+shortName(tabAnchor.n)+' (anchor)':''}</div>
-      </div>
-      <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div>
-          <div style="font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">OTD Today</div>
-          <div style="font-family:'Bebas Neue';font-size:30px;color:var(--g);line-height:1">${fmt(Math.round(otd*100)/100)}</div>
-          <div style="font-size:9px;color:var(--t3);margin-top:4px;line-height:1.7">
-            ${voiceLines.map((l,i)=>`Line ${i+1}: ${shortName(l.n)} $${l.price}${l.anchor?' <span style="color:var(--ok);font-size:8px">(anchor)</span>':''}`).join('<br>')}
-            ${tabAnchor?'<br>'+shortName(tabAnchor.n)+': $'+tabPrice+' +$'+TABLET_PLAN+'/mo':''}
-            <br>Acc: ${voiceLines.map(l=>l.id==='s25'?'$'+apoS25:('$'+apo)).join(' + ')}
-            <br>${isSW?'Act waived':'$'+actFee+' act ×'+lines}
-            <br><span style="color:var(--prog)">${pppNote}</span>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">Monthly</div>
-          <div style="font-family:'Bebas Neue';font-size:30px;color:var(--t1);line-height:1">${fmt(monthly)}<span style="font-size:12px">/mo</span></div>
-          <div style="font-size:9px;color:var(--t3);margin-top:4px;line-height:1.7">
-            Supreme plan<br>
-            ${tabPlan>0?'$'+tabPlan+' tablet plan<br>':''}
-            <span style="color:var(--prog)">${pppMoLine}</span>
-          </div>
-        </div>
-      </div>
-      <div style="padding:0 14px 12px">
-        <button onclick="launchWizard()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer">▶ Build This Quote</button>
-      </div>
-    </div>`;
-}
-
-function launchWizardWith(devId){
-  // Cash OTD: build quote with specific device for all lines
-  if(!W.lines||!W.lt) return;
-  resetAll(); setPlan('supreme');
-  const {lines,lt}=W;
-  const dev=PHONES.find(p=>p.id===devId);
-  const apo=dev&&dev.brand==='Apple'?(lt==='sw'?75:50):45;
-  S.apoPerDevice=apo; $('apo-inp').value=apo; updateApoTiles(apo);
-  for(let i=0;i<lines;i++){
-    addLine('v');
-    const l=S.lines[S.lines.length-1];
-    l.lt=lt==='sw'?'switcher':'new';
-    l.device=devId;
-    l.protect=true;
-    l.protectTier=dev&&dev.frp>=500?12:8;
-    l.finInclude=false;
-  }
-  renderLines();renderPlanGrid();update();
-  document.getElementById('lines-container').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function launchWizard(){
-  if(!W.lines||!W.brand||!W.lt) return;
-  resetAll(); setPlan('supreme');
-  const {lines,brand,lt,ppp,pa,tab}=W;
-  const ppptype=wizPPPType(),apr=wizAPR();
-  const apo=brand==='iphone'?(lt==='sw'?75:50):45;
-  S.apoPerDevice=apo; $('apo-inp').value=apo; updateApoTiles(apo);
-  if(ppp&&ppptype){
-    S.finOn=true;S.finType=ppptype;S.breadAPR=apr;
-    $('fin-chk').checked=true;$('fin-opts').style.display='block';
-    $('ft-prog').classList.toggle('on',ppptype==='prog');
-    $('ft-bread').classList.toggle('on',ppptype==='bread');
-    $('apr-sec').style.display=ppptype==='bread'?'block':'none';
-    $('prog-freq-sec').style.display=ppptype==='prog'?'block':'none';
-    if(ppptype==='bread'){$('apr0').classList.toggle('on',apr===0);$('apr14').classList.toggle('on',apr===14.99);}
-  }
-  const lb=wizLineBudget();
-  let assignments=[];
-  if(brand==='iphone'){
-    const self=ppp?wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,true,lb,apo):wizPickBest(lt==='sw'?WIZ_IPHONES_SW:WIZ_IPHONES_NW,lt,false,Infinity,apo);
-    const devId=self?self.id:(lt==='sw'?'i16e_128':'i13_128'); // SW→16e, NEW→13
-    for(let i=0;i<lines;i++) assignments.push({cat:'v',device:devId,protect:true,tier:12});
-  } else if(brand==='android'){
-    const self=ppp?wizPickBest(WIZ_ANDROID,lt,true,lb,apo):wizPickBest(WIZ_ANDROID,lt,false,Infinity,apo);
-    const devId=self?self.id:WIZ_ANDROID[0];
-    const restId=(ppp&&self&&self.id==='s25'&&lines>1)
-      ?(WIZ_ANDROID.slice(1).find(id=>{const p2=PHONES.find(ph=>ph.id===id);if(!p2)return false;const ml=lt==='new'?(p2.maxLinesNw||p2.maxLines):p2.maxLines;return !ml||(lines-1)<=ml;})||devId)
-      :devId;
-    for(let i=0;i<lines;i++) assignments.push({cat:'v',device:i===0?devId:restId,protect:!BUDGET_ANDROID.includes(i===0?devId:restId)});
-  } else {
-    const half=Math.ceil(lines/2),rest=lines-half;
-    const id1=lt==='sw'?'i16e_128':'i13_128';
-    const ad=PHONES.find(p=>p.id==='s25')||PHONES.find(p=>p.id==='medge');
-    for(let i=0;i<half;i++) assignments.push({cat:'v',device:id1,protect:true,tier:12});
-    for(let i=0;i<rest;i++) assignments.push({cat:'v',device:ad?ad.id:WIZ_ANDROID[0],protect:true});
-  }
-  assignments.forEach(a=>{
-    addLine(a.cat);
-    const l=S.lines[S.lines.length-1];
-    l.lt=lt==='sw'?'switcher':'new';l.device=a.device;
-    if(a.protect){l.protect=true;l.protectTier=a.tier||8;}
-    if(ppp) l.finInclude=true;
-  });
-  if(tab&&ppp){
-    addLine('t');
-    const tl=S.lines[S.lines.length-1];
-    tl.lt=lt==='sw'?'switcher':'new';tl.device=tab;tl.finInclude=true;
-  }
-  if(ppp) autoIncludeAllPPP();
-  renderLines();renderPlanGrid();update();
-  document.getElementById('lines-container').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function resetAll(){
-  S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
-  $('btn-new').classList.add('active');$('btn-aal').classList.remove('active');
-  $('plan-sec').style.display='block';
-  $('aal-sec').style.display='none';
-  ['aal','up','both'].forEach(x=>$('txn-'+x).classList.toggle('on',x==='aal'));
-  $('lines-title').textContent='Step 3 — Lines';
-  $('ap-chk').checked=true;$('ap-chk').disabled=false;$('ap-slide').classList.remove('off');
-  $('fin-chk').checked=false;$('fin-chk').disabled=true;$('fin-opts').style.display='none';
-  $('fin-slide').classList.add('off');
-  $('ft-prog').classList.add('on');$('ft-bread').classList.remove('on');
-  $('apr-sec').style.display='none';
-  $('apo-inp').value=0; updateApoTiles(0);
-  $('aal-plan-sel').value='supreme';
-  $('aal-lines-sel').value='1';
-  $('lines-container').innerHTML='';
-  renderPlanGrid();update();
-}
-
-function autoIncludeAllPPP(){
-  S.lines.forEach(l=>{
-    if(l.cat==='h') return;
-    const dev2=l.byod?null:devById(l.device,l.cat);
-    const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-    const pr=l.cat==='v'&&dev2?devPrice(dev2,l.lt,linePos,l.upQual!==false):(dev2?dev2.price:0);
-    l.finInclude=!dev2||pr>=149.99;
-    if(l.skeiwatch) l.skeiwatchFin=true;
-  });
-  if(S.apoPerDevice>0){
-    S.apoFin=true;
-    if($('apo-fin-chk'))$('apo-fin-chk').checked=true;
-    $('apo-split-opts').style.display='block';
-  }
-}
-
-function resetWiz(){
-  W={ppp:null,ppptype:null,approval:0,lines:null,brand:null,lt:null,tab:null,anchortype:null};
-  ['ppp-yes','ppp-no','pt-prog','pt-bread0','pt-bread14',
-   'lines-1','lines-2','lines-3','lines-4','lines-5',
-   'brand-iphone','brand-android','brand-mix',
-   'lt-sw','lt-new','tab-a9','tab-a11'
-  ].forEach(id=>{const el=$('wiz-'+id);if(el)el.classList.remove('on');});
-  ['ppptype-row','approval-row','tab-row'].forEach(id=>{
-    const el=$('wiz-'+id);if(el)el.style.display='none';
-  });
-  if($('wiz-result'))$('wiz-result').style.display='none';
-  if($('wiz-approval-inp'))$('wiz-approval-inp').value='';
-}
 
 // ============================================================
 // DM CARD
 // ============================================================
-const ID_CHECK_DEVS=['i13_128','i16e_128'];
+const ID_CHECK_DEVS=['i13_128','i13_256','i13_512','i16e_128','i16e_256','i16e_512'];
 
 function dmDevSummary(voiceLines){
   const dc={};
@@ -3179,17 +2567,21 @@ function showDMCard(){
     const lines=sourceLines.map(l=>({...l,lt:ltOverride||l.lt,upQual:upQualOverride!==undefined?upQualOverride:l.upQual}));
     const lt=ltOverride||(sourceLines.length===1?sourceLines[0].lt:(sourceLines.every(l=>l.lt==='upgrade')?'upgrade':sourceLines.some(l=>l.lt==='switcher')?'switcher':'new'));
 
+    const allV=sourceLines; // all voice lines
     // Group all lines by transaction label — upgrades split by qual status
     const txnGroups={};
+    const planObj0=S.plan?PLANS.find(p=>p.id===S.plan):null;
+    const aalPlanObj0=S.aalPlan?PLANS.find(p=>p.id===S.aalPlan):null;
+    const planShort=(S.acct==='aal'?aalPlanObj0:planObj0)?.full||(S.acct==='aal'?aalPlanObj0:planObj0)?.n||'';
     const addGroup=(arr,catOverride)=>{
       arr.forEach(l=>{
         const dev=l.byod?null:devById(l.device,l.cat||'v');
         const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'BYOD';
         let txn;
-        if(l.lt==='switcher') txn='Switcher';
+        if(l.lt==='switcher') txn=planShort?`Switcher — ${planShort}`:'Switcher';
         else if(l.lt==='upgrade') txn=l.upQual!==false?'Qualified Upgrade':'Non-Qualified Upgrade';
-        else txn='New Line';
-        if(catOverride) txn=catOverride; // tablets, hotspots always just "Add-on"
+        else txn=planShort?`New Line — ${planShort}`:'New Line';
+        if(catOverride) txn=catOverride;
         txnGroups[txn]=txnGroups[txn]||{};
         txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
       });
@@ -3206,25 +2598,53 @@ function showDMCard(){
     tabLines.forEach(l=>{
       const dev=devById(l.device,'t');
       const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Tablet';
-      const txn=l.lt==='upgrade'?'Tablet Upgrade':'Tablet Add-on';
+      const txn=l.lt==='upgrade'?'Tablet Upgrade':'Add a Line — Tablet';
       txnGroups[txn]=txnGroups[txn]||{};
       txnGroups[txn][n]=(txnGroups[txn][n]||0)+1;
     });
     hotspotLines.forEach(l=>{
       const dev=devById(l.device,'h');
       const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Hotspot';
-      txnGroups['Hotspot Add-on']=txnGroups['Hotspot Add-on']||{};
-      txnGroups['Hotspot Add-on'][n]=(txnGroups['Hotspot Add-on'][n]||0)+1;
+      txnGroups['Add a Line — Hotspot']=txnGroups['Add a Line — Hotspot']||{};
+      txnGroups['Add a Line — Hotspot'][n]=(txnGroups['Add a Line — Hotspot'][n]||0)+1;
     });
 
     const txnKeys=Object.keys(txnGroups);
-    let fullDevStr='';
-    txnKeys.forEach(txn=>{
-      const devLine=Object.entries(txnGroups[txn]).map(([n,c2])=>(c2>1?c2+'x ':'')+n).join('<br>');
-      fullDevStr+=`<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.5);margin-bottom:2px">${txn}</div><div>${devLine}</div></div>`;
+    // Build per-device feature map for inline display
+    const devFeatureMap={};
+    allV.forEach(l=>{
+      const dev=l.byod?null:devById(l.device,'v');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):(l.byod?'BYOD':'Device');
+      const feats=[];
+      if(l.protect){const tier=l.byod?(l.protectTier||8):protectCost(dev?dev.frp:0);feats.push('Protect $'+tier+'/mo');}
+      if(l.upgplus) feats.push('Upgrade Plus $5/mo');
+      if(l.intl) feats.push('Intl $10/mo');
+      if(l.intl15) feats.push('Intl $15/mo');
+      if(feats.length) devFeatureMap[n]=(devFeatureMap[n]||[]).concat(feats);
+    });
+    // Tablet/watch plan features per device
+    tabLines.forEach(l=>{
+      const dev=devById(l.device,'t');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Tablet';
+      devFeatureMap[n]=(devFeatureMap[n]||[]).concat(['Tablet Plan $15/mo']);
+    });
+    watchLines.filter(l=>l.lt!=='upgrade'&&!l.byod).forEach(l=>{
+      const dev=devById(l.device,'w');
+      const n=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,''):'Watch';
+      devFeatureMap[n]=(devFeatureMap[n]||[]).concat(['Watch Plan $10/mo']);
     });
 
-    // OTD for this specific lt
+    let fullDevStr='';
+    txnKeys.forEach(txn=>{
+      Object.entries(txnGroups[txn]).forEach(([n,c2])=>{
+        const devLabel=(c2>1?c2+'x ':'')+n;
+        const feats=devFeatureMap[n];
+        const featLine=feats&&feats.length?`<div style="font-size:9px;font-weight:700;color:rgba(0,0,0,.5);margin-top:1px;line-height:1.5">${feats.join(' · ')}</div>`:'';
+        fullDevStr+=`<div style="margin-bottom:6px"><div style="font-size:7px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.4);margin-bottom:1px">${txn}</div><div style="font-size:19px;font-weight:900;color:rgba(0,0,0,.9);line-height:1.2">${devLabel}</div>${featLine}</div>`;
+      });
+    });
+
+    // Savings vs FRP — voice + tablet + watch
     let frpTotal=0,devPriceTotal=0;
     lines.forEach((l,i)=>{
       const dev=l.byod?null:devById(l.device,'v');
@@ -3232,45 +2652,63 @@ function showDMCard(){
       frpTotal+=dev.frp||0;
       devPriceTotal+=devPrice(dev,l.lt,i+1,l.upQual!==false);
     });
+    tabLines.forEach(l=>{
+      const dev=devById(l.device,'t');
+      if(!dev) return;
+      frpTotal+=dev.frp||0;
+      devPriceTotal+=(l.lt==='upgrade'?dev.frp:dev.price);
+    });
+    watchLines.forEach(l=>{
+      if(l.byod) return;
+      const dev=devById(l.device,'w');
+      if(!dev) return;
+      frpTotal+=dev.frp||0;
+      devPriceTotal+=(l.lt==='upgrade'?dev.frp:dev.price);
+    });
     const savings=frpTotal-devPriceTotal;
     const savingsStr=savings>1?fmt(savings):null;
 
-    // Accessories
-    const allV=sourceLines;
-    const apoTotal=S.apoPerDevice*allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
+    // Accessories — APO applies to all device lines (voice, tablet, watch, hotspot)
+    const allDeviceLines=[...allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v'),...tabLines,...watchLines.filter(l=>!l.byod&&l.device),...hotspotLines.filter(l=>l.device)];
+    const apoTotal=S.apoPerDevice*allDeviceLines.length;
     const skeiwatchTotal=allV.reduce((s,l)=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
     const totalAcc=apoTotal+skeiwatchTotal;
     const hasProtect=allV.some(l=>l.protect);
     const needsIdCheck=lt==='switcher'&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
+    const i16eSW=lt==='switcher'&&voiceLines.some(l=>l.device==='i16e_128');
+    const isAALcard=S.acct==='aal';
 
-    // Recalculate OTD — if PPP selected, devices cost $1 (prog) or $0 (bread) today
+    // ── OTD CALCULATION ──────────────────────────────────────────
+    // Shared helpers
+    const planObj2=S.plan?PLANS.find(p=>p.id===S.plan):null;
+    const voiceNewLines=voiceLines.filter(l=>l.lt!=='upgrade');
+    const planCostOTD=voiceNewLines.length>0&&planObj2?planObj2.lines[Math.min(voiceLines.length,5)-1]:0;
+    const voiceActFeeOTD=(lt==='switcher'?0:ACT_FEE)*voiceLines.length; // SW = waived
+    const tabActFeeOTD=ACT_FEE*tabLines.length;
+    const watchNewLines=watchLines.filter(l=>l.lt!=='upgrade'&&!l.byod);
+    const watchActFeeOTD=ACT_FEE*watchNewLines.length;
+    const hsActFeeOTD=ACT_FEE*hotspotLines.length;
+    const allActFeeOTD=(voiceActFeeOTD+tabActFeeOTD+watchActFeeOTD+hsActFeeOTD)*(1+TAX);
+    const tabFirstMonthOTD=tabLines.length*TABLET_PLAN;
+    const watchFirstMonthOTD=watchNewLines.length*WATCH_PLAN;
+    const protCostOTD=allV.reduce((s,l)=>{if(!l.protect)return s;const dev=l.byod?null:devById(l.device,'v');return s+protectCost(dev?dev.frp:0);},0);
+    const featCostOTD=allV.reduce((s,l)=>s+(l.upgplus?5:0)+(l.intl?INTL_CALL:0)+(l.intl15?15:0),0);
+
     let otdAmt=0;
     const devT=lines.reduce((s,l,i)=>{const dev=l.byod?null:devById(l.device,'v');return s+(dev?devPrice(dev,l.lt,i+1,l.upQual!==false):0);},0);
     const tabT=tabLines.reduce((s,l)=>{const t=devById(l.device,'t');return s+(t?t.price:0);},0);
     const fb=devT+tabT+totalAcc;
+
     if(S.finOn&&c.hasQual){
-      // Device cost replaced by down payment; acc tax still due today
+      // PPP: device prices replaced by down payment ($1 prog / $0 bread)
       const downPayment=S.finType==='prog'?PROG_INIT:0;
-      otdAmt+=downPayment;
-      const protCost=allV.reduce((s,l)=>{if(!l.protect)return s;const dev=l.byod?null:devById(l.device,'v');return s+protectCost(dev?dev.frp:0);},0);
-      const isUpgradeOnly=lines.every(l=>l.lt==='upgrade');
-      const planCost2=isUpgradeOnly?0:(S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0);
-      const actFee2=lt==='switcher'?0:ACT_FEE*voiceLines.length;
-      otdAmt+=planCost2+actFee2*(1+TAX)+protCost;
+      otdAmt=downPayment+allActFeeOTD+tabFirstMonthOTD+watchFirstMonthOTD+planCostOTD+protCostOTD+featCostOTD;
     } else {
-      lines.forEach((l,i)=>{
-        const dev=l.byod?null:devById(l.device,'v');
-        if(!dev) return;
-        const dp=devPrice(dev,l.lt,i+1,l.upQual!==false);
-        otdAmt+=dp+dp*TAX;
-      });
-      if(lines.some(l=>l.lt!=='upgrade')||tabLines.length||hotspotLines.length){
-        const planCost=S.plan&&PLANS.find(p=>p.id===S.plan)?PLANS.find(p=>p.id===S.plan).lines[Math.min(voiceLines.length,5)-1]:0;
-        const actFee=lt==='switcher'?0:ACT_FEE*voiceLines.length;
-        otdAmt+=planCost+actFee*(1+TAX)+(totalAcc)*(1+TAX);
-      } else {
-        otdAmt+=(totalAcc)*(1+TAX);
-      }
+      // Cash: device prices + tax + all fees + first months + accessories + tax
+      const voiceDevTotal=lines.reduce((s,l,i)=>{const dev=l.byod?null:devById(l.device,'v');if(!dev)return s;const dp=devPrice(dev,l.lt,i+1,l.upQual!==false);return s+dp*(1+TAX);},0);
+      const tabDevTotal=tabT*(1+TAX);
+      const accTotal2=totalAcc*(1+TAX);
+      otdAmt=voiceDevTotal+tabDevTotal+accTotal2+allActFeeOTD+tabFirstMonthOTD+watchFirstMonthOTD+planCostOTD+protCostOTD+featCostOTD;
     }
 
     // Skeiwatch detail
@@ -3294,52 +2732,77 @@ function showDMCard(){
     });
 
     const headline=`Only ${fmt(otdAmt)} Today!`;
+    let headlineSub='';
+    if(S.finOn&&c.hasQual){
+      if(S.finType==='prog') headlineSub='When leasing with Progressive Leasing';
+      else headlineSub='When financing with Bread Pay';
+    }
     const badges=[];
-    // Transaction type badges
+    // Only show qual status and savings — txn type already shown above each device name
     const hasQualUp=lines.some(l=>l.lt==='upgrade'&&l.upQual!==false);
     const hasNonQualUp=lines.some(l=>l.lt==='upgrade'&&l.upQual===false);
-    const hasSW=lines.some(l=>l.lt==='switcher');
-    const hasNW=lines.some(l=>l.lt==='new');
-    if(hasSW) badges.push('Switcher');
-    if(hasNW) badges.push('New Line');
-    if(hasQualUp&&!hasNonQualUp) badges.push('Qualified Upgrade');
-    if(!hasQualUp&&hasNonQualUp) badges.push('Non-Qualified Upgrade');
     if(hasQualUp&&hasNonQualUp) badges.push('Qualified + Non-Qualified');
-    if(watchLines.length>0) badges.push(watchLines.some(l=>l.lt!=='upgrade')&&watchLines.some(l=>l.lt==='upgrade')?'Watch Mix':(watchLines.every(l=>l.lt==='upgrade')?'Watch Upgrade':'Watch New'));
+    else if(!hasQualUp&&hasNonQualUp) badges.push('Non-Qualified Upgrade');
     if(savingsStr) badges.push('Save '+savingsStr);
     const badgeHtml=badges.map(b=>`<span style="background:rgba(0,0,0,.18);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:800;white-space:nowrap">${b}</span>`).join('');
-    const sub=`<div style="font-size:18px;font-weight:900;color:rgba(0,0,0,.85);line-height:1.3;margin-bottom:6px">${fullDevStr}</div><div style="display:flex;gap:5px;flex-wrap:wrap">${badgeHtml}</div>`;
+    const sub=`<div style="margin-bottom:4px">${fullDevStr}</div>${badgeHtml?'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">'+badgeHtml+'</div>':''}`;
 
     // Tiles
     const tileData=[];
-    if(lines.some(l=>l.lt!=='upgrade')||tabLines.length||watchLines.filter(l=>l.lt!=='upgrade').length||hotspotLines.length){
+    const hasAnyMonthly=lines.some(l=>l.lt!=='upgrade')||tabLines.length||watchLines.filter(l=>l.lt!=='upgrade').length||hotspotLines.length||allV.some(l=>l.protect||l.upgplus||l.intl||l.intl15);
+    if(hasAnyMonthly){
       // Build monthly breakdown
       const planObj=S.plan?PLANS.find(p=>p.id===S.plan):null;
       const planName=planObj?planObj.full||planObj.n:'';
       const lineCount=Math.min(voiceLines.length,5);
-      const planCost=planObj?planObj.lines[lineCount-1]:0;
+      // Only charge plan if there are NEW/SW voice lines (not just tablets/watches)
+      const hasNewVoiceLines=lines.some(l=>l.lt!=='upgrade');
+      // For AAL: use the delta (increase), not the full plan cost
+      const planCost=hasNewVoiceLines&&planObj?(S.acct==='aal'?c.planDelta:planObj.lines[lineCount-1]):0;
       const monthlyIncludes=[];
-      monthlyIncludes.push(planName+(lineCount>1?` — ${lineCount} for ${fmt(planCost)}`:`— ${fmt(planCost)}/mo`));
-      // Protect breakdown: group by actual cost based on device FRP
-      const protGroups={};
+      if(planCost>0){
+        if(S.acct==='aal') monthlyIncludes.push(`${planName} plan increase (+${lines.filter(l=>l.lt!=='upgrade').length} line) — +$${planCost}/mo`);
+        else if(lineCount>1) monthlyIncludes.push(`${planName} — ${lineCount}×$${planObj.lines[lineCount-1]}`);
+        else monthlyIncludes.push(`${planName} ($${planObj.lines[0]}/mo)`);
+      }
+      // Protect — per device
       allV.forEach(l=>{
         if(!l.protect) return;
         const dev=l.byod?null:devById(l.device,'v');
         const tier=l.byod?(l.protectTier||8):protectCost(dev?dev.frp:0);
-        protGroups[tier]=(protGroups[tier]||0)+1;
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Device';
+        monthlyIncludes.push(`Protect ($${tier}/mo) — ${devName}`);
       });
-      Object.entries(protGroups).sort((a,b)=>a[0]-b[0]).forEach(([tier,cnt])=>{
-        monthlyIncludes.push(cnt+'x Protect ($'+tier+'/mo) — '+fmt(cnt*Number(tier)));
-      });
-      // Other monthly features
+      // Other monthly features — per device
       allV.forEach(l=>{
-        if(l.upgplus) monthlyIncludes.push('Upgrade Plus — $5/mo');
-        if(l.intl) monthlyIncludes.push('Intl Calling $10 — $10/mo');
-        if(l.intl15) monthlyIncludes.push('Intl Calling $15 — $15/mo');
-        if(l.hotspot&&l.hsRecur) monthlyIncludes.push('Hotspot — $10/mo');
+        const dev=l.byod?null:devById(l.device,'v');
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Device';
+        if(l.upgplus) monthlyIncludes.push(`Upgrade Plus ($5/mo) — ${devName}`);
+        if(l.intl) monthlyIncludes.push(`Intl Calling $10 ($10/mo) — ${devName}`);
+        if(l.intl15) monthlyIncludes.push(`Intl Calling $15 ($15/mo) — ${devName}`);
+        if(l.hotspot&&l.hsRecur) monthlyIncludes.push(`Hotspot ($10/mo) — ${devName}`);
       });
-      const monthlyIncludesHtml=[...new Set(monthlyIncludes)].join('<br>');
-      const planOnlyMo=planCost+allV.reduce((s,l)=>{if(l.protect){const dev=l.byod?null:devById(l.device,'v');s+=protectCost(dev?dev.frp:0);}if(l.upgplus)s+=5;if(l.intl)s+=10;if(l.hotspot&&l.hsRecur)s+=10;return s;},0);tileData.push({l:'Monthly Service Charges',v:fmt(planOnlyMo)+'/mo',sub:monthlyIncludesHtml,c:'rgba(255,255,255,.4)',span:true});
+      // Tablet plan — per tablet
+      tabLines.forEach(l=>{
+        const dev=devById(l.device,'t');
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Tablet';
+        monthlyIncludes.push(`Tablet Plan ($${TABLET_PLAN}/mo) — ${devName}`);
+      });
+      // Watch plan — per watch (new service only)
+      watchLines.filter(l=>l.lt!=='upgrade'&&!l.byod).forEach(l=>{
+        const dev=devById(l.device,'w');
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola )/i,''):'Watch';
+        monthlyIncludes.push(`Watch Plan ($${WATCH_PLAN}/mo) — ${devName}`);
+      });
+      // Hotspot plan — per hotspot
+      hotspotLines.forEach(l=>{
+        const dev=devById(l.device,'h');
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'Hotspot';
+        monthlyIncludes.push(`Hotspot Plan ($${HS_ADD}/mo) — ${devName}`);
+      });
+      const planOnlyMo=planCost+tabLines.length*TABLET_PLAN+watchLines.filter(l=>l.lt!=='upgrade').length*WATCH_PLAN+hotspotLines.length*15+allV.reduce((s,l)=>{if(l.protect){const dev=l.byod?null:devById(l.device,'v');s+=protectCost(dev?dev.frp:0);}if(l.upgplus)s+=5;if(l.intl)s+=10;if(l.hotspot&&l.hsRecur)s+=10;return s;},0);
+      const monthlyLabel=S.acct==='aal'?'Added to Bill':'Monthly Service Charges';
+      tileData.push({l:monthlyLabel,v:fmt(planOnlyMo)+'/mo',c:'rgba(255,255,255,.4)',span:true});
     }
     let pppSection='';
     if(c.hasQual&&S.finOn){
@@ -3384,13 +2847,6 @@ function showDMCard(){
         <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)">
           <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px">Phone Payment Plan</div>
 
-          <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.8">
-            <div style="font-weight:700;color:rgba(255,255,255,.25);font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Device(s) — Pre-tax</div>
-            ${pppDevList}
-            ${pppAccLine}
-            <div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:4px"><span style="font-weight:700;color:rgba(255,255,255,.5)">Total Pre-tax</span><span style="color:#fff;font-weight:900">${fmt(fb)}</span></div>
-          </div>
-
           <!-- Progressive: full width -->
           <div style="${tileStyle('#f97316')}margin-bottom:8px">
             ${lbl('Progressive Leasing','#f97316')}
@@ -3416,35 +2872,18 @@ function showDMCard(){
           </div>
         </div>`;
     }
-    // APO: effective per-device = (apo bundle + skeiwatch) / device count — matches step 4 logic
-    const apoDevCount=allV.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
+    // APO: count all device lines (voice + tablet + watch + hotspot)
+    const apoDevCount=allDeviceLines.length;
     const effectivePerDev=apoDevCount>0?totalAcc/apoDevCount:0;
     if(S.apoPerDevice>0||skeiwatchTotal>0){
       const includes=[];
-      if(S.apoPerDevice>0) includes.push(fmt(S.apoPerDevice)+' APO');
+      if(S.apoPerDevice>0) includes.push(fmt(S.apoPerDevice)+' APO × '+apoDevCount+' device'+(apoDevCount>1?'s':''));
       Object.values(swCounts).forEach(s=>includes.push(s.count+'x '+s.n+' — '+fmt(s.price*(s.count||1))));
-      const includesHtml=includes.join('<br>');
-      tileData.push({l:'Total Accessories',v:fmt(totalAcc),sub:includesHtml,c:'rgba(255,255,255,.4)'});
-      tileData.push({l:'Total APO',v:fmt(effectivePerDev),sub:includesHtml,c:'rgba(255,255,255,.4)'});
+      tileData.push({l:'Total Accessories',v:fmt(totalAcc),c:'rgba(255,255,255,.4)'});
+      tileData.push({l:'APO',v:fmt(effectivePerDev),c:'rgba(255,255,255,.4)'});
     }
-    // Features tile — for upgrades (no monthly tile)
-    if(lt==='upgrade'){
-      const featureCounts={};
-      allV.forEach(l=>{
-        if(l.protect) featureCounts['Protect']=(featureCounts['Protect']||0)+1;
-        if(l.upgplus) featureCounts['Upgrade Plus']=(featureCounts['Upgrade Plus']||0)+1;
-        if(l.intl) featureCounts['Intl $10']=(featureCounts['Intl $10']||0)+1;
-        if(l.intl15) featureCounts['Intl $15']=(featureCounts['Intl $15']||0)+1;
-        if(l.hotspot) featureCounts['Hotspot']=(featureCounts['Hotspot']||0)+1;
-      });
-      const featKeys=Object.keys(featureCounts);
-      if(featKeys.length>0){
-        const featLines=featKeys.map(k=>featureCounts[k]+'x '+k).join('<br>');
-        tileData.push({l:'Features',v:featLines,c:'rgba(255,255,255,.4)',small:true,span:featKeys.length>2});
-      }
-    }
-    if(tabLines.length) tileData.push({l:'Tablet Plan',v:fmt(tabLines.length*TABLET_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
-    if(watchLines.length) tileData.push({l:'Watch Plan',v:fmt(watchLines.length*WATCH_PLAN)+'/mo',c:'rgba(255,255,255,.3)'});
+    // Features now inside Monthly Service Charges tile
+    // Tablet/Watch plans now inside Monthly tile
     if(watchCreditStr) tileData.push({l:'Watch Credits',v:watchCreditStr,c:'#00c85f',small:true,span:true});
 
     const mkTile=(d,span)=>`<div style="background:#161616;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>${d.small?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`:`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}${d.sub?`<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:5px;line-height:1.6">Includes:<br>${d.sub}</div>`:''}</div>`;
@@ -3457,18 +2896,67 @@ function showDMCard(){
 
     let wide='';
     if(lt!=='upgrade'){
-      let req='Requires Supreme Unlimited Plan';
-      if(needsIdCheck) req+=' + CheckID validation with US Govt ID';
+      // Determine highest plan requirement from all lines
+      const planReqRank={any:0,smart:1,select:2,sensible:2,supreme:3};
+      const planLabels={any:'Any Plan',smart:'Smart Unlimited or higher',select:'Select Unlimited or higher',sensible:'Sensible or higher',supreme:'Supreme Unlimited'};
+      let highestReq='any';
+      [...voiceLines,...tabLines,...watchLines,...hotspotLines].forEach(l=>{
+        const dev=devById(l.device,l.cat||'v');
+        if(!dev) return;
+        const r=l.lt==='switcher'?(dev.promoReqSw||dev.promoReq||'any'):l.lt==='new'?(dev.promoReqNw||dev.promoReq||'any'):(dev.promoReq||'any');
+        if((planReqRank[r]||0)>(planReqRank[highestReq]||0)) highestReq=r;
+      });
+      let req=highestReq==='any'?'No specific plan required':`Requires ${planLabels[highestReq]||highestReq}`;
+      const i16ePromo128=voiceLines.some(l=>l.device==='i16e_128'&&l.lt==='switcher'&&devPrice(devById('i16e_128','v'),'switcher',1,true)<=1);
+      if(i16ePromo128){
+        req+=isAALcard
+          ?' · Port from eligible carrier · Max 4 every 3 years'
+          :' · Port from eligible carrier + CheckID validation · Max 4 every 3 years';
+      } else if(needsIdCheck){
+        req+=isAALcard
+          ?' · Max 4 every 3 years'
+          :' + CheckID validation · Max 4 every 3 years';
+      }
       wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
     }
-    return {headline,sub,tilesHtml,wide,pppSection};
+    return {headline,headlineSub,sub,tilesHtml,wide,pppSection};
   }
 
   const cards=[buildCard(null,undefined,voiceLines)];
 
-  const renderCardHtml=d=>`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25);margin-bottom:12px"><div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:18px 20px 14px"><div style="font-family:'Bebas Neue';font-size:42px;color:#000;line-height:1;letter-spacing:.5px">${d.headline}</div><div style="font-size:14px;font-weight:900;color:rgba(0,0,0,.75);margin-top:7px;line-height:1.4;letter-spacing:.2px">${d.sub}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>${d.wide}${d.pppSection||''}<div style="padding:8px 16px;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div></div></div>`;
+  const renderCardHtml=d=>{
+    const rsmInfo=_rsmUser&&RSM_INFO[_rsmUser]?RSM_INFO[_rsmUser]:null;
+    const isDM=rsmInfo&&rsmInfo.title==='District Manager';
+    const pickLabel=rsmInfo?`<div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.45);margin-bottom:5px">${isDM?"District Manager's Pick":"Store Manager's Pick • ["+_rsmUser+"] "+rsmInfo.name}</div>`:'';
+    return `<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.25);margin-bottom:12px">
+      <div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:14px 18px 12px">
+        ${pickLabel}
+        <div style="font-family:'Bebas Neue';font-size:38px;color:#000;line-height:1;letter-spacing:.5px">${d.headline}</div>
+        ${d.headlineSub?`<div style="font-size:10px;font-weight:800;color:rgba(0,0,0,.5);margin-top:2px;letter-spacing:.3px">${d.headlineSub}</div>`:''}
+        <div style="margin-top:8px">${d.sub}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>
+      ${d.wide}${d.pppSection||''}
+      <div style="padding:7px 16px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div>
+        <div id="dm-footer-date" style="font-size:9px;font-weight:700;color:rgba(255,255,255,.25)"></div>
+      </div>
+    </div>`;
+  };
 
   $('dm-cards-container').innerHTML=cards.map(renderCardHtml).join('');
+  // Auto-set date — after 8:10 PM CST/CDT roll to next day
+  const now=new Date();
+  // Get current offset for Central time (handles DST automatically)
+  const centralOffset=now.toLocaleString('en-US',{timeZone:'America/Chicago',hour:'numeric',hour12:false,minute:'numeric'});
+  const [cHour,cMin]=centralOffset.split(':').map(Number);
+  const cstMin=cHour*60+cMin;
+  const cutoff=20*60+10; // 8:10 PM = 1210 min
+  const cardDate=cstMin>=cutoff?new Date(now.getTime()+86400000):now;
+  const todayStr=(cardDate.getMonth()+1)+'/'+(cardDate.getDate())+'/'+cardDate.getFullYear();
+  const dateEl=$('dm-card-date');
+  if(dateEl) dateEl.dataset.date=todayStr;
+  document.querySelectorAll('#dm-footer-date').forEach(el=>el.textContent=todayStr);
   $('dm-overlay').style.display='block';
   document.body.style.overflow='hidden';
 }
@@ -3526,7 +3014,8 @@ function copyDMCard(){
   voiceLines.forEach((l,i)=>{const dev=l.byod?null:devById(l.device,l.cat);if(!dev)return;totalFRP+=dev.frp||0;totalDevPrice+=devPrice(dev,l.lt,i+1,l.upQual!==false);});
   const savings=totalFRP-totalDevPrice;
   const needsIdCheck=isSW&&voiceLines.some(l=>ID_CHECK_DEVS.includes(l.device));
-  const apoTotal=S.apoPerDevice*voiceLines.filter(l=>!l.byod&&l.device&&l.device!=='byod_v').length;
+  const allDevLines2=[...voiceLines.filter(l=>!l.byod&&l.device&&l.device!=='byod_v'),...tabLines,...watchLines.filter(l=>!l.byod&&l.device),...hotspotLines.filter(l=>l.device)];
+  const apoTotal=S.apoPerDevice*allDevLines2.length;
   const skeiwatchTotal=voiceLines.reduce((s,l)=>{const sk=SKEIWATCHES.find(x=>x.id===l.skeiwatch);return s+(sk?sk.price:0);},0);
   const hasProtect=voiceLines.some(l=>l.protect);
 
@@ -3614,11 +3103,26 @@ const RSM_USERS={
   'jg2646':'jgarcia'
 };
 
+// RSM name + title lookup
+const RSM_INFO={
+  '747':{name:'Gabbisette Sanchez',title:'Store Manager'},
+  '752':{name:'Elva Cruz',title:'Store Manager'},
+  '775':{name:'Matthew Gomez',title:'Store Manager'},
+  '768':{name:'Jose Manzo',title:'Store Manager'},
+  '777':{name:'Jaquelin Sauceda',title:'Store Manager'},
+  '769':{name:'Rolando Garcia',title:'Store Manager'},
+  'DM':{name:'Jose Garcia',title:'District Manager'},
+  'dm':{name:'Jose Garcia',title:'District Manager'},
+  'jg2646':{name:'Jose Garcia',title:'District Manager'}
+};
+let _rsmUser=null;
+
 function doRSMLogin(){
   const u=document.getElementById('rsm-user').value.trim();
   const p=document.getElementById('rsm-pin').value.trim().toLowerCase();
   const err=document.getElementById('rsm-error');
   if(RSM_USERS[u]&&RSM_USERS[u]===p){
+    _rsmUser=u;
     document.getElementById('rsm-overlay').style.display='none';
     showDMCard();
   } else {
@@ -3682,8 +3186,10 @@ try {
   <div style="max-width:400px;margin:0 auto">
     <!-- Cards rendered here -->
     <div id="dm-cards-container"></div>
+    <!-- Date field -->
+    <div id="dm-card-date" style="display:none"></div>
     <!-- Buttons -->
-    <div style="display:flex;gap:8px;margin-top:4px">
+    <div style="display:flex;gap:8px;margin-top:8px">
       <button onclick="closeDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #333;border-radius:var(--r2);color:#aaa;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Close</button>
       <button id="dm-copy-btn" onclick="copyDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #444;border-radius:var(--r2);color:#ddd;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Copy Text</button>
       <button id="dm-save-btn" onclick="saveDMPng()" style="flex:2;padding:11px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:11px;font-weight:900;cursor:pointer">Save PNG</button>
