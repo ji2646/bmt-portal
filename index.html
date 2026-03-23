@@ -1429,35 +1429,13 @@ function calc(){
   });
 
   // Activation & SIM fees
-  // PPP waiver: if finOn + hasQual anchor, lines financed with price > 0 get act fee waived
-  // We need a pre-pass to determine which lines qualify for the PPP waiver
-  // hasQual is computed in device totals below, so we compute a quick pre-check here
-  const _pppWaiverActive=S.finOn&&S.lines.some(l=>{
-    if(l.byod||l.cat==='h') return false;
-    const dev=devById(l.device,l.cat);
-    if(!dev) return false;
-    const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-    const pr=l.cat==='v'?devPrice(dev,l.lt,linePos,l.upQual!==false):(l.lt==='upgrade'?dev.frp:dev.price);
-    return l.finInclude===true&&pr>=149.99;
-  });
-  let actFees=0,pppWaivedFees=0,simFees=0;
+  let actFees=0,simFees=0;
   const curPlan=S.acct==='aal'?S.aalPlan:S.plan;
   S.lines.forEach(l=>{
     const isSw=l.lt==='switcher';
-    const dev=l.byod?null:devById(l.device,l.cat);
-    const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-    const pr=dev?(l.cat==='v'?devPrice(dev,l.lt,linePos,l.upQual!==false):(l.lt==='upgrade'?dev.frp:dev.price)):0;
-    // PPP waiver applies: finOn + hasQual anchor + this line is financed + price > 0
-    const pppWaived=_pppWaiverActive&&!isSw&&l.finInclude===true&&pr>0;
-    if(!isSw&&l.cat!=='w'){
-      if(pppWaived) pppWaivedFees+=ACT_FEE;
-      else actFees+=ACT_FEE;
-    }
-    if(!isSw&&l.cat==='w'&&l.lt==='upgrade'){
-      if(pppWaived) pppWaivedFees+=ACT_FEE;
-      else actFees+=ACT_FEE;
-    }
-    if(!isSw&&l.cat==='w'&&l.byod) actFees+=ACT_FEE; // BYOD watch — not on PPP
+    if(!isSw&&l.cat!=='w') actFees+=ACT_FEE;
+    if(!isSw&&l.cat==='w'&&l.lt==='upgrade') actFees+=ACT_FEE;
+    if(!isSw&&l.cat==='w'&&l.byod) actFees+=ACT_FEE;
     if(l.byod&&['v','t','h','w'].includes(l.cat)&&!isSw) simFees+=SIM_FEE;
     if(l.cat==='v'&&curPlan==='byod'&&!l.byod){ l.byod=true; l.device='byod_v'; }
   });
@@ -1580,7 +1558,6 @@ function calc(){
   });
 
   if(actFees>0) otd.push({l:'Activation fee(s)',v:actFees,tax:true});
-  if(pppWaivedFees>0) otd.push({l:'Act fee(s) — PPP Waiver (text DM to apply)',v:0,tax:false,waived:true,waivedAmt:pppWaivedFees});
   if(watchActOTD>0) otd.push({l:`Watch activation ×${w}`,v:watchActOTD,tax:true});
   if(simFees>0) otd.push({l:'SIM fee(s)',v:simFees,tax:true});
 
@@ -1619,7 +1596,7 @@ function calc(){
   return{plan,planCostFull,planCostMo,planDelta,planNewTotal,planOldTotal,hsPlanCost,watchPlanMo,watchNewLines,tabletPlanMo,tabletNewLines,featMo,featOneTime,
     actFees,simFees,watchActOTD,watchPosDiscount,taxableSum,taxAmt,
     deviceFinanced,deviceCash,apoTotal,finBase,finTax,hsDeviceTotal,skeiwatchTotal,skeiwatchCash,skeiwatchFinanced,
-    hasQual,pppWaivedFees,progTotal,progTotalWithTax,progPayment,progLastPayment,progMoEquiv,progFeeAmt,breadTotal,breadMo,
+    hasQual,progTotal,progTotalWithTax,progPayment,progLastPayment,progMoEquiv,progFeeAmt,breadTotal,breadMo,
     otd,otdTotal,planMoTotal,pppMo,grandMo,
     watchNotes,v,w,t,h};
 }
@@ -1660,16 +1637,7 @@ function update(){
   if(approvalDisp&&S.finOn&&c.hasQual){
     const finBase=c.finBase||0;
     approvalDisp.style.display='block';
-    // Waiver note
-    const waiverEl=$('fin-approval-waiver');
-    if(waiverEl){
-      if(c.pppWaivedFees>0){
-        waiverEl.style.display='block';
-        waiverEl.textContent='📲 Act fee waiver available — text DM before transaction. Saves '+fmt(c.pppWaivedFees*(1+TAX));
-      } else {
-        waiverEl.style.display='none';
-      }
-    }
+
     if(S.finType==='prog'){
       approvalAmt.textContent=fmt(finBase);
       approvalSub.textContent='Pre-tax · 90-Day Cost: '+fmt(finBase*(1+PROG_FEE));
@@ -1701,13 +1669,11 @@ function renderSummary(c){
   let otdRows=c.otd.map(i=>{
     if(i.free) return`<div class="sr"><span class="sl">${i.l}</span><span class="sv g">$0.00</span></div>`;
     if(i.credit) return`<div class="sr"><span class="sl">${i.l}</span><span class="sv g">${fmt(i.v)}</span></div>`;
-    if(i.waived) return`<div class="sr"><span class="sl" style="color:var(--g)">${i.l}</span><span class="sv g">$0 <span style="font-size:9px;color:var(--t3)">(saves ${fmt(i.waivedAmt*(1+TAX))})</span></span></div>`;
     if(i.v===0) return'';
     return`<div class="sr"><span class="sl">${i.l}${i.tax?'<span style="font-size:9px;color:var(--t3);margin-left:3px">+tax</span>':''}</span><span class="sv">${fmt(i.v)}</span></div>`;
   }).join('');
   if(c.taxAmt>0) otdRows+=`<div class="sr"><span class="sl">Tax (8.25%)</span><span class="sv">${fmt(c.taxAmt)}</span></div>`;
-  // PPP act fee waiver note — shows in OTD regardless of expanded/collapsed
-  const pppWaiverNote=c.pppWaivedFees>0?`<div class="note-box" style="background:rgba(0,169,79,.07);border:1px solid rgba(0,169,79,.2);border-radius:var(--r2);padding:8px 10px;font-size:10px;color:var(--g);margin-top:6px">📲 Act fee waiver available — text DM to apply before transaction. Saves ${fmt(c.pppWaivedFees*(1+TAX))}.</div>`:'';
+  const pppWaiverNote='';
   // SW promo note
   const swLines=S.lines.filter(l=>l.lt==='switcher').length;
   const swNote=swLines>0?`<div class="note-box" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:var(--r2);padding:8px 10px;font-size:10px;color:var(--warn);margin-top:6px">⚡ Activation fee waived for ${swLines} switcher${swLines>1?'s':''} — current promo. Great accessory attach opportunity!</div>`:'';
@@ -2727,30 +2693,12 @@ function showDMCard(){
         planCostOTD=planObj2?planObj2.lines[Math.min(voiceLines.length,5)-1]:0;
       }
     }
-    // Act fees — PPP waiver: financed lines with price > 0 get waived (show $0, note required)
-    const pppWaiverActivePC=S.finOn&&c.hasQual;
-    let voiceActFeeOTD=0, pcWaivedActFee=0;
-    voiceLines.forEach((l,i)=>{
-      if(l.lt==='switcher') return; // SW already waived
-      const dev=devById(l.device,'v');
-      const pr=dev?devPrice(dev,l.lt,i+1,l.upQual!==false):0;
-      if(pppWaiverActivePC&&l.finInclude===true&&pr>0) pcWaivedActFee+=ACT_FEE;
-      else voiceActFeeOTD+=ACT_FEE;
-    });
-    tabLines.forEach(l=>{
-      if(pppWaiverActivePC&&l.finInclude===true) pcWaivedActFee+=ACT_FEE;
-      else voiceActFeeOTD+=ACT_FEE;
-    });
     const watchNewLines=watchLines.filter(l=>l.lt!=='upgrade'&&!l.byod);
-    watchNewLines.forEach(l=>{
-      if(pppWaiverActivePC&&l.finInclude===true) pcWaivedActFee+=ACT_FEE;
-      else voiceActFeeOTD+=ACT_FEE;
-    });
-    voiceActFeeOTD+=ACT_FEE*hotspotLines.length;
-    const allActFeeOTD=voiceActFeeOTD*(1+TAX); // waived fees excluded from total
-    const tabActFeeOTD=0; // absorbed above
-    const watchActFeeOTD=0; // absorbed above
-    const hsActFeeOTD=0; // absorbed above
+    const voiceActFeeOTD=(lt==='switcher'?0:ACT_FEE)*voiceLines.length;
+    const tabActFeeOTD=ACT_FEE*tabLines.length;
+    const watchActFeeOTD=ACT_FEE*watchNewLines.length;
+    const hsActFeeOTD=ACT_FEE*hotspotLines.length;
+    const allActFeeOTD=(voiceActFeeOTD+tabActFeeOTD+watchActFeeOTD+hsActFeeOTD)*(1+TAX);
     const tabFirstMonthOTD=tabLines.length*TABLET_PLAN;
     const watchFirstMonthOTD=watchNewLines.length*WATCH_PLAN;
     const protCostOTD=allV.reduce((s,l)=>{if(!l.protect)return s;const dev=l.byod?null:devById(l.device,'v');return s+protectCost(dev?dev.frp:0);},0);
@@ -2905,23 +2853,12 @@ function showDMCard(){
 
 
 
-      // PPP waiver note for price card
-      const pcWaivedLines=sourceLines.filter(l=>{
-        if(l.byod||l.lt==='switcher') return false;
-        const dev=devById(l.device,'v');
-        if(!dev) return false;
-        const linePos=sourceLines.filter(x=>x.cat==='v').indexOf(l)+1;
-        const pr=devPrice(dev,l.lt,linePos,l.upQual!==false);
-        return l.finInclude===true&&pr>0;
-      });
-      const pcWaivedAmt=pcWaivedLines.length*ACT_FEE*(1+TAX);
-      const waiverNote=pcWaivedAmt>0?`<div style="margin-top:8px;padding:8px 10px;background:rgba(0,169,79,.08);border:1px solid rgba(0,169,79,.25);border-radius:6px;font-size:9px;color:#00c85f;font-weight:700">📲 Act fee waiver — text DM before transaction · Saves ${fmt(pcWaivedAmt)}</div>`:'';
+      const waiverNote='';
       pppSection=`
         <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)">
           <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px">Phone Payment Plan</div>
-          ${waiverNote}
           <!-- Progressive: full width -->
-          <div style="${tileStyle('#f97316')}margin-bottom:8px;${waiverNote?'margin-top:8px':''}">
+          <div style="${tileStyle('#f97316')}margin-bottom:8px">
             ${lbl('Progressive Leasing','#f97316')}
             ${val('$'+progPmt.toFixed(2)+'/'+progFreqSuffix,'#f97316')}
             ${sub2('Approval Needed: '+fmt(fb)+' (pre-tax)<br>90-Day Cost: '+fmt(progTotal)+'<br>Lease fee: '+fmt(prog90Fee)+' (10%) · Est. tax: '+fmt(prog90Tax)+' (8.25%)<br>'+progFreqLabel+' × '+progDivisor+' payments')}
