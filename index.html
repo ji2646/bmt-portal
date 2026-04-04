@@ -296,7 +296,7 @@ select option,select optgroup{background:#1a1a1a}
 const ALLOWED_UIDS=[
   'gs0426','ap485d','dg8674','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e'
+  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647'
 ];
 
 const LOG_URL='https://script.google.com/macros/s/AKfycbyEmTA-KcaJnoQRi9QCCZfwd1RGV2OoQ6SLc6ndljocJQER25UeadnDefvJ4Qe7QTYy/exec';
@@ -309,16 +309,34 @@ function logLogin(uid){
   }catch(e){}
 }
 
+function showLoginError(uid, type){
+  const screen=document.getElementById('login-screen');
+  screen.innerHTML=`
+    <div style="background:#8B0000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
+      <div style="font-size:48px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:16px">⛔</div>
+      <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:12px">${type} UID</div>
+      <div style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:32px">Contact admin for further assistance.</div>
+      <button onclick="resetLoginScreen()" style="background:#fff;color:#8B0000;font-weight:900;font-size:15px;padding:14px 36px;border:none;border-radius:8px;cursor:pointer;letter-spacing:.5px">↺ Try Again</button>
+    </div>`;
+}
+
+function resetLoginScreen(){
+  location.reload();
+}
+
 function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
   const err=document.getElementById('login-error');
-  if(ALLOWED_UIDS.includes(uid)){
+  if(DISABLED_UIDS.includes(uid)){
+    logInvalidAttempt(uid,'disabled');
+    showLoginError(uid,'Disabled');
+  } else if(ALLOWED_UIDS.includes(uid)){
     document.getElementById('login-screen').style.display='none';
     document.body.style.overflow='';
     logLogin(uid);
   } else {
-    err.style.display='block';
-    document.getElementById('login-uid').select();
+    logInvalidAttempt(uid,'invalid');
+    showLoginError(uid,'Invalid');
   }
 }
 
@@ -1473,6 +1491,7 @@ function renderDealStrip(){
 
 
 function resetAll(){
+  if(_sessionQuote) _sessionQuote+=('|[R]|'); _lastQuoteStr='';
   S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
   const _rb=$('btn-new'),_ra=$('btn-aal');
   if(_rb)_rb.classList.add('active');
@@ -2597,6 +2616,11 @@ function doRSMLogin(){
     _rsmUser=u;
     document.getElementById('rsm-overlay').style.display='none';
     showDMCard();
+    const rsmInfo=RSM_INFO[u];
+    const rsmName=rsmInfo?rsmInfo.name:u;
+    _sessionId='PC-'+u+'-'+Date.now();
+    _sessionQuote='';
+    logWithIP({type:'login',sessionId:_sessionId,name:rsmName,uid:'PriceCard - '+u,datetime:getDatetime(),device:getDevice()});
   } else {
     err.style.display='block';
     document.getElementById('rsm-pin').value='';
