@@ -372,7 +372,9 @@ function logQuoteUpdate(quoteStr){
   if(!_sessionId) return;
   clearTimeout(_quoteDebounce);
   _quoteDebounce=setTimeout(()=>{
-    sendLog({type:'quote',sessionId:_sessionId,quote:quoteStr});
+    const url=Object.entries({type:'quote',sessionId:_sessionId,quote:quoteStr})
+      .reduce((u,[k,v],i)=>u+(i?'&':'?')+k+'='+encodeURIComponent(v),LOG_URL);
+    fetch(url,{method:'GET',mode:'no-cors',cache:'no-store'}).catch(()=>{new Image().src=url;});
   },3000);
 }
 
