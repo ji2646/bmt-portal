@@ -338,7 +338,12 @@ function getDatetime(){
 function sendLog(params){
   try{
     const url=Object.entries(params).reduce((u,[k,v],i)=>u+(i?'&':'?')+k+'='+encodeURIComponent(v),LOG_URL);
-    new Image().src=url;
+    // Try fetch no-cors first, fallback to image pixel
+    if(typeof fetch!=='undefined'){
+      fetch(url,{method:'GET',mode:'no-cors',cache:'no-store'}).catch(()=>{new Image().src=url;});
+    } else {
+      new Image().src=url;
+    }
   }catch(e){}
 }
 
@@ -360,7 +365,7 @@ function logLogin(uid){
   _sessionId=uid+'-'+Date.now();
   _sessionQuote='';
   _lastQuoteStr='';
-  logWithIP({type:'login',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:'QTool - '+uid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'login',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()});
 }
 
 function logQuoteUpdate(quoteStr){
@@ -2650,6 +2655,18 @@ const RSM_USERS={
   'jg2646':'jgarcia'
 };
 
+const RSM_UID_MAP={
+  '747':'gs0426',
+  '752':'ec934j',
+  '775':'mg221k',
+  '768':'jx820u',
+  '777':'jq6635',
+  '769':'rg8855',
+  'DM':'ji2646dm',
+  'dm':'ji2646dm',
+  'jg2646':'ji2646dm'
+};
+
 // RSM name + title lookup
 const RSM_INFO={
   '747':{name:'Gabbisette Sanchez',title:'Store Manager'},
@@ -2676,7 +2693,7 @@ function doRSMLogin(){
     const rsmName=rsmInfo?rsmInfo.name:u;
     _sessionId='PC-'+u+'-'+Date.now();
     _sessionQuote=''; _lastQuoteStr='';
-    logWithIP({type:'login',sessionId:_sessionId,name:rsmName,uid:'PriceCard - '+u,datetime:getDatetime(),device:getDevice()});
+    logWithIP({type:'login',sessionId:_sessionId,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
   } else {
     err.style.display='block';
     document.getElementById('rsm-pin').value='';
