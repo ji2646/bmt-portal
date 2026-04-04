@@ -1327,8 +1327,9 @@ function renderDealStrip(){
   const c1apo=c1.lt==='upgrade'?90:45;
   const c1prot=c1.lt==='switcher'||c1.lt==='new'?protectCost(c1ph?c1ph.frp:0):0;
   const c1pr=c1ph?(c1.lt==='upgrade'?c1ph.up:c1.lt==='switcher'?c1ph.sw:c1ph.nw):0;
+  const c1plan=c1.lt==='upgrade'?0:sup.lines[0];
   const c1tax=(c1pr+c1apo+ACT_FEE)*TAX;
-  const c1otd=c1pr+sup.lines[0]+c1apo+ACT_FEE+c1prot+c1tax;
+  const c1otd=c1pr+c1plan+c1apo+ACT_FEE+c1prot+c1tax;
 
   // ── Card 2: iPhone 17e / 17 Pro Max ──
   const c2=_DL.i17e, c2ph=PHONES.find(p=>p.id===c2.dev);
@@ -1337,8 +1338,9 @@ function renderDealStrip(){
   const c2prot=c2.lt!=='upgrade'?protectCost(c2ph?c2ph.frp:0):0;
   const c2pr=c2ph?(c2.lt==='upgrade'?c2ph.up:c2.lt==='switcher'?c2ph.sw:c2ph.nw):0;
   const c2skei=c2is17pm?159.99:0; // C80 $159.99
+  const c2plan=c2.lt==='upgrade'?0:sup.lines[0];
   const c2tax=(c2pr+c2apo+c2skei+ACT_FEE)*TAX;
-  const c2otd=c2pr+sup.lines[0]+c2apo+c2skei+ACT_FEE+c2prot+c2tax;
+  const c2otd=c2pr+c2plan+c2apo+c2skei+ACT_FEE+c2prot+c2tax;
 
   // ── Card 3: A36 / moto edge / moto stylus ──
   const c3=_DL.a36, c3ph=PHONES.find(p=>p.id===c3.dev);
@@ -1363,7 +1365,9 @@ function renderDealStrip(){
   const c5apo=c5.lt==='upgrade'?70:45;
   const c5prot=c5.lt!=='upgrade'?protectCost(c5ph?c5ph.frp:0):0;
   const c5pr=c5ph?(c5.lt==='upgrade'?c5ph.up:c5.lt==='switcher'?devPrice(c5ph,'switcher',1,true):devPrice(c5ph,'new',1,true)):0;
-  const c5reqPlanId=(c5ph&&(c5ph.promoReqSw||c5ph.promoReq)||'smart')==='supreme'?'supreme':'smart';
+  const c5reqPlanIdSw=(c5ph&&c5ph.promoReqSw)||'smart';
+  const c5reqPlanIdNw=(c5ph&&(c5ph.promoReqNw||c5ph.promoReq))||'smart';
+  const c5reqPlanId=c5.lt==='switcher'?c5reqPlanIdSw:c5reqPlanIdNw;
   const c5plan=c5.lt==='upgrade'?null:PLANS.find(p=>p.id===c5reqPlanId);
   const c5planCost=c5plan?c5plan.lines[0]:0;
   const c5tax=(c5pr+c5apo+ACT_FEE)*TAX;
@@ -1438,7 +1442,7 @@ function renderDealStrip(){
     </div>
     <div class="deal-card android" onclick="launchDeal('budget')">
       <div class="deal-tag">📱 Androids Under $300</div>
-      ${devPick('budget',[{id:'mg26',lbl:'moto g 2026'},{id:'a16',lbl:'Galaxy A16'},{id:'a17',lbl:'Galaxy A17'}])}
+      ${devPick('budget',[{id:'mgplay',lbl:'moto g play 2026'},{id:'a16',lbl:'Galaxy A16'},{id:'a17',lbl:'Galaxy A17'}])}
       ${ltRow3('budget',['var(--warn)',gc,'var(--indigo)'])}
       <div class="deal-price">${fmt(Math.round(c5otd*100)/100)}</div>
       <div class="deal-sub">${c5plan?c5plan.full+' · ':''}${c5.lt==='upgrade'?'$70':'$45'} APD${c5prot?' · Protect':''}</div>
@@ -1529,8 +1533,10 @@ function launchDeal(type){
     if(d.lt==='upgrade'){ setAcct('aal'); setTxnType('upgrade'); }
     else {
       setAcct('new');
-      const reqPlan=(ph&&(ph.promoReqNw||ph.promoReq)||'smart')==='supreme'?'supreme':'smart';
-      setPlan(reqPlan); renderPlanGrid();
+      const reqPlanId=d.lt==='switcher'
+        ?(ph&&ph.promoReqSw)||'smart'
+        :(ph&&(ph.promoReqNw||ph.promoReq))||'smart';
+      setPlan(reqPlanId); renderPlanGrid();
       S.ap=true; $('ap-chk').checked=true;
     }
     S.apoPerDevice=apo; $('apo-inp').value=apo; updateApoTiles(apo);
