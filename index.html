@@ -299,12 +299,26 @@ const ALLOWED_UIDS=[
   'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e'
 ];
 
+const LOG_URL='https://script.google.com/macros/s/AKfycbzT0K1EWx-0pCcHBjnBTxLTxbpegklrRYu6k_yVoyJlTzJXcKd33pq9RwajYe_OBUue/exec';
+
+function logLogin(uid){
+  try{
+    const device=navigator.userAgent;
+    fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{
+      fetch(LOG_URL,{method:'POST',body:JSON.stringify({uid,name:uid,device,ip:d.ip}),headers:{'Content-Type':'application/json'}});
+    }).catch(()=>{
+      fetch(LOG_URL,{method:'POST',body:JSON.stringify({uid,name:uid,device,ip:'unknown'}),headers:{'Content-Type':'application/json'}});
+    });
+  }catch(e){}
+}
+
 function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
   const err=document.getElementById('login-error');
   if(ALLOWED_UIDS.includes(uid)){
     document.getElementById('login-screen').style.display='none';
     document.body.style.overflow='';
+    logLogin(uid);
   } else {
     err.style.display='block';
     document.getElementById('login-uid').select();
