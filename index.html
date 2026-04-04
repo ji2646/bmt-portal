@@ -303,12 +303,9 @@ const LOG_URL='https://script.google.com/macros/s/AKfycbyEmTA-KcaJnoQRi9QCCZfwd1
 
 function logLogin(uid){
   try{
-    const device=navigator.userAgent;
-    fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{
-      fetch(LOG_URL,{method:'POST',body:JSON.stringify({uid,name:uid,device,ip:d.ip}),headers:{'Content-Type':'application/json'}});
-    }).catch(()=>{
-      fetch(LOG_URL,{method:'POST',body:JSON.stringify({uid,name:uid,device,ip:'unknown'}),headers:{'Content-Type':'application/json'}});
-    });
+    const device=encodeURIComponent(navigator.userAgent.substring(0,100));
+    const url=LOG_URL+'?uid='+encodeURIComponent(uid)+'&device='+device;
+    fetch(url,{method:'GET',mode:'no-cors'});
   }catch(e){}
 }
 
