@@ -365,7 +365,7 @@ function logLogin(uid){
   _sessionId=uid+'-'+Date.now();
   _sessionQuote='';
   _lastQuoteStr='';
-  logWithIP({type:'login',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()});
 }
 
 function logQuoteUpdate(quoteStr){
@@ -1910,17 +1910,29 @@ function update(){
   try{
     if(_sessionId&&S.lines.length>0){
       const ql=S.lines.filter(l=>l.cat==='v'&&l.device&&!l.byod);
-      if(ql.length>0){
-        const dev=devById(ql[0].device,'v');
-        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'?';
-        const lt=ql[0].lt==='switcher'?'SW':ql[0].lt==='new'?'NW':'UP';
-        const plan=S.acct==='aal'?S.aalPlan:S.plan;
-        const ap=S.ap?'AP':'NAP';
-        const prot=ql[0].protect?'P'+(ql[0].protectTier||8):'';
-        const apo=S.apoPerDevice>0?'APD$'+S.apoPerDevice:'';
-        const fin=S.finOn?'PPP':'';
-        const otd='$'+Math.round(c.otdTotal||0);
-        const parts=[lt,devName,plan?plan.toUpperCase():'',ap,prot,apo,fin,otd].filter(Boolean);
+      const anyLine=S.lines.filter(l=>l.device&&!l.byod);
+      if(anyLine.length>0){
+        let parts=[];
+        if(ql.length>0){
+          const dev=devById(ql[0].device,'v');
+          const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'?';
+          const lt=ql[0].lt==='switcher'?'SW':ql[0].lt==='new'?'NW':'UP';
+          const plan=S.acct==='aal'?S.aalPlan:S.plan;
+          const ap=S.ap?'AP':'NAP';
+          const prot=ql[0].protect?'P'+(ql[0].protectTier||8):'';
+          const apo=S.apoPerDevice>0?'APD$'+S.apoPerDevice:'';
+          const fin=S.finOn?'PPP':'';
+          const otd='$'+Math.round(c.otdTotal||0);
+          parts=[lt,devName,plan?plan.toUpperCase():'',ap,prot,apo,fin,otd];
+        } else {
+          // Non-voice lines only
+          const first=anyLine[0];
+          const dev=devById(first.device,first.cat);
+          const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):first.cat.toUpperCase();
+          const otd='$'+Math.round(c.otdTotal||0);
+          parts=[devName,otd];
+        }
+        parts=parts.filter(Boolean);
         const qstr='[Q]'+parts.join('·');
         if(qstr!==_lastQuoteStr){
           _lastQuoteStr=qstr;
@@ -2719,7 +2731,7 @@ function doRSMLogin(){
     const rsmName=rsmInfo?rsmInfo.name:u;
     _sessionId='PC-'+u+'-'+Date.now();
     _sessionQuote=''; _lastQuoteStr='';
-    logWithIP({type:'login',sessionId:_sessionId,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
+    logWithIP({type:'pricecard',sessionId:_sessionId,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
   } else {
     err.style.display='block';
     document.getElementById('rsm-pin').value='';
