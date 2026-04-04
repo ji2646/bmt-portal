@@ -1906,6 +1906,32 @@ function update(){
 
   renderSummary(c);
 
+  // Quote tracking — auto-log 3s after changes stop
+  try{
+    if(_sessionId&&S.lines.length>0){
+      const ql=S.lines.filter(l=>l.cat==='v'&&l.device&&!l.byod);
+      if(ql.length>0){
+        const dev=devById(ql[0].device,'v');
+        const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'?';
+        const lt=ql[0].lt==='switcher'?'SW':ql[0].lt==='new'?'NW':'UP';
+        const plan=S.acct==='aal'?S.aalPlan:S.plan;
+        const ap=S.ap?'AP':'NAP';
+        const prot=ql[0].protect?'P'+(ql[0].protectTier||8):'';
+        const apo=S.apoPerDevice>0?'APD$'+S.apoPerDevice:'';
+        const fin=S.finOn?'PPP':'';
+        const otd='$'+Math.round(c.otdTotal||0);
+        const parts=[lt,devName,plan?plan.toUpperCase():'',ap,prot,apo,fin,otd].filter(Boolean);
+        const qstr='[Q]'+parts.join('·');
+        if(qstr!==_lastQuoteStr){
+          _lastQuoteStr=qstr;
+          const sep=_sessionQuote?'→':'';
+          _sessionQuote=(_sessionQuote+sep+qstr).slice(-2000);
+          logQuoteUpdate(_sessionQuote);
+        }
+      }
+    }
+  }catch(e){}
+
   // Approval amount display in step 5
   const approvalDisp=$('fin-approval-display');
   const approvalAmt=$('fin-approval-amt');
