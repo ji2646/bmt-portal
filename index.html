@@ -3053,8 +3053,9 @@ function actRenderList(){
     sessions=sessions.filter(s=>(s.name||'').toLowerCase().includes(q)||(s.uid||'').toLowerCase().includes(q));
   }
   // Sort
-  if(sort==='newest') sessions.sort((a,b)=>b.sessionId.localeCompare(a.sessionId));
-  else if(sort==='oldest') sessions.sort((a,b)=>a.sessionId.localeCompare(b.sessionId));
+  const parseDate=s=>{try{return new Date(s.datetime||0).getTime()||parseInt((s.sessionId||'0').split('-').pop())||0;}catch(e){return 0;}};
+  if(sort==='newest') sessions.sort((a,b)=>parseDate(b)-parseDate(a));
+  else if(sort==='oldest') sessions.sort((a,b)=>parseDate(a)-parseDate(b));
   else if(sort==='name') sessions.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   else if(sort==='quotes') sessions.sort((a,b)=>(b.quote.split('[Q]').length)-(a.quote.split('[Q]').length));
 
@@ -3067,9 +3068,20 @@ function actRenderList(){
     const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     const qcount=s.quote.split('[Q]').filter(Boolean).length;
     // Parse date cleanly
-    const dtParts=(s.datetime||'').split(', ');
-    const dateStr=dtParts[0]||s.datetime;
-    const timeStr=dtParts[1]||'';
+    // Parse datetime — sheet format: "04/05/2026, 1:18 AM"
+    const rawDt=s.datetime||'';
+    let dateStr='', timeStr='';
+    if(rawDt.includes(', ')){
+      const ci=rawDt.indexOf(', ');
+      dateStr=rawDt.substring(0,ci);
+      timeStr=rawDt.substring(ci+2);
+    } else if(rawDt){
+      dateStr=rawDt;
+    } else {
+      // Fallback: extract timestamp from sessionId
+      const ts=parseInt((s.sessionId||'').split('-').pop());
+      if(ts){const d=new Date(ts);dateStr=d.toLocaleDateString('en-US');timeStr=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+    }
     return`<div onclick="actShowDetail('${s.sessionId}')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--g);flex-shrink:0">${initials}</div>
       <div style="flex:1;min-width:0">
