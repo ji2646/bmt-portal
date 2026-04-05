@@ -4034,19 +4034,36 @@ function dmToRender(){
   }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
-  el.innerHTML=items.map(r=>`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.days} · ${r.reason} · ${r.duration}</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${r.submitted}</div>
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)'};
+  // Compute submission # per week for each item
+  const weekCounts={};
+  [..._dmToData].forEach(row=>{
+    const fd=parseFirstDay(row); if(!fd) return;
+    const wk=getWeekStart(fd).getTime();
+    if(!weekCounts[wk]) weekCounts[wk]=[];
+    weekCounts[wk].push(row.rowId);
+  });
+  el.innerHTML=items.map(r=>{
+    const fd=parseFirstDay(r);
+    let weekLabel='—'; let subNum='';
+    if(fd){
+      const sun=getWeekStart(fd); const sat=new Date(sun); sat.setDate(sun.getDate()+6);
+      weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate();
+      const wk=sun.getTime();
+      if(weekCounts[wk]){const idx=weekCounts[wk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}
+    }
+    return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} <span style="color:rgba(255,255,255,.3)">·</span> ${subNum} <span style="color:rgba(255,255,255,.3)">·</span> ${r.submitted}</div>
+        </div>
+        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
-      <div style="background:${sb[r.status]};color:${sc[r.status]};border:1px solid ${sbd[r.status]};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
-    </div>
-  </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function dmTcRender(){
@@ -4071,53 +4088,82 @@ function dmTcRender(){
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
   const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
   const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
-  el.innerHTML=items.map(r=>`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.date} · ${r.location} · ${r.reason}</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.shiftStart}–${r.shiftEnd} · Submitted ${r.submitted}</div>
+  const sc2={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)'};
+  const sb2={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)'};
+  const sbd2={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)'};
+  // Compute submission # per pay cycle
+  const cycles=getPayCycles();
+  const cycleCounts={};
+  [..._dmTcData].forEach(row=>{
+    const d=parseDate(row.date); if(!d) return;
+    cycles.forEach((c,i)=>{
+      if(d>=c.start&&d<=c.end){
+        if(!cycleCounts[i]) cycleCounts[i]=[];
+        cycleCounts[i].push(row.rowId);
+      }
+    });
+  });
+  el.innerHTML=items.map(r=>{
+    const d=parseDate(r.date);
+    let cycleLabel='—'; let subNum='';
+    if(d){
+      cycles.forEach((c,i)=>{
+        if(d>=c.start&&d<=c.end){
+          cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);
+          if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}
+        }
+      });
+    }
+    return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} <span style="color:rgba(255,255,255,.3)">·</span> ${subNum} <span style="color:rgba(255,255,255,.3)">·</span> ${r.submitted||r.date}</div>
+        </div>
+        <div style="background:${sb2[r.status]||sb2.Sent};color:${sc2[r.status]||sc2.Sent};border:1px solid ${sbd2[r.status]||sbd2.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
-      <div style="background:${sb[r.status]};color:${sc[r.status]};border:1px solid ${sbd[r.status]};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
-    </div>
-  </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function showDMTimeDetail(type,rowId){
   const list=type==='to'?_dmToData:_dmTcData;
   const r=list.find(x=>x.rowId===rowId);
   if(!r) return;
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
   const rows=type==='to'?[
     ['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],
     ['Reason',r.reason],['Duration',r.duration],['Submitted',r.submitted],
     ...(r.edited?[['Edited',r.edited]]:[])
   ]:[
     ['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',r.date],
-    ['Reason',r.reason],['Shift Start',r.shiftStart],['Break',r.breakStart+' – '+r.breakEnd],
-    ['Shift End',r.shiftEnd],['Submitted',r.submitted],
+    ['Reason',r.reason],['Shift',r.shiftStart+' – '+r.shiftEnd],
+    ['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' – '+r.breakEnd:'None'],
+    ['Submitted',r.submitted],
     ...(r.edited?[['Edited',r.edited]]:[])
   ];
 
-  // Build copy text for approved/denied
-  function buildCopyText(type, r, status){
-    if(type==='to'){
-      const txt=`${r.name} (${r.uid}) Your time off request for ${r.days}, ${r.month} has been ${status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}\nTime Off: ${r.duration}${r.note?'\nNote: '+r.note:''}`;
-      return txt;
-    } else {
-      const txt=`${r.name} (${r.uid}) Your time correction for ${r.date} at ${r.location} has been ${status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}\nShift: ${r.shiftStart} – ${r.shiftEnd}${r.note?'\nNote: '+r.note:''}`;
-      return txt;
-    }
-  }
+  const days=type==='to'?getDaysArray(r):[];
+  const isMultiDay=days.length>1;
+  const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial');
 
-  const isDone=(r.status==='Approved'||r.status==='Denied');
-  const copyText=isDone?buildCopyText(type,r,r.status):'';
+  // Build copy text
+  let copyText='';
+  if(isDone&&type==='to'&&isMultiDay){
+    const res=buildPartialCopyText(r); copyText=res.txt;
+  } else if(isDone&&type==='to'){
+    const hoursLine=r.approvedHours?'\nApproved Hours: '+r.approvedHours:'\nTime Off: '+r.duration;
+    copyText=r.name+' ('+r.uid+') Your time off request for '+r.days+', '+r.month+' has been '+r.status.toLowerCase()+'.\nRequest ID: '+r.rowId+'\nStatus: '+r.status+hoursLine+(r.note?'\nNote: '+r.note:'');
+  } else if(isDone&&type==='tc'){
+    copyText=r.name+' ('+r.uid+') Your time correction for '+r.date+' has been '+r.status.toLowerCase()+'.\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' – '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
+  }
 
   const detailDiv=document.createElement('div');
   detailDiv.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   detailDiv.innerHTML=`
     <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
-      <div onclick="this.closest('div[style]').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
+      <div onclick="this.closest('div[style*=z-index]').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
       <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">${type==='to'?'Time Off':'Time Correction'}</div>
       <div></div>
     </div>
@@ -4127,61 +4173,70 @@ function showDMTimeDetail(type,rowId){
           <div style="font-size:10px;color:var(--t3)">Status</div>
           <div style="color:${sc[r.status]||'#aaa'};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">${r.status}</div>
         </div>
-        ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%">${v}</div></div>`).join('')}
+        ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%">${v||'—'}</div></div>`).join('')}
       </div>
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;padding:12px 14px">
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Notes</div>
-        <textarea id="dm-note" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;resize:vertical;min-height:60px">${r.note||''}</textarea>
+        <textarea id="dm-note-field" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;resize:vertical;min-height:60px">${r.note||''}</textarea>
       </div>
-      ${isDone?`
+      ${isDone&&copyText?`
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
         <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div>
         </div>
         <div style="padding:12px 14px">
           <div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:'DM Sans'">${copyText.replace(/</g,'&lt;')}</div>
-          <button id="dm-copy-btn" onclick="
-            navigator.clipboard.writeText(${JSON.stringify(copyText)}).then(()=>{
-              this.textContent='✓ Copied';
-              this.style.background='rgba(0,169,79,.12)';
-              this.style.color='var(--g)';
-              this.style.borderColor='rgba(0,169,79,.3)';
-            }).catch(()=>{
-              const ta=document.createElement('textarea');
-              ta.value=${JSON.stringify(copyText)};
-              document.body.appendChild(ta);ta.select();document.execCommand('copy');
-              document.body.removeChild(ta);
-              this.textContent='✓ Copied';
-            })
-          " style="margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">📋 Copy</button>
+          <button onclick="navigator.clipboard.writeText(${JSON.stringify(copyText)}).then(()=>{this.textContent='✓ Copied';this.style.color='var(--g)';}).catch(()=>{const ta=document.createElement('textarea');ta.value=${JSON.stringify(copyText)};document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);this.textContent='✓ Copied';})"
+            style="margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">📋 Copy</button>
         </div>
       </div>`:''}
-      ${isMultiDay?`
+      ${isMultiDay&&type==='to'?`
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px" id="dm-days-panel">
         <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Day-by-Day Approval</div>
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Day-by-Day</div>
         </div>
         ${days.map((day,i)=>{
           const ds=buildDaysStatus(r);
           const st=ds[day]||'Pending';
-          const approvedStyle=st==='Approved'?'background:rgba(0,169,79,.15);border-color:rgba(0,169,79,.4);color:var(--g)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
-          const deniedStyle=st==='Denied'?'background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:var(--err)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
+          const ga=st==='Approved'?'background:rgba(0,169,79,.15);border-color:rgba(0,169,79,.4);color:var(--g)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
+          const gd=st==='Denied'?'background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:var(--err)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
           return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd)" id="day-row-${i}">
-            <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${day} <span style="font-size:10px;font-weight:400;color:${st==='Approved'?'var(--g)':st==='Denied'?'var(--err)':'var(--t3)'}">${st}</span></div>
+            <div style="font-size:12px;font-weight:700;color:var(--t1)">${day} <span id="day-st-${i}" style="font-size:10px;font-weight:400;color:${st==='Approved'?'var(--g)':st==='Denied'?'var(--err)':'var(--t3)'}">${st}</span></div>
             <div style="display:flex;gap:6px">
-              <button onclick="setDayStatus('${rowId}','${day}','Approved',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${approvedStyle};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✓</button>
-              <button onclick="setDayStatus('${rowId}','${day}','Denied',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${deniedStyle};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✗</button>
+              <button onclick="setDayStatus('${rowId}','${day}','Approved',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${ga};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✓</button>
+              <button onclick="setDayStatus('${rowId}','${day}','Denied',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${gd};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✗</button>
             </div>
           </div>`;
         }).join('')}
       </div>
-      <button onclick="savePartial('${type}','${rowId}',document.getElementById('dm-note').value)" style="width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px">Save Decision</button>
-      `:`
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
-        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
+      <button onclick="savePartial('${type}','${rowId}',document.getElementById('dm-note-field').value)" style="width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px">Save Decision</button>`:`
+      <div id="partial-hours-${rowId}" style="display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div>
+            <input type="time" id="partial-from-${rowId}" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div>
+            <input type="time" id="partial-until-${rowId}" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          </div>
+        </div>
+        <button onclick="
+          const f=document.getElementById('partial-from-${rowId}').value;
+          const u=document.getElementById('partial-until-${rowId}').value;
+          if(!f||!u){alert('Please enter both times.');return;}
+          const fmtH=t=>{const[h,m]=t.split(':');const hr=parseInt(h);return hr>12?hr-12:hr||12+':'+m+' '+(hr>=12?'PM':'AM');};
+          const hrs=fmtH(f)+' – '+fmtH(u);
+          const note=document.getElementById('dm-note-field').value;
+          dmTimeAction('${type}','${rowId}','Partial',note,'hours:'+hrs);
+        " style="margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">Confirm Partial</button>
       </div>
-      `}
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
+        <button onclick="document.getElementById('partial-hours-${rowId}').style.display=document.getElementById('partial-hours-${rowId}').style.display==='none'?'block':'none'" style="padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Partial</button>
+        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
+      </div>`}
     </div>`;
   document.body.appendChild(detailDiv);
 }
