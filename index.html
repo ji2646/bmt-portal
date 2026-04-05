@@ -4160,10 +4160,11 @@ function showDMTimeDetail(type,rowId){
   }
 
   const detailDiv=document.createElement('div');
+  detailDiv.id='dm-time-detail-overlay';
   detailDiv.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   detailDiv.innerHTML=`
     <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
-      <div onclick="this.closest('div[style*=z-index]').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
+      <div onclick="document.getElementById('dm-time-detail-overlay').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
       <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">${type==='to'?'Time Off':'Time Correction'}</div>
       <div></div>
     </div>
@@ -4277,7 +4278,7 @@ function dmTimeAction(type,rowId,status,note,daysStatus){
   const list=type==='to'?_dmToData:_dmTcData;
   const r=list.find(x=>x.rowId===rowId);
   if(r){r.status=status;r.note=note;if(daysStatus)r.daysStatus=daysStatus;}
-  document.querySelectorAll('div[style*="z-index:999999"]').forEach(d=>d.remove());
+  const _det=document.getElementById('dm-time-detail-overlay');if(_det)_det.remove();
   if(type==='to') dmToRender(); else dmTcRender();
 }
 
