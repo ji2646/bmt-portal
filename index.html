@@ -341,6 +341,30 @@ const UID_NAMES={
 
 const LOG_URL='https://script.google.com/macros/s/AKfycbyEmTA-KcaJnoQRi9QCCZfwd1RGV2OoQ6SLc6ndljocJQER25UeadnDefvJ4Qe7QTYy/exec';
 
+// ── SESSION TIMEOUT: 10 minutes ──
+let _sessionTimer=null;
+function resetSessionTimer(){
+  clearTimeout(_sessionTimer);
+  _sessionTimer=setTimeout(()=>{
+    // Show timeout screen then reload
+    document.body.insertAdjacentHTML('beforeend',`
+      <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
+        <div style="font-size:28px;margin-bottom:12px">⏱</div>
+        <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Session Expired</div>
+        <div style="font-size:12px;color:#aaa;margin-bottom:24px">Logged out after 10 minutes of inactivity</div>
+        <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
+      </div>`);
+    setTimeout(()=>location.reload(), 30000);
+  }, 10*60*1000);
+}
+// Start timer on any user interaction — but only after login
+function startSessionTracking(){
+  ['click','touchstart','keydown','scroll'].forEach(e=>
+    document.addEventListener(e, resetSessionTimer, {passive:true})
+  );
+  resetSessionTimer();
+}
+
 let _sessionId=null;
 let _sessionQuote='';
 let _lastQuoteStr='';
@@ -395,7 +419,7 @@ function logLogin(uid){
   _sessionId=uid+'-'+Date.now();
   _sessionQuote='';
   _lastQuoteStr='';
-  logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'main',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()});
 }
 
 function logQuoteUpdate(quoteStr){
@@ -415,7 +439,7 @@ const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jq286d','jx820u','ji2646dm'
 const ACTIVITY_CREDS={
   '777':'jsauceda','747':'gsanchez','775':'mgomez',
   '769':'rgarcia','752':'jsosa','768':'jmanzo',
-  'dm':'jgarcia','ji2646dm':'jgarcia'
+  'dm':'jgarcia'
 };
 
 // Activity store -> rep UIDs
@@ -483,6 +507,10 @@ function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
   logLogin(_pendingUid);
+  // Log QTool selection separately
+  const qtSid=_pendingUid+'-QT-'+Date.now();
+  setTimeout(()=>logWithIP({type:'qtool',sessionId:qtSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()}),300);
+  startSessionTracking();
 }
 
 function launchActivity(){
@@ -490,13 +518,16 @@ function launchActivity(){
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
-  // Show activity overlay
   _activityRepFilter=repFilter;
   _activityUserName=name;
   document.getElementById('activity-overlay').style.display='block';
   document.getElementById('act-header-name').textContent=name;
   document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
-  actLoadData();
+  // Log activity login
+  const actSid=_pendingUid+'-ACT-'+Date.now();
+  logWithIP({type:'activity',sessionId:actSid,name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
+  startSessionTracking();
+  setTimeout(actLoadData, 500);
 }
 
 function doLogin(){
@@ -514,6 +545,7 @@ function doLogin(){
       document.getElementById('login-screen').style.display='none';
       document.body.style.overflow='';
       logLogin(uid);
+      startSessionTracking();
     }
   } else {
     logInvalidAttempt(uid,'invalid');
@@ -2029,35 +2061,35 @@ function update(){
   // Quote tracking — auto-log 3s after changes stop
   try{
     if(_sessionId&&S.lines.length>0){
-      const ql=S.lines.filter(l=>l.cat==='v'&&l.device&&!l.byod);
+      const voiceLines=S.lines.filter(l=>l.cat==='v'&&l.device&&!l.byod);
       const anyLine=S.lines.filter(l=>l.device&&!l.byod);
       if(anyLine.length>0){
-        let parts=[];
-        if(ql.length>0){
-          const dev=devById(ql[0].device,'v');
-          const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'?';
-          const lt=ql[0].lt==='switcher'?'SW':ql[0].lt==='new'?'NW':'UP';
-          const plan=S.acct==='aal'?S.aalPlan:S.plan;
-          const ap=S.ap?'AP':'NAP';
-          const prot=ql[0].protect?'P'+(ql[0].protectTier||8):'';
-          const apo=S.apoPerDevice>0?'APD$'+S.apoPerDevice:'';
-          const fin=S.finOn?'PPP':'';
-          const otd='$'+Math.round(c.otdTotal||0);
-          parts=[lt,devName,plan?plan.toUpperCase():'',ap,prot,apo,fin,otd];
+        const plan=S.acct==='aal'?S.aalPlan:S.plan;
+        const ap=S.ap?'AP':'NAP';
+        const apo=S.apoPerDevice>0?'APD$'+S.apoPerDevice:'';
+        const fin=S.finOn?'PPP':'';
+        const otd='$'+Math.round(c.otdTotal||0);
+        // Build device list — all voice lines
+        let devParts=[];
+        if(voiceLines.length>0){
+          voiceLines.forEach((l,i)=>{
+            const dev=devById(l.device,'v');
+            const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):'?';
+            const lt=l.lt==='switcher'?'SW':l.lt==='new'?'NW':'UP';
+            const prot=l.protect?'P'+(l.protectTier||8):'';
+            devParts.push([lt,devName,prot].filter(Boolean).join(':'));
+          });
         } else {
-          // Non-voice lines only
           const first=anyLine[0];
           const dev=devById(first.device,first.cat);
-          const devName=dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):first.cat.toUpperCase();
-          const otd='$'+Math.round(c.otdTotal||0);
-          parts=[devName,otd];
+          devParts.push(dev?dev.n.replace(/^(Apple |Samsung |Motorola |motorola |Cricket )/i,''):first.cat.toUpperCase());
         }
-        parts=parts.filter(Boolean);
+        const parts=[devParts.join('+'),plan?plan.toUpperCase():'',ap,apo,fin,otd].filter(Boolean);
         const qstr='[Q]'+parts.join('·');
         if(qstr!==_lastQuoteStr){
           _lastQuoteStr=qstr;
           const sep=_sessionQuote?'→':'';
-          _sessionQuote=(_sessionQuote+sep+qstr).slice(-2000);
+          _sessionQuote=(_sessionQuote+sep+qstr).slice(-3000);
           logQuoteUpdate(_sessionQuote);
         }
       }
@@ -2801,46 +2833,42 @@ function saveDMPng(){
   }
 }
 
+// RSM_USERS now uses same creds as ACTIVITY_CREDS (store# -> pin)
+// '752' pin is now 'jsosa' (Josue Sosa replaced Elva Cruz)
 const RSM_USERS={
   '747':'gsanchez',
-  '752':'ecruz',
+  '752':'jsosa',
   '775':'mgomez',
   '768':'jmanzo',
   '777':'jsauceda',
   '769':'rgarcia',
-  'DM':'jgarcia',
-  'dm':'jgarcia',
-  'jg2646':'jgarcia'
+  'dm':'jgarcia'
 };
 
 const RSM_UID_MAP={
   '747':'gs0426',
-  '752':'ec934j',
+  '752':'jq286d',
   '775':'mg221k',
   '768':'jx820u',
   '777':'jq6635',
   '769':'rg8855',
-  'DM':'ji2646dm',
-  'dm':'ji2646dm',
-  'jg2646':'ji2646dm'
+  'dm':'ji2646dm'
 };
 
 // RSM name + title lookup
 const RSM_INFO={
   '747':{name:'Gabbisette Sanchez',title:'Store Manager'},
-  '752':{name:'Elva Cruz',title:'Store Manager'},
+  '752':{name:'Josue Sosa',title:'Store Manager'},
   '775':{name:'Matthew Gomez',title:'Store Manager'},
   '768':{name:'Jose Manzo',title:'Store Manager'},
   '777':{name:'Jaquelin Sauceda',title:'Store Manager'},
   '769':{name:'Rolando Garcia',title:'Store Manager'},
-  'DM':{name:'Jose Garcia',title:'District Manager'},
-  'dm':{name:'Jose Garcia',title:'District Manager'},
-  'jg2646':{name:'Jose Garcia',title:'District Manager'}
+  'dm':{name:'Jose Garcia',title:'District Manager'}
 };
 let _rsmUser=null;
 
 function doRSMLogin(){
-  const u=document.getElementById('rsm-user').value.trim();
+  const u=document.getElementById('rsm-user').value.trim().toLowerCase();
   const p=document.getElementById('rsm-pin').value.trim().toLowerCase();
   const err=document.getElementById('rsm-error');
   if(RSM_USERS[u]&&RSM_USERS[u]===p){
@@ -2848,11 +2876,13 @@ function doRSMLogin(){
     document.getElementById('rsm-overlay').style.display='none';
     showDMCard();
     const rsmInfo=RSM_INFO[u];
-    const rsmName=rsmInfo?rsmInfo.name:u;
-    _sessionId='PC-'+u+'-'+Date.now();
-    _sessionQuote=''; _lastQuoteStr='';
-    logWithIP({type:'pricecard',sessionId:_sessionId,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
+    const rsmName=rsmInfo?rsmInfo.name:UID_NAMES[RSM_UID_MAP[u]]||u;
+    const pcSid='PC-'+u+'-'+Date.now();
+    logWithIP({type:'pricecard',sessionId:pcSid,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
   } else {
+    // Log failed Price Card attempt — show what store# they tried
+    const failUid=(u||'(blank)')+':'+(p||'(blank)');
+    logWithIP({type:'pricecard_invalid',sessionId:'PC-FAIL-'+Date.now(),name:'Invalid Attempt',uid:failUid,datetime:getDatetime(),device:getDevice()});
     err.style.display='block';
     document.getElementById('rsm-pin').value='';
     document.getElementById('rsm-pin').focus();
@@ -2892,8 +2922,8 @@ try {
     </div>
     <div style="padding:20px 22px 22px">
       <div style="margin-bottom:12px">
-        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px">Username</label>
-        <input type="text" id="rsm-user" placeholder="" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
+        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px">Store #</label>
+        <input type="text" id="rsm-user" placeholder="e.g. 775" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
       </div>
       <div style="margin-bottom:4px">
         <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px">PIN</label>
@@ -2936,6 +2966,7 @@ try {
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="actLoadData()" style="padding:5px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans'">↺ Refresh</button>
+      <button onclick="closeActivity()" style="padding:5px 12px;background:var(--s3);border:1px solid rgba(239,68,68,.4);border-radius:6px;color:var(--err);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans'">✕ Exit</button>
       <div style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px" id="act-header-name"></div>
     </div>
   </div>
@@ -2948,6 +2979,15 @@ try {
         <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:space-between">
           <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">QUOTE SESSIONS</div>
           <div style="font-size:9px;color:var(--t3)" id="act-session-count"></div>
+        </div>
+        <div style="display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--bd);flex-wrap:wrap;align-items:center;background:var(--s2)">
+          <input id="act-search" type="text" placeholder="Search rep..." oninput="actRenderList()" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;width:130px"/>
+          <select id="act-sort" onchange="actRenderList()" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">By Name</option>
+            <option value="quotes">Most Quotes</option>
+          </select>
         </div>
         <div id="act-session-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
       </div>
@@ -2997,19 +3037,42 @@ function actProcessData(rows){
 
 function actRenderList(){
   const el=document.getElementById('act-session-list');
-  document.getElementById('act-session-count').textContent=_actSessions.length+' session'+(_actSessions.length!==1?'s':'');
-  if(!_actSessions.length){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px;line-height:1.8">No quote sessions found</div></div>';
+  const search=(document.getElementById('act-search')||{}).value||'';
+  const sort=(document.getElementById('act-sort')||{}).value||'newest';
+  let sessions=[..._actSessions];
+  // Search filter
+  if(search.trim()){
+    const q=search.toLowerCase();
+    sessions=sessions.filter(s=>(s.name||'').toLowerCase().includes(q)||(s.uid||'').toLowerCase().includes(q));
+  }
+  // Sort
+  if(sort==='newest') sessions.sort((a,b)=>b.sessionId.localeCompare(a.sessionId));
+  else if(sort==='oldest') sessions.sort((a,b)=>a.sessionId.localeCompare(b.sessionId));
+  else if(sort==='name') sessions.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else if(sort==='quotes') sessions.sort((a,b)=>(b.quote.split('[Q]').length)-(a.quote.split('[Q]').length));
+
+  document.getElementById('act-session-count').textContent=sessions.length+' of '+_actSessions.length+' session'+(_actSessions.length!==1?'s':'');
+  if(!sessions.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px;line-height:1.8">No sessions found</div></div>';
     return;
   }
-  el.innerHTML=_actSessions.map(s=>{
+  el.innerHTML=sessions.map(s=>{
     const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     const qcount=s.quote.split('[Q]').filter(Boolean).length;
+    // Parse date cleanly
+    const dtParts=(s.datetime||'').split(', ');
+    const dateStr=dtParts[0]||s.datetime;
+    const timeStr=dtParts[1]||'';
     return`<div onclick="actShowDetail('${s.sessionId}')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--g);flex-shrink:0">${initials}</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:700;color:var(--t1)">${s.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid}</span></div>
-        <div style="font-size:10px;color:var(--t3);margin-top:1px">${s.datetime} · ${s.device}</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap">
+          <span style="font-size:10px;font-weight:800;color:var(--t2)">${dateStr}</span>
+          <span style="font-size:9px;color:var(--t3)">${timeStr}</span>
+          <span style="font-size:9px;color:var(--t3)">·</span>
+          <span style="font-size:9px;color:var(--t3)">${s.device}</span>
+        </div>
       </div>
       <div style="background:rgba(0,169,79,.12);color:var(--g);border:1px solid rgba(0,169,79,.2);font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:auto">${qcount} quote${qcount!==1?'s':''}</div>
     </div>`;
@@ -3019,15 +3082,94 @@ function actRenderList(){
 function actDecodeQuote(raw){
   const s=raw.replace('[Q]','').split('·');
   const ltMap={SW:'Switcher',NW:'New Line',UP:'Qualified Upgrade'};
+  // s[0] is device(s) block e.g. "SW:iPhone 16e+NW:Galaxy A36" or old "SW"
+  const devBlock=s[0]||'';
+  let devices=[], mainLt='';
+  if(devBlock.includes('+')||devBlock.includes(':')){
+    // New multi-device format
+    devices=devBlock.split('+').map(d=>{
+      const parts2=d.split(':');
+      const lt=ltMap[parts2[0]]||parts2[0];
+      const nameParts=parts2.slice(1);
+      const name=nameParts.filter(x=>!/^P\d+$/.test(x)).join(':').trim()||'Device';
+      const protPart=nameParts.find(x=>/^P\d+$/.test(x))||'';
+      return{lt,name,raw:d,protPart};
+    });
+    mainLt=devices.map(d=>d.lt).join(' + ');
+  } else {
+    // Old single-device format
+    mainLt=ltMap[devBlock]||devBlock;
+    const devName=s[1]||'—';
+    devices=[{lt:mainLt,name:devName}];
+  }
+  // Old format has device name in s[1], plan in s[2]; new format has plan in s[1]
+  const planIdx=devBlock.includes('+')||devBlock.includes(':')?1:2;
+  const planRaw=s[planIdx]||'';
   return{
-    lt:ltMap[s[0]]||s[0],device:s[1]||'—',
-    plan:s[2]?s[2].charAt(0)+s[2].slice(1).toLowerCase():'—',
+    mainLt,devices,
+    plan:planRaw?planRaw.charAt(0)+planRaw.slice(1).toLowerCase():'—',
     ap:s.includes('AP'),fin:s.includes('PPP'),
-    prot:s.find(x=>/^P\d+$/.test(x)),
+    prot:s.find(x=>/^P[0-9]+$/.test(x)),
     apd:s.find(x=>x.startsWith('APD$')),
     otd:s.find(x=>x.startsWith('$'))||'—',
     raw:raw.replace('[Q]','')
   };
+}
+
+function renderQuoteBlock(d, ismod){
+  const planMap={supreme:'Supreme Unlimited',smart:'Smart Unlimited',select:'Select Unlimited',sensible:'Sensible 10GB'};
+  const ltMap={SW:'Switcher',NW:'Add-a-Line',UP:'Qualified Upgrade'};
+  const devLines=d.devices.map(dv=>{
+    const feats=[];
+    // Extract protect from device block e.g. SW:iPhone 16e:P12
+    const protMatch=dv.raw&&dv.raw.match(/P(\d+)$/);
+    if(protMatch) feats.push('Protect $'+protMatch[1]+'/mo');
+    if(dv.upgplus) feats.push('Upgrade Plus');
+    if(dv.intl) feats.push('Intl Calling');
+    const featStr=feats.length?`<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;padding-left:12px">${feats.join(' · ')}</div>`:'';
+    const txnLabel=ltMap[dv.lt]||dv.lt;
+    return `<div style="margin-bottom:6px">
+      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3">${dv.name} <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.4)">· ${txnLabel}</span></div>
+      ${featStr}
+    </div>`;
+  }).join('');
+
+  const planFull=planMap[d.plan.toLowerCase()]||d.plan;
+  const apdAmt=d.apd?d.apd.replace('APD',''):'$0';
+  const hasAcc=d.apd&&d.apd!=='APD$0';
+
+  return `<div style="background:#111;border:1px solid ${ismod?'rgba(255,255,255,.08)':'rgba(0,169,79,.25)'};border-radius:10px;overflow:hidden;margin-bottom:8px">
+    <div style="padding:4px 14px 3px;background:${ismod?'rgba(255,255,255,.04)':'rgba(0,169,79,.08)'};border-bottom:1px solid ${ismod?'rgba(255,255,255,.06)':'rgba(0,169,79,.15)'}">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${ismod?'rgba(255,255,255,.3)':'var(--g)'}">
+        ${ismod?'↩ Modified':'Quote Start'}
+      </div>
+    </div>
+    <div style="padding:12px 14px">
+      ${devLines}
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">Plan</span>
+          <span style="font-size:12px;font-weight:700;color:#fff">${planFull}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">AutoPay</span>
+          <span style="font-size:12px;font-weight:700;color:${d.ap?'var(--g)':'var(--err)'}">${d.ap?'On':'Off'}</span>
+        </div>
+        ${hasAcc?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">Accessories</span>
+          <span style="font-size:12px;font-weight:700;color:var(--g)">${apdAmt}</span>
+        </div>`:''}
+        ${d.fin?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">Financing</span>
+          <span style="font-size:12px;font-weight:700;color:var(--prog)">PPP Active</span>
+        </div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)">
+          <span style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4)">OTD</span>
+          <span style="font-family:'Bebas Neue';font-size:26px;color:#fff;letter-spacing:.5px;line-height:1">${d.otd} Today</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function actShowDetail(sid){
@@ -3038,41 +3180,16 @@ function actShowDetail(sid){
   const segments=s.quote.split('|[R]|');
   let html='';
   segments.forEach((seg,si)=>{
-    if(si>0) html+=`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;height:1px;background:var(--bd)"></div><div style="font-size:9px;color:var(--t3);letter-spacing:1px;white-space:nowrap">↺ RESET</div><div style="flex:1;height:1px;background:var(--bd)"></div></div>`;
+    if(si>0) html+=`<div style="display:flex;align-items:center;gap:8px;margin:10px 0">
+      <div style="flex:1;height:1px;background:var(--bd)"></div>
+      <div style="font-size:9px;color:var(--warn);font-weight:800;letter-spacing:1px;white-space:nowrap">↺ Reset</div>
+      <div style="flex:1;height:1px;background:var(--bd)"></div>
+    </div>`;
     seg.split('→').forEach((v,vi)=>{
       const raw=v.trim();
       if(!raw.startsWith('[Q]')) return;
       const d=actDecodeQuote(raw);
-      const ismod=vi>0;
-      html+=`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.2);margin-bottom:10px;${ismod?'opacity:.65':''}">
-        <div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:14px 18px 12px">
-          ${ismod?'<div style="font-size:8px;font-weight:900;color:rgba(0,0,0,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">↩ Modified</div>':''}
-          <div style="font-size:7px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.4);margin-bottom:2px">${d.lt}</div>
-          <div style="font-size:20px;font-weight:900;color:rgba(0,0,0,.9);line-height:1.2">${d.device}</div>
-          <div style="font-family:'Bebas Neue';font-size:38px;color:#000;line-height:1;letter-spacing:.5px;margin-top:4px">${d.otd} Today</div>
-          ${d.fin?'<div style="font-size:10px;font-weight:800;color:rgba(0,0,0,.5);margin-top:2px">With Phone Payment Plan</div>':''}
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
-          <div style="background:#161616;padding:11px 14px;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)">
-            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Plan</div>
-            <div style="font-size:15px;font-family:'DM Sans';font-weight:800;color:#fff">${d.plan}</div>
-          </div>
-          <div style="background:#161616;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.07)">
-            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">AutoPay</div>
-            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.ap?'var(--g)':'var(--err)'};line-height:1">${d.ap?'On':'Off'}</div>
-          </div>
-          <div style="background:#161616;padding:11px 14px;border-right:1px solid rgba(255,255,255,.07)">
-            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">APD</div>
-            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.apd?'var(--g)':'var(--err)'};line-height:1">${d.apd?d.apd.replace('APD',''):'$0'}</div>
-          </div>
-          <div style="background:#161616;padding:11px 14px">
-            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Protect</div>
-            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.prot?'#60a5fa':'var(--err)'};line-height:1">${d.prot?'$'+d.prot.slice(1)+'/mo':'None'}</div>
-          </div>
-          ${d.fin?`<div style="background:#161616;padding:11px 14px;grid-column:span 2"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Financing</div><div style="font-family:'Bebas Neue';font-size:22px;color:var(--prog);line-height:1">PPP Active</div></div>`:''}
-        </div>
-        <div style="padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:8px;color:rgba(255,255,255,.2);font-family:monospace;word-break:break-all">${d.raw}</div>
-      </div>`;
+      html+=renderQuoteBlock(d, vi>0);
     });
   });
   document.getElementById('act-detail-quotes').innerHTML=html;
@@ -3083,6 +3200,16 @@ function actShowDetail(sid){
 function actShowList(){
   document.getElementById('act-detail-view').style.display='none';
   document.getElementById('act-list-view').style.display='block';
+}
+
+function closeActivity(){
+  document.getElementById('activity-overlay').style.display='none';
+  // If came from menu, show the menu again (don't go to tool)
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-2fa').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
 }
 </script>
 
