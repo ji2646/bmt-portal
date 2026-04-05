@@ -443,11 +443,11 @@ const ACTIVITY_CREDS={
 // Activity store -> rep UIDs
 const STORE_REPS={
   '777':null, // Jaquelin sees all
-  '747':['ap485d','dg8674'],
-  '775':['tg4507'],
-  '769':['bb8326'],
-  '752':['ec934j'],
-  '768':['nc3647'],
+  '747':['gs0426','ap485d','dg8674'],       // Gabbi + her reps
+  '775':['mg221k','tg4507'],                // Matthew + Thalia
+  '769':['rg8855','bb8326'],                // Rolando + Bryan
+  '752':['jq286d','cx7250'],                // Josue Sosa + Christina (NOT Elva)
+  '768':['jx820u','nc3647'],                // Jose Manzo + Nancy
   'dm':null,
   'ji2646dm':null
 };
@@ -2983,17 +2983,27 @@ try {
     <!-- LIST VIEW -->
     <div id="act-list-view">
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+        <!-- Header -->
         <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:space-between">
-          <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">QUOTE SESSIONS</div>
+          <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">SESSIONS</div>
           <div style="font-size:9px;color:var(--t3)" id="act-session-count"></div>
         </div>
-        <div style="display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--bd);flex-wrap:wrap;align-items:center;background:var(--s2)">
-          <input id="act-search" type="text" placeholder="Search rep..." oninput="actRenderList()" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;width:130px"/>
-          <select id="act-sort" onchange="actRenderList()" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="name">By Name</option>
-            <option value="quotes">Most Quotes</option>
+        <!-- Filter tabs -->
+        <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);overflow-x:auto">
+          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#000;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
+          <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">QTool</button>
+          <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Main</button>
+          <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Activity</button>
+          <button onclick="actSetFilter('PriceCard',this)" id="act-f-pricecard" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Price Card</button>
+          <button onclick="actSetFilter('invalid',this)" id="act-f-invalid" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Invalid</button>
+        </div>
+        <!-- Search + Sort -->
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
+          <input id="act-search" type="text" placeholder="Search name or UID..." oninput="actRenderList()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+          <select id="act-sort" onchange="actRenderList()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name</option>
           </select>
         </div>
         <div id="act-session-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
@@ -3025,109 +3035,139 @@ function actLoadData(){
 }
 
 function actUseDemoData(){
+  // Demo fallback — only shown if live fetch fails
   actProcessData([
+    {loginType:'Main',sessionId:'ji2646dm-1775346505000',name:'Josue Garcia',uid:'ji2646dm',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:''},
     {loginType:'QTool',sessionId:'ji2646dm-1775346505908',name:'Josue Garcia',uid:'ji2646dm',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:'[Q]UP·iPhone 17e 256GB·SUPREME·AP·APD$90·$774'},
+    {loginType:'Main',sessionId:'mg221k-1775346214000',name:'Matthew Gomez',uid:'mg221k',datetime:'04/04/2026, 6:43 PM',device:'Android Phone · Chrome',ip:'24.170.58.152',quote:''},
     {loginType:'QTool',sessionId:'mg221k-1775346214353',name:'Matthew Gomez',uid:'mg221k',datetime:'04/04/2026, 6:43 PM',device:'Android Phone · Chrome',ip:'24.170.58.152',quote:'[Q]SW·Galaxy A36·SUPREME·AP·P8·APD$45·$183→[Q]SW·iPhone 16e 128GB·SUPREME·AP·P12·APD$45·$229|[R]|[Q]NW·moto g play 2026·SMART·AP·P8·APD$45·$139'},
+    {loginType:'Main',sessionId:'gs0426-1775346444000',name:'Gabbisette Sanchez',uid:'gs0426',datetime:'04/04/2026, 6:47 PM',device:'iPhone · Safari',ip:'47.234.194.86',quote:''},
     {loginType:'QTool',sessionId:'gs0426-1775346444900',name:'Gabbisette Sanchez',uid:'gs0426',datetime:'04/04/2026, 6:47 PM',device:'iPhone · Safari',ip:'47.234.194.86',quote:'[Q]SW·iPhone 16e 128GB·SUPREME·AP·P12·APD$45·$229'},
+    {loginType:'INVALID UID',sessionId:'FAIL-1775346499904',name:'Unknown',uid:'elvacruz',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:''},
+    {loginType:'INVALID Activity',sessionId:'ACT-FAIL-1775346500000',name:'Elva Cruz',uid:'752:ecruz',datetime:'04/04/2026, 6:49 PM',device:'iPhone · Safari',ip:'47.234.194.86',quote:''},
   ]);
 }
 
+let _actFilter='all';
+function actSetFilter(f, btn){
+  _actFilter=f;
+  document.querySelectorAll('[id^="act-f-"]').forEach(b=>{
+    b.style.background='var(--s3)';b.style.color='var(--t3)';b.style.borderColor='var(--bd2)';
+  });
+  btn.style.background='var(--g)';btn.style.color='#000';btn.style.borderColor='var(--g)';
+  actRenderList();
+}
+
 function actProcessData(rows){
-  // Show all login types — filter by rep access only
+  const isDM=(_pendingUid==='ji2646dm');
   _actSessions=rows.filter(r=>{
     if(!r.loginType) return false;
-    if(_activityRepFilter&&_activityRepFilter.length>0){
-      // For non-QTool rows, still show if the UID matches allowed reps or RSMs
-      if(!_activityRepFilter.includes(r.uid)) return false;
+    if(isDM){
+      // DM sees everything
+      return true;
+    } else {
+      // RSM sees only QTool rows with quotes for their allowed reps
+      if(r.loginType!=='QTool') return false;
+      if(!r.quote||!r.quote.trim()) return false;
+      if(_activityRepFilter&&_activityRepFilter.length>0){
+        if(!_activityRepFilter.includes(r.uid)) return false;
+      }
+      return true;
     }
-    return true;
-  }).reverse(); // reverse so newest from sheet comes first
+  });
+  _actSessions.sort((a,b)=>{
+    const ta=parseInt((a.sessionId||'0').replace(/[^0-9]/g,'').slice(-13))||0;
+    const tb=parseInt((b.sessionId||'0').replace(/[^0-9]/g,'').slice(-13))||0;
+    return tb-ta;
+  });
   actRenderList();
 }
 
 function actRenderList(){
   const el=document.getElementById('act-session-list');
+  const isDM=(_pendingUid==='ji2646dm');
+  // Show filter tabs only for DM
+  const filterBar=document.querySelector('[id^="act-f-all"]');
+  if(filterBar) filterBar.closest('div').style.display=isDM?'flex':'none';
   const search=(document.getElementById('act-search')||{}).value||'';
   const sort=(document.getElementById('act-sort')||{}).value||'newest';
   let sessions=[..._actSessions];
-  // Search filter
+
+  // Type filter (DM only)
+  if(isDM&&_actFilter!=='all'){
+    if(_actFilter==='invalid'){
+      sessions=sessions.filter(s=>(s.loginType||'').includes('INVALID'));
+    } else {
+      sessions=sessions.filter(s=>s.loginType===_actFilter);
+    }
+  }
+
+  // Search
   if(search.trim()){
     const q=search.toLowerCase();
     sessions=sessions.filter(s=>(s.name||'').toLowerCase().includes(q)||(s.uid||'').toLowerCase().includes(q));
   }
-  // Sort
-  const parseDate=s=>{try{return new Date(s.datetime||0).getTime()||parseInt((s.sessionId||'0').split('-').pop())||0;}catch(e){return 0;}};
-  if(sort==='newest') sessions.sort((a,b)=>parseDate(b)-parseDate(a));
-  else if(sort==='oldest') sessions.sort((a,b)=>parseDate(a)-parseDate(b));
-  else if(sort==='name') sessions.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  else if(sort==='quotes') sessions.sort((a,b)=>(b.quote.split('[Q]').length)-(a.quote.split('[Q]').length));
 
-  document.getElementById('act-session-count').textContent=sessions.length+' of '+_actSessions.length+' session'+(_actSessions.length!==1?'s':'');
+  // Sort
+  const getTs=s=>parseInt((s.sessionId||'0').replace(/[^0-9]/g,'').slice(-13))||0;
+  if(sort==='newest') sessions.sort((a,b)=>getTs(b)-getTs(a));
+  else if(sort==='oldest') sessions.sort((a,b)=>getTs(a)-getTs(b));
+  else if(sort==='name') sessions.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  document.getElementById('act-session-count').textContent=sessions.length+' of '+_actSessions.length;
+
   if(!sessions.length){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px;line-height:1.8">No sessions found</div></div>';
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px">No sessions found</div></div>';
     return;
   }
+
+  const badgeMap={
+    'QTool':    ['rgba(0,169,79,.12)','var(--g)','rgba(0,169,79,.2)'],
+    'Main':     ['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.14)'],
+    'Activity': ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.2)'],
+    'PriceCard':['rgba(251,191,36,.1)','#fbbf24','rgba(251,191,36,.2)'],
+  };
+
   el.innerHTML=sessions.map(s=>{
     const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    const isInvalid=(s.loginType||'').includes('INVALID');
+    const bc=isInvalid?['rgba(239,68,68,.1)','var(--err)','rgba(239,68,68,.2)']:(badgeMap[s.loginType]||['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.14)']);
 
-    // Parse date
-    const rawDt=s.datetime||'';
+    // Time display — use local browser time from sessionId timestamp (reliable)
+    const ts=getTs(s);
     let dateStr='', timeStr='';
-    if(rawDt.includes(', ')){
-      const ci=rawDt.indexOf(', ');
-      dateStr=rawDt.substring(0,ci);
-      timeStr=rawDt.substring(ci+2);
-    } else {
-      const ts=parseInt((s.sessionId||'').split('-').pop());
-      if(ts){const d=new Date(ts);dateStr=d.toLocaleDateString('en-US');timeStr=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
-      else dateStr=rawDt;
+    if(ts){
+      const d=new Date(ts);
+      dateStr=d.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+      timeStr=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+    } else if(s.datetime){
+      const parts=s.datetime.split(', ');
+      dateStr=parts[0]||s.datetime; timeStr=parts[1]||'';
     }
 
-    // Session ID last 8 digits
-    const sid=(s.sessionId||'').split('-').pop().slice(-8);
+    // Session ID — last 8 digits of timestamp
+    const sid=ts?String(ts).slice(-8):(s.sessionId||'').slice(-8);
 
-    // Badge per type
-    const badgeMap={
-      'QTool':    ['rgba(0,169,79,.12)','var(--g)','rgba(0,169,79,.2)'],
-      'Main':     ['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.12)'],
-      'Activity': ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.2)'],
-      'PriceCard':['rgba(251,191,36,.1)','#fbbf24','rgba(251,191,36,.2)'],
-    };
-    const isInvalid=s.loginType&&s.loginType.includes('INVALID');
-    const bc=isInvalid?['rgba(239,68,68,.1)','var(--err)','rgba(239,68,68,.2)']:
-             (badgeMap[s.loginType]||['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.12)']);
+    // Badge = login type only
+    const badge=s.loginType||'—';
 
-    // Mod count for QTool
-    let badge='';
-    if(s.loginType==='QTool'&&s.quote){
-      const mods=s.quote.split('→').length-1;
-      badge=mods>0?`${mods} mod${mods!==1?'s':''}`:
-            s.quote.includes('[Q]')?'1 quote':'—';
-    } else {
-      badge=s.loginType||'—';
-    }
+    // All rows tappable
+    const clickable=true;
+    const rowClick=clickable?`onclick="actShowDetail('${s.sessionId}')" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"`:'' ;
+    const rowStyle='display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);transition:background .12s'+(clickable?';cursor:pointer':'');
 
-    // Clickable only for QTool with quote
-    const clickable=s.loginType==='QTool'&&s.quote&&s.quote.trim();
-    return`<div ${clickable?`onclick="actShowDetail('${s.sessionId}')"`:''}
-      style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);${clickable?'cursor:pointer;':''}transition:background .12s"
-      ${clickable?`onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"`:''}">
+    return`<div ${rowClick} style="${rowStyle}">
       <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:${bc[1]};flex-shrink:0">${initials}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:var(--t1)">${s.name||'—'} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid||''}</span></div>
-        <div style="display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap">
-          <span style="font-size:10px;font-weight:800;color:var(--t2)">${dateStr}</span>
-          <span style="font-size:9px;color:var(--t3)">${timeStr}</span>
-          <span style="font-size:9px;color:var(--t3)">·</span>
-          <span style="font-size:9px;color:var(--t3)">#${sid}</span>
-          <span style="font-size:9px;color:var(--t3)">·</span>
-          <span style="font-size:9px;color:var(--t3)">${s.device||''}</span>
-        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name||'—'} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid||''}</span></div>
+        <div style="font-size:10px;font-weight:800;color:var(--t2);margin-top:2px">${dateStr} ${timeStr}</div>
+        <div style="font-size:9px;color:var(--t3);margin-top:1px">#${sid} · ${s.device||''}</div>
       </div>
-      <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:auto">${badge}</div>
+      <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:8px">${badge}</div>
     </div>`;
   }).join('');
 }
+
 
 function actDecodeQuote(raw){
   const s=raw.replace('[Q]','').split('·');
@@ -3225,8 +3265,60 @@ function renderQuoteBlock(d, ismod){
 function actShowDetail(sid){
   const s=_actSessions.find(x=>x.sessionId===sid);
   if(!s) return;
-  document.getElementById('act-detail-name').textContent=s.name;
-  document.getElementById('act-detail-meta').textContent=s.datetime+' · '+s.device;
+  const ts=parseInt((s.sessionId||'0').replace(/[^0-9]/g,'').slice(-13))||0;
+  const dtStr=ts?new Date(ts).toLocaleString('en-US',{month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true}):s.datetime;
+  const sid8=ts?String(ts).slice(-8):(s.sessionId||'').slice(-8);
+  const isInvalid=(s.loginType||'').includes('INVALID');
+
+  document.getElementById('act-detail-name').textContent=(s.name||'—')+' · '+(s.uid||'');
+  document.getElementById('act-detail-meta').textContent=dtStr+' · #'+sid8+' · '+(s.device||'');
+
+  const quotesEl=document.getElementById('act-detail-quotes');
+
+  // Non-QTool or empty quote — show info card
+  if(s.loginType!=='QTool'||!s.quote||!s.quote.trim()){
+    const isActInvalid=s.loginType==='INVALID Activity';
+    const isPCInvalid=s.loginType==='INVALID PriceCard';
+    let attempted='';
+    if((isActInvalid||isPCInvalid)&&s.uid&&s.uid.includes(':')){
+      const parts=s.uid.split(':');
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">Store Entered</span>
+          <span style="font-size:12px;font-weight:700;color:#fff">${parts[0]||'—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">PIN Entered</span>
+          <span style="font-size:12px;font-weight:700;color:var(--err)">${parts[1]||'—'}</span>
+        </div>
+      </div>`;
+    } else if(isInvalid){
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:11px;color:rgba(255,255,255,.4)">UID Entered</span>
+          <span style="font-size:12px;font-weight:700;color:var(--err)">${s.uid||'—'}</span>
+        </div>
+      </div>`;
+    }
+    quotesEl.innerHTML=`<div style="background:#111;border:1px solid ${isInvalid?'rgba(239,68,68,.25)':'rgba(255,255,255,.08)'};border-radius:10px;padding:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">Login Type</span>
+        <span style="font-size:12px;font-weight:800;color:${isInvalid?'var(--err)':'var(--g)'}">${s.loginType}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">IP Address</span>
+        <span style="font-size:12px;font-weight:700;color:#fff">${s.ip||'—'}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-size:11px;color:rgba(255,255,255,.4)">Device</span>
+        <span style="font-size:12px;font-weight:700;color:#fff">${s.device||'—'}</span>
+      </div>
+      ${attempted}
+    </div>`;
+    document.getElementById('act-list-view').style.display='none';
+    document.getElementById('act-detail-view').style.display='block';
+    return;
+  }
   const segments=s.quote.split('|[R]|');
   let html='';
   segments.forEach((seg,si)=>{
