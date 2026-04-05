@@ -592,11 +592,13 @@ function doLogin(){
     if(RSM_UIDS.includes(uid)){
       showMenu();
     } else {
-      // Rep — go straight to tool, also log QTool
-      document.getElementById('login-screen').style.display='none';
-      document.body.style.overflow='';
-      setTimeout(()=>logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()}),300);
-      startSessionTracking();
+      // Rep — show menu with 3 options
+      _pendingUid=uid;
+      document.getElementById('ls-uid').style.display='none';
+      document.getElementById('ls-menu').style.display='block';
+      document.getElementById('ls-menu-name').textContent='Welcome, '+(UID_NAMES[uid]||uid);
+      document.getElementById('btn-timemgmt').style.display='block';
+      document.getElementById('btn-activity').style.display='block';
     }
   } else {
     // Main log: invalid
