@@ -505,6 +505,9 @@ function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-content').style.display='block';
   document.body.style.overflow='';
+  // Always set fresh sessionId so quote tracking can attach to this row
+  _sessionId=_pendingUid+'-'+Date.now();
+  _sessionQuote=''; _lastQuoteStr='';
   logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
 }
