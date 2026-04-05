@@ -433,7 +433,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jq286d','jx820u','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jq286d','jx820u','ji2646dm','ec934j'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -476,6 +476,10 @@ function showMenu(){
   document.getElementById('ls-menu').style.display='block';
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('ls-menu-name').textContent='Welcome, '+name;
+  // Log main login for RSM/DM when they reach the menu
+  _sessionId=_pendingUid+'-'+Date.now();
+  _sessionQuote=''; _lastQuoteStr='';
+  logWithIP({type:'main',sessionId:_sessionId,name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
 }
 
 function showActivity2FA(){
@@ -506,10 +510,9 @@ function verify2FA(){
 function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
-  logLogin(_pendingUid);
-  // Log QTool selection separately
+  // Log QTool selection
   const qtSid=_pendingUid+'-QT-'+Date.now();
-  setTimeout(()=>logWithIP({type:'qtool',sessionId:qtSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()}),300);
+  logWithIP({type:'qtool',sessionId:qtSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
 }
 
@@ -2876,7 +2879,7 @@ function doRSMLogin(){
     document.getElementById('rsm-overlay').style.display='none';
     showDMCard();
     const rsmInfo=RSM_INFO[u];
-    const rsmName=rsmInfo?rsmInfo.name:UID_NAMES[RSM_UID_MAP[u]]||u;
+    const rsmName=rsmInfo?rsmInfo.name:(UID_NAMES[RSM_UID_MAP[u]]||u);
     const pcSid='PC-'+u+'-'+Date.now();
     logWithIP({type:'pricecard',sessionId:pcSid,name:rsmName,uid:RSM_UID_MAP[u]||u,datetime:getDatetime(),device:getDevice()});
   } else {
