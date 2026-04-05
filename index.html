@@ -278,16 +278,45 @@ select option,select optgroup{background:#1a1a1a}
   <div class="login-card">
     <div class="login-header">
       <h1>Quote Tool</h1>
-      
     </div>
     <div class="login-body">
-      <div class="login-field">
-        <label>UID</label>
-        <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()"/>
+
+      <!-- STEP 1: UID -->
+      <div id="ls-uid">
+        <div class="login-field">
+          <label>UID</label>
+          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div id="login-error">UID not recognized or access not granted</div>
+        <button id="login-btn" onclick="doLogin()">Sign In</button>
       </div>
-      <div id="login-error">UID not recognized or access not granted</div>
-      <button id="login-btn" onclick="doLogin()">Sign In</button>
-      <div class="login-footer">Internal use only</div>
+
+      <!-- STEP 2: RSM/DM Menu -->
+      <div id="ls-menu" style="display:none">
+        <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
+        <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
+        <button onclick="showActivity2FA()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📊 Activity</button>
+      </div>
+
+      <!-- STEP 3: Activity 2FA -->
+      <div id="ls-2fa" style="display:none">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:12px">Verify Identity</div>
+        <div class="login-field" style="margin-bottom:10px">
+          <label>Store #</label>
+          <input type="text" id="act-store" placeholder="e.g. 775" autocomplete="off" autocorrect="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+        </div>
+        <div class="login-field" style="margin-bottom:4px">
+          <label>PIN</label>
+          <input type="password" id="act-pin" placeholder="••••••" onkeydown="if(event.key==='Enter')verify2FA()" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+        </div>
+        <div id="act-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 4px;font-weight:700">Incorrect store or PIN</div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button onclick="showMenu()" style="flex:1;padding:10px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#aaa;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
+          <button onclick="verify2FA()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Continue</button>
+        </div>
+      </div>
+
+      <div class="login-footer" style="margin-top:12px">Internal use only</div>
     </div>
   </div>
 </div>
@@ -358,7 +387,8 @@ function logWithIP(params){
 }
 
 function logInvalidAttempt(uid, type){
-  logWithIP({type,sessionId:'FAIL-'+Date.now(),name:UID_NAMES[uid]||'Unknown',uid,datetime:getDatetime(),device:getDevice()});
+  const attemptedUid=uid||'(blank)';
+  logWithIP({type,sessionId:'FAIL-'+Date.now(),name:UID_NAMES[uid]||'Unknown',uid:attemptedUid,datetime:getDatetime(),device:getDevice()});
 }
 
 function logLogin(uid){
@@ -378,6 +408,34 @@ function logQuoteUpdate(quoteStr){
   },3000);
 }
 
+// RSM UIDs — these get the menu
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jq286d','jx820u','ji2646dm'];
+
+// Activity 2FA credentials: store# -> pin
+const ACTIVITY_CREDS={
+  '777':'jsauceda','747':'gsanchez','775':'mgomez',
+  '769':'rgarcia','752':'jsosa','768':'jmanzo',
+  'dm':'jgarcia','ji2646dm':'jgarcia'
+};
+
+// Activity store -> rep UIDs
+const STORE_REPS={
+  '777':null, // Jaquelin sees all
+  '747':['ap485d','dg8674'],
+  '775':['tg4507'],
+  '769':['bb8326'],
+  '752':['ec934j'],
+  '768':['nc3647'],
+  'dm':null,
+  'ji2646dm':null
+};
+
+let _pendingUid=null;
+let _activityStore=null;
+let _activityRepFilter=null;
+let _activityUserName='';
+let _actSessions=[];
+
 function showLoginError(uid, type){
   document.getElementById('login-screen').innerHTML=`
     <div style="background:#8B0000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
@@ -388,15 +446,75 @@ function showLoginError(uid, type){
     </div>`;
 }
 
+function showMenu(){
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-2fa').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  const name=UID_NAMES[_pendingUid]||_pendingUid;
+  document.getElementById('ls-menu-name').textContent='Welcome, '+name;
+}
+
+function showActivity2FA(){
+  document.getElementById('ls-menu').style.display='none';
+  document.getElementById('ls-2fa').style.display='block';
+  document.getElementById('act-error').style.display='none';
+  document.getElementById('act-store').value='';
+  document.getElementById('act-pin').value='';
+  setTimeout(()=>document.getElementById('act-store').focus(),100);
+}
+
+function verify2FA(){
+  const store=document.getElementById('act-store').value.trim();
+  const pin=document.getElementById('act-pin').value.trim().toLowerCase();
+  const err=document.getElementById('act-error');
+  // DM can use 'dm' or their uid as store
+  const storeKey=(store==='dm'||store===_pendingUid)?_pendingUid:store;
+  const validPin=ACTIVITY_CREDS[store]||ACTIVITY_CREDS[storeKey];
+  if(validPin&&validPin===pin){
+    _activityStore=store;
+    launchActivity();
+  } else {
+    err.style.display='block';
+    document.getElementById('act-pin').value='';
+  }
+}
+
+function launchQuoteTool(){
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  logLogin(_pendingUid);
+}
+
+function launchActivity(){
+  const repFilter=STORE_REPS[_activityStore]||STORE_REPS[_pendingUid]||null;
+  const name=UID_NAMES[_pendingUid]||_pendingUid;
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  // Show activity overlay
+  _activityRepFilter=repFilter;
+  _activityUserName=name;
+  document.getElementById('activity-overlay').style.display='block';
+  document.getElementById('act-header-name').textContent=name;
+  document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
+  actLoadData();
+}
+
 function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
+  const err=document.getElementById('login-error');
   if(DISABLED_UIDS.includes(uid)){
     logInvalidAttempt(uid,'disabled');
     showLoginError(uid,'Disabled');
   } else if(ALLOWED_UIDS.includes(uid)){
-    document.getElementById('login-screen').style.display='none';
-    document.body.style.overflow='';
-    logLogin(uid);
+    _pendingUid=uid;
+    if(RSM_UIDS.includes(uid)){
+      showMenu();
+    } else {
+      // Rep — go straight to tool
+      document.getElementById('login-screen').style.display='none';
+      document.body.style.overflow='';
+      logLogin(uid);
+    }
   } else {
     logInvalidAttempt(uid,'invalid');
     showLoginError(uid,'Invalid');
@@ -2805,6 +2923,168 @@ try {
     </div>
   </div>
 </div>
+
+
+<!-- ACTIVITY OVERLAY -->
+<div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;font-family:'DM Sans',sans-serif">
+
+  <!-- Header -->
+  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+    <div>
+      <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
+      <div style="font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700" id="act-header-store"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="actLoadData()" style="padding:5px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans'">↺ Refresh</button>
+      <div style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px" id="act-header-name"></div>
+    </div>
+  </div>
+
+  <div style="max-width:700px;margin:0 auto;padding:16px 12px 60px">
+
+    <!-- LIST VIEW -->
+    <div id="act-list-view">
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">QUOTE SESSIONS</div>
+          <div style="font-size:9px;color:var(--t3)" id="act-session-count"></div>
+        </div>
+        <div id="act-session-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="act-detail-view" style="display:none">
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+        <div onclick="actShowList()" style="display:flex;align-items:center;gap:6px;padding:10px 14px;cursor:pointer;color:var(--t3);font-size:11px;font-weight:700;border-bottom:1px solid var(--bd);transition:color .15s">← All Sessions</div>
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);background:var(--s2)">
+          <div style="font-size:16px;font-weight:800" id="act-detail-name"></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px" id="act-detail-meta"></div>
+        </div>
+        <div style="padding:14px" id="act-detail-quotes"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function actLoadData(){
+  document.getElementById('act-session-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading sessions...</div>';
+  fetch(LOG_URL+'?type=fetch',{method:'GET',mode:'cors'})
+    .then(r=>r.json())
+    .then(data=>actProcessData(data))
+    .catch(()=>actUseDemoData());
+}
+
+function actUseDemoData(){
+  actProcessData([
+    {loginType:'QTool',sessionId:'ji2646dm-1775346505908',name:'Josue Garcia',uid:'ji2646dm',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:'[Q]UP·iPhone 17e 256GB·SUPREME·AP·APD$90·$774'},
+    {loginType:'QTool',sessionId:'mg221k-1775346214353',name:'Matthew Gomez',uid:'mg221k',datetime:'04/04/2026, 6:43 PM',device:'Android Phone · Chrome',ip:'24.170.58.152',quote:'[Q]SW·Galaxy A36·SUPREME·AP·P8·APD$45·$183→[Q]SW·iPhone 16e 128GB·SUPREME·AP·P12·APD$45·$229|[R]|[Q]NW·moto g play 2026·SMART·AP·P8·APD$45·$139'},
+    {loginType:'QTool',sessionId:'gs0426-1775346444900',name:'Gabbisette Sanchez',uid:'gs0426',datetime:'04/04/2026, 6:47 PM',device:'iPhone · Safari',ip:'47.234.194.86',quote:'[Q]SW·iPhone 16e 128GB·SUPREME·AP·P12·APD$45·$229'},
+  ]);
+}
+
+function actProcessData(rows){
+  _actSessions=rows.filter(r=>{
+    if(r.loginType!=='QTool') return false;
+    if(!r.quote||!r.quote.trim()) return false;
+    if(_activityRepFilter&&_activityRepFilter.length>0&&!_activityRepFilter.includes(r.uid)) return false;
+    return true;
+  });
+  actRenderList();
+}
+
+function actRenderList(){
+  const el=document.getElementById('act-session-list');
+  document.getElementById('act-session-count').textContent=_actSessions.length+' session'+(_actSessions.length!==1?'s':'');
+  if(!_actSessions.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px;line-height:1.8">No quote sessions found</div></div>';
+    return;
+  }
+  el.innerHTML=_actSessions.map(s=>{
+    const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    const qcount=s.quote.split('[Q]').filter(Boolean).length;
+    return`<div onclick="actShowDetail('${s.sessionId}')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--g);flex-shrink:0">${initials}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--t1)">${s.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid}</span></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">${s.datetime} · ${s.device}</div>
+      </div>
+      <div style="background:rgba(0,169,79,.12);color:var(--g);border:1px solid rgba(0,169,79,.2);font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:auto">${qcount} quote${qcount!==1?'s':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function actDecodeQuote(raw){
+  const s=raw.replace('[Q]','').split('·');
+  const ltMap={SW:'Switcher',NW:'New Line',UP:'Qualified Upgrade'};
+  return{
+    lt:ltMap[s[0]]||s[0],device:s[1]||'—',
+    plan:s[2]?s[2].charAt(0)+s[2].slice(1).toLowerCase():'—',
+    ap:s.includes('AP'),fin:s.includes('PPP'),
+    prot:s.find(x=>/^P\d+$/.test(x)),
+    apd:s.find(x=>x.startsWith('APD$')),
+    otd:s.find(x=>x.startsWith('$'))||'—',
+    raw:raw.replace('[Q]','')
+  };
+}
+
+function actShowDetail(sid){
+  const s=_actSessions.find(x=>x.sessionId===sid);
+  if(!s) return;
+  document.getElementById('act-detail-name').textContent=s.name;
+  document.getElementById('act-detail-meta').textContent=s.datetime+' · '+s.device;
+  const segments=s.quote.split('|[R]|');
+  let html='';
+  segments.forEach((seg,si)=>{
+    if(si>0) html+=`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;height:1px;background:var(--bd)"></div><div style="font-size:9px;color:var(--t3);letter-spacing:1px;white-space:nowrap">↺ RESET</div><div style="flex:1;height:1px;background:var(--bd)"></div></div>`;
+    seg.split('→').forEach((v,vi)=>{
+      const raw=v.trim();
+      if(!raw.startsWith('[Q]')) return;
+      const d=actDecodeQuote(raw);
+      const ismod=vi>0;
+      html+=`<div style="background:#0d0d0d;border-radius:10px;overflow:hidden;border:1px solid rgba(0,169,79,.2);margin-bottom:10px;${ismod?'opacity:.65':''}">
+        <div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:14px 18px 12px">
+          ${ismod?'<div style="font-size:8px;font-weight:900;color:rgba(0,0,0,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">↩ Modified</div>':''}
+          <div style="font-size:7px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.4);margin-bottom:2px">${d.lt}</div>
+          <div style="font-size:20px;font-weight:900;color:rgba(0,0,0,.9);line-height:1.2">${d.device}</div>
+          <div style="font-family:'Bebas Neue';font-size:38px;color:#000;line-height:1;letter-spacing:.5px;margin-top:4px">${d.otd} Today</div>
+          ${d.fin?'<div style="font-size:10px;font-weight:800;color:rgba(0,0,0,.5);margin-top:2px">With Phone Payment Plan</div>':''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+          <div style="background:#161616;padding:11px 14px;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07)">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Plan</div>
+            <div style="font-size:15px;font-family:'DM Sans';font-weight:800;color:#fff">${d.plan}</div>
+          </div>
+          <div style="background:#161616;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.07)">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">AutoPay</div>
+            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.ap?'var(--g)':'var(--err)'};line-height:1">${d.ap?'On':'Off'}</div>
+          </div>
+          <div style="background:#161616;padding:11px 14px;border-right:1px solid rgba(255,255,255,.07)">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">APD</div>
+            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.apd?'var(--g)':'var(--err)'};line-height:1">${d.apd?d.apd.replace('APD',''):'$0'}</div>
+          </div>
+          <div style="background:#161616;padding:11px 14px">
+            <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Protect</div>
+            <div style="font-family:'Bebas Neue';font-size:22px;color:${d.prot?'#60a5fa':'var(--err)'};line-height:1">${d.prot?'$'+d.prot.slice(1)+'/mo':'None'}</div>
+          </div>
+          ${d.fin?`<div style="background:#161616;padding:11px 14px;grid-column:span 2"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">Financing</div><div style="font-family:'Bebas Neue';font-size:22px;color:var(--prog);line-height:1">PPP Active</div></div>`:''}
+        </div>
+        <div style="padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:8px;color:rgba(255,255,255,.2);font-family:monospace;word-break:break-all">${d.raw}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('act-detail-quotes').innerHTML=html;
+  document.getElementById('act-list-view').style.display='none';
+  document.getElementById('act-detail-view').style.display='block';
+}
+
+function actShowList(){
+  document.getElementById('act-detail-view').style.display='none';
+  document.getElementById('act-list-view').style.display='block';
+}
+</script>
 
 </body>
 </html>
