@@ -505,7 +505,7 @@ function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-content').style.display='block';
   document.body.style.overflow='';
-  logWithIP({type:'qtool',sessionId:_sessionId+'-QT',name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
 }
 
@@ -544,7 +544,7 @@ function doLogin(){
       // Rep — go straight to tool, also log QTool
       document.getElementById('login-screen').style.display='none';
       document.body.style.overflow='';
-      setTimeout(()=>logWithIP({type:'qtool',sessionId:_sessionId+'-QT',name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()}),300);
+      setTimeout(()=>logWithIP({type:'qtool',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()}),300);
       startSessionTracking();
     }
   } else {
