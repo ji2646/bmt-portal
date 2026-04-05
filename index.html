@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cricket Quote Tool</title>
+<title>Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -18,6 +18,7 @@
   --r:12px;--r2:8px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:13px}
+.app-content{display:none}
 header{background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
 .hbug{width:32px;height:32px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;color:#000}
@@ -276,9 +277,6 @@ select option,select optgroup{background:#1a1a1a}
 
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-header">
-      <h1>Quote Tool</h1>
-    </div>
     <div class="login-body">
 
       <!-- STEP 1: UID -->
@@ -316,7 +314,7 @@ select option,select optgroup{background:#1a1a1a}
         </div>
       </div>
 
-      <div class="login-footer" style="margin-top:12px">Internal use only</div>
+
     </div>
   </div>
 </div>
@@ -476,10 +474,6 @@ function showMenu(){
   document.getElementById('ls-menu').style.display='block';
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('ls-menu-name').textContent='Welcome, '+name;
-  // Log main login for RSM/DM when they reach the menu
-  _sessionId=_pendingUid+'-'+Date.now();
-  _sessionQuote=''; _lastQuoteStr='';
-  logWithIP({type:'main',sessionId:_sessionId,name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
 }
 
 function showActivity2FA(){
@@ -509,10 +503,9 @@ function verify2FA(){
 
 function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-content').style.display='block';
   document.body.style.overflow='';
-  // Log QTool selection
-  const qtSid=_pendingUid+'-QT-'+Date.now();
-  logWithIP({type:'qtool',sessionId:qtSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'qtool',sessionId:_sessionId+'-QT',name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
 }
 
@@ -527,8 +520,7 @@ function launchActivity(){
   document.getElementById('act-header-name').textContent=name;
   document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
   // Log activity login
-  const actSid=_pendingUid+'-ACT-'+Date.now();
-  logWithIP({type:'activity',sessionId:actSid,name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'activity',sessionId:_sessionId+'-ACT',name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
   setTimeout(actLoadData, 500);
 }
@@ -537,21 +529,27 @@ function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
   const err=document.getElementById('login-error');
   if(DISABLED_UIDS.includes(uid)){
-    logInvalidAttempt(uid,'disabled');
+    // Main log: disabled
+    logWithIP({type:'main',sessionId:'FAIL-'+Date.now(),name:UID_NAMES[uid]||'Unknown',uid:uid,datetime:getDatetime(),device:getDevice(),status:'DISABLED UID'});
     showLoginError(uid,'Disabled');
   } else if(ALLOWED_UIDS.includes(uid)){
     _pendingUid=uid;
+    // Main log: successful
+    _sessionId=uid+'-'+Date.now();
+    _sessionQuote=''; _lastQuoteStr='';
+    logWithIP({type:'main',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice(),status:'OK'});
     if(RSM_UIDS.includes(uid)){
       showMenu();
     } else {
-      // Rep — go straight to tool
+      // Rep — go straight to tool, also log QTool
       document.getElementById('login-screen').style.display='none';
       document.body.style.overflow='';
-      logLogin(uid);
+      setTimeout(()=>logWithIP({type:'qtool',sessionId:_sessionId+'-QT',name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice()}),300);
       startSessionTracking();
     }
   } else {
-    logInvalidAttempt(uid,'invalid');
+    // Main log: invalid
+    logWithIP({type:'main',sessionId:'FAIL-'+Date.now(),name:'Unknown',uid:uid||'(blank)',datetime:getDatetime(),device:getDevice(),status:'INVALID UID'});
     showLoginError(uid,'Invalid');
   }
 }
@@ -560,6 +558,7 @@ function doLogin(){
 document.body.style.overflow='hidden';
 </script>
 
+<div class="app-content" id="app-content">
 <div class="hi-banner">
   <div style="padding:8px 14px;border-right:1px solid rgba(139,92,246,.3);display:flex;flex-direction:column;gap:2px">
     <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:1px">📡 AT&T Internet Air</div>
@@ -2916,6 +2915,8 @@ try {
     📝 Quote Tool Feedback
   </a>
 </div>
+</div><!-- end app-content -->
+
 <!-- RSM LOGIN OVERLAY -->
 <div id="rsm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9998;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
   <div style="width:300px;background:#111;border:1px solid #222;border-radius:12px;overflow:hidden">
