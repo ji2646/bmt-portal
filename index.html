@@ -501,6 +501,54 @@ function verify2FA(){
   }
 }
 
+function handleActivityClick(){
+  const isDM=(_pendingUid==='ji2646dm');
+  const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
+  // Log activity click
+  const actLogSid=_pendingUid+'-ACT-'+Date.now();
+  logWithIP({type:'activity',sessionId:actLogSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
+  if(isDM||isRSM){
+    // RSM/DM need 2FA
+    showActivity2FA();
+  } else {
+    // Rep goes straight in
+    launchRepActivity();
+  }
+}
+
+function launchRepActivity(){
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  document.getElementById('rep-activity-overlay').style.display='block';
+  document.getElementById('rep-act-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
+  repActLoadData();
+  startSessionTracking();
+}
+
+function launchTimeMgmt(){
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  document.getElementById('tm-overlay').style.display='block';
+  document.getElementById('tm-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
+  startSessionTracking();
+}
+
+function closeTM(){
+  document.getElementById('tm-overlay').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
+function closeRepActivity(){
+  document.getElementById('rep-activity-overlay').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
 function launchQuoteTool(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-content').style.display='block';
@@ -2983,6 +3031,15 @@ try {
     <!-- LIST VIEW -->
     <div id="act-list-view">
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+        <!-- Master tabs -->
+        <div style="display:flex;border-bottom:1px solid var(--bd)">
+          <div id="act-master-log" onclick="actMasterTab('log')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Quotes & Log</div>
+          <div id="act-master-to" onclick="actMasterTab('to')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Time Off</div>
+          <div id="act-master-tc" onclick="actMasterTab('tc')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
+        </div>
+
+        <!-- QUOTES & LOG PANE -->
+        <div id="act-pane-log">
         <!-- Header -->
         <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:space-between">
           <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">SESSIONS</div>
@@ -3007,6 +3064,30 @@ try {
           </select>
         </div>
         <div id="act-session-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
+        </div><!-- end act-pane-log -->
+
+        <!-- TIME OFF PANE -->
+        <div id="act-pane-to" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
+            <input id="dm-to-search" type="text" placeholder="Search name or UID..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <select id="dm-to-filter" onchange="dmToRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+              <option value="all">All</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option>
+            </select>
+          </div>
+          <div id="dm-to-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
+        </div>
+
+        <!-- CORRECTIONS PANE -->
+        <div id="act-pane-tc" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
+            <input id="dm-tc-search" type="text" placeholder="Search name or UID..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <select id="dm-tc-filter" onchange="dmTcRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+              <option value="all">All</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option>
+            </select>
+          </div>
+          <div id="dm-tc-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
+        </div>
+
       </div>
     </div>
 
@@ -3352,6 +3433,662 @@ function closeActivity(){
   document.getElementById('ls-2fa').style.display='none';
   document.getElementById('ls-menu').style.display='block';
   document.body.style.overflow='hidden';
+}
+</script>
+
+
+<!-- ══════════════════════════════════
+     TIME MANAGEMENT OVERLAY
+══════════════════════════════════ -->
+<div id="tm-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto">
+  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+    <div onclick="closeTM()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
+    <div id="tm-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+  </div>
+  <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid var(--bd)">
+        <div id="tm-tab-tc" onclick="tmTab('tc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Time Correction</div>
+        <div id="tm-tab-to" onclick="tmTab('to')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Time Off</div>
+      </div>
+
+      <!-- TIME CORRECTION -->
+      <div id="tm-tc">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Shift Location</div>
+          <select id="tc-loc" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none">
+            <option value="">Select store...</option>
+            <option>Jefferson Dr (777)</option><option>College St (747)</option>
+            <option>Dowlen Rd (775)</option><option>Memorial Blvd (769)</option>
+            <option>Twin City Hwy (752)</option><option>West Orange (768)</option>
+          </select>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Date Worked</div>
+          <input type="date" id="tc-date" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          <div style="font-size:9px;color:var(--t3);margin-top:4px;font-family:'DM Sans'">Past dates and today only</div>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Reason for Correction</div>
+          <input type="text" id="tc-reason" placeholder="e.g. Forgot to clock in" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Shift Start</div>
+          <input type="time" id="tc-start" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Break?</div>
+          <div style="display:flex;gap:8px">
+            <div id="tc-brk-y" onclick="tcBreak(true)" style="flex:1;padding:8px;border:1px solid var(--g);border-radius:var(--r2);text-align:center;font-size:11px;font-weight:700;color:var(--g);background:rgba(0,169,79,.08);cursor:pointer;font-family:'DM Sans'">Yes</div>
+            <div id="tc-brk-n" onclick="tcBreak(false)" style="flex:1;padding:8px;border:1px solid var(--bd2);border-radius:var(--r2);text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">No</div>
+          </div>
+        </div>
+        <div id="tc-brk-fields" style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Break Start</div>
+              <input type="time" id="tc-brk-start" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+            </div>
+            <div>
+              <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Break End</div>
+              <input type="time" id="tc-brk-end" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Shift End</div>
+          <input type="time" id="tc-end" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+        </div>
+        <div style="padding:12px 14px">
+          <button onclick="submitTC()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Correction</button>
+        </div>
+      </div>
+
+      <!-- TIME OFF -->
+      <div id="tm-to" style="display:none">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Month</div>
+          <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline()">
+            <option>April 2026</option><option>May 2026</option><option>June 2026</option>
+            <option>July 2026</option><option>August 2026</option><option>September 2026</option>
+          </select>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Day(s) Requested <span style="font-weight:400;text-transform:none;letter-spacing:0">— same week Sun–Sat</span></div>
+          <input type="text" id="to-days" placeholder="e.g. May 4, 5" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          <div id="to-deadline-msg" style="font-size:9px;color:var(--warn);margin-top:4px;font-family:'DM Sans'">Must submit 2 weeks before the week's Sunday</div>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Reason</div>
+          <input type="text" id="to-reason" placeholder="e.g. Doctor appointment" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+        </div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Duration</div>
+          <div style="display:flex;gap:8px">
+            <div id="to-dur-full" onclick="toDur('full')" style="flex:1;padding:8px;border:1px solid var(--g);border-radius:var(--r2);text-align:center;font-size:11px;font-weight:700;color:var(--g);background:rgba(0,169,79,.08);cursor:pointer;font-family:'DM Sans'">Full Day</div>
+            <div id="to-dur-part" onclick="toDur('part')" style="flex:1;padding:8px;border:1px solid var(--bd2);border-radius:var(--r2);text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">Specify Hours</div>
+          </div>
+        </div>
+        <div id="to-hours" style="display:none;padding:12px 14px;border-bottom:1px solid var(--bd)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">From</div>
+              <input type="time" id="to-from" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+            </div>
+            <div>
+              <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Until</div>
+              <input type="time" id="to-until" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 14px">
+          <button onclick="submitTO()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     REP ACTIVITY OVERLAY
+══════════════════════════════════ -->
+<div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto">
+  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+    <div onclick="closeRepActivity()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
+    <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+  </div>
+  <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid var(--bd)">
+        <div id="ra-tab-to" onclick="raTab('to')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Time Off</div>
+        <div id="ra-tab-tc" onclick="raTab('tc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
+      </div>
+      <!-- Filter -->
+      <div style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto">
+        <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#000;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
+        <button onclick="raFilter('Sent',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Sent</button>
+        <button onclick="raFilter('Pending',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Pending</button>
+        <button onclick="raFilter('Approved',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Approved</button>
+        <button onclick="raFilter('Denied',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Denied</button>
+      </div>
+      <div id="ra-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px;font-family:'DM Sans'">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- REP ACTIVITY DETAIL -->
+<div id="ra-detail-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99999;overflow-y:auto">
+  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+    <div onclick="closeRADetail()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px" id="ra-detail-title">Request</div>
+    <div></div>
+  </div>
+  <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px" id="ra-detail-content"></div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════════
+// TIME MANAGEMENT
+// ══════════════════════════════════════════
+const TM_URL=LOG_URL;
+
+function tmTab(t){
+  ['tc','to'].forEach(x=>{
+    const el=document.getElementById('tm-tab-'+x);
+    el.style.color=x===t?'var(--g)':'var(--t3)';
+    el.style.borderBottomColor=x===t?'var(--g)':'transparent';
+    document.getElementById('tm-'+x).style.display=x===t?'block':'none';
+  });
+}
+
+let _tcBreak=true;
+function tcBreak(yes){
+  _tcBreak=yes;
+  const y=document.getElementById('tc-brk-y'),n=document.getElementById('tc-brk-n');
+  y.style.borderColor=yes?'var(--g)':'var(--bd2)';y.style.color=yes?'var(--g)':'var(--t3)';y.style.background=yes?'rgba(0,169,79,.08)':'transparent';
+  n.style.borderColor=!yes?'var(--g)':'var(--bd2)';n.style.color=!yes?'var(--g)':'var(--t3)';n.style.background=!yes?'rgba(0,169,79,.08)':'transparent';
+  document.getElementById('tc-brk-fields').style.display=yes?'block':'none';
+}
+
+let _toDurFull=true;
+function toDur(d){
+  _toDurFull=d==='full';
+  const f=document.getElementById('to-dur-full'),p=document.getElementById('to-dur-part');
+  f.style.borderColor=_toDurFull?'var(--g)':'var(--bd2)';f.style.color=_toDurFull?'var(--g)':'var(--t3)';f.style.background=_toDurFull?'rgba(0,169,79,.08)':'transparent';
+  p.style.borderColor=!_toDurFull?'var(--g)':'var(--bd2)';p.style.color=!_toDurFull?'var(--g)':'var(--t3)';p.style.background=!_toDurFull?'rgba(0,169,79,.08)':'transparent';
+  document.getElementById('to-hours').style.display=_toDurFull?'none':'block';
+}
+
+function fmtT(t){if(!t)return'';const[h,m]=t.split(':');const hr=parseInt(h);return`${hr>12?hr-12:hr||12}:${m} ${hr>=12?'PM':'AM'}`;}
+
+function toUpdateDeadline(){
+  // Just show the reminder — full validation on submit
+  document.getElementById('to-deadline-msg').style.color='var(--warn)';
+}
+
+function checkDeadline(days){
+  try{
+    const first=days.split(',')[0].trim();
+    const yr=new Date().getFullYear();
+    const d=new Date(first+(first.includes(String(yr))?'':`, ${yr}`));
+    if(isNaN(d)) return false;
+    const sun=new Date(d); sun.setDate(d.getDate()-d.getDay());
+    const deadline=new Date(sun); deadline.setDate(sun.getDate()-14);
+    return new Date()>deadline;
+  }catch(e){return false;}
+}
+
+function submitTC(){
+  const loc=document.getElementById('tc-loc').value;
+  const date=document.getElementById('tc-date').value;
+  const reason=document.getElementById('tc-reason').value.trim();
+  const start=document.getElementById('tc-start').value;
+  const end=document.getElementById('tc-end').value;
+  if(!loc||!date||!reason||!start||!end){alert('Please fill in all required fields.');return;}
+  const today=new Date();today.setHours(23,59,59,999);
+  if(new Date(date+'T12:00:00')>today){alert('Date must be today or in the past.');return;}
+  const brkS=_tcBreak?fmtT(document.getElementById('tc-brk-start').value):'';
+  const brkE=_tcBreak?fmtT(document.getElementById('tc-brk-end').value):'';
+  const uid=_pendingUid, name=UID_NAMES[uid]||uid;
+  const submitted=getDatetime();
+  const rowId=uid+'-TC-'+Date.now();
+  sendLog({type:'tc_submit',rowId,uid,name,submitted,location:loc,date,reason,shiftStart:fmtT(start),shiftEnd:fmtT(end),breakStart:_tcBreak?brkS:'None',breakEnd:_tcBreak?brkE:'None',status:'Sent',note:''});
+  tmConfirm('Time correction submitted.','Sent');
+}
+
+function submitTO(){
+  const month=document.getElementById('to-month').value;
+  const days=document.getElementById('to-days').value.trim();
+  const reason=document.getElementById('to-reason').value.trim();
+  if(!days||!reason){alert('Please fill in all required fields.');return;}
+  const dur=_toDurFull?'Full Day':`${fmtT(document.getElementById('to-from').value)}–${fmtT(document.getElementById('to-until').value)}`;
+  const uid=_pendingUid, name=UID_NAMES[uid]||uid;
+  const submitted=getDatetime();
+  const rowId=uid+'-TO-'+Date.now();
+  const isLate=checkDeadline(days);
+  const status=isLate?'Denied':'Sent';
+  const note=isLate?'Missed request deadline':'';
+  sendLog({type:'to_submit',rowId,uid,name,submitted,month,days,reason,duration:dur,status,note,edited:''});
+  tmConfirm(isLate?'Request submitted but automatically denied — missed the 2-week deadline.':'Time off request submitted.',status,isLate,rowId);
+}
+
+function tmConfirm(msg,status,showNotify=false,rowId=''){
+  const colors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const div=document.createElement('div');
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
+  div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
+    <div style="font-size:28px;margin-bottom:12px">${status==='Denied'?'⚠️':'✓'}</div>
+    <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">${msg}</div>
+    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:800;color:${colors[status]||'#aaa'};margin-bottom:20px">${status}</div>
+    ${showNotify?`<button id="notify-dm-btn" onclick="notifyDM('${rowId}',this)" style="width:100%;padding:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:8px">📣 Notify DM for Review</button>`:''}
+    <button onclick="this.closest('div[style]').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
+  </div>`;
+  document.body.appendChild(div);
+}
+
+function notifyDM(rowId,btn){
+  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
+  btn.textContent='✓ DM Notified';btn.disabled=true;btn.style.opacity='.5';
+}
+
+// ══════════════════════════════════════════
+// REP ACTIVITY
+// ══════════════════════════════════════════
+let _raTab='to', _raFilter='all', _raData={to:[],tc:[]};
+
+function closeRepActivity(){
+  document.getElementById('rep-activity-overlay').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
+function closeRADetail(){
+  document.getElementById('ra-detail-overlay').style.display='none';
+  document.getElementById('rep-activity-overlay').style.display='block';
+}
+
+function raTab(t){
+  _raTab=t;
+  ['to','tc'].forEach(x=>{
+    const el=document.getElementById('ra-tab-'+x);
+    el.style.color=x===t?'var(--g)':'var(--t3)';
+    el.style.borderBottomColor=x===t?'var(--g)':'transparent';
+  });
+  renderRA();
+}
+
+function raFilter(f,btn){
+  _raFilter=f;
+  document.querySelectorAll('.ra-f').forEach(b=>{b.style.background='var(--s3)';b.style.color='var(--t3)';b.style.borderColor='var(--bd2)';});
+  btn.style.background='var(--g)';btn.style.color='#000';btn.style.borderColor='var(--g)';
+  renderRA();
+}
+
+function repActLoadData(){
+  document.getElementById('ra-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
+    .then(r=>r.json()).then(d=>{_raData=d;renderRA();}).catch(()=>{_raData={to:[],tc:[]};renderRA();});
+}
+
+function renderRA(){
+  const el=document.getElementById('ra-list');
+  let items=_raData[_raTab]||[];
+  if(_raFilter!=='all') items=items.filter(r=>r.status===_raFilter);
+  items=[...items].sort((a,b)=>b.submitted.localeCompare(a.submitted));
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px">No submissions found</div></div>';
+    return;
+  }
+  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const statusBg={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
+  const statusBd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
+  el.innerHTML=items.map(r=>{
+    const c=statusColors[r.status]||'#aaa';
+    const bg=statusBg[r.status]||'rgba(255,255,255,.06)';
+    const bd=statusBd[r.status]||'#333';
+    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${r.date} — ${r.location}`;
+    const sub=_raTab==='to'?`${r.reason} · ${r.duration}`:`${r.reason}`;
+    const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${r.edited}</div>`:'';
+    return`<div onclick="showRADetail('${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${title}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${sub}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${r.submitted}</div>
+          ${edited}
+        </div>
+        <div style="background:${bg};color:${c};border:1px solid ${bd};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+      </div>
+      ${r.note?`<div style="font-size:10px;color:${r.status==='Approved'?'var(--g)':r.status==='Denied'?'var(--err)':'var(--warn)'};margin-top:4px;font-family:'DM Sans';font-style:italic">${r.note}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function showRADetail(rowId){
+  const all=[...(_raData.to||[]),...(_raData.tc||[])];
+  const r=all.find(x=>x.rowId===rowId);
+  if(!r) return;
+  const isTO=r.rowId.includes('-TO-');
+  document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
+  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const canEdit=r.status==='Sent'||r.status==='Pending';
+  const canNotify=r.status==='Denied'&&isTO;
+  const rows=isTO?[
+    ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
+    ['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
+  ]:[
+    ['Location',r.location],['Date',r.date],['Reason',r.reason],
+    ['Shift Start',r.shiftStart],['Break Start',r.breakStart],['Break End',r.breakEnd],['Shift End',r.shiftEnd],
+    ['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
+  ];
+  document.getElementById('ra-detail-content').innerHTML=`
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+      <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Status</div>
+        <div style="background:rgba(255,255,255,.06);color:${statusColors[r.status]||'#aaa'};border:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;font-family:'DM Sans'">${r.status}</div>
+      </div>
+      ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
+      ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#aaa'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
+    </div>
+    ${canEdit?`<button onclick="editRequest('${rowId}')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">Edit Request</button>
+    <button onclick="deleteRequest('${rowId}')" style="width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Delete Request</button>`:''}
+    ${canNotify?`<button onclick="notifyDMFromDetail('${rowId}')" style="width:100%;padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer;margin-top:8px">📣 Notify DM for Review</button>
+    <div style="font-size:9px;color:var(--t3);text-align:center;margin-top:6px;font-family:'DM Sans'">Late entries may still be denied.</div>`:''}
+  `;
+  document.getElementById('rep-activity-overlay').style.display='none';
+  document.getElementById('ra-detail-overlay').style.display='block';
+}
+
+function deleteRequest(rowId){
+  if(!confirm('Delete this request? It will be marked as Denied.')) return;
+  sendLog({type:'req_delete',rowId,uid:_pendingUid});
+  closeRADetail();
+  repActLoadData();
+}
+
+function notifyDMFromDetail(rowId){
+  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
+  alert('DM has been notified.');
+  closeRADetail();
+  repActLoadData();
+}
+
+function editRequest(rowId){
+  // In full build — opens pre-filled form. For now placeholder.
+  alert('Edit functionality — opens pre-filled form in full build.');
+}
+</script>
+
+
+<script>
+// ══════════════════════════════════════════
+// DM TIME OFF + CORRECTIONS DASHBOARD
+// ══════════════════════════════════════════
+let _dmToData=[], _dmTcData=[];
+let _dmCurrentPane='log';
+
+function actMasterTab(pane){
+  _dmCurrentPane=pane;
+  ['log','to','tc'].forEach(p=>{
+    const tab=document.getElementById('act-master-'+p);
+    const el=document.getElementById('act-pane-'+p);
+    const isOn=p===pane;
+    tab.style.color=isOn?'var(--g)':'var(--t3)';
+    tab.style.borderBottomColor=isOn?'var(--g)':'transparent';
+    el.style.display=isOn?'block':'none';
+  });
+  if(pane==='to'&&!_dmToData.length) dmLoadTO();
+  if(pane==='tc'&&!_dmTcData.length) dmLoadTC();
+}
+
+function dmLoadTO(){
+  document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
+    .then(r=>r.json()).then(d=>{_dmToData=d;dmToRender();}).catch(()=>{_dmToData=[];dmToRender();});
+}
+
+function dmLoadTC(){
+  document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
+    .then(r=>r.json()).then(d=>{_dmTcData=d;dmTcRender();}).catch(()=>{_dmTcData=[];dmTcRender();});
+}
+
+function dmToRender(){
+  const el=document.getElementById('dm-to-list');
+  const q=(document.getElementById('dm-to-search').value||'').toLowerCase();
+  const f=document.getElementById('dm-to-filter').value||'all';
+  let items=[..._dmToData].sort((a,b)=>b.submitted.localeCompare(a.submitted));
+  if(f!=='all') items=items.filter(r=>r.status===f);
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
+  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
+  el.innerHTML=items.map(r=>`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.days} · ${r.reason} · ${r.duration}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${r.submitted}</div>
+      </div>
+      <div style="background:${sb[r.status]};color:${sc[r.status]};border:1px solid ${sbd[r.status]};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+    </div>
+  </div>`).join('');
+}
+
+function dmTcRender(){
+  const el=document.getElementById('dm-tc-list');
+  const q=(document.getElementById('dm-tc-search').value||'').toLowerCase();
+  const f=document.getElementById('dm-tc-filter').value||'all';
+  let items=[..._dmTcData].sort((a,b)=>b.submitted.localeCompare(a.submitted));
+  if(f!=='all') items=items.filter(r=>r.status===f);
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
+  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
+  el.innerHTML=items.map(r=>`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.date} · ${r.location} · ${r.reason}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.shiftStart}–${r.shiftEnd} · Submitted ${r.submitted}</div>
+      </div>
+      <div style="background:${sb[r.status]};color:${sc[r.status]};border:1px solid ${sbd[r.status]};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+    </div>
+  </div>`).join('');
+}
+
+function showDMTimeDetail(type,rowId){
+  const list=type==='to'?_dmToData:_dmTcData;
+  const r=list.find(x=>x.rowId===rowId);
+  if(!r) return;
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const rows=type==='to'?[
+    ['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],
+    ['Reason',r.reason],['Duration',r.duration],['Submitted',r.submitted],
+    ...(r.edited?[['Edited',r.edited]]:[])
+  ]:[
+    ['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',r.date],
+    ['Reason',r.reason],['Shift Start',r.shiftStart],['Break',r.breakStart+' – '+r.breakEnd],
+    ['Shift End',r.shiftEnd],['Submitted',r.submitted],
+    ...(r.edited?[['Edited',r.edited]]:[])
+  ];
+
+  // Build copy text for approved/denied
+  function buildCopyText(type, r, status){
+    if(type==='to'){
+      const txt=`${r.name} (${r.uid}) Your time off request for ${r.days}, ${r.month} has been ${status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}\nTime Off: ${r.duration}${r.note?'\nNote: '+r.note:''}`;
+      return txt;
+    } else {
+      const txt=`${r.name} (${r.uid}) Your time correction for ${r.date} at ${r.location} has been ${status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}\nShift: ${r.shiftStart} – ${r.shiftEnd}${r.note?'\nNote: '+r.note:''}`;
+      return txt;
+    }
+  }
+
+  const isDone=(r.status==='Approved'||r.status==='Denied');
+  const copyText=isDone?buildCopyText(type,r,r.status):'';
+
+  const detailDiv=document.createElement('div');
+  detailDiv.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
+  detailDiv.innerHTML=`
+    <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+      <div onclick="this.closest('div[style]').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
+      <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">${type==='to'?'Time Off':'Time Correction'}</div>
+      <div></div>
+    </div>
+    <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:10px;color:var(--t3)">Status</div>
+          <div style="color:${sc[r.status]||'#aaa'};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">${r.status}</div>
+        </div>
+        ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%">${v}</div></div>`).join('')}
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;padding:12px 14px">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Notes</div>
+        <textarea id="dm-note" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;resize:vertical;min-height:60px">${r.note||''}</textarea>
+      </div>
+      ${isDone?`
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div>
+        </div>
+        <div style="padding:12px 14px">
+          <div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:'DM Sans'">${copyText.replace(/</g,'&lt;')}</div>
+          <button id="dm-copy-btn" onclick="
+            navigator.clipboard.writeText(${JSON.stringify(copyText)}).then(()=>{
+              this.textContent='✓ Copied';
+              this.style.background='rgba(0,169,79,.12)';
+              this.style.color='var(--g)';
+              this.style.borderColor='rgba(0,169,79,.3)';
+            }).catch(()=>{
+              const ta=document.createElement('textarea');
+              ta.value=${JSON.stringify(copyText)};
+              document.body.appendChild(ta);ta.select();document.execCommand('copy');
+              document.body.removeChild(ta);
+              this.textContent='✓ Copied';
+            })
+          " style="margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">📋 Copy</button>
+        </div>
+      </div>`:''}
+      ${isMultiDay?`
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px" id="dm-days-panel">
+        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Day-by-Day Approval</div>
+        </div>
+        ${days.map((day,i)=>{
+          const ds=buildDaysStatus(r);
+          const st=ds[day]||'Pending';
+          const approvedStyle=st==='Approved'?'background:rgba(0,169,79,.15);border-color:rgba(0,169,79,.4);color:var(--g)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
+          const deniedStyle=st==='Denied'?'background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:var(--err)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd)" id="day-row-${i}">
+            <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${day} <span style="font-size:10px;font-weight:400;color:${st==='Approved'?'var(--g)':st==='Denied'?'var(--err)':'var(--t3)'}">${st}</span></div>
+            <div style="display:flex;gap:6px">
+              <button onclick="setDayStatus('${rowId}','${day}','Approved',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${approvedStyle};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✓</button>
+              <button onclick="setDayStatus('${rowId}','${day}','Denied',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${deniedStyle};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✗</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <button onclick="savePartial('${type}','${rowId}',document.getElementById('dm-note').value)" style="width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px">Save Decision</button>
+      `:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
+        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
+      </div>
+      `}
+    </div>`;
+  document.body.appendChild(detailDiv);
+}
+
+let _dayStatuses={};
+
+function setDayStatus(rowId,day,status,idx){
+  if(!_dayStatuses[rowId]) _dayStatuses[rowId]={};
+  _dayStatuses[rowId][day]=status;
+  // Update row UI
+  const row=document.getElementById('day-row-'+idx);
+  if(!row) return;
+  const span=row.querySelector('span');
+  if(span){span.textContent=status;span.style.color=status==='Approved'?'var(--g)':'var(--err)';}
+  const btns=row.querySelectorAll('button');
+  if(btns[0]){btns[0].style.background=status==='Approved'?'rgba(0,169,79,.15)':'var(--s3)';btns[0].style.borderColor=status==='Approved'?'rgba(0,169,79,.4)':'var(--bd2)';btns[0].style.color=status==='Approved'?'var(--g)':'var(--t3)';}
+  if(btns[1]){btns[1].style.background=status==='Denied'?'rgba(239,68,68,.15)':'var(--s3)';btns[1].style.borderColor=status==='Denied'?'rgba(239,68,68,.4)':'var(--bd2)';btns[1].style.color=status==='Denied'?'var(--err)':'var(--t3)';}
+}
+
+function savePartial(type,rowId,note){
+  const list=_dmToData;
+  const r=list.find(x=>x.rowId===rowId);
+  if(!r) return;
+  const ds=_dayStatuses[rowId]||{};
+  // Merge with existing
+  const existing=buildDaysStatus(r);
+  const merged={...existing,...ds};
+  const vals=Object.values(merged);
+  const allApproved=vals.every(v=>v==='Approved');
+  const allDenied=vals.every(v=>v==='Denied');
+  const status=allApproved?'Approved':allDenied?'Denied':'Partial';
+  const daysStatusStr=serializeDaysStatus(merged);
+  dmTimeAction(type,rowId,status,note,daysStatusStr);
+}
+
+function dmTimeAction(type,rowId,status,note,daysStatus){
+  sendLog({type:'time_update',rowId,status,note:note,daysStatus:daysStatus||'',updatedBy:_pendingUid,updatedAt:getDatetime()});
+  const list=type==='to'?_dmToData:_dmTcData;
+  const r=list.find(x=>x.rowId===rowId);
+  if(r){r.status=status;r.note=note;if(daysStatus)r.daysStatus=daysStatus;}
+  document.querySelectorAll('div[style*="z-index:999999"]').forEach(d=>d.remove());
+  if(type==='to') dmToRender(); else dmTcRender();
+}
+
+function getDaysArray(r){
+  // Parse days from e.g. "04, 05, 06" or "May 4, 5" with month context
+  if(!r.days) return [];
+  return r.days.split(',').map(d=>d.trim()).filter(Boolean);
+}
+
+function buildDaysStatus(r){
+  // Returns current day statuses as object {day: 'Approved'/'Denied'/null}
+  const days=getDaysArray(r);
+  const result={};
+  days.forEach(d=>result[d]=null);
+  if(r.daysStatus){
+    r.daysStatus.split(',').forEach(part=>{
+      const [day,st]=part.split(':');
+      if(day&&st) result[day.trim()]=st.trim();
+    });
+  }
+  return result;
+}
+
+function serializeDaysStatus(obj){
+  return Object.entries(obj).map(([d,s])=>d+':'+(s||'Pending')).join(',');
+}
+
+function buildPartialCopyText(r){
+  const ds=buildDaysStatus(r);
+  const approved=Object.entries(ds).filter(([d,s])=>s==='Approved').map(([d])=>d);
+  const denied=Object.entries(ds).filter(([d,s])=>s==='Denied').map(([d])=>d);
+  const allApproved=denied.length===0&&approved.length>0;
+  const allDenied=approved.length===0&&denied.length>0;
+  const status=allApproved?'Approved':allDenied?'Denied':'Partial';
+  let txt=`${r.name} (${r.uid}) Your time off request has been ${status==='Partial'?'partially approved':status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}`;
+  if(status==='Partial'){
+    if(approved.length) txt+=`\nApproved: ${approved.join(', ')}`;
+    if(denied.length) txt+=`\nDenied: ${denied.join(', ')}`;
+  } else {
+    txt+=`\nTime Off: ${r.duration}`;
+  }
+  if(r.note) txt+=`\nNote: ${r.note}`;
+  return {txt,status};
 }
 </script>
 
