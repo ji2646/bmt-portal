@@ -3033,12 +3033,15 @@ function actUseDemoData(){
 }
 
 function actProcessData(rows){
+  // Show all login types — filter by rep access only
   _actSessions=rows.filter(r=>{
-    if(r.loginType!=='QTool') return false;
-    if(!r.quote||!r.quote.trim()) return false;
-    if(_activityRepFilter&&_activityRepFilter.length>0&&!_activityRepFilter.includes(r.uid)) return false;
+    if(!r.loginType) return false;
+    if(_activityRepFilter&&_activityRepFilter.length>0){
+      // For non-QTool rows, still show if the UID matches allowed reps or RSMs
+      if(!_activityRepFilter.includes(r.uid)) return false;
+    }
     return true;
-  });
+  }).reverse(); // reverse so newest from sheet comes first
   actRenderList();
 }
 
@@ -3066,34 +3069,62 @@ function actRenderList(){
   }
   el.innerHTML=sessions.map(s=>{
     const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-    const qcount=s.quote.split('[Q]').filter(Boolean).length;
-    // Parse date cleanly
-    // Parse datetime — sheet format: "04/05/2026, 1:18 AM"
+
+    // Parse date
     const rawDt=s.datetime||'';
     let dateStr='', timeStr='';
     if(rawDt.includes(', ')){
       const ci=rawDt.indexOf(', ');
       dateStr=rawDt.substring(0,ci);
       timeStr=rawDt.substring(ci+2);
-    } else if(rawDt){
-      dateStr=rawDt;
     } else {
-      // Fallback: extract timestamp from sessionId
       const ts=parseInt((s.sessionId||'').split('-').pop());
       if(ts){const d=new Date(ts);dateStr=d.toLocaleDateString('en-US');timeStr=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+      else dateStr=rawDt;
     }
-    return`<div onclick="actShowDetail('${s.sessionId}')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
-      <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--g);flex-shrink:0">${initials}</div>
+
+    // Session ID last 8 digits
+    const sid=(s.sessionId||'').split('-').pop().slice(-8);
+
+    // Badge per type
+    const badgeMap={
+      'QTool':    ['rgba(0,169,79,.12)','var(--g)','rgba(0,169,79,.2)'],
+      'Main':     ['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.12)'],
+      'Activity': ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.2)'],
+      'PriceCard':['rgba(251,191,36,.1)','#fbbf24','rgba(251,191,36,.2)'],
+    };
+    const isInvalid=s.loginType&&s.loginType.includes('INVALID');
+    const bc=isInvalid?['rgba(239,68,68,.1)','var(--err)','rgba(239,68,68,.2)']:
+             (badgeMap[s.loginType]||['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.12)']);
+
+    // Mod count for QTool
+    let badge='';
+    if(s.loginType==='QTool'&&s.quote){
+      const mods=s.quote.split('→').length-1;
+      badge=mods>0?`${mods} mod${mods!==1?'s':''}`:
+            s.quote.includes('[Q]')?'1 quote':'—';
+    } else {
+      badge=s.loginType||'—';
+    }
+
+    // Clickable only for QTool with quote
+    const clickable=s.loginType==='QTool'&&s.quote&&s.quote.trim();
+    return`<div ${clickable?`onclick="actShowDetail('${s.sessionId}')"`:''}
+      style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);${clickable?'cursor:pointer;':''}transition:background .12s"
+      ${clickable?`onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"`:''}">
+      <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:${bc[1]};flex-shrink:0">${initials}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:var(--t1)">${s.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid}</span></div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1)">${s.name||'—'} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid||''}</span></div>
         <div style="display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap">
           <span style="font-size:10px;font-weight:800;color:var(--t2)">${dateStr}</span>
           <span style="font-size:9px;color:var(--t3)">${timeStr}</span>
           <span style="font-size:9px;color:var(--t3)">·</span>
-          <span style="font-size:9px;color:var(--t3)">${s.device}</span>
+          <span style="font-size:9px;color:var(--t3)">#${sid}</span>
+          <span style="font-size:9px;color:var(--t3)">·</span>
+          <span style="font-size:9px;color:var(--t3)">${s.device||''}</span>
         </div>
       </div>
-      <div style="background:rgba(0,169,79,.12);color:var(--g);border:1px solid rgba(0,169,79,.2);font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:auto">${qcount} quote${qcount!==1?'s':''}</div>
+      <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-left:auto">${badge}</div>
     </div>`;
   }).join('');
 }
