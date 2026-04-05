@@ -289,11 +289,12 @@ select option,select optgroup{background:#1a1a1a}
         <button id="login-btn" onclick="doLogin()">Sign In</button>
       </div>
 
-      <!-- STEP 2: RSM/DM Menu -->
+      <!-- STEP 2: Menu -->
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
         <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
-        <button onclick="showActivity2FA()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📊 Activity</button>
+        <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">🕐 Time Management</button>
+        <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📋 Activity</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -504,15 +505,12 @@ function verify2FA(){
 function handleActivityClick(){
   const isDM=(_pendingUid==='ji2646dm');
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-  // Log activity click
   const actLogSid=_pendingUid+'-ACT-'+Date.now();
   logWithIP({type:'activity',sessionId:actLogSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   if(isDM||isRSM){
-    // RSM/DM need 2FA
-    showActivity2FA();
+    showActivity2FA(); // RSM/DM need 2FA
   } else {
-    // Rep goes straight in
-    launchRepActivity();
+    launchRepActivity(); // Rep goes straight in - no 2FA
   }
 }
 
@@ -597,8 +595,10 @@ function doLogin(){
       document.getElementById('ls-uid').style.display='none';
       document.getElementById('ls-menu').style.display='block';
       document.getElementById('ls-menu-name').textContent='Welcome, '+(UID_NAMES[uid]||uid);
-      document.getElementById('btn-timemgmt').style.display='block';
-      document.getElementById('btn-activity').style.display='block';
+      const btnTM=document.getElementById('btn-timemgmt');
+      const btnAct=document.getElementById('btn-activity');
+      if(btnTM) btnTM.style.display='block';
+      if(btnAct) btnAct.style.display='block';
     }
   } else {
     // Main log: invalid
@@ -3070,10 +3070,15 @@ try {
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
-          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
-            <input id="dm-to-search" type="text" placeholder="Search name or UID..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
-            <select id="dm-to-filter" onchange="dmToRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
-              <option value="all">All</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+              <input id="dm-to-search" type="text" placeholder="Search name or UID..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+              <select id="dm-to-status" onchange="dmToRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
+              </select>
+            </div>
+            <select id="dm-to-week" onchange="dmToRender()" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+              <option value="all">All Weeks</option>
             </select>
           </div>
           <div id="dm-to-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
@@ -3081,10 +3086,15 @@ try {
 
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
-          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
-            <input id="dm-tc-search" type="text" placeholder="Search name or UID..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
-            <select id="dm-tc-filter" onchange="dmTcRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
-              <option value="all">All</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
+              <input id="dm-tc-search" type="text" placeholder="Search name or UID..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+              <select id="dm-tc-status" onchange="dmTcRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Corrected</option>
+              </select>
+            </div>
+            <select id="dm-tc-cycle" onchange="dmTcRender()" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+              <option value="all">All Pay Cycles</option>
             </select>
           </div>
           <div id="dm-tc-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
@@ -3737,20 +3747,24 @@ function repActLoadData(){
   document.getElementById('ra-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
     .then(r=>r.json())
-    .then(d=>{_raData=d;renderRA();})
-    .catch(()=>{
+    .then(d=>{
+      if(d&&(d.to||d.tc)){_raData=d;renderRA();}
+      else{setRADemo();} // response wasn't proper data
+    })
+    .catch(()=>{setRADemo();});
+}
+function setRADemo(){
       // Fallback demo data keyed to current user
-      _raData={
-        to:[
-          {rowId:_pendingUid+'-TO-DEMO1',submitted:'04/05/2026, 2:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Example request',duration:'Full Day',month:'May 2026',days:'12',daysStatus:'',status:'Sent',note:'',edited:''},
-          {rowId:_pendingUid+'-TO-DEMO2',submitted:'03/20/2026, 10:00 AM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Doctor appointment',duration:'Full Day',month:'April 2026',days:'08',daysStatus:'',status:'Approved',note:'Approved. Enjoy!',edited:''}
-        ],
-        tc:[
-          {rowId:_pendingUid+'-TC-DEMO1',submitted:'04/04/2026, 3:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,date:'04/04/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock in',shiftStart:'10:00 AM',breakStart:'1:00 PM',breakEnd:'1:30 PM',shiftEnd:'7:00 PM',status:'Sent',note:'',edited:''}
-        ]
-      };
-      renderRA();
-    });
+  _raData={
+    to:[
+      {rowId:_pendingUid+'-TO-DEMO1',submitted:'04/05/2026, 2:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Example request',duration:'Full Day',month:'May 2026',days:'12',daysStatus:'',status:'Sent',note:'',edited:''},
+      {rowId:_pendingUid+'-TO-DEMO2',submitted:'03/20/2026, 10:00 AM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Doctor appointment',duration:'Full Day',month:'April 2026',days:'08',daysStatus:'',status:'Approved',note:'Approved. Enjoy!',edited:''}
+    ],
+    tc:[
+      {rowId:_pendingUid+'-TC-DEMO1',submitted:'04/04/2026, 3:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,date:'04/04/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock in',shiftStart:'10:00 AM',breakStart:'1:00 PM',breakEnd:'1:30 PM',shiftEnd:'7:00 PM',status:'Sent',note:'',edited:''}
+    ]
+  };
+  renderRA();
 }
 
 function renderRA(){
@@ -3794,8 +3808,20 @@ function showRADetail(rowId){
   const isTO=r.rowId.includes('-TO-');
   document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
   const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
-  const canEdit=r.status==='Sent'||r.status==='Pending';
+  // canEdit: status must be Sent/Pending AND not within 7 days of week start
+  const _canEditStatus=r.status==='Sent'||r.status==='Pending';
+  let _withinLockout=false;
+  if(isTO){
+    const firstDay=parseFirstDay(r);
+    if(firstDay){
+      const sun=getWeekStart(firstDay);
+      const lockDate=new Date(sun); lockDate.setDate(sun.getDate()-7);
+      _withinLockout=new Date()>=lockDate;
+    }
+  }
+  const canEdit=_canEditStatus&&!_withinLockout;
   const canNotify=r.status==='Denied'&&isTO;
+  const showLockMsg=isTO&&_canEditStatus&&_withinLockout;
   const rows=isTO?[
     ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
     ['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
@@ -3813,6 +3839,7 @@ function showRADetail(rowId){
       ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
       ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#aaa'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
     </div>
+    ${showLockMsg?`<div style="font-size:10px;color:var(--warn);text-align:center;padding:10px 14px;font-family:'DM Sans'">🔒 Request locked — within 7 days of week start</div>`:''}
     ${canEdit?`<button onclick="editRequest('${rowId}')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">Edit Request</button>
     <button onclick="deleteRequest('${rowId}')" style="width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Delete Request</button>`:''}
     ${canNotify?`<button onclick="notifyDMFromDetail('${rowId}')" style="width:100%;padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer;margin-top:8px">📣 Notify DM for Review</button>
@@ -3860,48 +3887,151 @@ function actMasterTab(pane){
     tab.style.borderBottomColor=isOn?'var(--g)':'transparent';
     el.style.display=isOn?'block':'none';
   });
-  if(pane==='to'&&!_dmToData.length) dmLoadTO();
-  if(pane==='tc'&&!_dmTcData.length) dmLoadTC();
+  if(pane==='to'){if(!_dmToData.length) dmLoadTO(); else {populateTOWeeks();dmToRender();}}
+  if(pane==='tc'){if(!_dmTcData.length) dmLoadTC(); else {populateTCCycles();dmTcRender();}}
 }
 
 function dmLoadTO(){
   document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
     .then(r=>r.json())
-    .then(d=>{_dmToData=d;dmToRender();})
-    .catch(()=>{
+    .then(d=>{
+      if(Array.isArray(d)){_dmToData=d;dmToRender();}
+      else{setDMToDemo();}
+    })
+    .catch(()=>{setDMToDemo();});
+}
+function setDMToDemo(){
       _dmToData=[
         {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
         {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
         {rowId:'ec934j-TO-OLD-36',submitted:'03/23/2026, 9:17 AM',uid:'ec934j',name:'Elva Cruz',reason:'Out of town',duration:'Full Day',month:'April',days:'04, 05, 06',daysStatus:'Apr 04:Denied,Apr 05:Denied,Apr 06:Denied',status:'Denied',note:'Late entry / first weekend of month',edited:''},
         {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
         {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
-      ];
-      dmToRender();
-    });
+  ];
+  dmToRender();
 }
 
 function dmLoadTC(){
   document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
     .then(r=>r.json())
-    .then(d=>{_dmTcData=d;dmTcRender();})
-    .catch(()=>{
+    .then(d=>{
+      if(Array.isArray(d)){_dmTcData=d;dmTcRender();}
+      else{setDMTcDemo();}
+    })
+    .catch(()=>{setDMTcDemo();});
+}
+function setDMTcDemo(){
       _dmTcData=[
         {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
         {rowId:'ec934j-TC-OLD-096',submitted:'',uid:'ec934j',name:'Elva Cruz',date:'3/6/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock in',shiftStart:'9:40 AM',breakStart:'3:04 PM',breakEnd:'4:05 PM',shiftEnd:'7:08 PM',status:'Corrected',note:'',edited:''},
         {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
-      ];
-      dmTcRender();
-    });
+  ];
+  dmTcRender();
+}
+
+// ── PAY CYCLE HELPERS ──
+function getPayCycles(){
+  // Current cycle starts 3/29/2026, biweekly
+  const anchor=new Date(2026,2,29); // March 29 2026
+  const cycles=[];
+  // Build 10 cycles back and 4 ahead
+  for(let i=-10;i<=4;i++){
+    const s=new Date(anchor); s.setDate(anchor.getDate()+i*14);
+    const e=new Date(s); e.setDate(s.getDate()+13);
+    cycles.push({start:s,end:e,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
+  }
+  return cycles;
+}
+function fmtCycleDate(d){return (d.getMonth()+1)+'/'+(d.getDate())+'/'+d.getFullYear();}
+function fmtWeekDate(d){return (d.getMonth()+1)+'/'+(d.getDate());}
+function dateInCycle(dateStr,cycle){
+  const d=parseDate(dateStr); if(!d) return false;
+  return d>=cycle.start&&d<=cycle.end;
+}
+function parseDate(str){
+  if(!str) return null;
+  try{const d=new Date(str);return isNaN(d)?null:d;}catch(e){return null;}
+}
+
+// ── WEEK HELPERS FOR TIME OFF ──
+function getWeekStart(d){
+  // Return the Sunday of the week containing d
+  const day=d.getDay(); // 0=Sun
+  const sun=new Date(d); sun.setDate(d.getDate()-day); sun.setHours(0,0,0,0);
+  return sun;
+}
+function getWeekLabel(sun){
+  const sat=new Date(sun); sat.setDate(sun.getDate()+6);
+  return fmtWeekDate(sun)+' – '+fmtWeekDate(sat)+'/'+sat.getFullYear();
+}
+function parseFirstDay(r){
+  // Parse first requested day from days + month fields e.g. days="04, 05" month="April 2026"
+  const firstDay=(r.days||'').split(',')[0].trim();
+  if(!firstDay) return null;
+  const monthStr=r.month||'';
+  try{
+    // Try "April 04" or just "04"
+    const d=new Date(monthStr+' '+firstDay);
+    if(!isNaN(d)) return d;
+    // Try month + numeric day
+    const parts=monthStr.split(' ');
+    const yr=parts[1]||new Date().getFullYear();
+    const d2=new Date(parts[0]+' '+firstDay+', '+yr);
+    return isNaN(d2)?null:d2;
+  }catch(e){return null;}
+}
+
+function populateTOWeeks(){
+  const sel=document.getElementById('dm-to-week');
+  if(!sel) return;
+  const weeks=new Map();
+  _dmToData.forEach(r=>{
+    const d=parseFirstDay(r);
+    if(!d) return;
+    const sun=getWeekStart(d);
+    const key=sun.getTime();
+    if(!weeks.has(key)) weeks.set(key,{sun,label:'Week of '+getWeekLabel(sun)});
+  });
+  const sorted=[...weeks.values()].sort((a,b)=>b.sun-a.sun);
+  const current=sel.value;
+  sel.innerHTML='<option value="all">All Weeks</option>'+
+    sorted.map(w=>`<option value="${w.sun.getTime()}">${w.label}</option>`).join('');
+  if(current&&current!=='all') sel.value=current;
+}
+
+function populateTCCycles(){
+  const sel=document.getElementById('dm-tc-cycle');
+  if(!sel) return;
+  const cycles=getPayCycles();
+  // Find which cycles have data
+  const used=new Set();
+  _dmTcData.forEach(r=>{
+    const d=parseDate(r.date);
+    if(!d) return;
+    cycles.forEach((c,i)=>{if(d>=c.start&&d<=c.end) used.add(i);});
+  });
+  // Mark current cycle (3/29-4/11 = index 10 since we start at -10)
+  const current=sel.value;
+  sel.innerHTML='<option value="all">All Pay Cycles</option>'+
+    cycles.map((c,i)=>`<option value="${i}"${used.has(i)?'':''}>${c.label}${i===10?' (Current)':''}</option>`).join('');
+  if(current&&current!=='all') sel.value=current;
 }
 
 function dmToRender(){
   const el=document.getElementById('dm-to-list');
   const q=(document.getElementById('dm-to-search').value||'').toLowerCase();
-  const f=document.getElementById('dm-to-filter').value||'all';
+  const f=(document.getElementById('dm-to-status')||{value:'all'}).value||'all';
+  const wk=(document.getElementById('dm-to-week')||{value:'all'}).value||'all';
+  populateTOWeeks();
   let items=[..._dmToData].sort((a,b)=>b.submitted.localeCompare(a.submitted));
   if(f!=='all') items=items.filter(r=>r.status===f);
+  if(wk!=='all'){
+    const sunTs=parseInt(wk);
+    const sun=new Date(sunTs); const sat=new Date(sunTs+6*86400000);
+    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
+  }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
@@ -3922,9 +4052,20 @@ function dmToRender(){
 function dmTcRender(){
   const el=document.getElementById('dm-tc-list');
   const q=(document.getElementById('dm-tc-search').value||'').toLowerCase();
-  const f=document.getElementById('dm-tc-filter').value||'all';
-  let items=[..._dmTcData].sort((a,b)=>b.submitted.localeCompare(a.submitted));
+  const f=(document.getElementById('dm-tc-status')||{value:'all'}).value||'all';
+  const cyc=(document.getElementById('dm-tc-cycle')||{value:'all'}).value||'all';
+  populateTCCycles();
+  // Sort newest first by date worked
+  let items=[..._dmTcData].sort((a,b)=>{
+    const da=parseDate(a.date)||new Date(0);
+    const db=parseDate(b.date)||new Date(0);
+    return db-da;
+  });
   if(f!=='all') items=items.filter(r=>r.status===f);
+  if(cyc!=='all'){
+    const cycles=getPayCycles(); const ci=parseInt(cyc);
+    if(cycles[ci]) items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});
+  }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
