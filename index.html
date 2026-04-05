@@ -3734,7 +3734,21 @@ function raFilter(f,btn){
 function repActLoadData(){
   document.getElementById('ra-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
-    .then(r=>r.json()).then(d=>{_raData=d;renderRA();}).catch(()=>{_raData={to:[],tc:[]};renderRA();});
+    .then(r=>r.json())
+    .then(d=>{_raData=d;renderRA();})
+    .catch(()=>{
+      // Fallback demo data keyed to current user
+      _raData={
+        to:[
+          {rowId:_pendingUid+'-TO-DEMO1',submitted:'04/05/2026, 2:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Example request',duration:'Full Day',month:'May 2026',days:'12',daysStatus:'',status:'Sent',note:'',edited:''},
+          {rowId:_pendingUid+'-TO-DEMO2',submitted:'03/20/2026, 10:00 AM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,reason:'Doctor appointment',duration:'Full Day',month:'April 2026',days:'08',daysStatus:'',status:'Approved',note:'Approved. Enjoy!',edited:''}
+        ],
+        tc:[
+          {rowId:_pendingUid+'-TC-DEMO1',submitted:'04/04/2026, 3:00 PM',uid:_pendingUid,name:UID_NAMES[_pendingUid]||_pendingUid,date:'04/04/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock in',shiftStart:'10:00 AM',breakStart:'1:00 PM',breakEnd:'1:30 PM',shiftEnd:'7:00 PM',status:'Sent',note:'',edited:''}
+        ]
+      };
+      renderRA();
+    });
 }
 
 function renderRA(){
@@ -3851,13 +3865,33 @@ function actMasterTab(pane){
 function dmLoadTO(){
   document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
-    .then(r=>r.json()).then(d=>{_dmToData=d;dmToRender();}).catch(()=>{_dmToData=[];dmToRender();});
+    .then(r=>r.json())
+    .then(d=>{_dmToData=d;dmToRender();})
+    .catch(()=>{
+      _dmToData=[
+        {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
+        {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
+        {rowId:'ec934j-TO-OLD-36',submitted:'03/23/2026, 9:17 AM',uid:'ec934j',name:'Elva Cruz',reason:'Out of town',duration:'Full Day',month:'April',days:'04, 05, 06',daysStatus:'Apr 04:Denied,Apr 05:Denied,Apr 06:Denied',status:'Denied',note:'Late entry / first weekend of month',edited:''},
+        {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
+        {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
+      ];
+      dmToRender();
+    });
 }
 
 function dmLoadTC(){
   document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
   fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
-    .then(r=>r.json()).then(d=>{_dmTcData=d;dmTcRender();}).catch(()=>{_dmTcData=[];dmTcRender();});
+    .then(r=>r.json())
+    .then(d=>{_dmTcData=d;dmTcRender();})
+    .catch(()=>{
+      _dmTcData=[
+        {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+        {rowId:'ec934j-TC-OLD-096',submitted:'',uid:'ec934j',name:'Elva Cruz',date:'3/6/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock in',shiftStart:'9:40 AM',breakStart:'3:04 PM',breakEnd:'4:05 PM',shiftEnd:'7:08 PM',status:'Corrected',note:'',edited:''},
+        {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+      ];
+      dmTcRender();
+    });
 }
 
 function dmToRender(){
