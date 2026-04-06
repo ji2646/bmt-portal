@@ -474,6 +474,12 @@ function showMenu(){
   document.getElementById('ls-menu').style.display='block';
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('ls-menu-name').textContent='Welcome, '+name;
+  // DM has no Time Management (they don't submit their own), everyone else does
+  const isDM=(_pendingUid==='ji2646dm');
+  const btnTM=document.getElementById('btn-timemgmt');
+  const btnAct=document.getElementById('btn-activity');
+  if(btnTM) btnTM.style.display=isDM?'none':'block';
+  if(btnAct) btnAct.style.display='block';
 }
 
 function showActivity2FA(){
@@ -575,11 +581,11 @@ function launchActivity(){
   const isDMUser=(_pendingUid==='ji2646dm');
   // Normalize store key to lowercase
   const storeKey=(_activityStore||'').toLowerCase().trim();
-  const repFilter=isDMUser?null:(STORE_REPS[storeKey]||STORE_REPS[_pendingUid]||[]);
-  // Log warning if filter unexpectedly empty for non-DM
-  if(!isDMUser&&(!repFilter||repFilter.length===0)){
-    console.warn('Activity: no rep filter for store',storeKey,'uid',_pendingUid);
-  }
+  // null in STORE_REPS means "sees all" (e.g. store 777 / Jaquelin)
+  // undefined means store not found
+  const storeEntry=STORE_REPS.hasOwnProperty(storeKey)?STORE_REPS[storeKey]:
+                   STORE_REPS.hasOwnProperty(_pendingUid)?STORE_REPS[_pendingUid]:undefined;
+  const repFilter=isDMUser?null:storeEntry; // null=all, array=filtered, undefined=no match
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
@@ -3064,9 +3070,9 @@ try {
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
         <!-- Master tabs -->
         <div style="display:flex;border-bottom:1px solid var(--bd)">
-          <div id="act-master-log" onclick="actMasterTab('log')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Quotes & Log</div>
-          <div id="act-master-to" onclick="actMasterTab('to')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Time Off</div>
-          <div id="act-master-tc" onclick="actMasterTab('tc')" style="flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
+          <div id="act-master-log" onclick="actMasterTab('log')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Quotes & Log</div>
+          <div id="act-master-to" onclick="actMasterTab('to')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Time Off</div>
+          <div id="act-master-tc" onclick="actMasterTab('tc')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
         </div>
 
         <!-- QUOTES & LOG PANE -->
@@ -3193,7 +3199,8 @@ function actSetFilter(f, btn){
 function actProcessData(rows){
   const isDM=(_pendingUid==='ji2646dm');
   // Normalize repFilter to lowercase for comparison
-  const filterLower=(_activityRepFilter&&_activityRepFilter.length>0)
+  // null = sees all, array = filtered to those UIDs
+  const filterLower=Array.isArray(_activityRepFilter)
     ?_activityRepFilter.map(u=>u.toLowerCase()):null;
   _actSessions=rows.filter(r=>{
     if(!r.loginType) return false;
@@ -3201,12 +3208,12 @@ function actProcessData(rows){
     if(isDM){
       return true; // DM sees everything
     } else {
-      // RSM sees only QTool rows with quotes for their allowed reps
+      // RSM sees only QTool rows with quotes — never the DM
       if(r.loginType!=='QTool') return false;
       if(!r.quote||!r.quote.trim()) return false;
-      if(filterLower){
-        if(!filterLower.includes(rowUid)) return false;
-      }
+      if(rowUid==='ji2646dm') return false; // RSMs never see DM
+      // null filterLower = sees all reps (e.g. Jaquelin store 777)
+      if(filterLower&&!filterLower.includes(rowUid)) return false;
       return true;
     }
   });
