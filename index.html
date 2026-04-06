@@ -3100,13 +3100,18 @@ try {
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
           <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
-              <input id="dm-to-search" type="text" placeholder="Search name or UID..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
-              <select id="dm-to-status" onchange="dmToRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+            <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <select id="dm-to-status" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
               </select>
+              <select id="dm-to-sort" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">By Name</option>
+              </select>
             </div>
-            <select id="dm-to-week" onchange="dmToRender()" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+            <select id="dm-to-week" onchange="dmToRender()" style="width:100%;padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
               <option value="all">All Weeks</option>
             </select>
           </div>
@@ -3116,13 +3121,18 @@ try {
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
           <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center">
-              <input id="dm-tc-search" type="text" placeholder="Search name or UID..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
-              <select id="dm-tc-status" onchange="dmTcRender()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+            <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <select id="dm-tc-status" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Corrected</option>
               </select>
+              <select id="dm-tc-sort" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">By Name</option>
+              </select>
             </div>
-            <select id="dm-tc-cycle" onchange="dmTcRender()" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
+            <select id="dm-tc-cycle" onchange="dmTcRender()" style="width:100%;padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
               <option value="all">All Pay Cycles</option>
             </select>
           </div>
@@ -4022,9 +4032,10 @@ function parseDate(str){
 
 // ── WEEK HELPERS FOR TIME OFF ──
 function getWeekStart(d){
-  // Return the Sunday of the week containing d
-  const day=d.getDay(); // 0=Sun
-  const sun=new Date(d); sun.setDate(d.getDate()-day); sun.setHours(0,0,0,0);
+  // Return the Sunday of the week containing d (local time)
+  const local=new Date(d.getFullYear(),d.getMonth(),d.getDate()); // strip time
+  const day=local.getDay(); // 0=Sun
+  const sun=new Date(local); sun.setDate(local.getDate()-day);
   return sun;
 }
 function getWeekLabel(sun){
@@ -4033,19 +4044,21 @@ function getWeekLabel(sun){
   return fmt(sun)+' – '+fmt(sat);
 }
 function parseFirstDay(r){
-  // Parse first requested day from days + month fields e.g. days="04, 05" month="April 2026"
   const firstDay=(r.days||'').split(',')[0].trim();
   if(!firstDay) return null;
-  const monthStr=r.month||'';
+  const monthStr=(r.month||'').trim();
   try{
-    // Try "April 04" or just "04"
-    const d=new Date(monthStr+' '+firstDay);
-    if(!isNaN(d)) return d;
-    // Try month + numeric day
     const parts=monthStr.split(' ');
-    const yr=parts[1]||new Date().getFullYear();
-    const d2=new Date(parts[0]+' '+firstDay+', '+yr);
-    return isNaN(d2)?null:d2;
+    const mon=parts[0]||'';
+    const yr=parseInt(parts[1])||2026;
+    // Build date string and parse as local
+    const ds=mon+' '+firstDay.replace(/^0/,'')+', '+yr;
+    const d=new Date(ds);
+    if(!isNaN(d)){
+      // Return as local date to avoid UTC shift
+      return new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    }
+    return null;
   }catch(e){return null;}
 }
 
@@ -4091,14 +4104,18 @@ function dmToRender(){
   const f=(document.getElementById('dm-to-status')||{value:'all'}).value||'all';
   const wk=(document.getElementById('dm-to-week')||{value:'all'}).value||'all';
   populateTOWeeks();
-  let items=[..._dmToData].sort((a,b)=>b.submitted.localeCompare(a.submitted));
+  const toSort=(document.getElementById('dm-to-sort')||{value:'newest'}).value||'newest';
+  let items=[..._dmToData];
+  if(toSort==='newest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return db-da;});
+  else if(toSort==='oldest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return da-db;});
+  else if(toSort==='name') items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
   if(wk!=='all'){
     const sunTs=parseInt(wk);
     const sun=new Date(sunTs); const sat=new Date(sunTs+6*86400000);
     items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
   }
-  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
   const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)'};
@@ -4138,18 +4155,17 @@ function dmTcRender(){
   const f=(document.getElementById('dm-tc-status')||{value:'all'}).value||'all';
   const cyc=(document.getElementById('dm-tc-cycle')||{value:'all'}).value||'all';
   populateTCCycles();
-  // Sort newest first by date worked
-  let items=[..._dmTcData].sort((a,b)=>{
-    const da=parseDate(a.date)||new Date(0);
-    const db=parseDate(b.date)||new Date(0);
-    return db-da;
-  });
+  const tcSort=(document.getElementById('dm-tc-sort')||{value:'newest'}).value||'newest';
+  let items=[..._dmTcData];
+  if(tcSort==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return db-da;});
+  else if(tcSort==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return da-db;});
+  else if(tcSort==='name') items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
   if(cyc!=='all'){
     const cycles=getPayCycles(); const ci=parseInt(cyc);
     if(cycles[ci]) items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});
   }
-  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q));
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
   const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
@@ -4252,6 +4268,7 @@ function showDMTimeDetail(type,rowId){
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;padding:12px 14px">
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Notes</div>
         <textarea id="dm-note-field" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;resize:vertical;min-height:60px">${r.note||''}</textarea>
+        <button onclick="dmSaveNote('${type}','${rowId}')" style="margin-top:8px;width:100%;padding:9px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">💾 Save Note</button>
       </div>
       ${isDone&&copyText?`
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
