@@ -324,7 +324,7 @@ select option,select optgroup{background:#1a1a1a}
 const ALLOWED_UIDS=[
   'gs0426','ap485d','dg8674','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647'
+  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j'
 ];
 
 const DISABLED_UIDS=['ji2646'];
@@ -334,7 +334,7 @@ const UID_NAMES={
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','ec934j':'Elva Cruz','bb8326':'Bryan Barajas',
-  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova',
+  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez',
   'ji2646dm':'Josue Garcia','ji2646':'Josue Garcia (OLD)'
 };
 
@@ -448,7 +448,7 @@ const STORE_REPS={
   '775':['mg221k','tg4507'],                // Matthew + Thalia
   '769':['rg8855','bb8326'],                // Rolando + Bryan
   '752':['jq286d','cx7250'],                // Josue Sosa + Christina (NOT Elva)
-  '768':['jx820u','nc3647'],                // Jose Manzo + Nancy
+  '768':['jx820u','nc3647','ju512j'],         // Jose Manzo + Nancy + Jonatan
   'dm':null,
   'ji2646dm':null
 };
@@ -462,7 +462,6 @@ let _actSessions=[];
 function showLoginError(uid, type){
   document.getElementById('login-screen').innerHTML=`
     <div style="background:#8B0000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
-      <div style="font-size:60px;margin-bottom:16px">⛔</div>
       <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:12px">${type} UID</div>
       <div style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:32px">Contact admin for further assistance.</div>
       <button onclick="location.reload()" style="background:#fff;color:#8B0000;font-weight:900;font-size:15px;padding:14px 36px;border:none;border-radius:8px;cursor:pointer">↺ Try Again</button>
@@ -548,6 +547,20 @@ function closeRepActivity(){
 }
 
 function launchQuoteTool(){
+  // Under construction for specific UIDs
+  const underConstruction=['nc3647','ju512j'];
+  if(underConstruction.includes(_pendingUid)){
+    document.getElementById('login-screen').style.display='none';
+    document.body.style.overflow='';
+    const el=document.createElement('div');
+    el.style.cssText='position:fixed;inset:0;background:#7C6000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:DM Sans,sans-serif;padding:40px;text-align:center';
+    el.innerHTML=`<div style="font-size:48px;margin-bottom:16px">🚧</div>
+      <div style="font-size:24px;font-weight:900;color:#fff;margin-bottom:8px">Coming Soon</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:32px">Quote Tool is not yet available for your account.</div>
+      <button onclick="this.closest('div[style]').remove();document.getElementById('login-screen').style.display='flex';document.body.style.overflow='hidden';" style="padding:12px 32px;background:#fff;color:#7C6000;font-family:DM Sans;font-size:13px;font-weight:900;border:none;border-radius:8px;cursor:pointer">← Back</button>`;
+    document.body.appendChild(el);
+    return;
+  }
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-content').style.display='block';
   document.body.style.overflow='';
@@ -559,7 +572,14 @@ function launchQuoteTool(){
 }
 
 function launchActivity(){
-  const repFilter=STORE_REPS[_activityStore]||STORE_REPS[_pendingUid]||null;
+  const isDMUser=(_pendingUid==='ji2646dm');
+  // Normalize store key to lowercase
+  const storeKey=(_activityStore||'').toLowerCase().trim();
+  const repFilter=isDMUser?null:(STORE_REPS[storeKey]||STORE_REPS[_pendingUid]||[]);
+  // Log warning if filter unexpectedly empty for non-DM
+  if(!isDMUser&&(!repFilter||repFilter.length===0)){
+    console.warn('Activity: no rep filter for store',storeKey,'uid',_pendingUid);
+  }
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
@@ -1130,8 +1150,11 @@ function lu(id,k,v){
   // Shipping warning for high-value devices
   if(k==='device'&&v){
     const dev=PHONES.find(p=>p.id===v)||TABLETS.find(t=>t.id===v);
-    if(dev){
-      const pr=l.lt==='sw'||l.lt==='switcher'?dev.sw:(l.lt==='upgrade'?(dev.up??dev.frp):dev.nw);
+    if(dev&&l.protect){
+      l.protectTier=protectCost(dev.frp);
+    } else if(dev&&!l.protect&&l.lt!=='upgrade'){
+      // Auto-set correct tier for when protect gets toggled later
+      l.protectTier=protectCost(dev.frp);
     }
   }
   update();
@@ -3128,7 +3151,7 @@ function actLoadData(){
 }
 
 function actUseDemoData(){
-  // Demo fallback — only shown if live fetch fails
+  // Demo fallback — filter is applied inside actProcessData
   actProcessData([
     {loginType:'Main',sessionId:'ji2646dm-1775346505000',name:'Josue Garcia',uid:'ji2646dm',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:''},
     {loginType:'QTool',sessionId:'ji2646dm-1775346505908',name:'Josue Garcia',uid:'ji2646dm',datetime:'04/04/2026, 6:48 PM',device:'Mac · Chrome',ip:'67.10.51.224',quote:'[Q]UP·iPhone 17e 256GB·SUPREME·AP·APD$90·$774'},
@@ -3153,17 +3176,20 @@ function actSetFilter(f, btn){
 
 function actProcessData(rows){
   const isDM=(_pendingUid==='ji2646dm');
+  // Normalize repFilter to lowercase for comparison
+  const filterLower=(_activityRepFilter&&_activityRepFilter.length>0)
+    ?_activityRepFilter.map(u=>u.toLowerCase()):null;
   _actSessions=rows.filter(r=>{
     if(!r.loginType) return false;
+    const rowUid=(r.uid||'').toLowerCase();
     if(isDM){
-      // DM sees everything
-      return true;
+      return true; // DM sees everything
     } else {
       // RSM sees only QTool rows with quotes for their allowed reps
       if(r.loginType!=='QTool') return false;
       if(!r.quote||!r.quote.trim()) return false;
-      if(_activityRepFilter&&_activityRepFilter.length>0){
-        if(!_activityRepFilter.includes(r.uid)) return false;
+      if(filterLower){
+        if(!filterLower.includes(rowUid)) return false;
       }
       return true;
     }
@@ -3677,7 +3703,12 @@ function submitTO(){
   const month=document.getElementById('to-month').value;
   const days=document.getElementById('to-days').value.trim();
   const reason=document.getElementById('to-reason').value.trim();
-  if(!days||!reason){alert('Please fill in all required fields.');return;}
+  if(!days||!reason){alert('Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
+  if(!_toDurFull){
+    const tf=document.getElementById('to-from').value;
+    const tu=document.getElementById('to-until').value;
+    if(!tf||!tu){alert('Please enter your requested hours (From and Until).');return;}
+  }
   const dur=_toDurFull?'Full Day':`${fmtT(document.getElementById('to-from').value)}–${fmtT(document.getElementById('to-until').value)}`;
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
   const submitted=getDatetime();
@@ -3692,13 +3723,14 @@ function submitTO(){
 function tmConfirm(msg,status,showNotify=false,rowId=''){
   const colors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
   const div=document.createElement('div');
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
+  div.id='tm-confirm-overlay';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999998;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
   div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
     <div style="font-size:28px;margin-bottom:12px">${status==='Denied'?'⚠️':'✓'}</div>
     <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">${msg}</div>
     <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:800;color:${colors[status]||'#aaa'};margin-bottom:20px">${status}</div>
     ${showNotify?`<button id="notify-dm-btn" onclick="notifyDM('${rowId}',this)" style="width:100%;padding:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:8px">📣 Notify DM for Review</button>`:''}
-    <button onclick="this.closest('div[style]').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
+    <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
   </div>`;
   document.body.appendChild(div);
 }
@@ -3748,7 +3780,14 @@ function repActLoadData(){
   fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
     .then(r=>r.json())
     .then(d=>{
-      if(d&&(d.to||d.tc)){_raData=d;renderRA();}
+      if(d&&(d.to||d.tc)){
+        // Filter to only this rep's own data
+        _raData={
+          to:(d.to||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase()),
+          tc:(d.tc||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase())
+        };
+        renderRA();
+      }
       else{setRADemo();} // response wasn't proper data
     })
     .catch(()=>{setRADemo();});
@@ -3896,19 +3935,26 @@ function dmLoadTO(){
   fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
     .then(r=>r.json())
     .then(d=>{
-      if(Array.isArray(d)){_dmToData=d;dmToRender();}
+      if(Array.isArray(d)){
+        const _toFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
+        _dmToData=_toFilter?d.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):d;
+        dmToRender();
+      }
       else{setDMToDemo();}
     })
     .catch(()=>{setDMToDemo();});
 }
 function setDMToDemo(){
-      _dmToData=[
-        {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
-        {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
-        {rowId:'ec934j-TO-OLD-36',submitted:'03/23/2026, 9:17 AM',uid:'ec934j',name:'Elva Cruz',reason:'Out of town',duration:'Full Day',month:'April',days:'04, 05, 06',daysStatus:'Apr 04:Denied,Apr 05:Denied,Apr 06:Denied',status:'Denied',note:'Late entry / first weekend of month',edited:''},
-        {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
-        {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
+  const rawToDemo=[
+    {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
+    {rowId:'ec934j-TO-OLD-36',submitted:'03/23/2026, 9:17 AM',uid:'ec934j',name:'Elva Cruz',reason:'Out of town',duration:'Full Day',month:'April',days:'04, 05, 06',daysStatus:'Apr 04:Denied,Apr 05:Denied,Apr 06:Denied',status:'Denied',note:'Late entry / first weekend of month',edited:''},
+    {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'gs0426-TO-OLD-44',submitted:'04/04/2026, 2:00 PM',uid:'gs0426',name:'Gabbisette Sanchez',reason:'Personal appointment',duration:'Full Day',month:'April',days:'20',daysStatus:'',status:'Sent',note:'',edited:''},
   ];
+  const f=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
+  _dmToData=f?rawToDemo.filter(r=>f.includes((r.uid||'').toLowerCase())):rawToDemo;
   dmToRender();
 }
 
@@ -3917,17 +3963,30 @@ function dmLoadTC(){
   fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
     .then(r=>r.json())
     .then(d=>{
-      if(Array.isArray(d)){_dmTcData=d;dmTcRender();}
+      if(Array.isArray(d)){
+        const _tcFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
+        _dmTcData=_tcFilter?d.filter(r=>_tcFilter.includes((r.uid||'').toLowerCase())):d;
+        dmTcRender();
+      }
       else{setDMTcDemo();}
     })
     .catch(()=>{setDMTcDemo();});
 }
 function setDMTcDemo(){
-      _dmTcData=[
-        {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
-        {rowId:'ec934j-TC-OLD-096',submitted:'',uid:'ec934j',name:'Elva Cruz',date:'3/6/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock in',shiftStart:'9:40 AM',breakStart:'3:04 PM',breakEnd:'4:05 PM',shiftEnd:'7:08 PM',status:'Corrected',note:'',edited:''},
-        {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+  const rawTcDemo=[
+    {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'ec934j-TC-OLD-096',submitted:'',uid:'ec934j',name:'Elva Cruz',date:'3/6/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock in',shiftStart:'9:40 AM',breakStart:'3:04 PM',breakEnd:'4:05 PM',shiftEnd:'7:08 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'ap485d-TC-OLD-098',submitted:'',uid:'ap485d',name:'Alfredo Parra',date:'3/10/2026',location:'College St (747)',reason:'No Internet at college location',shiftStart:'11:31 AM',breakStart:'3:00 PM',breakEnd:'4:08 PM',shiftEnd:'8:13 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'mg221k-TC-OLD-099',submitted:'',uid:'mg221k',name:'Matthew Gomez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Internet down',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'6:00 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'bb8326-TC-OLD-100',submitted:'',uid:'bb8326',name:'Bryan Barajas',date:'3/7/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock back in from break',shiftStart:'11:00 AM',breakStart:'3:00 PM',breakEnd:'4:00 PM',shiftEnd:'7:18 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'rg8855-TC-OLD-101',submitted:'',uid:'rg8855',name:'Rolando Garcia',date:'2/7/2026',location:'West Orange (768)',reason:'Discrepancy on timecard',shiftStart:'9:52 AM',breakStart:'2:00 PM',breakEnd:'3:00 PM',shiftEnd:'8:02 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'nc3647-TC-OLD-102',submitted:'',uid:'nc3647',name:'Nancy Cordova',date:'3/12/2026',location:'West Orange (768)',reason:'Forgot to clock back in from break',shiftStart:'12:15 PM',breakStart:'3:00 PM',breakEnd:'4:05 PM',shiftEnd:'8:03 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'jq286d-TC-OLD-103',submitted:'',uid:'jq286d',name:'Josue Sosa',date:'2/15/2026',location:'Jefferson Dr (777)',reason:'Skipped shift lab by accident',shiftStart:'11:37 AM',breakStart:'2:27 PM',breakEnd:'3:11 PM',shiftEnd:'5:35 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'cx7250-TC-OLD-104',submitted:'',uid:'cx7250',name:'Christina Muzquiz',date:'1/28/2026',location:'Memorial Blvd (769)',reason:'Shift lab error clocking in',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'5:05 PM',status:'Corrected',note:'',edited:''},
   ];
+  const f=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
+  _dmTcData=f?rawTcDemo.filter(r=>f.includes((r.uid||'').toLowerCase())):rawTcDemo;
   dmTcRender();
 }
 
@@ -4153,10 +4212,17 @@ function showDMTimeDetail(type,rowId){
   if(isDone&&type==='to'&&isMultiDay){
     const res=buildPartialCopyText(r); copyText=res.txt;
   } else if(isDone&&type==='to'){
-    const hoursLine=r.approvedHours?'\nApproved Hours: '+r.approvedHours:'\nTime Off: '+r.duration;
-    copyText=r.name+' ('+r.uid+') Your time off request for '+r.days+', '+r.month+' has been '+r.status.toLowerCase()+'.\nRequest ID: '+r.rowId+'\nStatus: '+r.status+hoursLine+(r.note?'\nNote: '+r.note:'');
+    const hoursLine=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
+    const firstName=r.name?r.name.split(' ')[0]:r.uid;
+    const actionLine=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
+    const monthStr=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();
+    const yearStr=(r.month||'').match(/\d{4}/)?.[0]||'2026';
+    const daysStr=(r.days||'').split(',').map(d=>monthStr+' '+d.trim()+', '+yearStr).join(', ');
+    copyText=firstName+',\n\nYour time off request for '+daysStr+' '+actionLine+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hoursLine+(r.note?'\nNote: '+r.note:'');
   } else if(isDone&&type==='tc'){
-    copyText=r.name+' ('+r.uid+') Your time correction for '+r.date+' has been '+r.status.toLowerCase()+'.\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' – '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
+    const firstNameTC=r.name?r.name.split(' ')[0]:r.uid;
+    const actionTC=r.status==='Approved'?'has been approved':'has been denied';
+    copyText=firstNameTC+',\n\nYour time correction for '+r.date+' '+actionTC+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' – '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
   }
 
   const detailDiv=document.createElement('div');
@@ -4187,7 +4253,7 @@ function showDMTimeDetail(type,rowId){
         </div>
         <div style="padding:12px 14px">
           <div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:'DM Sans'">${copyText.replace(/</g,'&lt;')}</div>
-          <button onclick="navigator.clipboard.writeText(${JSON.stringify(copyText)}).then(()=>{this.textContent='✓ Copied';this.style.color='var(--g)';}).catch(()=>{const ta=document.createElement('textarea');ta.value=${JSON.stringify(copyText)};document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);this.textContent='✓ Copied';})"
+          <button id="dm-copy-action" onclick="dmCopyText(this)" data-text=""
             style="margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">📋 Copy</button>
         </div>
       </div>`:''}
@@ -4233,13 +4299,53 @@ function showDMTimeDetail(type,rowId){
           dmTimeAction('${type}','${rowId}','Partial',note,'hours:'+hrs);
         " style="margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">Confirm Partial</button>
       </div>
+      ${type==='to'?`
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
         <button onclick="document.getElementById('partial-hours-${rowId}').style.display=document.getElementById('partial-hours-${rowId}').style.display==='none'?'block':'none'" style="padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Partial</button>
         <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
+      </div>`:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
+        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
       </div>`}
+      `}
     </div>`;
   document.body.appendChild(detailDiv);
+  // Safely set copy text via data attribute after DOM insertion
+  const copyBtn=document.getElementById('dm-copy-action');
+  if(copyBtn&&copyText) copyBtn.setAttribute('data-text',copyText);
+}
+
+function dmSaveNote(type, rowId){
+  const note = document.getElementById('dm-note-field').value;
+  // Get current status from cached data
+  const list = type==='to' ? _dmToData : _dmTcData;
+  const r = list.find(x=>x.rowId===rowId);
+  const currentStatus = r ? r.status : '';
+  sendLog({type:'time_update', rowId, status:currentStatus, note, daysStatus:r&&r.daysStatus||'', updatedBy:_pendingUid, updatedAt:getDatetime()});
+  // Update local cache
+  if(r) r.note = note;
+  // Visual feedback
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ Saved';
+  btn.style.color = 'var(--g)';
+  btn.style.borderColor = 'rgba(0,169,79,.3)';
+  setTimeout(()=>{ btn.textContent = orig; btn.style.color = 'var(--t2)'; btn.style.borderColor = 'var(--bd2)'; }, 2000);
+}
+
+function dmCopyText(btn){
+  const text=btn.getAttribute('data-text')||'';
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✓ Copied';btn.style.color='var(--g)';
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='✓ Copied';
+  });
 }
 
 let _dayStatuses={};
@@ -4313,14 +4419,21 @@ function buildPartialCopyText(r){
   const allApproved=denied.length===0&&approved.length>0;
   const allDenied=approved.length===0&&denied.length>0;
   const status=allApproved?'Approved':allDenied?'Denied':'Partial';
-  let txt=`${r.name} (${r.uid}) Your time off request has been ${status==='Partial'?'partially approved':status.toLowerCase()}.\nRequest ID: ${r.rowId}\nStatus: ${status}`;
+  const firstName=r.name?r.name.split(' ')[0]:r.uid;
+  const action=status==='Partial'?'has been partially approved':status==='Approved'?'has been approved':'has been denied';
+  // Format days with month and year
+  const monthStr=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();
+  const yearStr=(r.month||'').match(/\d{4}/)?.[0]||'2026';
+  const fmtDay=d=>monthStr+' '+d.trim()+', '+yearStr;
+  let txt=firstName+',\n\nYour time off request '+action+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+status;
   if(status==='Partial'){
-    if(approved.length) txt+=`\nApproved: ${approved.join(', ')}`;
-    if(denied.length) txt+=`\nDenied: ${denied.join(', ')}`;
+    if(approved.length) txt+='\nApproved: '+approved.map(fmtDay).join(', ');
+    if(denied.length) txt+='\nDenied: '+denied.map(fmtDay).join(', ');
   } else {
-    txt+=`\nTime Off: ${r.duration}`;
+    const allDays=(r.days||'').split(',').map(fmtDay).join(', ');
+    txt+='\nDays: '+allDays+'\nDuration: '+r.duration;
   }
-  if(r.note) txt+=`\nNote: ${r.note}`;
+  if(r.note) txt+='\nNote: '+r.note;
   return {txt,status};
 }
 </script>
