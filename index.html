@@ -588,6 +588,12 @@ function launchActivity(){
   document.getElementById('activity-overlay').style.display='block';
   document.getElementById('act-header-name').textContent=name;
   document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
+  // Show Time Off and Corrections tabs only for DM
+  const _isDMUser2=(_pendingUid==='ji2646dm');
+  const toTab=document.getElementById('act-master-to');
+  const tcTab=document.getElementById('act-master-tc');
+  if(toTab) toTab.style.display=_isDMUser2?'flex':'none';
+  if(tcTab) tcTab.style.display=_isDMUser2?'flex':'none';
   // Log activity login
   logWithIP({type:'activity',sessionId:_sessionId+'-ACT',name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
@@ -4023,7 +4029,8 @@ function getWeekStart(d){
 }
 function getWeekLabel(sun){
   const sat=new Date(sun); sat.setDate(sun.getDate()+6);
-  return fmtWeekDate(sun)+' – '+fmtWeekDate(sat)+'/'+sat.getFullYear();
+  const fmt=d=>(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+  return fmt(sun)+' – '+fmt(sat);
 }
 function parseFirstDay(r){
   // Parse first requested day from days + month fields e.g. days="04, 05" month="April 2026"
@@ -4051,12 +4058,12 @@ function populateTOWeeks(){
     if(!d) return;
     const sun=getWeekStart(d);
     const key=sun.getTime();
-    if(!weeks.has(key)) weeks.set(key,{sun,label:'Week of '+getWeekLabel(sun)});
+    if(!weeks.has(key)) weeks.set(key,{sun,label:getWeekLabel(sun)});
   });
   const sorted=[...weeks.values()].sort((a,b)=>b.sun-a.sun);
   const current=sel.value;
   sel.innerHTML='<option value="all">All Weeks</option>'+
-    sorted.map(w=>`<option value="${w.sun.getTime()}">${w.label}</option>`).join('');
+    sorted.map(w=>`<option value="${w.sun.getTime()}">Week of ${w.label}</option>`).join('');
   if(current&&current!=='all') sel.value=current;
 }
 
