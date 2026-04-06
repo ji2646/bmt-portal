@@ -318,7 +318,7 @@ select option,select optgroup{background:#1a1a1a}
 
     </div>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-06APR2026-0423PM</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-06APR2026-0453PM</div>
 </div>
 
 <script>
@@ -532,6 +532,7 @@ function launchRepActivity(){
 function launchTimeMgmt(){
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
+  setTimeout(buildTODayChips,100);
   document.getElementById('tm-overlay').style.display='block';
   document.getElementById('tm-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
   startSessionTracking();
@@ -3564,14 +3565,16 @@ function closeActivity(){
       <div id="tm-to" style="display:none">
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Month</div>
-          <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline()">
+          <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline();buildTODayChips()">
             <option>April 2026</option><option>May 2026</option><option>June 2026</option>
             <option>July 2026</option><option>August 2026</option><option>September 2026</option>
           </select>
         </div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Day(s) Requested <span style="font-weight:400;text-transform:none;letter-spacing:0">— enter day numbers, comma-separated</span></div>
-          <input type="text" id="to-days" placeholder="e.g. 14 or 14, 15, 16" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Day(s) Requested <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— tap to select, same week only</span></div>
+          <div id="to-day-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
+          <input type="hidden" id="to-days"/>
+          <div id="to-days-error" style="display:none;font-size:9px;color:var(--err);margin-bottom:4px;font-family:'DM Sans'"></div>
           <div id="to-deadline-msg" style="font-size:9px;color:var(--warn);margin-top:4px;font-family:'DM Sans'">Must submit 2 weeks before the week's Sunday</div>
         </div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
@@ -3715,13 +3718,75 @@ function submitTC(){
   tmConfirm('Time correction submitted.','Sent');
 }
 
+let _toDaysSelected=[];
+
+function buildTODayChips(){
+  const container=document.getElementById('to-day-chips');
+  if(!container) return;
+  const monthVal=document.getElementById('to-month').value||'';
+  // How many days in this month?
+  const parts=monthVal.split(' ');
+  const mon=parts[0]; const yr=parseInt(parts[1])||2026;
+  const monthIdx=['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(mon);
+  const daysInMonth=monthIdx>=0?new Date(yr,monthIdx+1,0).getDate():31;
+  _toDaysSelected=[];
+  document.getElementById('to-days').value='';
+  document.getElementById('to-days-error').style.display='none';
+  container.innerHTML='';
+  for(let d=1;d<=daysInMonth;d++){
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.id='to-chip-'+d;
+    btn.textContent=d;
+    btn.style.cssText='width:36px;height:36px;border-radius:8px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:DM Sans;font-size:12px;font-weight:700;cursor:pointer;transition:all .12s;flex-shrink:0';
+    btn.onclick=(()=>{const _d=d;return function(){toggleTODay(_d);};})();
+    container.appendChild(btn);
+  }
+}
+
+function toggleTODay(day){
+  const errEl=document.getElementById('to-days-error');
+  // Check if adding this day would span a different week
+  if(!_toDaysSelected.includes(day)){
+    const monthVal=document.getElementById('to-month').value||'';
+    const parts=monthVal.split(' ');
+    const mon=parts[0]; const yr=parseInt(parts[1])||2026;
+    const newDate=new Date(mon+' '+day+', '+yr);
+    if(!isNaN(newDate)){
+      const newSun=getWeekStart(new Date(newDate.getFullYear(),newDate.getMonth(),newDate.getDate()));
+      // Check against already selected days
+      for(const existing of _toDaysSelected){
+        const exDate=new Date(mon+' '+existing+', '+yr);
+        const exSun=getWeekStart(new Date(exDate.getFullYear(),exDate.getMonth(),exDate.getDate()));
+        if(newSun.getTime()!==exSun.getTime()){
+          errEl.style.display='block';
+          errEl.textContent='Day '+day+' is in a different week. Same week only — submit separately for other weeks.';
+          setTimeout(()=>{errEl.style.display='none';},3000);
+          return;
+        }
+      }
+    }
+    _toDaysSelected.push(day);
+  } else {
+    _toDaysSelected=_toDaysSelected.filter(d=>d!==day);
+    errEl.style.display='none';
+  }
+  _toDaysSelected.sort((a,b)=>a-b);
+  // Update chip styles
+  document.querySelectorAll('[id^="to-chip-"]').forEach(btn=>{
+    const n=parseInt(btn.id.replace('to-chip-',''));
+    const sel=_toDaysSelected.includes(n);
+    btn.style.background=sel?'var(--g)':'var(--s3)';
+    btn.style.color=sel?'#000':'var(--t3)';
+    btn.style.borderColor=sel?'var(--g)':'var(--bd2)';
+  });
+  // Update hidden input
+  document.getElementById('to-days').value=_toDaysSelected.join(', ');
+}
+
 function submitTO(){
   const month=document.getElementById('to-month').value;
-  let days=document.getElementById('to-days').value.trim();
-  // Normalize days: strip month names if accidentally included, extract numbers only
-  const _mo=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  _mo.forEach(m=>{days=days.replace(new RegExp(m+'\\s*','gi'),'');});
-  days=days.replace(/\s+/g,' ').trim().replace(/^,|,$/g,'').trim();
+  const days=document.getElementById('to-days').value.trim();
   const reason=document.getElementById('to-reason').value.trim();
   if(!days||!reason){alert('Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
   if(!_toDurFull){
