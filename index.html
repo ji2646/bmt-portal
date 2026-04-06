@@ -324,7 +324,7 @@ select option,select optgroup{background:#1a1a1a}
 const ALLOWED_UIDS=[
   'gs0426','ap485d','dg8674','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j'
+  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j','ju512j'
 ];
 
 const DISABLED_UIDS=['ji2646'];
@@ -334,7 +334,7 @@ const UID_NAMES={
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','ec934j':'Elva Cruz','bb8326':'Bryan Barajas',
-  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez',
+  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ju512j':'Jonatan Ramirez',
   'ji2646dm':'Josue Garcia','ji2646':'Josue Garcia (OLD)'
 };
 
@@ -594,12 +594,9 @@ function launchActivity(){
   document.getElementById('activity-overlay').style.display='block';
   document.getElementById('act-header-name').textContent=name;
   document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
-  // Show Time Off and Corrections tabs only for DM
-  const _isDMUser2=(_pendingUid==='ji2646dm');
-  const toTab=document.getElementById('act-master-to');
-  const tcTab=document.getElementById('act-master-tc');
-  if(toTab) toTab.style.display=_isDMUser2?'flex':'none';
-  if(tcTab) tcTab.style.display=_isDMUser2?'flex':'none';
+  // All 3 tabs visible for DM and RSMs
+  const _t1=document.getElementById('act-master-to');const _t2=document.getElementById('act-master-tc');
+  if(_t1)_t1.style.display='flex';if(_t2)_t2.style.display='flex';
   // Log activity login
   logWithIP({type:'activity',sessionId:_sessionId+'-ACT',name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
@@ -3105,16 +3102,14 @@ try {
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
-          <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
+                    <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-to-status" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
               </select>
               <select id="dm-to-sort" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="name">By Name</option>
+                <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="name">By Name</option>
               </select>
             </div>
             <select id="dm-to-week" onchange="dmToRender()" style="width:100%;padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
@@ -3126,16 +3121,14 @@ try {
 
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
-          <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
+                    <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-tc-status" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Corrected</option>
               </select>
               <select id="dm-tc-sort" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="name">By Name</option>
+                <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="name">By Name</option>
               </select>
             </div>
             <select id="dm-tc-cycle" onchange="dmTcRender()" style="width:100%;padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
@@ -3431,14 +3424,14 @@ function actShowDetail(sid){
         </div>
         <div style="display:flex;justify-content:space-between">
           <span style="font-size:11px;color:rgba(255,255,255,.4)">PIN Entered</span>
-          <span style="font-size:12px;font-weight:700;color:var(--err)">${parts[1]||'—'}</span>
+          <span style="font-size:12px;font-weight:700;color:#ef4444">${parts[1]||'—'}</span>
         </div>
       </div>`;
     } else if(isInvalid){
       attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
         <div style="display:flex;justify-content:space-between">
           <span style="font-size:11px;color:rgba(255,255,255,.4)">UID Entered</span>
-          <span style="font-size:12px;font-weight:700;color:var(--err)">${s.uid||'—'}</span>
+          <span style="font-size:12px;font-weight:700;color:#ef4444">${s.uid||'—'}</span>
         </div>
       </div>`;
     }
@@ -3736,11 +3729,36 @@ function submitTO(){
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
   const submitted=getDatetime();
   const rowId=uid+'-TO-'+Date.now();
-  const isLate=checkDeadline(days);
-  const status=isLate?'Denied':'Sent';
-  const note=isLate?'Missed request deadline':'';
-  sendLog({type:'to_submit',rowId,uid,name,submitted,month,days,reason,duration:dur,status,note,edited:''});
-  tmConfirm(isLate?'Request submitted but automatically denied — missed the 2-week deadline.':'Time off request submitted.',status,isLate,rowId);
+  // Parse first requested day to get week start
+  const _toFirstDay=parseFirstDay({days,month});
+  let toStatus='Sent', toNote='', toShowNotify=false;
+  if(!_toFirstDay){
+    alert('Could not parse the requested date. Please check the day(s) field.');return;
+  }
+  const _toWeekSun=getWeekStart(_toFirstDay);
+  const _toToday=new Date(); _toToday.setHours(0,0,0,0);
+  const daysToWeek=Math.floor((_toWeekSun-_toToday)/(1000*60*60*24));
+  if(daysToWeek<0){
+    // Week already started — block entirely
+    alert('This week has already started. Time off requests are not allowed for past or current weeks.');
+    return;
+  } else if(daysToWeek<7){
+    // 0–6 days — auto deny, no notify DM
+    toStatus='Denied';
+    toNote='Automatically denied — request submitted less than 7 days before week start.';
+    toShowNotify=false;
+  } else if(daysToWeek<14){
+    // 7–13 days — auto deny, notify DM available
+    toStatus='Denied';
+    toNote='Automatically denied — submitted within 2-week window. DM review available.';
+    toShowNotify=true;
+  }
+  // 14+ days = normal (Sent)
+  sendLog({type:'to_submit',rowId,uid,name,submitted,month,days,reason,duration:dur,status:toStatus,note:toNote,edited:''});
+  const _toMsg=toStatus==='Denied'
+    ?(daysToWeek<7?'Request denied — must submit at least 7 days in advance.':'Request submitted but automatically denied — missed the 2-week deadline.')
+    :'Time off request submitted.';
+  tmConfirm(_toMsg,toStatus,toShowNotify,rowId);
 }
 
 function tmConfirm(msg,status,showNotify=false,rowId=''){
@@ -3866,7 +3884,7 @@ function renderRA(){
 function showRADetail(rowId){
   const all=[...(_raData.to||[]),...(_raData.tc||[])];
   const r=all.find(x=>x.rowId===rowId);
-  if(!r) return;
+  if(!r){console.warn('showRADetail: rowId not found in _raData',rowId,_raData);return;}
   const isTO=r.rowId.includes('-TO-');
   document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
   const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
@@ -3882,15 +3900,31 @@ function showRADetail(rowId){
     }
   }
   const canEdit=_canEditStatus&&!_withinLockout;
-  const canNotify=r.status==='Denied'&&isTO;
+  const canNotify=isTO&&r.status==='Denied'
+    &&(r.note||'').includes('DM review available')
+    &&!(r.note||'').includes('DM notified');
   const showLockMsg=isTO&&_canEditStatus&&_withinLockout;
+  // Days in advance
+  let daysAdvanceRow=[];
+  if(isTO){
+    const fd=parseFirstDay(r);
+    if(fd){
+      const sun=getWeekStart(fd);
+      const sub=r.submitted?new Date(r.submitted):new Date();
+      const subLocal=new Date(sub.getFullYear(),sub.getMonth(),sub.getDate());
+      const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
+      const isLate2=diff<0;
+      const label=isLate2?('Requested '+Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):('Requested '+diff+' day'+(diff===1?'':'s')+' in advance');
+      daysAdvanceRow=[['Submitted',r.submitted],['Advance',label,isLate2?'#ef4444':null]];
+    }
+  }
   const rows=isTO?[
     ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
-    ['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
+    ...daysAdvanceRow,...(r.edited?[['Edited',r.edited]]:[])
   ]:[
     ['Location',r.location],['Date',r.date],['Reason',r.reason],
-    ['Shift Start',r.shiftStart],['Break Start',r.breakStart],['Break End',r.breakEnd],['Shift End',r.shiftEnd],
-    ['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
+    ['Shift Start',r.shiftStart],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' – '+r.breakEnd:'None'],
+    ['Shift End',r.shiftEnd],['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
   ];
   document.getElementById('ra-detail-content').innerHTML=`
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
@@ -3898,7 +3932,7 @@ function showRADetail(rowId){
         <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Status</div>
         <div style="background:rgba(255,255,255,.06);color:${statusColors[r.status]||'#aaa'};border:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;font-family:'DM Sans'">${r.status}</div>
       </div>
-      ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
+      ${rows.map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:${c||'var(--t1)'};text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
       ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#aaa'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
     </div>
     ${showLockMsg?`<div style="font-size:10px;color:var(--warn);text-align:center;padding:10px 14px;font-family:'DM Sans'">🔒 Request locked — within 7 days of week start</div>`:''}
@@ -3938,6 +3972,84 @@ function editRequest(rowId){
 // ══════════════════════════════════════════
 let _dmToData=[], _dmTcData=[];
 let _dmCurrentPane='log';
+
+
+
+function dmToRender(){
+  const el=document.getElementById('dm-to-list');
+  if(!el) return;
+  const q=(document.getElementById('dm-to-search')||{value:''}).value.toLowerCase();
+  const f=(document.getElementById('dm-to-status')||{value:'all'}).value||'all';
+  const wk=(document.getElementById('dm-to-week')||{value:'all'}).value||'all';
+  const srt=(document.getElementById('dm-to-sort')||{value:'newest'}).value||'newest';
+  populateTOWeeks();
+  let items=[..._dmToData];
+  if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return db-da;});
+  else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return da-db;});
+  else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(f!=='all') items=items.filter(r=>r.status===f);
+  if(wk!=='all'){
+    const sunTs=parseInt(wk);const sun=new Date(sunTs);const sat=new Date(sunTs+6*86400000);
+    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
+  }
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
+  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)'};
+  const weekCounts={};
+  [..._dmToData].forEach(row=>{const fd=parseFirstDay(row);if(!fd)return;const wkk=getWeekStart(fd).getTime();if(!weekCounts[wkk])weekCounts[wkk]=[];weekCounts[wkk].push(row.rowId);});
+  el.innerHTML=items.map(r=>{
+    const fd=parseFirstDay(r);let weekLabel='--';let subNum='';
+    if(fd){const sun=getWeekStart(fd);const sat=new Date(sun);sat.setDate(sun.getDate()+6);weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate()+'/'+sat.getFullYear();const wkk=sun.getTime();if(weekCounts[wkk]){const idx=weekCounts[wkk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}}
+    return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} · ${subNum} · ${r.submitted||''}</div>
+        </div>
+        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function dmTcRender(){
+  const el=document.getElementById('dm-tc-list');
+  if(!el) return;
+  const q=(document.getElementById('dm-tc-search')||{value:''}).value.toLowerCase();
+  const f=(document.getElementById('dm-tc-status')||{value:'all'}).value||'all';
+  const cyc=(document.getElementById('dm-tc-cycle')||{value:'all'}).value||'all';
+  const srt=(document.getElementById('dm-tc-sort')||{value:'newest'}).value||'newest';
+  populateTCCycles();
+  let items=[..._dmTcData];
+  if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return db-da;});
+  else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return da-db;});
+  else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(f!=='all') items=items.filter(r=>r.status===f);
+  if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});}
+  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
+  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)'};
+  const cycles2=getPayCycles();const cycleCounts={};
+  [..._dmTcData].forEach(row=>{const d=parseDate(row.date);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
+  el.innerHTML=items.map(r=>{
+    const d=parseDate(r.date);let cycleLabel='--';let subNum='';
+    if(d){cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}};});}
+    return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${r.submitted||r.date||''}</div>
+        </div>
+        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 
 function actMasterTab(pane){
   _dmCurrentPane=pane;
@@ -4105,247 +4217,94 @@ function populateTCCycles(){
   if(current&&current!=='all') sel.value=current;
 }
 
-function dmToRender(){
-  const el=document.getElementById('dm-to-list');
-  const q=(document.getElementById('dm-to-search').value||'').toLowerCase();
-  const f=(document.getElementById('dm-to-status')||{value:'all'}).value||'all';
-  const wk=(document.getElementById('dm-to-week')||{value:'all'}).value||'all';
-  populateTOWeeks();
-  const toSort=(document.getElementById('dm-to-sort')||{value:'newest'}).value||'newest';
-  let items=[..._dmToData];
-  if(toSort==='newest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return db-da;});
-  else if(toSort==='oldest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return da-db;});
-  else if(toSort==='name') items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  if(f!=='all') items=items.filter(r=>r.status===f);
-  if(wk!=='all'){
-    const sunTs=parseInt(wk);
-    const sun=new Date(sunTs); const sat=new Date(sunTs+6*86400000);
-    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
-  }
-  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
-  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)'};
-  // Compute submission # per week for each item
-  const weekCounts={};
-  [..._dmToData].forEach(row=>{
-    const fd=parseFirstDay(row); if(!fd) return;
-    const wk=getWeekStart(fd).getTime();
-    if(!weekCounts[wk]) weekCounts[wk]=[];
-    weekCounts[wk].push(row.rowId);
-  });
-  el.innerHTML=items.map(r=>{
-    const fd=parseFirstDay(r);
-    let weekLabel='—'; let subNum='';
-    if(fd){
-      const sun=getWeekStart(fd); const sat=new Date(sun); sat.setDate(sun.getDate()+6);
-      weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate();
-      const wk=sun.getTime();
-      if(weekCounts[wk]){const idx=weekCounts[wk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}
-    }
-    return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} <span style="color:rgba(255,255,255,.3)">·</span> ${subNum} <span style="color:rgba(255,255,255,.3)">·</span> ${r.submitted}</div>
-        </div>
-        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function dmTcRender(){
-  const el=document.getElementById('dm-tc-list');
-  const q=(document.getElementById('dm-tc-search').value||'').toLowerCase();
-  const f=(document.getElementById('dm-tc-status')||{value:'all'}).value||'all';
-  const cyc=(document.getElementById('dm-tc-cycle')||{value:'all'}).value||'all';
-  populateTCCycles();
-  const tcSort=(document.getElementById('dm-tc-sort')||{value:'newest'}).value||'newest';
-  let items=[..._dmTcData];
-  if(tcSort==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return db-da;});
-  else if(tcSort==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return da-db;});
-  else if(tcSort==='name') items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  if(f!=='all') items=items.filter(r=>r.status===f);
-  if(cyc!=='all'){
-    const cycles=getPayCycles(); const ci=parseInt(cyc);
-    if(cycles[ci]) items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});
-  }
-  if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
-  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
-  const sc2={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)'};
-  const sb2={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)'};
-  const sbd2={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)'};
-  // Compute submission # per pay cycle
-  const cycles=getPayCycles();
-  const cycleCounts={};
-  [..._dmTcData].forEach(row=>{
-    const d=parseDate(row.date); if(!d) return;
-    cycles.forEach((c,i)=>{
-      if(d>=c.start&&d<=c.end){
-        if(!cycleCounts[i]) cycleCounts[i]=[];
-        cycleCounts[i].push(row.rowId);
-      }
-    });
-  });
-  el.innerHTML=items.map(r=>{
-    const d=parseDate(r.date);
-    let cycleLabel='—'; let subNum='';
-    if(d){
-      cycles.forEach((c,i)=>{
-        if(d>=c.start&&d<=c.end){
-          cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);
-          if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}
-        }
-      });
-    }
-    return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} <span style="color:rgba(255,255,255,.3)">·</span> ${subNum} <span style="color:rgba(255,255,255,.3)">·</span> ${r.submitted||r.date}</div>
-        </div>
-        <div style="background:${sb2[r.status]||sb2.Sent};color:${sc2[r.status]||sc2.Sent};border:1px solid ${sbd2[r.status]||sbd2.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 function showDMTimeDetail(type,rowId){
-  const list=type==='to'?_dmToData:_dmTcData;
-  const r=list.find(x=>x.rowId===rowId);
-  if(!r) return;
-
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
-  const rows=type==='to'?[
-    ['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],
-    ['Reason',r.reason],['Duration',r.duration],['Submitted',r.submitted],
-    ...(r.edited?[['Edited',r.edited]]:[])
-  ]:[
-    ['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',r.date],
-    ['Reason',r.reason],['Shift',r.shiftStart+' – '+r.shiftEnd],
-    ['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' – '+r.breakEnd:'None'],
-    ['Submitted',r.submitted],
-    ...(r.edited?[['Edited',r.edited]]:[])
-  ];
-
-  const days=type==='to'?getDaysArray(r):[];
-  const isMultiDay=days.length>1;
+  const list=type==='to'?_dmToData:_dmTcData;const r=list.find(x=>x.rowId===rowId);if(!r)return;
+  const isDM=(_pendingUid==='ji2646dm');const isViewOnly=!isDM;
+  const days=type==='to'?getDaysArray(r):[];const isMultiDay=days.length>1;
   const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial');
-
-  // Build copy text
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
   let copyText='';
-  if(isDone&&type==='to'&&isMultiDay){
-    const res=buildPartialCopyText(r); copyText=res.txt;
-  } else if(isDone&&type==='to'){
-    const hoursLine=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
-    const firstName=r.name?r.name.split(' ')[0]:r.uid;
-    const actionLine=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
-    const monthStr=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();
-    const yearStr=(r.month||'').match(/\d{4}/)?.[0]||'2026';
-    const daysStr=(r.days||'').split(',').map(d=>monthStr+' '+d.trim()+', '+yearStr).join(', ');
-    copyText=firstName+',\n\nYour time off request for '+daysStr+' '+actionLine+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hoursLine+(r.note?'\nNote: '+r.note:'');
-  } else if(isDone&&type==='tc'){
-    const firstNameTC=r.name?r.name.split(' ')[0]:r.uid;
-    const actionTC=r.status==='Approved'?'has been approved':'has been denied';
-    copyText=firstNameTC+',\n\nYour time correction for '+r.date+' '+actionTC+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' – '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
+  if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){copyText=buildPartialCopyText(r).txt;}
+  else if(!isViewOnly&&isDone&&type==='to'){
+    const ms=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();const ys=(r.month||'').match(/\d{4}/)?.[0]||'2026';
+    const ds=(r.days||'').split(',').map(d=>ms+' '+d.trim()+', '+ys).join(', ');
+    const fn=r.name?r.name.split(' ')[0]:r.uid;
+    const hl=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
+    const al=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
+    copyText=fn+',\n\nYour time off request for '+ds+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hl+(r.note?'\nNote: '+r.note:'');
+  } else if(!isViewOnly&&isDone&&type==='tc'){
+    const fn=r.name?r.name.split(' ')[0]:r.uid;const al=r.status==='Approved'?'has been approved':'has been denied';
+    copyText=fn+',\n\nYour time correction for '+r.date+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' \u2013 '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
   }
-
-  const detailDiv=document.createElement('div');
-  detailDiv.id='dm-time-detail-overlay';
-  detailDiv.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
-  detailDiv.innerHTML=`
-    <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
-      <div onclick="document.getElementById('dm-time-detail-overlay').remove()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer">← Back</div>
-      <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">${type==='to'?'Time Off':'Time Correction'}</div>
-      <div></div>
-    </div>
-    <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
-      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:10px;color:var(--t3)">Status</div>
-          <div style="color:${sc[r.status]||'#aaa'};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">${r.status}</div>
-        </div>
-        ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">${l}</div><div style="font-size:12px;font-weight:700;color:var(--t1);text-align:right;max-width:60%">${v||'—'}</div></div>`).join('')}
-      </div>
-      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;padding:12px 14px">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px">Notes</div>
-        <textarea id="dm-note-field" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;resize:vertical;min-height:60px">${r.note||''}</textarea>
-        <button onclick="dmSaveNote('${type}','${rowId}')" style="margin-top:8px;width:100%;padding:9px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">💾 Save Note</button>
-      </div>
-      ${isDone&&copyText?`
-      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div>
-        </div>
-        <div style="padding:12px 14px">
-          <div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:'DM Sans'">${copyText.replace(/</g,'&lt;')}</div>
-          <button id="dm-copy-action" onclick="dmCopyText(this)" data-text=""
-            style="margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer">📋 Copy</button>
-        </div>
-      </div>`:''}
-      ${isMultiDay&&type==='to'?`
-      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px" id="dm-days-panel">
-        <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Day-by-Day</div>
-        </div>
-        ${days.map((day,i)=>{
-          const ds=buildDaysStatus(r);
-          const st=ds[day]||'Pending';
-          const ga=st==='Approved'?'background:rgba(0,169,79,.15);border-color:rgba(0,169,79,.4);color:var(--g)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
-          const gd=st==='Denied'?'background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:var(--err)':'background:var(--s3);border-color:var(--bd2);color:var(--t3)';
-          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd)" id="day-row-${i}">
-            <div style="font-size:12px;font-weight:700;color:var(--t1)">${day} <span id="day-st-${i}" style="font-size:10px;font-weight:400;color:${st==='Approved'?'var(--g)':st==='Denied'?'var(--err)':'var(--t3)'}">${st}</span></div>
-            <div style="display:flex;gap:6px">
-              <button onclick="setDayStatus('${rowId}','${day}','Approved',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${ga};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✓</button>
-              <button onclick="setDayStatus('${rowId}','${day}','Denied',${i})" style="padding:5px 12px;border-radius:6px;border:1px solid;${gd};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">✗</button>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-      <button onclick="savePartial('${type}','${rowId}',document.getElementById('dm-note-field').value)" style="width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px">Save Decision</button>`:`
-      <div id="partial-hours-${rowId}" style="display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <div>
-            <div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div>
-            <input type="time" id="partial-from-${rowId}" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div>
-            <input type="time" id="partial-until-${rowId}" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
-          </div>
-        </div>
-        <button onclick="
-          const f=document.getElementById('partial-from-${rowId}').value;
-          const u=document.getElementById('partial-until-${rowId}').value;
-          if(!f||!u){alert('Please enter both times.');return;}
-          const fmtH=t=>{const[h,m]=t.split(':');const hr=parseInt(h);return hr>12?hr-12:hr||12+':'+m+' '+(hr>=12?'PM':'AM');};
-          const hrs=fmtH(f)+' – '+fmtH(u);
-          const note=document.getElementById('dm-note-field').value;
-          dmTimeAction('${type}','${rowId}','Partial',note,'hours:'+hrs);
-        " style="margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">Confirm Partial</button>
-      </div>
-      ${type==='to'?`
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
-        <button onclick="document.getElementById('partial-hours-${rowId}').style.display=document.getElementById('partial-hours-${rowId}').style.display==='none'?'block':'none'" style="padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Partial</button>
-        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
-      </div>`:`
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button onclick="dmTimeAction('${type}','${rowId}','Denied',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Deny</button>
-        <button onclick="dmTimeAction('${type}','${rowId}','Approved',document.getElementById('dm-note-field').value,'')" style="padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Approve</button>
-      </div>`}
-      `}
-    </div>`;
-  document.body.appendChild(detailDiv);
-  // Safely set copy text via data attribute after DOM insertion
-  const copyBtn=document.getElementById('dm-copy-action');
-  if(copyBtn&&copyText) copyBtn.setAttribute('data-text',copyText);
+  const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',r.edited]]:[])]:
+    [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',r.date],['Reason',r.reason],['Shift',r.shiftStart+' \u2013 '+r.shiftEnd],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' \u2013 '+r.breakEnd:'None'],['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])];
+  const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
+  const hdr=document.createElement('div');hdr.style.cssText='background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10';
+  const bb=document.createElement('div');bb.style.cssText='font-size:11px;font-weight:700;color:var(--t3);cursor:pointer';bb.textContent='\u2190 Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
+  const tl=document.createElement('div');tl.style.cssText='font-family:Bebas Neue;font-size:20px;letter-spacing:3px';tl.textContent=type==='to'?'Time Off':'Time Correction';
+  hdr.appendChild(bb);hdr.appendChild(tl);hdr.appendChild(document.createElement('div'));ov.appendChild(hdr);
+  const body=document.createElement('div');body.style.cssText='max-width:500px;margin:0 auto;padding:16px 14px 80px';
+  const ic=document.createElement('div');ic.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';
+  ic.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;color:var(--t3)">Status</div><div style="color:'+(sc[r.status]||'#aaa')+';font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">'+(r.status||'\u2014')+'</div></div>'+rows.map(([l,v,c])=>'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">'+l+'</div><div style="font-size:12px;font-weight:700;color:'+(c||'var(--t1)')+';text-align:right;max-width:60%">'+(v||'\u2014')+'</div></div>').join('');
+  body.appendChild(ic);
+  const nc=document.createElement('div');nc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px';
+  const nl=document.createElement('div');nl.style.cssText='font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px';nl.textContent='Notes';nc.appendChild(nl);
+  if(isViewOnly){const nt=document.createElement('div');nt.style.cssText='font-size:12px;color:var(--t2);min-height:36px;line-height:1.5';nt.textContent=r.note||'\u2014';nc.appendChild(nt);}
+  else{const ta=document.createElement('textarea');ta.id='dm-note-field';ta.style.cssText='width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none;resize:vertical;min-height:60px;box-sizing:border-box';ta.value=r.note||'';
+    const sb=document.createElement('button');sb.style.cssText='margin-top:8px;width:100%;padding:9px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer';sb.textContent='\ud83d\udcbe Save Note';sb.onclick=(()=>{const _t=type,_r=rowId;return function(){dmSaveNote(_t,_r);};})();nc.appendChild(ta);nc.appendChild(sb);}
+  body.appendChild(nc);
+  if(!isViewOnly&&isDone&&copyText){
+    const cc=document.createElement('div');cc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';
+    cc.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div></div><div style="padding:12px 14px"><div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:DM Sans" id="dm-copy-text"></div></div>';
+    cc.querySelector('#dm-copy-text').textContent=copyText;
+    const cpBtn=document.createElement('button');cpBtn.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer';cpBtn.textContent='\ud83d\udccb Copy';
+    cpBtn.onclick=(()=>{const _ct=copyText,_b=cpBtn;return function(){navigator.clipboard.writeText(_ct).then(()=>{_b.textContent='\u2713 Copied';_b.style.color='var(--g)';}).catch(()=>{const ta=document.createElement('textarea');ta.value=_ct;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);_b.textContent='\u2713 Copied';});};})();
+    cc.querySelector('div:last-child').appendChild(cpBtn);body.appendChild(cc);
+  }
+  if(!isViewOnly){
+    if(isMultiDay&&type==='to'){
+      const dc=document.createElement('div');dc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';dc.id='dm-days-panel';
+      dc.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Day-by-Day</div></div>';
+      const ds=buildDaysStatus(r);
+      days.forEach((day,i)=>{
+        const st=ds[day]||'Pending';const sc2=st==='Approved'?'var(--g)':st==='Denied'?'var(--err)':'var(--t3)';
+        const ga='background:'+(st==='Approved'?'rgba(0,169,79,.15)':'var(--s3)')+';border-color:'+(st==='Approved'?'rgba(0,169,79,.4)':'var(--bd2)')+';color:'+(st==='Approved'?'var(--g)':'var(--t3)');
+        const gd='background:'+(st==='Denied'?'rgba(239,68,68,.15)':'var(--s3)')+';border-color:'+(st==='Denied'?'rgba(239,68,68,.4)':'var(--bd2)')+';color:'+(st==='Denied'?'var(--err)':'var(--t3)');
+        const dr=document.createElement('div');dr.id='day-row-'+i;dr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd)';
+        const dl=document.createElement('div');dl.style.cssText='font-size:12px;font-weight:700;color:var(--t1)';dl.textContent=day+' ';
+        const dsp=document.createElement('span');dsp.id='day-st-'+i;dsp.style.cssText='font-size:10px;font-weight:400;color:'+sc2;dsp.textContent=st;dl.appendChild(dsp);
+        const bw=document.createElement('div');bw.style.cssText='display:flex;gap:6px';
+        const ab=document.createElement('button');ab.style.cssText='padding:5px 12px;border-radius:6px;border:1px solid;'+ga+';font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer';ab.textContent='\u2713';ab.onclick=(()=>{const _d=day,_i=i,_r=rowId;return function(){setDayStatus(_r,_d,'Approved',_i);};})();
+        const db=document.createElement('button');db.style.cssText='padding:5px 12px;border-radius:6px;border:1px solid;'+gd+';font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer';db.textContent='\u2717';db.onclick=(()=>{const _d=day,_i=i,_r=rowId;return function(){setDayStatus(_r,_d,'Denied',_i);};})();
+        bw.appendChild(ab);bw.appendChild(db);dr.appendChild(dl);dr.appendChild(bw);dc.appendChild(dr);
+      });
+      body.appendChild(dc);
+      const sdb=document.createElement('button');sdb.style.cssText='width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px';sdb.textContent='Save Decision';sdb.onclick=(()=>{const _t=type,_r=rowId;return function(){savePartial(_t,_r,document.getElementById('dm-note-field').value);};})();body.appendChild(sdb);
+    } else if(type==='to'){
+      const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
+      phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
+      const cpb=document.createElement('button');cpb.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer';cpb.textContent='Confirm Partial';
+      cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){alert('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
+      phd.appendChild(cpb);body.appendChild(phd);
+      const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px';
+      const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
+      const pb=document.createElement('button');pb.style.cssText='padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';pb.textContent='Partial';pb.onclick=(()=>{const _r=rowId;return function(){const ph=document.getElementById('partial-hours-'+_r);if(ph)ph.style.display=ph.style.display==='none'?'block':'none';};})();
+      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      bg.appendChild(db);bg.appendChild(pb);bg.appendChild(ab);body.appendChild(bg);
+    } else {
+      const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px';
+      const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
+      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      bg.appendChild(db);bg.appendChild(ab);body.appendChild(bg);
+    }
+  }
+  if(isViewOnly&&r.uid&&r.uid.toLowerCase()===_pendingUid.toLowerCase()){
+    const ce=r.status==='Sent'||r.status==='Pending';let lk=false;
+    if(type==='to'){const fd=parseFirstDay(r);if(fd){const s=getWeekStart(fd);const l=new Date(s);l.setDate(s.getDate()-7);lk=new Date()>=l;}}
+    if(ce&&!lk){const del=document.createElement('button');del.style.cssText='margin-top:8px;width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer';del.textContent='Delete Request';del.onclick=(()=>{const _r=rowId,_t=type;return function(){if(!confirm('Delete this request? It will be marked as Denied.'))return;sendLog({type:'req_delete',rowId:_r,uid:_pendingUid});const list=_t==='to'?_dmToData:_dmTcData;const rec=list.find(x=>x.rowId===_r);if(rec){rec.status='Denied';rec.note='Employee deleted request';}const det=document.getElementById('dm-time-detail-overlay');if(det)det.remove();if(_t==='to')dmToRender();else dmTcRender();};})();body.appendChild(del);}
+    else if(lk&&ce){const lm=document.createElement('div');lm.style.cssText='margin-top:8px;text-align:center;font-size:10px;color:var(--warn);font-family:DM Sans';lm.textContent='\ud83d\udd12 Locked \u2014 within 7 days of week start';body.appendChild(lm);}
+  }
+  ov.appendChild(body);document.body.appendChild(ov);
 }
 
 function dmSaveNote(type, rowId){
@@ -4419,6 +4378,20 @@ function dmTimeAction(type,rowId,status,note,daysStatus){
   if(type==='to') dmToRender(); else dmTcRender();
 }
 
+
+function dmAdvRow(r,type){
+  if(type!=='to') return [];
+  const fd=parseFirstDay(r);
+  if(!fd) return [['Submitted',r.submitted||'']];
+  const sun=getWeekStart(fd);
+  const sub=r.submitted?new Date(r.submitted):null;
+  if(!sub) return [['Submitted',r.submitted||'']];
+  const subLocal=new Date(sub.getFullYear(),sub.getMonth(),sub.getDate());
+  const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
+  const isLate=diff<0;
+  const label=isLate?(Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):(diff+' day'+(diff===1?'':'s')+' in advance');
+  return [['Submitted',r.submitted||''],['Advance',label,isLate?'#ef4444':null]];
+}
 function getDaysArray(r){
   // Parse days from e.g. "04, 05, 06" or "May 4, 5" with month context
   if(!r.days) return [];
