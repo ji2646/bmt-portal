@@ -3570,8 +3570,8 @@ function closeActivity(){
           </select>
         </div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Day(s) Requested <span style="font-weight:400;text-transform:none;letter-spacing:0">— same week Sun–Sat</span></div>
-          <input type="text" id="to-days" placeholder="e.g. May 4, 5" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Day(s) Requested <span style="font-weight:400;text-transform:none;letter-spacing:0">— enter day numbers, comma-separated</span></div>
+          <input type="text" id="to-days" placeholder="e.g. 14 or 14, 15, 16" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
           <div id="to-deadline-msg" style="font-size:9px;color:var(--warn);margin-top:4px;font-family:'DM Sans'">Must submit 2 weeks before the week's Sunday</div>
         </div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
@@ -3717,13 +3717,17 @@ function submitTC(){
 
 function submitTO(){
   const month=document.getElementById('to-month').value;
-  const days=document.getElementById('to-days').value.trim();
+  let days=document.getElementById('to-days').value.trim();
+  // Normalize days: strip month names if accidentally included, extract numbers only
+  const _mo=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  _mo.forEach(m=>{days=days.replace(new RegExp(m+'\\s*','gi'),'');});
+  days=days.replace(/\s+/g,' ').trim().replace(/^,|,$/g,'').trim();
   const reason=document.getElementById('to-reason').value.trim();
   if(!days||!reason){alert('Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
   if(!_toDurFull){
     const tf=document.getElementById('to-from').value;
     const tu=document.getElementById('to-until').value;
-    if(!tf||!tu){alert('Please enter your requested hours (From and Until).');return;}
+    if(!tf||!tu){tmError('Missing Hours','Please enter your requested hours (From and Until).');return;}
   }
   const dur=_toDurFull?'Full Day':`${fmtT(document.getElementById('to-from').value)}–${fmtT(document.getElementById('to-until').value)}`;
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
@@ -3733,14 +3737,26 @@ function submitTO(){
   const _toFirstDay=parseFirstDay({days,month});
   let toStatus='Sent', toNote='', toShowNotify=false;
   if(!_toFirstDay){
-    alert('Could not parse the requested date. Please check the day(s) field.');return;
+    tmError('Invalid Date','Could not read the date. Use numbers only — e.g. 14, 15');return;
   }
   const _toWeekSun=getWeekStart(_toFirstDay);
   const _toToday=new Date(); _toToday.setHours(0,0,0,0);
   const daysToWeek=Math.floor((_toWeekSun-_toToday)/(1000*60*60*24));
+  // Validate all days fall in the same Sun-Sat week
+  const _allDaysList=days.split(',').map(d=>d.trim()).filter(Boolean);
+  for(const _d of _allDaysList){
+    const _parsed=parseFirstDay({days:_d,month});
+    if(_parsed){
+      const _dSun=getWeekStart(_parsed);
+      if(_dSun.getTime()!==_toWeekSun.getTime()){
+        tmError('Days Span Multiple Weeks','All requested days must fall within the same Sunday–Saturday week. Please split your request into separate submissions.');
+        return;
+      }
+    }
+  }
   if(daysToWeek<=0){
     // Week already started — block entirely, no submission, no notify DM
-    alert('This week has already started. You cannot submit a time off request for a week that has already begun.');
+    tmError('This week has already started.', 'You cannot request time off for a week that has already begun.');
     return;
   } else if(daysToWeek<14){
     // 1–13 days — auto-deny, Notify DM available
@@ -3754,6 +3770,19 @@ function submitTO(){
     ?'Your request was automatically denied. Time off must be submitted at least 14 days before the week starts. You may notify your DM for review.'
     :'Time off request submitted successfully.';
   tmConfirm(_toMsg,toStatus,toShowNotify,rowId);
+}
+
+function tmError(title,msg){
+  const div=document.createElement('div');
+  div.id='tm-error-overlay';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999998;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
+  div.innerHTML=`<div style="background:var(--s1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
+    <div style="font-size:28px;margin-bottom:12px">⚠️</div>
+    <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">${title}</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">${msg}</div>
+    <button onclick="document.getElementById('tm-error-overlay').remove()" style="width:100%;padding:10px;background:var(--err);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">OK</button>
+  </div>`;
+  document.body.appendChild(div);
 }
 
 function tmConfirm(msg,status,showNotify=false,rowId=''){
@@ -4158,7 +4187,11 @@ function getWeekLabel(sun){
   return fmt(sun)+' – '+fmt(sat);
 }
 function parseFirstDay(r){
-  const firstDay=(r.days||'').split(',')[0].trim();
+  // Strip month name from days if accidentally included (e.g. "April 15" -> "15")
+  let rawDay=(r.days||'').split(',')[0].trim();
+  const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
+  const firstDay=rawDay.replace(/^0/,'');
   if(!firstDay) return null;
   const monthStr=(r.month||'').trim();
   try{
@@ -4166,7 +4199,7 @@ function parseFirstDay(r){
     const mon=parts[0]||'';
     const yr=parseInt(parts[1])||2026;
     // Build date string and parse as local
-    const ds=mon+' '+firstDay.replace(/^0/,'')+', '+yr;
+    const ds=mon+' '+firstDay+', '+yr;
     const d=new Date(ds);
     if(!isNaN(d)){
       // Return as local date to avoid UTC shift
