@@ -318,6 +318,7 @@ select option,select optgroup{background:#1a1a1a}
 
     </div>
   </div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-06APR2026-0345PM</div>
 </div>
 
 <script>
@@ -659,7 +660,6 @@ document.body.style.overflow='hidden';
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/3/2026</div></div>
   </div>
-  <div class="hbadge" style="background:var(--s3);color:var(--t2);border:1px solid var(--bd)">Tool Updated 4/3/2026 8:39 AM</div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -3738,26 +3738,21 @@ function submitTO(){
   const _toWeekSun=getWeekStart(_toFirstDay);
   const _toToday=new Date(); _toToday.setHours(0,0,0,0);
   const daysToWeek=Math.floor((_toWeekSun-_toToday)/(1000*60*60*24));
-  if(daysToWeek<0){
-    // Week already started — block entirely
-    alert('This week has already started. Time off requests are not allowed for past or current weeks.');
+  if(daysToWeek<=0){
+    // Week already started — block entirely, no submission, no notify DM
+    alert('This week has already started. You cannot submit a time off request for a week that has already begun.');
     return;
-  } else if(daysToWeek<7){
-    // 0–6 days — auto deny, no notify DM
-    toStatus='Denied';
-    toNote='Automatically denied — request submitted less than 7 days before week start.';
-    toShowNotify=false;
   } else if(daysToWeek<14){
-    // 7–13 days — auto deny, notify DM available
+    // 1–13 days — auto-deny, Notify DM available
     toStatus='Denied';
-    toNote='Automatically denied — submitted within 2-week window. DM review available.';
+    toNote='Automatically denied — requests must be submitted at least 14 days before the week starts. DM review available.';
     toShowNotify=true;
   }
   // 14+ days = normal (Sent)
   sendLog({type:'to_submit',rowId,uid,name,submitted,month,days,reason,duration:dur,status:toStatus,note:toNote,edited:''});
   const _toMsg=toStatus==='Denied'
-    ?(daysToWeek<7?'Request denied — must submit at least 7 days in advance.':'Request submitted but automatically denied — missed the 2-week deadline.')
-    :'Time off request submitted.';
+    ?'Your request was automatically denied. Time off must be submitted at least 14 days before the week starts. You may notify your DM for review.'
+    :'Time off request submitted successfully.';
   tmConfirm(_toMsg,toStatus,toShowNotify,rowId);
 }
 
@@ -3913,9 +3908,9 @@ function showRADetail(rowId){
       const sub=r.submitted?new Date(r.submitted):new Date();
       const subLocal=new Date(sub.getFullYear(),sub.getMonth(),sub.getDate());
       const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
-      const isLate2=diff<0;
-      const label=isLate2?('Requested '+Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):('Requested '+diff+' day'+(diff===1?'':'s')+' in advance');
-      daysAdvanceRow=[['Submitted',r.submitted],['Advance',label,isLate2?'#ef4444':null]];
+      const isRed2=diff<14;
+      const label=diff<0?('Requested '+Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):('Requested '+diff+' day'+(diff===1?'':'s')+' in advance');
+      daysAdvanceRow=[['Submitted',r.submitted],['Advance',label,isRed2?'#ef4444':null]];
     }
   }
   const rows=isTO?[
@@ -4388,9 +4383,9 @@ function dmAdvRow(r,type){
   if(!sub) return [['Submitted',r.submitted||'']];
   const subLocal=new Date(sub.getFullYear(),sub.getMonth(),sub.getDate());
   const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
-  const isLate=diff<0;
-  const label=isLate?(Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):(diff+' day'+(diff===1?'':'s')+' in advance');
-  return [['Submitted',r.submitted||''],['Advance',label,isLate?'#ef4444':null]];
+  const isRed=diff<14;
+  const label=diff<0?(Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):(diff+' day'+(diff===1?'':'s')+' in advance');
+  return [['Submitted',r.submitted||''],['Advance',label,isRed?'#ef4444':null]];
 }
 function getDaysArray(r){
   // Parse days from e.g. "04, 05, 06" or "May 4, 5" with month context
