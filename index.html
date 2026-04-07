@@ -295,6 +295,7 @@ select option,select optgroup{background:#1a1a1a}
         <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
         <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">🕐 Time Management</button>
         <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📋 Activity</button>
+        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#555;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -318,25 +319,7 @@ select option,select optgroup{background:#1a1a1a}
 
     </div>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px" id="version-label">V-06APR2026</div>
-  <script>
-    (function(){
-      const now=new Date();
-      const cst=now.toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
-      // Format as V-DDMMMYYYY-HHMM
-      const d=new Date(now.toLocaleString('en-US',{timeZone:'America/Chicago'}));
-      const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-      const dd=String(d.getDate()).padStart(2,'0');
-      const mon=months[d.getMonth()];
-      const yr=d.getFullYear();
-      const hh=String(d.getHours()).padStart(2,'0');
-      const mm=String(d.getMinutes()).padStart(2,'0');
-      const ampm=d.getHours()>=12?'PM':'AM';
-      const h12=d.getHours()%12||12;
-      const el=document.getElementById('version-label');
-      if(el) el.textContent='V-'+dd+mon+yr+'-'+String(h12).padStart(2,'0')+mm+ampm+' CST';
-    })();
-  </script>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px" id="version-label">V-06APR2026-0831PM</div>
 </div>
 
 <script>
@@ -381,6 +364,18 @@ function startSessionTracking(){
     document.addEventListener(e, resetSessionTimer, {passive:true})
   );
   resetSessionTimer();
+}
+
+function doLogout(){
+  clearTimeout(_sessionTimer);
+  document.body.insertAdjacentHTML('beforeend',`
+    <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
+      <div style="font-size:28px;margin-bottom:12px">👋</div>
+      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Signed Out</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:24px">You've been signed out successfully.</div>
+      <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
+    </div>`);
+  setTimeout(()=>location.reload(), 8000);
 }
 
 let _sessionId=null;
@@ -4254,8 +4249,8 @@ function actMasterTab(pane){
     tab.style.borderBottomColor=isOn?'var(--g)':'transparent';
     el.style.display=isOn?'block':'none';
   });
-  if(pane==='to'){if(!_dmToData.length) dmLoadTO(); else {populateTOWeeks();dmToRender();}}
-  if(pane==='tc'){if(!_dmTcData.length) dmLoadTC(); else {populateTCCycles();dmTcRender();}}
+  if(pane==='to'){dmLoadTO();}
+  if(pane==='tc'){dmLoadTC();}
 }
 
 function dmLoadTO(){
