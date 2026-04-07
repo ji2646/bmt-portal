@@ -295,7 +295,6 @@ select option,select optgroup{background:#1a1a1a}
         <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
         <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">🕐 Time Management</button>
         <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📋 Activity</button>
-        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#555;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -319,7 +318,7 @@ select option,select optgroup{background:#1a1a1a}
 
     </div>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px" id="version-label">V-06APR2026-0831PM</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-06APR2026-0510PM</div>
 </div>
 
 <script>
@@ -366,18 +365,6 @@ function startSessionTracking(){
   resetSessionTimer();
 }
 
-function doLogout(){
-  clearTimeout(_sessionTimer);
-  document.body.insertAdjacentHTML('beforeend',`
-    <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
-      <div style="font-size:28px;margin-bottom:12px">👋</div>
-      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Signed Out</div>
-      <div style="font-size:12px;color:#aaa;margin-bottom:24px">You've been signed out successfully.</div>
-      <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
-    </div>`);
-  setTimeout(()=>location.reload(), 8000);
-}
-
 let _sessionId=null;
 let _sessionQuote='';
 let _lastQuoteStr='';
@@ -398,7 +385,7 @@ function getDevice(){
 }
 
 function getDatetime(){
-  return new Date().toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+  return new Date().toLocaleString('en-US',{month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
 }
 
 function sendLog(params){
@@ -981,15 +968,6 @@ const $=id=>document.getElementById(id);
 const fmt=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const fmtMo=n=>fmt(n)+'/mo';
 
-// Non-blocking toast for brief UI feedback (quote tool only)
-function showToast(msg){
-  const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--bd2);border-radius:8px;color:var(--t2);font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;padding:10px 20px;z-index:9999999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.5)';
-  t.textContent=msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2500);
-}
-
 function devById(id,cat){
   if(cat==='v')return PHONES.find(p=>p.id===id);
   if(cat==='w')return WATCHES.find(w=>w.id===id);
@@ -1117,9 +1095,9 @@ function setPlan(id){
 // LINES
 // ============================================================
 function addLine(cat, clone=null){
-  if(cat==='v'&&vc()>=5){showToast('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){showToast('Max 5 watch lines.');return;}
-  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){showToast('Max 1 tablet per voice line on new accounts.');return;}
+  if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
+  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,upgplus:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true,skeiwatch:null,skeiwatchFin:true};
   S.lines.push({...base,id:S.nid++,cat});
   renderLines();renderPlanGrid();update();
@@ -1128,9 +1106,9 @@ function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
   if(!src) return;
   const cat=src.cat;
-  if(cat==='v'&&vc()>=5){showToast('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){showToast('Max 5 watch lines.');return;}
-  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){showToast('Max 1 tablet per voice line.');return;}
+  if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
+  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
+  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line.');return;}
   // Clone and insert right after source line
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
@@ -3126,10 +3104,7 @@ try {
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
-              <button onclick="dmLoadTO()" style="padding:6px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">↺ Refresh</button>
-            </div>
+            <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-to-status" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
@@ -3148,10 +3123,7 @@ try {
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
-              <button onclick="dmLoadTC()" style="padding:6px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">↺ Refresh</button>
-            </div>
+            <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-tc-status" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Corrected</option>
@@ -3188,7 +3160,7 @@ try {
 <script>
 function actLoadData(){
   document.getElementById('act-session-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading sessions...</div>';
-  fetch(LOG_URL+'?type=fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+  fetch(LOG_URL+'?type=fetch',{method:'GET',mode:'cors'})
     .then(r=>r.json())
     .then(data=>actProcessData(data))
     .catch(()=>actUseDemoData());
@@ -3643,10 +3615,7 @@ function closeActivity(){
   <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
     <div onclick="closeRepActivity()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="repActLoadData()" style="padding:4px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:20px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;letter-spacing:.3px">↺ Refresh</button>
-      <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
-    </div>
+    <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
@@ -3737,9 +3706,9 @@ function submitTC(){
   const reason=document.getElementById('tc-reason').value.trim();
   const start=document.getElementById('tc-start').value;
   const end=document.getElementById('tc-end').value;
-  if(!loc||!date||!reason||!start||!end){tmError('Missing Fields','Please fill in all required fields: Location, Date, Reason, Shift Start, and Shift End.');return;}
+  if(!loc||!date||!reason||!start||!end){alert('Please fill in all required fields.');return;}
   const today=new Date();today.setHours(23,59,59,999);
-  if(new Date(date+'T12:00:00')>today){tmError('Invalid Date','Date must be today or in the past.');return;}
+  if(new Date(date+'T12:00:00')>today){alert('Date must be today or in the past.');return;}
   const brkS=_tcBreak?fmtT(document.getElementById('tc-brk-start').value):'';
   const brkE=_tcBreak?fmtT(document.getElementById('tc-brk-end').value):'';
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
@@ -3802,16 +3771,9 @@ function toggleTODay(day){
         const exDate=new Date(mon+' '+existing+', '+yr);
         const exSun=getWeekStart(new Date(exDate.getFullYear(),exDate.getMonth(),exDate.getDate()));
         if(newSun.getTime()!==exSun.getTime()){
-          // Show dismissible custom modal instead of auto-disappearing text
-          const _warnDiv=document.createElement('div');
-          _warnDiv.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
-          _warnDiv.innerHTML=`<div style="background:var(--s1);border:1px solid rgba(245,158,11,.3);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
-            <div style="font-size:28px;margin-bottom:12px">📅</div>
-            <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">Different Week</div>
-            <div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">Day <strong>${day}</strong> falls in a different week. Submit a separate request for that week.</div>
-            <button onclick="this.closest('[style]').remove()" style="width:100%;padding:10px;background:var(--warn);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">OK</button>
-          </div>`;
-          document.body.appendChild(_warnDiv);
+          errEl.style.display='block';
+          errEl.textContent='Day '+day+' is in a different week. Submit a separate request for that week.';
+          setTimeout(()=>{errEl.style.display='none';},3000);
           return;
         }
       }
@@ -3838,7 +3800,7 @@ function submitTO(){
   const month=document.getElementById('to-month').value;
   const days=document.getElementById('to-days').value.trim();
   const reason=document.getElementById('to-reason').value.trim();
-  if(!days||!reason){tmError('Missing Fields','Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
+  if(!days||!reason){alert('Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
   if(!_toDurFull){
     const tf=document.getElementById('to-from').value;
     const tu=document.getElementById('to-until').value;
@@ -3956,27 +3918,21 @@ function raFilter(f,btn){
 }
 
 function repActLoadData(){
-  const el=document.getElementById('ra-list');
-  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  const bust='&_='+Date.now();
-  fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid)+bust,{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+  document.getElementById('ra-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
+    .then(r=>r.json())
     .then(d=>{
-      if(d&&(d.to!==undefined||d.tc!==undefined)){
-        _raData={to:(d.to||[]),tc:(d.tc||[])};
+      if(d&&(d.to||d.tc)){
+        // Filter to only this rep's own data
+        _raData={
+          to:(d.to||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase()),
+          tc:(d.tc||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase())
+        };
         renderRA();
-      } else {
-        throw new Error('Bad response');
       }
+      else{setRADemo();} // response wasn't proper data
     })
-    .catch(()=>{
-      el.innerHTML=`<div style="text-align:center;padding:30px">
-        <div style="font-size:22px;margin-bottom:8px">⚠️</div>
-        <div style="font-size:12px;font-weight:800;color:var(--warn);margin-bottom:6px">Could not reach sheet</div>
-        <div style="font-size:10px;color:var(--t3);margin-bottom:14px">Check your connection and try again.</div>
-        <button onclick="repActLoadData()" style="padding:8px 20px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer">↺ Try Again</button>
-      </div>`;
-    });
+    .catch(()=>{setRADemo();});
 }
 function setRADemo(){
       // Fallback demo data keyed to current user
@@ -4008,15 +3964,15 @@ function renderRA(){
     const c=statusColors[r.status]||'#aaa';
     const bg=statusBg[r.status]||'rgba(255,255,255,.06)';
     const bd=statusBd[r.status]||'#333';
-    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${fmtSubmitted(r.date)} — ${r.location}`;
+    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${r.date} — ${r.location}`;
     const sub=_raTab==='to'?`${r.reason} · ${r.duration}`:`${r.reason}`;
-    const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${fmtSubmitted(r.edited)}</div>`:'';
+    const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${r.edited}</div>`:'';
     return`<div onclick="showRADetail('${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">
         <div>
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${title}</div>
           <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${sub}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${fmtSubmitted(r.submitted)}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${r.submitted}</div>
           ${edited}
         </div>
         <div style="background:${bg};color:${c};border:1px solid ${bd};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
@@ -4065,11 +4021,11 @@ function showRADetail(rowId){
   }
   const rows=isTO?[
     ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
-    ...daysAdvanceRow,...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])
+    ...daysAdvanceRow,...(r.edited?[['Edited',r.edited]]:[])
   ]:[
-    ['Location',r.location],['Date',fmtSubmitted(r.date)],['Reason',r.reason],
+    ['Location',r.location],['Date',r.date],['Reason',r.reason],
     ['Shift Start',r.shiftStart],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' – '+r.breakEnd:'None'],
-    ['Shift End',r.shiftEnd],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])
+    ['Shift End',r.shiftEnd],['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
   ];
   document.getElementById('ra-detail-content').innerHTML=`
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
@@ -4091,70 +4047,22 @@ function showRADetail(rowId){
 }
 
 function deleteRequest(rowId){
-  const div=document.createElement('div');
-  div.id='delete-confirm-overlay';
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
-  div.innerHTML=`<div style="background:var(--s1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
-    <div style="font-size:28px;margin-bottom:12px">⚠️</div>
-    <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">Delete Request?</div>
-    <div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">This request will be marked as <span style="color:var(--err);font-weight:800">Denied</span>. This cannot be undone.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button onclick="document.getElementById('delete-confirm-overlay').remove()" style="padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer">Cancel</button>
-      <button id="delete-confirm-btn" style="padding:10px;background:var(--err);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Delete</button>
-    </div>
-  </div>`;
-  document.body.appendChild(div);
-  document.getElementById('delete-confirm-btn').onclick=()=>{
-    document.getElementById('delete-confirm-overlay').remove();
-    sendLog({type:'req_delete',rowId,uid:_pendingUid});
-    closeRADetail();
-    repActLoadData();
-  };
+  if(!confirm('Delete this request? It will be marked as Denied.')) return;
+  sendLog({type:'req_delete',rowId,uid:_pendingUid});
+  closeRADetail();
+  repActLoadData();
 }
 
 function notifyDMFromDetail(rowId){
   sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
-  const div=document.createElement('div');
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
-  div.innerHTML=`<div style="background:var(--s1);border:1px solid rgba(59,130,246,.3);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
-    <div style="font-size:28px;margin-bottom:12px">📣</div>
-    <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">DM Notified</div>
-    <div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">Your DM has been notified and will review your request.</div>
-    <button onclick="this.closest('[style]').remove()" style="width:100%;padding:10px;background:var(--bread);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
-  </div>`;
-  document.body.appendChild(div);
+  alert('DM has been notified.');
   closeRADetail();
   repActLoadData();
 }
 
 function editRequest(rowId){
-  const all=[...(_raData.to||[]),...(_raData.tc||[])];
-  const r=all.find(x=>x.rowId===rowId);
-  if(!r) return;
-  const isTO=rowId.includes('-TO-');
-  // Show custom modal with pre-filled info instead of alert
-  const div=document.createElement('div');
-  div.id='edit-info-overlay';
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
-  div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
-    <div style="font-size:28px;margin-bottom:12px">✏️</div>
-    <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">Edit Request</div>
-    <div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.6;text-align:left;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:12px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Current Request</div>
-      ${isTO
-        ? `<div style="margin-bottom:4px"><span style="color:var(--t3)">Month:</span> ${r.month}</div>
-           <div style="margin-bottom:4px"><span style="color:var(--t3)">Days:</span> ${r.days}</div>
-           <div style="margin-bottom:4px"><span style="color:var(--t3)">Reason:</span> ${r.reason}</div>
-           <div><span style="color:var(--t3)">Duration:</span> ${r.duration}</div>`
-        : `<div style="margin-bottom:4px"><span style="color:var(--t3)">Date:</span> ${r.date}</div>
-           <div style="margin-bottom:4px"><span style="color:var(--t3)">Location:</span> ${r.location}</div>
-           <div><span style="color:var(--t3)">Reason:</span> ${r.reason}</div>`
-      }
-    </div>
-    <div style="font-size:11px;color:var(--warn);margin-bottom:20px">To edit, delete this request and submit a new one with the correct info.</div>
-    <button onclick="document.getElementById('edit-info-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Got It</button>
-  </div>`;
-  document.body.appendChild(div);
+  // In full build — opens pre-filled form. For now placeholder.
+  alert('Edit functionality — opens pre-filled form in full build.');
 }
 </script>
 
@@ -4199,9 +4107,7 @@ function dmToRender(){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:11px;font-weight:600;color:var(--t2);margin-top:2px;font-family:'DM Sans'">${r.days} — ${r.month}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${r.reason||''} · ${r.duration||''}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${weekLabel} · ${fmtSubmitted(r.submitted)}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} · ${subNum} · ${r.submitted||''}</div>
         </div>
         <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
@@ -4237,7 +4143,7 @@ function dmTcRender(){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${fmtSubmitted(r.submitted||r.date)}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${r.submitted||r.date||''}</div>
         </div>
         <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
@@ -4256,38 +4162,23 @@ function actMasterTab(pane){
     tab.style.borderBottomColor=isOn?'var(--g)':'transparent';
     el.style.display=isOn?'block':'none';
   });
-  if(pane==='to'){dmLoadTO();}
-  if(pane==='tc'){dmLoadTC();}
+  if(pane==='to'){if(!_dmToData.length) dmLoadTO(); else {populateTOWeeks();dmToRender();}}
+  if(pane==='tc'){if(!_dmTcData.length) dmLoadTC(); else {populateTCCycles();dmTcRender();}}
 }
 
 function dmLoadTO(){
-  const el=document.getElementById('dm-to-list');
-  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+  document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
+    .then(r=>r.json())
     .then(d=>{
-      console.log('[dmLoadTO] raw response rows:',d&&d.length,d);
-      if(Array.isArray(d)&&d.length>=0){
+      if(Array.isArray(d)){
         const _toFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
-        console.log('[dmLoadTO] repFilter:',_toFilter);
-        // Filter out corrupt rows with no rowId or uid
-        const clean=d.filter(r=>r.rowId&&r.uid);
-        _dmToData=_toFilter?clean.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):clean;
-        console.log('[dmLoadTO] after filter:',_dmToData.length,_dmToData.map(r=>({rowId:r.rowId,uid:r.uid,status:r.status,month:r.month})));
+        _dmToData=_toFilter?d.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):d;
         dmToRender();
-      } else {
-        throw new Error('Bad response');
       }
+      else{setDMToDemo();}
     })
-    .catch(err=>{
-      console.error('[dmLoadTO] fetch error:',err);
-      el.innerHTML=`<div style="text-align:center;padding:30px">
-        <div style="font-size:22px;margin-bottom:8px">⚠️</div>
-        <div style="font-size:12px;font-weight:800;color:var(--warn);margin-bottom:6px">Could not reach sheet</div>
-        <div style="font-size:10px;color:var(--t3);margin-bottom:14px">Check that the Google Apps Script is deployed and accessible.</div>
-        <button onclick="dmLoadTO()" style="padding:8px 20px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer">↺ Try Again</button>
-      </div>`;
-    });
+    .catch(()=>{setDMToDemo();});
 }
 function setDMToDemo(){
   const rawToDemo=[
@@ -4305,25 +4196,17 @@ function setDMToDemo(){
 
 function dmLoadTC(){
   document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+  fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
+    .then(r=>r.json())
     .then(d=>{
-      if(Array.isArray(d)&&d.length>=0){
+      if(Array.isArray(d)){
         const _tcFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
         _dmTcData=_tcFilter?d.filter(r=>_tcFilter.includes((r.uid||'').toLowerCase())):d;
         dmTcRender();
-      } else {
-        throw new Error('Bad response');
       }
+      else{setDMTcDemo();}
     })
-    .catch(err=>{
-      document.getElementById('dm-tc-list').innerHTML=`<div style="text-align:center;padding:30px">
-        <div style="font-size:22px;margin-bottom:8px">⚠️</div>
-        <div style="font-size:12px;font-weight:800;color:var(--warn);margin-bottom:6px">Could not reach sheet</div>
-        <div style="font-size:10px;color:var(--t3);margin-bottom:14px">Check that the Google Apps Script is deployed and accessible.</div>
-        <button onclick="dmLoadTC()" style="padding:8px 20px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer">↺ Try Again</button>
-      </div>`;
-    });
+    .catch(()=>{setDMTcDemo();});
 }
 function setDMTcDemo(){
   const rawTcDemo=[
@@ -4348,8 +4231,8 @@ function getPayCycles(){
   // Current cycle starts 3/29/2026, biweekly
   const anchor=new Date(2026,2,29); // March 29 2026
   const cycles=[];
-  // Build 10 cycles back and 12 ahead (to cover ~6 months future)
-  for(let i=-10;i<=12;i++){
+  // Build 10 cycles back and 4 ahead
+  for(let i=-10;i<=4;i++){
     const s=new Date(anchor); s.setDate(anchor.getDate()+i*14);
     const e=new Date(s); e.setDate(s.getDate()+13);
     cycles.push({start:s,end:e,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
@@ -4364,21 +4247,7 @@ function dateInCycle(dateStr,cycle){
 }
 function parseDate(str){
   if(!str) return null;
-  try{
-    // If it looks like an ISO string or raw Date toString, parse and return
-    const d=new Date(str);
-    return isNaN(d)?null:d;
-  }catch(e){return null;}
-}
-
-// Format any date value (ISO string, Date.toString(), MM/DD/YYYY, etc.) to MM/DD/YYYY, H:MM AM/PM CST
-function fmtSubmitted(val){
-  if(!val) return '';
-  // Already formatted like "04/06/2026, 11:53 AM" — return as-is
-  if(typeof val==='string'&&/^\d{2}\/\d{2}\/\d{4},\s/.test(val)) return val;
-  const d=new Date(val);
-  if(isNaN(d)) return String(val);
-  return d.toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+  try{const d=new Date(str);return isNaN(d)?null:d;}catch(e){return null;}
 }
 
 // ── WEEK HELPERS FOR TIME OFF ──
@@ -4400,21 +4269,17 @@ function parseFirstDay(r){
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
   const firstDay=rawDay.replace(/^0/,'');
-  if(!firstDay||isNaN(parseInt(firstDay))) return null;
+  if(!firstDay) return null;
   const monthStr=(r.month||'').trim();
   try{
     const parts=monthStr.split(' ');
     const mon=parts[0]||'';
-    // Year: try month field first, then rowId timestamp, then default 2026
-    let yr=parseInt(parts[1])||0;
-    if(!yr&&r.rowId){
-      const ts=parseInt((r.rowId||'').replace(/[^0-9]/g,'').slice(-13));
-      if(ts>1e12) yr=new Date(ts).getFullYear();
-    }
-    if(!yr) yr=2026;
+    const yr=parseInt(parts[1])||2026;
+    // Build date string and parse as local
     const ds=mon+' '+firstDay+', '+yr;
     const d=new Date(ds);
     if(!isNaN(d)){
+      // Return as local date to avoid UTC shift
       return new Date(d.getFullYear(),d.getMonth(),d.getDate());
     }
     return null;
@@ -4425,7 +4290,6 @@ function populateTOWeeks(){
   const sel=document.getElementById('dm-to-week');
   if(!sel) return;
   const weeks=new Map();
-  // Add weeks from actual data
   _dmToData.forEach(r=>{
     const d=parseFirstDay(r);
     if(!d) return;
@@ -4433,15 +4297,6 @@ function populateTOWeeks(){
     const key=sun.getTime();
     if(!weeks.has(key)) weeks.set(key,{sun,label:getWeekLabel(sun)});
   });
-  // Pre-populate the next 26 weeks (6 months ahead) so future submissions always appear
-  const today=new Date();
-  const todaySun=getWeekStart(today);
-  for(let i=0;i<26;i++){
-    const sun=new Date(todaySun);
-    sun.setDate(todaySun.getDate()+i*7);
-    const key=sun.getTime();
-    if(!weeks.has(key)) weeks.set(key,{sun,label:getWeekLabel(sun)});
-  }
   const sorted=[...weeks.values()].sort((a,b)=>b.sun-a.sun);
   const current=sel.value;
   sel.innerHTML='<option value="all">All Weeks</option>'+
@@ -4460,17 +4315,10 @@ function populateTCCycles(){
     if(!d) return;
     cycles.forEach((c,i)=>{if(d>=c.start&&d<=c.end) used.add(i);});
   });
-  // Find current cycle index
-  const now=new Date();
-  const currentIdx=cycles.findIndex(c=>now>=c.start&&now<=c.end);
+  // Mark current cycle (3/29-4/11 = index 10 since we start at -10)
   const current=sel.value;
   sel.innerHTML='<option value="all">All Pay Cycles</option>'+
-    // Show all cycles, newest first
-    [...cycles].reverse().map((c,ri)=>{
-      const i=cycles.length-1-ri;
-      const label=c.label+(i===currentIdx?' (Current)':'')+(used.has(i)?' ●':'');
-      return`<option value="${i}">${label}</option>`;
-    }).join('');
+    cycles.map((c,i)=>`<option value="${i}"${used.has(i)?'':''}>${c.label}${i===10?' (Current)':''}</option>`).join('');
   if(current&&current!=='all') sel.value=current;
 }
 
@@ -4541,7 +4389,7 @@ function showDMTimeDetail(type,rowId){
       const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
       phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
       const cpb=document.createElement('button');cpb.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer';cpb.textContent='Confirm Partial';
-      cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){showToast('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
+      cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){alert('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
       phd.appendChild(cpb);body.appendChild(phd);
       const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px';
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
@@ -4558,13 +4406,7 @@ function showDMTimeDetail(type,rowId){
   if(isViewOnly&&r.uid&&r.uid.toLowerCase()===_pendingUid.toLowerCase()){
     const ce=r.status==='Sent'||r.status==='Pending';let lk=false;
     if(type==='to'){const fd=parseFirstDay(r);if(fd){const s=getWeekStart(fd);const l=new Date(s);l.setDate(s.getDate()-7);lk=new Date()>=l;}}
-    if(ce&&!lk){const del=document.createElement('button');del.style.cssText='margin-top:8px;width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer';del.textContent='Delete Request';del.onclick=(()=>{const _r=rowId,_t=type;return function(){
-      const _cdiv=document.createElement('div');_cdiv.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
-      _cdiv.innerHTML='<div style="background:var(--s1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center"><div style="font-size:28px;margin-bottom:12px">⚠️</div><div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">Delete Request?</div><div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">This request will be marked as <span style="color:var(--err);font-weight:800">Denied</span>. This cannot be undone.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button id="_cdel-cancel" style="padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer">Cancel</button><button id="_cdel-confirm" style="padding:10px;background:var(--err);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Delete</button></div></div>';
-      document.body.appendChild(_cdiv);
-      document.getElementById('_cdel-cancel').onclick=()=>_cdiv.remove();
-      document.getElementById('_cdel-confirm').onclick=()=>{_cdiv.remove();sendLog({type:'req_delete',rowId:_r,uid:_pendingUid});const list=_t==='to'?_dmToData:_dmTcData;const rec=list.find(x=>x.rowId===_r);if(rec){rec.status='Denied';rec.note='Employee deleted request';}const det=document.getElementById('dm-time-detail-overlay');if(det)det.remove();if(_t==='to')dmToRender();else dmTcRender();};
-    };})();body.appendChild(del);}
+    if(ce&&!lk){const del=document.createElement('button');del.style.cssText='margin-top:8px;width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer';del.textContent='Delete Request';del.onclick=(()=>{const _r=rowId,_t=type;return function(){if(!confirm('Delete this request? It will be marked as Denied.'))return;sendLog({type:'req_delete',rowId:_r,uid:_pendingUid});const list=_t==='to'?_dmToData:_dmTcData;const rec=list.find(x=>x.rowId===_r);if(rec){rec.status='Denied';rec.note='Employee deleted request';}const det=document.getElementById('dm-time-detail-overlay');if(det)det.remove();if(_t==='to')dmToRender();else dmTcRender();};})();body.appendChild(del);}
     else if(lk&&ce){const lm=document.createElement('div');lm.style.cssText='margin-top:8px;text-align:center;font-size:10px;color:var(--warn);font-family:DM Sans';lm.textContent='\ud83d\udd12 Locked \u2014 within 7 days of week start';body.appendChild(lm);}
   }
   ov.appendChild(body);document.body.appendChild(ov);
