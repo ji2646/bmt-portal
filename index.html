@@ -433,8 +433,8 @@ function fmtTime(val){
 function fmtSubmitted(val){
   if(!val) return '';
   const s=String(val).trim();
-  // Already formatted like "04/06/2026, 11:53 AM" — return as-is
-  if(/^\d{2}\/\d{2}\/\d{4},\s/.test(s)) return s;
+  // Already formatted like "04/06/2026, 6:25 PM" or "4/7/2026, 6:25 PM" — return as-is (never re-parse)
+  if(/^\d{1,2}\/\d{1,2}\/\d{4},\s/.test(s)) return s;
   // ISO date-only "2026-04-07" — format as MM/DD/YYYY without time
   if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
     const [yr,mo,dy]=s.split('-');
@@ -448,7 +448,44 @@ function fmtSubmitted(val){
   return d.toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
 }
 
-let _sessionId=null;
+// Format date-only — strips time, used for TC date field (not submitted timestamp)
+function fmtDateOnly(val){
+  if(!val) return '';
+  const s=String(val).trim();
+  // Already MM/DD/YYYY with no time — return as-is
+  if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) return s;
+  // Already formatted with time — strip the time
+  if(/^\d{1,2}\/\d{1,2}\/\d{4},/.test(s)) return s.split(',')[0];
+  // ISO date-only "2026-04-07" — parse as UTC to avoid day rollback
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[yr,mo,dy]=s.split('-');return mo+'/'+dy+'/'+yr;}
+  // ISO datetime — use UTC month/day/year
+  if(s.includes('T')){
+    const d=new Date(s);
+    if(!isNaN(d)){
+      const mo=String(d.getUTCMonth()+1).padStart(2,'0');
+      const dy=String(d.getUTCDate()).padStart(2,'0');
+      return mo+'/'+dy+'/'+d.getUTCFullYear();
+    }
+  }
+  return s;
+}
+
+// Format TO month field — handles "May 2026", "2026-05-01T00:00:00.000Z", Date objects
+function fmtTOMonth(val){
+  if(!val) return '';
+  const s=String(val).trim();
+  // Already text like "May 2026" or "April"
+  if(/^[A-Za-z]/.test(s)) return s;
+  // ISO datetime — use UTC to avoid rolling back to previous month
+  if(s.includes('T')||(/^\d{4}-\d{2}-\d{2}/.test(s))){
+    const d=new Date(s);
+    if(!isNaN(d)){
+      const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return months[d.getUTCMonth()]+' '+d.getUTCFullYear();
+    }
+  }
+  return s;
+}
 let _sessionQuote='';
 let _lastQuoteStr='';
 let _quoteDebounce=null;
@@ -1819,7 +1856,7 @@ function renderDealStrip(){
   $('deal-strip').innerHTML=`
     <div class="deal-card iphone" onclick="launchDeal('iphone')">
       <div class="deal-tag">📱 iPhone Deals</div>
-      ${devPick('iphone',[{id:'i16e_128',lbl:'16e'},{id:'i15_128',lbl:'15'},{id:'i13_128',lbl:'13'}])}
+      ${devPick('iphone',[{id:'i16e_128',lbl:'iPhone 16e'},{id:'i15_128',lbl:'iPhone 15'},{id:'i13_128',lbl:'iPhone 13'}])}
       ${ltRow3('iphone',['var(--warn)',gc,'var(--indigo)'])}
       <div class="deal-price">${fmt(Math.round(c1otd*100)/100)}</div>
       <div class="deal-sub">Supreme · ${c1.lt==='upgrade'?'$90':'$45'} APD · Protect</div>
@@ -4055,7 +4092,7 @@ function renderRA(){
     const c=statusColors[r.status]||'#aaa';
     const bg=statusBg[r.status]||'rgba(255,255,255,.06)';
     const bd=statusBd[r.status]||'#333';
-    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${fmtSubmitted(r.date)} — ${r.location}`;
+    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${fmtDateOnly(r.date)} — ${r.location}`;
     const sub=_raTab==='to'?`${r.reason} · ${r.duration}`:`${r.reason}`;
     const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${fmtSubmitted(r.edited)}</div>`:'';
     return`<div onclick="showRADetail('${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
@@ -4111,7 +4148,7 @@ function showRADetail(rowId){
     }
   }
   const rows=isTO?[
-    ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
+    ['Month',fmtTOMonth(r.month)],['Days',String(r.days||'')],['Reason',r.reason],['Duration',r.duration],
     ...daysAdvanceRow,...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])
   ]:[
     ['Location',r.location],['Date',fmtSubmitted(r.date)],['Reason',r.reason],
@@ -4160,7 +4197,7 @@ function editRequest(rowId){
   const isTO=rowId.includes('-TO-');
   showModal({
     icon:'✏️',title:'Edit Request',
-    msg:`To make changes, delete this request and submit a new one.<br><br><span style="color:var(--t3);font-size:11px">${isTO?`Month: ${r.month} &nbsp;·&nbsp; Days: ${r.days}<br>Reason: ${r.reason}`:`Date: ${fmtSubmitted(r.date)} &nbsp;·&nbsp; ${r.location}<br>Reason: ${r.reason}`}</span>`,
+    msg:`To make changes, delete this request and submit a new one.<br><br><span style="color:var(--t3);font-size:11px">${isTO?`Month: ${r.month} &nbsp;·&nbsp; Days: ${r.days}<br>Reason: ${r.reason}`:`Date: ${fmtDateOnly(r.date)} &nbsp;·&nbsp; ${r.location}<br>Reason: ${r.reason}`}</span>`,
     borderColor:'var(--bd)',
     cancelLabel:null
   });
@@ -4374,12 +4411,20 @@ function getWeekLabel(sun){
   return fmt(sun)+' – '+fmt(sat);
 }
 function parseFirstDay(r){
-  let rawDay=(r.days||'').split(',')[0].trim();
+  let rawDay=String(r.days||'').split(',')[0].trim();
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
   const firstDay=rawDay.replace(/^0/,'');
   if(!firstDay||isNaN(parseInt(firstDay))) return null;
-  const monthStr=(r.month||'').trim();
+  // Handle month field that may be ISO datetime from Sheets e.g. "2026-05-01T00:00:00.000Z"
+  let monthStr=(r.month||'').trim();
+  if(monthStr.includes('T')||(/^\d{4}-\d{2}-\d{2}/.test(monthStr))){
+    const md=new Date(monthStr);
+    if(!isNaN(md)){
+      const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      monthStr=months[md.getUTCMonth()]+' '+md.getUTCFullYear();
+    }
+  }
   try{
     const parts=monthStr.split(' ');
     const mon=parts[0]||'';
@@ -4449,20 +4494,26 @@ function showDMTimeDetail(type,rowId){
   const showActions=!isViewOnly;
   const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
   let copyText='';
+  let copySubject='';
   if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){copyText=buildPartialCopyText(r).txt;}
   else if(!isViewOnly&&isDone&&type==='to'){
     const ms=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();const ys=(r.month||'').match(/\d{4}/)?.[0]||'2026';
-    const ds=(r.days||'').split(',').map(d=>ms+' '+d.trim()+', '+ys).join(', ');
+    const ds=String(r.days||'').split(',').map(d=>ms+' '+d.trim()+', '+ys).join(', ');
     const fn=r.name?r.name.split(' ')[0]:r.uid;
     const hl=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
     const al=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
     copyText=fn+',\n\nYour time off request for '+ds+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hl+(r.note?'\nNote: '+r.note:'');
-  } else if(!isViewOnly&&isDone&&type==='tc'){
-    const fn=r.name?r.name.split(' ')[0]:r.uid;const al=r.status==='Approved'?'has been approved':'has been denied';
-    copyText=fn+',\n\nYour time correction for '+fmtSubmitted(r.date)+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+fmtTime(r.shiftStart)+' \u2013 '+fmtTime(r.shiftEnd)+(r.note?'\nNote: '+r.note:'');
+  } else if(!isViewOnly&&type==='tc'){
+    const fn=r.name?r.name.split(' ')[0]:r.uid;
+    const fullName=r.name||r.uid;
+    const dateStr=fmtDateOnly(r.date);
+    const al=r.status==='Approved'?'has been approved':r.status==='Denied'?'has been denied':r.status==='Action Required'?'requires action':r.status==='Pending'?'is pending review':'is under review';
+    const hasBreak=r.breakStart&&r.breakStart!=='None'&&r.breakEnd&&r.breakEnd!=='None';
+    copySubject='Time Correction – '+fullName+' – '+dateStr;
+    copyText=fn+',\n\nYour time correction for '+dateStr+' '+al+'.\n\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nReason: '+(r.reason||'')+'\n\n\nShift: '+fmtTime(r.shiftStart)+' \u2013 '+fmtTime(r.shiftEnd)+(hasBreak?'\nBreak: '+fmtTime(r.breakStart)+' \u2013 '+fmtTime(r.breakEnd):'')+'\n\n\n'+(r.note?'Note: '+r.note:'');
   }
-  const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])]:
-    [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtSubmitted(r.date)],['Reason',r.reason],['Shift',fmtTime(r.shiftStart)+' 2013 '+fmtTime(r.shiftEnd)],['Break',r.breakStart&&r.breakStart!=='None'?fmtTime(r.breakStart)+' 2013 '+fmtTime(r.breakEnd):'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
+  const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',fmtTOMonth(r.month)],['Days',String(r.days||'')],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])]:
+    [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtDateOnly(r.date)],['Reason',r.reason],['Shift',fmtTime(r.shiftStart)+' – '+fmtTime(r.shiftEnd)],['Break',r.breakStart&&r.breakStart!=='None'?fmtTime(r.breakStart)+' – '+fmtTime(r.breakEnd):'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
   const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   const hdr=document.createElement('div');hdr.style.cssText='background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10';
   const bb=document.createElement('div');bb.style.cssText='font-size:11px;font-weight:700;color:var(--t3);cursor:pointer';bb.textContent='\u2190 Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
@@ -4478,11 +4529,19 @@ function showDMTimeDetail(type,rowId){
   else{const ta=document.createElement('textarea');ta.id='dm-note-field';ta.style.cssText='width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none;resize:vertical;min-height:60px;box-sizing:border-box';ta.value=r.note||'';
     const sb=document.createElement('button');sb.style.cssText='margin-top:8px;width:100%;padding:9px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer';sb.textContent='\ud83d\udcbe Save Note';sb.onclick=(()=>{const _t=type,_r=rowId;return function(){dmSaveNote(_t,_r);};})();nc.appendChild(ta);nc.appendChild(sb);}
   body.appendChild(nc);
-  if(!isViewOnly&&isDone&&copyText){
+  if(!isViewOnly&&(isDone||type==='tc')&&(copyText||copySubject)){
     const cc=document.createElement('div');cc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';
-    cc.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div></div><div style="padding:12px 14px"><div style="font-size:11px;color:var(--t2);line-height:1.7;white-space:pre-wrap;font-family:DM Sans" id="dm-copy-text"></div></div>';
+    let ccHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd)"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)">Copy to Send</div></div>';
+    if(copySubject){
+      ccHTML+='<div style="padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-size:11px;color:var(--t2);font-weight:700">'+copySubject+'</div><button id="dm-copy-subj-btn" style="flex-shrink:0;padding:4px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">📋 Subject</button></div>';
+    }
+    ccHTML+='<div style="padding:12px 14px"><div style="font-size:12px;color:var(--t2);line-height:1.8;white-space:pre-wrap;font-family:DM Sans" id="dm-copy-text"></div></div>';
+    cc.innerHTML=ccHTML;
     cc.querySelector('#dm-copy-text').textContent=copyText;
-    const cpBtn=document.createElement('button');cpBtn.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer';cpBtn.textContent='\ud83d\udccb Copy';
+    if(copySubject){
+      cc.querySelector('#dm-copy-subj-btn').onclick=(()=>{const _s=copySubject,_b=cc.querySelector('#dm-copy-subj-btn');return function(){navigator.clipboard.writeText(_s).then(()=>{_b.textContent='\u2713 Copied';_b.style.color='var(--g)';setTimeout(()=>{_b.textContent='\ud83d\udccb Subject';_b.style.color='';},2000);}).catch(()=>{const ta=document.createElement('textarea');ta.value=_s;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);_b.textContent='\u2713 Copied';});};})();
+    }
+    const cpBtn=document.createElement('button');cpBtn.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer';cpBtn.textContent='\ud83d\udccb Copy Body';
     cpBtn.onclick=(()=>{const _ct=copyText,_b=cpBtn;return function(){navigator.clipboard.writeText(_ct).then(()=>{_b.textContent='\u2713 Copied';_b.style.color='var(--g)';}).catch(()=>{const ta=document.createElement('textarea');ta.value=_ct;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);_b.textContent='\u2713 Copied';});};})();
     cc.querySelector('div:last-child').appendChild(cpBtn);body.appendChild(cc);
   }
@@ -4526,15 +4585,15 @@ function showDMTimeDetail(type,rowId){
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
       const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
       bg.appendChild(db);bg.appendChild(ab);body.appendChild(bg);
-      // Second row: Sent, Pending, Action Required, Corrected
+      // Second row: Sent, Pending
       const bg2=document.createElement('div');bg2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
       const sb2tc=document.createElement('button');sb2tc.style.cssText='padding:10px;background:rgba(255,255,255,.04);border:1px solid #444;border-radius:var(--r2);color:#aaa;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2tc.textContent='↺ Sent';sb2tc.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
       const pb2=document.createElement('button');pb2.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2.textContent='Pending';pb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bg2.appendChild(sb2tc);bg2.appendChild(pb2);body.appendChild(bg2);
-      const bg3=document.createElement('div');bg3.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
-      const arb=document.createElement('button');arb.style.cssText='padding:10px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';arb.textContent='Action Req.';arb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Action Required',ta?ta.value:'','');};})();
-      const cb=document.createElement('button');cb.style.cssText='padding:10px;background:rgba(0,169,79,.08);border:1px solid rgba(0,169,79,.25);border-radius:var(--r2);color:var(--g);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';cb.textContent='Corrected';cb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Corrected',ta?ta.value:'','');};})();
-      bg3.appendChild(arb);bg3.appendChild(cb);body.appendChild(bg3);
+      // Third row: Action Required only
+      const bg3=document.createElement('div');bg3.style.cssText='margin-top:8px';
+      const arb=document.createElement('button');arb.style.cssText='padding:10px;width:100%;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';arb.textContent='Action Required';arb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Action Required',ta?ta.value:'','');};})();
+      bg3.appendChild(arb);body.appendChild(bg3);
     }
   }
   if(isViewOnly&&r.uid&&r.uid.toLowerCase()===_pendingUid.toLowerCase()){
@@ -4634,7 +4693,7 @@ function dmAdvRow(r,type){
 function getDaysArray(r){
   // Parse days from e.g. "04, 05, 06" or "May 4, 5" with month context
   if(!r.days) return [];
-  return r.days.split(',').map(d=>d.trim()).filter(Boolean);
+  return String(r.days||'').split(',').map(d=>d.trim()).filter(Boolean);
 }
 
 function buildDaysStatus(r){
@@ -4673,7 +4732,7 @@ function buildPartialCopyText(r){
     if(approved.length) txt+='\nApproved: '+approved.map(fmtDay).join(', ');
     if(denied.length) txt+='\nDenied: '+denied.map(fmtDay).join(', ');
   } else {
-    const allDays=(r.days||'').split(',').map(fmtDay).join(', ');
+    const allDays=String(r.days||'').split(',').map(fmtDay).join(', ');
     txt+='\nDays: '+allDays+'\nDuration: '+r.duration;
   }
   if(r.note) txt+='\nNote: '+r.note;
