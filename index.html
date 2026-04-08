@@ -295,6 +295,7 @@ select option,select optgroup{background:#1a1a1a}
         <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
         <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">🕐 Time Management</button>
         <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📋 Activity</button>
+        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#555;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -318,7 +319,7 @@ select option,select optgroup{background:#1a1a1a}
 
     </div>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-06APR2026-0510PM</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-07APR2026-0910PM</div>
 </div>
 
 <script>
@@ -365,6 +366,65 @@ function startSessionTracking(){
   resetSessionTimer();
 }
 
+function doLogout(){
+  clearTimeout(_sessionTimer);
+  document.body.insertAdjacentHTML('beforeend',`
+    <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
+      <div style="font-size:28px;margin-bottom:12px">👋</div>
+      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Signed Out</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:24px">You've been signed out successfully.</div>
+      <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
+    </div>`);
+  setTimeout(()=>location.reload(),8000);
+}
+
+// Replaces all alert()/confirm() browser popups with styled modals
+function showModal({icon='⚠️',title,msg='',confirmLabel,confirmColor='var(--err)',onConfirm,cancelLabel='Cancel',borderColor='rgba(239,68,68,.3)'}){
+  const id='_modal_'+Date.now();
+  const div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
+  const btns=confirmLabel
+    ?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="document.getElementById('${id}').remove()" style="padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer">${cancelLabel}</button>
+        <button id="${id}-ok" style="padding:10px;background:${confirmColor};border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">${confirmLabel}</button>
+      </div>`
+    :`<button onclick="document.getElementById('${id}').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">OK</button>`;
+  div.innerHTML=`<div style="background:var(--s1);border:1px solid ${borderColor};border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
+    <div style="font-size:28px;margin-bottom:12px">${icon}</div>
+    <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:${msg?'8':'20'}px">${title}</div>
+    ${msg?`<div style="font-size:12px;color:var(--t2);margin-bottom:20px;line-height:1.5">${msg}</div>`:''}
+    ${btns}
+  </div>`;
+  document.body.appendChild(div);
+  if(confirmLabel&&onConfirm) document.getElementById(id+'-ok').onclick=()=>{div.remove();onConfirm();};
+}
+
+// Non-blocking toast for brief inline feedback
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--bd2);border-radius:8px;color:var(--t2);font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;padding:10px 20px;z-index:9999999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.5)';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// Format any date value cleanly — handles ISO strings, Date.toString(), MM/DD/YYYY, date-only YYYY-MM-DD
+function fmtSubmitted(val){
+  if(!val) return '';
+  const s=String(val).trim();
+  // Already formatted like "04/06/2026, 11:53 AM" — return as-is
+  if(/^\d{2}\/\d{2}\/\d{4},\s/.test(s)) return s;
+  // ISO date-only "2026-04-07" — format as MM/DD/YYYY without time
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    const [yr,mo,dy]=s.split('-');
+    return mo+'/'+dy+'/'+yr;
+  }
+  // ISO datetime or Date.toString() — parse and format in CST
+  const d=new Date(s);
+  if(isNaN(d)) return s;
+  return d.toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+}
+
 let _sessionId=null;
 let _sessionQuote='';
 let _lastQuoteStr='';
@@ -385,7 +445,7 @@ function getDevice(){
 }
 
 function getDatetime(){
-  return new Date().toLocaleString('en-US',{month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+  return new Date().toLocaleString('en-US',{timeZone:'America/Chicago',month:'2-digit',day:'2-digit',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
 }
 
 function sendLog(params){
@@ -1095,9 +1155,9 @@ function setPlan(id){
 // LINES
 // ============================================================
 function addLine(cat, clone=null){
-  if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
-  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line on new accounts.');return;}
+  if(cat==='v'&&vc()>=5){showToast('Max 5 voice lines.');return;}
+  if(cat==='w'&&wc()>=5){showToast('Max 5 watch lines.');return;}
+  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){showToast('Max 1 tablet per voice line on new accounts.');return;}
   const base=clone?{...clone}:{cat,lt:'switcher',device:'',byod:false,protect:false,protectTier:8,intl:false,intl15:false,upgplus:false,hotspot:false,hsRecur:true,hsPlan:'sd150',finInclude:true,upQual:true,skeiwatch:null,skeiwatchFin:true};
   S.lines.push({...base,id:S.nid++,cat});
   renderLines();renderPlanGrid();update();
@@ -1106,9 +1166,9 @@ function dupeLine(id){
   const src=S.lines.find(l=>l.id===id);
   if(!src) return;
   const cat=src.cat;
-  if(cat==='v'&&vc()>=5){alert('Max 5 voice lines.');return;}
-  if(cat==='w'&&wc()>=5){alert('Max 5 watch lines.');return;}
-  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){alert('Max 1 tablet per voice line.');return;}
+  if(cat==='v'&&vc()>=5){showToast('Max 5 voice lines.');return;}
+  if(cat==='w'&&wc()>=5){showToast('Max 5 watch lines.');return;}
+  if(cat==='t'&&tc()>=vc()&&S.acct==='new'){showToast('Max 1 tablet per voice line.');return;}
   // Clone and insert right after source line
   const clone={...src, id:S.nid++};
   const srcIdx=S.lines.findIndex(l=>l.id===id);
@@ -3104,7 +3164,10 @@ try {
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
+              <button onclick="dmLoadTO()" style="padding:6px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">↺ Refresh</button>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-to-status" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
@@ -3123,10 +3186,13 @@ try {
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
-            <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
+              <button onclick="dmLoadTC()" style="padding:6px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">↺ Refresh</button>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-tc-status" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Corrected</option>
+                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Action Required</option><option>Approved</option><option>Denied</option><option>Corrected</option>
               </select>
               <select id="dm-tc-sort" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="name">By Name</option>
@@ -3615,7 +3681,10 @@ function closeActivity(){
   <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
     <div onclick="closeRepActivity()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
-    <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="repActLoadData()" style="padding:4px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:20px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">↺ Refresh</button>
+      <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+    </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
@@ -3629,6 +3698,7 @@ function closeActivity(){
         <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#000;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
         <button onclick="raFilter('Sent',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Sent</button>
         <button onclick="raFilter('Pending',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Pending</button>
+        <button onclick="raFilter('Action Required',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Action Req.</button>
         <button onclick="raFilter('Approved',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Approved</button>
         <button onclick="raFilter('Denied',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Denied</button>
       </div>
@@ -3706,9 +3776,9 @@ function submitTC(){
   const reason=document.getElementById('tc-reason').value.trim();
   const start=document.getElementById('tc-start').value;
   const end=document.getElementById('tc-end').value;
-  if(!loc||!date||!reason||!start||!end){alert('Please fill in all required fields.');return;}
+  if(!loc||!date||!reason||!start||!end){tmError('Missing Fields','Please fill in all required fields: Location, Date, Reason, Shift Start, and Shift End.');return;}
   const today=new Date();today.setHours(23,59,59,999);
-  if(new Date(date+'T12:00:00')>today){alert('Date must be today or in the past.');return;}
+  if(new Date(date+'T12:00:00')>today){tmError('Invalid Date','Date must be today or in the past.');return;}
   const brkS=_tcBreak?fmtT(document.getElementById('tc-brk-start').value):'';
   const brkE=_tcBreak?fmtT(document.getElementById('tc-brk-end').value):'';
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
@@ -3771,9 +3841,7 @@ function toggleTODay(day){
         const exDate=new Date(mon+' '+existing+', '+yr);
         const exSun=getWeekStart(new Date(exDate.getFullYear(),exDate.getMonth(),exDate.getDate()));
         if(newSun.getTime()!==exSun.getTime()){
-          errEl.style.display='block';
-          errEl.textContent='Day '+day+' is in a different week. Submit a separate request for that week.';
-          setTimeout(()=>{errEl.style.display='none';},3000);
+          showModal({icon:'📅',title:'Different Week',msg:'Day <strong>'+day+'</strong> is in a different week. Submit a separate request for that week.',borderColor:'rgba(245,158,11,.3)'});
           return;
         }
       }
@@ -3800,7 +3868,7 @@ function submitTO(){
   const month=document.getElementById('to-month').value;
   const days=document.getElementById('to-days').value.trim();
   const reason=document.getElementById('to-reason').value.trim();
-  if(!days||!reason){alert('Please fill in all required fields:\n• Day(s) Requested\n• Reason');return;}
+  if(!days||!reason){tmError('Missing Fields','Please select at least one day and enter a reason.');return;}
   if(!_toDurFull){
     const tf=document.getElementById('to-from').value;
     const tu=document.getElementById('to-until').value;
@@ -3919,18 +3987,14 @@ function raFilter(f,btn){
 
 function repActLoadData(){
   document.getElementById('ra-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid),{method:'GET',mode:'cors'})
+  fetch(TM_URL+'?type=ra_fetch&uid='+encodeURIComponent(_pendingUid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json())
     .then(d=>{
       if(d&&(d.to||d.tc)){
-        // Filter to only this rep's own data
-        _raData={
-          to:(d.to||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase()),
-          tc:(d.tc||[]).filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase())
-        };
+        _raData={to:(d.to||[]),tc:(d.tc||[])};
         renderRA();
       }
-      else{setRADemo();} // response wasn't proper data
+      else{setRADemo();}
     })
     .catch(()=>{setRADemo();});
 }
@@ -3957,27 +4021,27 @@ function renderRA(){
     el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px">No submissions found</div></div>';
     return;
   }
-  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
-  const statusBg={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)'};
-  const statusBd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)'};
+  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  const statusBg={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)','Action Required':'rgba(139,92,246,.1)','Corrected':'rgba(0,169,79,.1)'};
+  const statusBd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)','Action Required':'rgba(139,92,246,.25)','Corrected':'rgba(0,169,79,.25)'};
   el.innerHTML=items.map(r=>{
     const c=statusColors[r.status]||'#aaa';
     const bg=statusBg[r.status]||'rgba(255,255,255,.06)';
     const bd=statusBd[r.status]||'#333';
-    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${r.date} — ${r.location}`;
+    const title=_raTab==='to'?`${r.days} — ${r.month}`:`${fmtSubmitted(r.date)} — ${r.location}`;
     const sub=_raTab==='to'?`${r.reason} · ${r.duration}`:`${r.reason}`;
-    const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${r.edited}</div>`:'';
+    const edited=r.edited?`<div style="font-size:9px;color:var(--t3);margin-top:1px">Edited ${fmtSubmitted(r.edited)}</div>`:'';
     return`<div onclick="showRADetail('${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">
         <div>
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${title}</div>
           <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${sub}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${r.submitted}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${fmtSubmitted(r.submitted)}</div>
           ${edited}
         </div>
         <div style="background:${bg};color:${c};border:1px solid ${bd};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
-      ${r.note?`<div style="font-size:10px;color:${r.status==='Approved'?'var(--g)':r.status==='Denied'?'var(--err)':'var(--warn)'};margin-top:4px;font-family:'DM Sans';font-style:italic">${r.note}</div>`:''}
+      ${r.note?`<div style="font-size:10px;color:${r.status==='Approved'||r.status==='Corrected'?'var(--g)':r.status==='Denied'?'var(--err)':r.status==='Action Required'?'var(--purple)':'var(--warn)'};margin-top:4px;font-family:'DM Sans';font-style:italic">${r.note}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -3988,9 +4052,9 @@ function showRADetail(rowId){
   if(!r){console.warn('showRADetail: rowId not found in _raData',rowId,_raData);return;}
   const isTO=r.rowId.includes('-TO-');
   document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
-  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
-  // canEdit: status must be Sent/Pending AND not within 7 days of week start
-  const _canEditStatus=r.status==='Sent'||r.status==='Pending';
+  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  // canEdit: status must be Sent/Pending/Action Required AND not within 7 days of week start
+  const _canEditStatus=r.status==='Sent'||r.status==='Pending'||r.status==='Action Required';
   let _withinLockout=false;
   if(isTO){
     const firstDay=parseFirstDay(r);
@@ -4016,16 +4080,16 @@ function showRADetail(rowId){
       const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
       const isRed2=diff<14;
       const label=diff<0?('Requested '+Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):('Requested '+diff+' day'+(diff===1?'':'s')+' in advance');
-      daysAdvanceRow=[['Submitted',r.submitted],['Advance',label,isRed2?'#ef4444':null]];
+      daysAdvanceRow=[['Submitted',fmtSubmitted(r.submitted)],['Advance',label,isRed2?'#ef4444':null]];
     }
   }
   const rows=isTO?[
     ['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],
-    ...daysAdvanceRow,...(r.edited?[['Edited',r.edited]]:[])
+    ...daysAdvanceRow,...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])
   ]:[
-    ['Location',r.location],['Date',r.date],['Reason',r.reason],
+    ['Location',r.location],['Date',fmtSubmitted(r.date)],['Reason',r.reason],
     ['Shift Start',r.shiftStart],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' – '+r.breakEnd:'None'],
-    ['Shift End',r.shiftEnd],['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])
+    ['Shift End',r.shiftEnd],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])
   ];
   document.getElementById('ra-detail-content').innerHTML=`
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
@@ -4047,22 +4111,32 @@ function showRADetail(rowId){
 }
 
 function deleteRequest(rowId){
-  if(!confirm('Delete this request? It will be marked as Denied.')) return;
-  sendLog({type:'req_delete',rowId,uid:_pendingUid});
-  closeRADetail();
-  repActLoadData();
+  showModal({
+    icon:'⚠️',title:'Delete Request?',
+    msg:'This request will be marked as <strong style="color:var(--err)">Denied</strong>. This cannot be undone.',
+    confirmLabel:'Delete',confirmColor:'var(--err)',
+    onConfirm:()=>{sendLog({type:'req_delete',rowId,uid:_pendingUid});closeRADetail();repActLoadData();}
+  });
 }
 
 function notifyDMFromDetail(rowId){
   sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
-  alert('DM has been notified.');
+  showModal({icon:'📣',title:'DM Notified',msg:'Your DM has been notified and will review your request.',borderColor:'rgba(59,130,246,.3)'});
   closeRADetail();
   repActLoadData();
 }
 
 function editRequest(rowId){
-  // In full build — opens pre-filled form. For now placeholder.
-  alert('Edit functionality — opens pre-filled form in full build.');
+  const all=[...(_raData.to||[]),...(_raData.tc||[])];
+  const r=all.find(x=>x.rowId===rowId);
+  if(!r) return;
+  const isTO=rowId.includes('-TO-');
+  showModal({
+    icon:'✏️',title:'Edit Request',
+    msg:`To make changes, delete this request and submit a new one.<br><br><span style="color:var(--t3);font-size:11px">${isTO?`Month: ${r.month} &nbsp;·&nbsp; Days: ${r.days}<br>Reason: ${r.reason}`:`Date: ${fmtSubmitted(r.date)} &nbsp;·&nbsp; ${r.location}<br>Reason: ${r.reason}`}</span>`,
+    borderColor:'var(--bd)',
+    cancelLabel:null
+  });
 }
 </script>
 
@@ -4095,9 +4169,9 @@ function dmToRender(){
   }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)'};
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)','Action Required':'rgba(139,92,246,.25)',Corrected:'rgba(0,169,79,.25)'};
   const weekCounts={};
   [..._dmToData].forEach(row=>{const fd=parseFirstDay(row);if(!fd)return;const wkk=getWeekStart(fd).getTime();if(!weekCounts[wkk])weekCounts[wkk]=[];weekCounts[wkk].push(row.rowId);});
   el.innerHTML=items.map(r=>{
@@ -4107,7 +4181,7 @@ function dmToRender(){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} · ${subNum} · ${r.submitted||''}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} · ${subNum} · ${fmtSubmitted(r.submitted)}</div>
         </div>
         <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
@@ -4131,9 +4205,9 @@ function dmTcRender(){
   if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});}
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)'};
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)','Action Required':'var(--purple)'};
+  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)','Action Required':'rgba(139,92,246,.25)'};
   const cycles2=getPayCycles();const cycleCounts={};
   [..._dmTcData].forEach(row=>{const d=parseDate(row.date);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
   el.innerHTML=items.map(r=>{
@@ -4143,7 +4217,7 @@ function dmTcRender(){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${r.submitted||r.date||''}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${fmtSubmitted(r.submitted||r.date)}</div>
         </div>
         <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
       </div>
@@ -4162,18 +4236,19 @@ function actMasterTab(pane){
     tab.style.borderBottomColor=isOn?'var(--g)':'transparent';
     el.style.display=isOn?'block':'none';
   });
-  if(pane==='to'){if(!_dmToData.length) dmLoadTO(); else {populateTOWeeks();dmToRender();}}
-  if(pane==='tc'){if(!_dmTcData.length) dmLoadTC(); else {populateTCCycles();dmTcRender();}}
+  if(pane==='to'){dmLoadTO();}
+  if(pane==='tc'){dmLoadTC();}
 }
 
 function dmLoadTO(){
   document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=to_fetch',{method:'GET',mode:'cors'})
+  fetch(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
         const _toFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
-        _dmToData=_toFilter?d.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):d;
+        const clean=d.filter(r=>r.rowId&&r.uid);
+        _dmToData=_toFilter?clean.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):clean;
         dmToRender();
       }
       else{setDMToDemo();}
@@ -4196,12 +4271,13 @@ function setDMToDemo(){
 
 function dmLoadTC(){
   document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=tc_fetch',{method:'GET',mode:'cors'})
+  fetch(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
         const _tcFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
-        _dmTcData=_tcFilter?d.filter(r=>_tcFilter.includes((r.uid||'').toLowerCase())):d;
+        const clean=d.filter(r=>r.rowId&&r.uid);
+        _dmTcData=_tcFilter?clean.filter(r=>_tcFilter.includes((r.uid||'').toLowerCase())):clean;
         dmTcRender();
       }
       else{setDMTcDemo();}
@@ -4228,11 +4304,9 @@ function setDMTcDemo(){
 
 // ── PAY CYCLE HELPERS ──
 function getPayCycles(){
-  // Current cycle starts 3/29/2026, biweekly
-  const anchor=new Date(2026,2,29); // March 29 2026
+  const anchor=new Date(2026,2,29); // March 29 2026, biweekly
   const cycles=[];
-  // Build 10 cycles back and 4 ahead
-  for(let i=-10;i<=4;i++){
+  for(let i=-10;i<=12;i++){
     const s=new Date(anchor); s.setDate(anchor.getDate()+i*14);
     const e=new Date(s); e.setDate(s.getDate()+13);
     cycles.push({start:s,end:e,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
@@ -4252,9 +4326,8 @@ function parseDate(str){
 
 // ── WEEK HELPERS FOR TIME OFF ──
 function getWeekStart(d){
-  // Return the Sunday of the week containing d (local time)
-  const local=new Date(d.getFullYear(),d.getMonth(),d.getDate()); // strip time
-  const day=local.getDay(); // 0=Sun
+  const local=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const day=local.getDay();
   const sun=new Date(local); sun.setDate(local.getDate()-day);
   return sun;
 }
@@ -4264,24 +4337,21 @@ function getWeekLabel(sun){
   return fmt(sun)+' – '+fmt(sat);
 }
 function parseFirstDay(r){
-  // Strip month name from days if accidentally included (e.g. "April 15" -> "15")
   let rawDay=(r.days||'').split(',')[0].trim();
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
   const firstDay=rawDay.replace(/^0/,'');
-  if(!firstDay) return null;
+  if(!firstDay||isNaN(parseInt(firstDay))) return null;
   const monthStr=(r.month||'').trim();
   try{
     const parts=monthStr.split(' ');
     const mon=parts[0]||'';
-    const yr=parseInt(parts[1])||2026;
-    // Build date string and parse as local
-    const ds=mon+' '+firstDay+', '+yr;
-    const d=new Date(ds);
-    if(!isNaN(d)){
-      // Return as local date to avoid UTC shift
-      return new Date(d.getFullYear(),d.getMonth(),d.getDate());
-    }
+    // Year: from month field, or rowId timestamp, or default 2026
+    let yr=parseInt(parts[1])||0;
+    if(!yr&&r.rowId){const ts=parseInt((r.rowId||'').replace(/[^0-9]/g,'').slice(-13));if(ts>1e12)yr=new Date(ts).getFullYear();}
+    if(!yr) yr=2026;
+    const d=new Date(mon+' '+firstDay+', '+yr);
+    if(!isNaN(d)) return new Date(d.getFullYear(),d.getMonth(),d.getDate());
     return null;
   }catch(e){return null;}
 }
@@ -4290,13 +4360,20 @@ function populateTOWeeks(){
   const sel=document.getElementById('dm-to-week');
   if(!sel) return;
   const weeks=new Map();
+  // Add weeks from actual data
   _dmToData.forEach(r=>{
-    const d=parseFirstDay(r);
-    if(!d) return;
+    const d=parseFirstDay(r); if(!d) return;
     const sun=getWeekStart(d);
     const key=sun.getTime();
     if(!weeks.has(key)) weeks.set(key,{sun,label:getWeekLabel(sun)});
   });
+  // Pre-populate next 26 weeks so future submissions always appear
+  const todaySun=getWeekStart(new Date());
+  for(let i=0;i<26;i++){
+    const sun=new Date(todaySun); sun.setDate(todaySun.getDate()+i*7);
+    const key=sun.getTime();
+    if(!weeks.has(key)) weeks.set(key,{sun,label:getWeekLabel(sun)});
+  }
   const sorted=[...weeks.values()].sort((a,b)=>b.sun-a.sun);
   const current=sel.value;
   sel.innerHTML='<option value="all">All Weeks</option>'+
@@ -4308,17 +4385,21 @@ function populateTCCycles(){
   const sel=document.getElementById('dm-tc-cycle');
   if(!sel) return;
   const cycles=getPayCycles();
-  // Find which cycles have data
+  const now=new Date();
+  const currentIdx=cycles.findIndex(c=>now>=c.start&&now<=c.end);
   const used=new Set();
   _dmTcData.forEach(r=>{
-    const d=parseDate(r.date);
-    if(!d) return;
+    const d=parseDate(r.date); if(!d) return;
     cycles.forEach((c,i)=>{if(d>=c.start&&d<=c.end) used.add(i);});
   });
-  // Mark current cycle (3/29-4/11 = index 10 since we start at -10)
   const current=sel.value;
+  // Show newest first
+  const reversed=[...cycles].reverse();
   sel.innerHTML='<option value="all">All Pay Cycles</option>'+
-    cycles.map((c,i)=>`<option value="${i}"${used.has(i)?'':''}>${c.label}${i===10?' (Current)':''}</option>`).join('');
+    reversed.map(c=>{
+      const i=cycles.indexOf(c);
+      return`<option value="${i}">${c.label}${i===currentIdx?' (Current)':''}${used.has(i)?' ●':''}</option>`;
+    }).join('');
   if(current&&current!=='all') sel.value=current;
 }
 
@@ -4326,8 +4407,8 @@ function showDMTimeDetail(type,rowId){
   const list=type==='to'?_dmToData:_dmTcData;const r=list.find(x=>x.rowId===rowId);if(!r)return;
   const isDM=(_pendingUid==='ji2646dm');const isViewOnly=!isDM;
   const days=type==='to'?getDaysArray(r):[];const isMultiDay=days.length>1;
-  const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial');
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa'};
+  const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial'||r.status==='Corrected');
+  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
   let copyText='';
   if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){copyText=buildPartialCopyText(r).txt;}
   else if(!isViewOnly&&isDone&&type==='to'){
@@ -4339,10 +4420,10 @@ function showDMTimeDetail(type,rowId){
     copyText=fn+',\n\nYour time off request for '+ds+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hl+(r.note?'\nNote: '+r.note:'');
   } else if(!isViewOnly&&isDone&&type==='tc'){
     const fn=r.name?r.name.split(' ')[0]:r.uid;const al=r.status==='Approved'?'has been approved':'has been denied';
-    copyText=fn+',\n\nYour time correction for '+r.date+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' \u2013 '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
+    copyText=fn+',\n\nYour time correction for '+fmtSubmitted(r.date)+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\nShift: '+r.shiftStart+' \u2013 '+r.shiftEnd+(r.note?'\nNote: '+r.note:'');
   }
-  const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',r.edited]]:[])]:
-    [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',r.date],['Reason',r.reason],['Shift',r.shiftStart+' \u2013 '+r.shiftEnd],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' \u2013 '+r.breakEnd:'None'],['Submitted',r.submitted],...(r.edited?[['Edited',r.edited]]:[])];
+  const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',r.month],['Days',r.days],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])]:
+    [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtSubmitted(r.date)],['Reason',r.reason],['Shift',r.shiftStart+' \u2013 '+r.shiftEnd],['Break',r.breakStart&&r.breakStart!=='None'?r.breakStart+' \u2013 '+r.breakEnd:'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
   const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   const hdr=document.createElement('div');hdr.style.cssText='background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10';
   const bb=document.createElement('div');bb.style.cssText='font-size:11px;font-weight:700;color:var(--t3);cursor:pointer';bb.textContent='\u2190 Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
@@ -4389,7 +4470,7 @@ function showDMTimeDetail(type,rowId){
       const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
       phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
       const cpb=document.createElement('button');cpb.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer';cpb.textContent='Confirm Partial';
-      cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){alert('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
+      cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){showToast('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
       phd.appendChild(cpb);body.appendChild(phd);
       const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px';
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
@@ -4401,12 +4482,18 @@ function showDMTimeDetail(type,rowId){
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
       const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
       bg.appendChild(db);bg.appendChild(ab);body.appendChild(bg);
+      // Second row: Pending, Action Required, Corrected
+      const bg2=document.createElement('div');bg2.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px';
+      const pb2=document.createElement('button');pb2.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2.textContent='Pending';pb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
+      const arb=document.createElement('button');arb.style.cssText='padding:10px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';arb.textContent='Action Req.';arb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Action Required',ta?ta.value:'','');};})();
+      const cb=document.createElement('button');cb.style.cssText='padding:10px;background:rgba(0,169,79,.08);border:1px solid rgba(0,169,79,.25);border-radius:var(--r2);color:var(--g);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';cb.textContent='Corrected';cb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Corrected',ta?ta.value:'','');};})();
+      bg2.appendChild(pb2);bg2.appendChild(arb);bg2.appendChild(cb);body.appendChild(bg2);
     }
   }
   if(isViewOnly&&r.uid&&r.uid.toLowerCase()===_pendingUid.toLowerCase()){
     const ce=r.status==='Sent'||r.status==='Pending';let lk=false;
     if(type==='to'){const fd=parseFirstDay(r);if(fd){const s=getWeekStart(fd);const l=new Date(s);l.setDate(s.getDate()-7);lk=new Date()>=l;}}
-    if(ce&&!lk){const del=document.createElement('button');del.style.cssText='margin-top:8px;width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer';del.textContent='Delete Request';del.onclick=(()=>{const _r=rowId,_t=type;return function(){if(!confirm('Delete this request? It will be marked as Denied.'))return;sendLog({type:'req_delete',rowId:_r,uid:_pendingUid});const list=_t==='to'?_dmToData:_dmTcData;const rec=list.find(x=>x.rowId===_r);if(rec){rec.status='Denied';rec.note='Employee deleted request';}const det=document.getElementById('dm-time-detail-overlay');if(det)det.remove();if(_t==='to')dmToRender();else dmTcRender();};})();body.appendChild(del);}
+    if(ce&&!lk){const del=document.createElement('button');del.style.cssText='margin-top:8px;width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer';del.textContent='Delete Request';del.onclick=(()=>{const _r=rowId,_t=type;return function(){showModal({icon:'⚠️',title:'Delete Request?',msg:'This request will be marked as <strong style="color:var(--err)">Denied</strong>. This cannot be undone.',confirmLabel:'Delete',confirmColor:'var(--err)',onConfirm:()=>{sendLog({type:'req_delete',rowId:_r,uid:_pendingUid});const list=_t==='to'?_dmToData:_dmTcData;const rec=list.find(x=>x.rowId===_r);if(rec){rec.status='Denied';rec.note='Employee deleted request';}const det=document.getElementById('dm-time-detail-overlay');if(det)det.remove();if(_t==='to')dmToRender();else dmTcRender();}});};})();body.appendChild(del);}
     else if(lk&&ce){const lm=document.createElement('div');lm.style.cssText='margin-top:8px;text-align:center;font-size:10px;color:var(--warn);font-family:DM Sans';lm.textContent='\ud83d\udd12 Locked \u2014 within 7 days of week start';body.appendChild(lm);}
   }
   ov.appendChild(body);document.body.appendChild(ov);
@@ -4487,15 +4574,15 @@ function dmTimeAction(type,rowId,status,note,daysStatus){
 function dmAdvRow(r,type){
   if(type!=='to') return [];
   const fd=parseFirstDay(r);
-  if(!fd) return [['Submitted',r.submitted||'']];
+  if(!fd) return [['Submitted',fmtSubmitted(r.submitted||'')]];
   const sun=getWeekStart(fd);
   const sub=r.submitted?new Date(r.submitted):null;
-  if(!sub) return [['Submitted',r.submitted||'']];
+  if(!sub) return [['Submitted',fmtSubmitted(r.submitted||'')]];
   const subLocal=new Date(sub.getFullYear(),sub.getMonth(),sub.getDate());
   const diff=Math.floor((sun-subLocal)/(1000*60*60*24));
   const isRed=diff<14;
   const label=diff<0?(Math.abs(diff)+' day'+(Math.abs(diff)===1?'':'s')+' late'):(diff+' day'+(diff===1?'':'s')+' in advance');
-  return [['Submitted',r.submitted||''],['Advance',label,isRed?'#ef4444':null]];
+  return [['Submitted',fmtSubmitted(r.submitted||'')],['Advance',label,isRed?'#ef4444':null]];
 }
 function getDaysArray(r){
   // Parse days from e.g. "04, 05, 06" or "May 4, 5" with month context
