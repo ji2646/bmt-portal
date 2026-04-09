@@ -474,15 +474,20 @@ function fmtDateOnly(val){
 function fmtTOMonth(val){
   if(!val) return '';
   const s=String(val).trim();
-  // Already text like "May 2026" or "April"
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  // Date.toString() format: "Thu Apr 30 2026 19:00:00 GMT-0500 (Central Daylight Time)"
+  // Must check BEFORE the ^[A-Za-z] early return since this also starts with a letter
+  if(/^[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4}/.test(s)){
+    // Parse as Date and use UTC month/year
+    const d=new Date(s);
+    if(!isNaN(d)) return months[d.getUTCMonth()]+' '+d.getUTCFullYear();
+  }
+  // Already clean text like "May 2026" or "April" — return as-is
   if(/^[A-Za-z]/.test(s)) return s;
-  // ISO datetime — use UTC to avoid rolling back to previous month
+  // ISO datetime "2026-05-01T00:00:00.000Z" — use UTC
   if(s.includes('T')||(/^\d{4}-\d{2}-\d{2}/.test(s))){
     const d=new Date(s);
-    if(!isNaN(d)){
-      const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-      return months[d.getUTCMonth()]+' '+d.getUTCFullYear();
-    }
+    if(!isNaN(d)) return months[d.getUTCMonth()]+' '+d.getUTCFullYear();
   }
   return s;
 }
@@ -4416,14 +4421,15 @@ function parseFirstDay(r){
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
   const firstDay=rawDay.replace(/^0/,'');
   if(!firstDay||isNaN(parseInt(firstDay))) return null;
-  // Handle month field that may be ISO datetime from Sheets e.g. "2026-05-01T00:00:00.000Z"
+  // Handle month field that may be ISO datetime or Date.toString() from Sheets
   let monthStr=(r.month||'').trim();
-  if(monthStr.includes('T')||(/^\d{4}-\d{2}-\d{2}/.test(monthStr))){
+  if(/^[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4}/.test(monthStr)){
+    // Date.toString() format — parse with UTC
     const md=new Date(monthStr);
-    if(!isNaN(md)){
-      const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-      monthStr=months[md.getUTCMonth()]+' '+md.getUTCFullYear();
-    }
+    if(!isNaN(md)){const months=['January','February','March','April','May','June','July','August','September','October','November','December'];monthStr=months[md.getUTCMonth()]+' '+md.getUTCFullYear();}
+  } else if(monthStr.includes('T')||(/^\d{4}-\d{2}-\d{2}/.test(monthStr))){
+    const md=new Date(monthStr);
+    if(!isNaN(md)){const months=['January','February','March','April','May','June','July','August','September','October','November','December'];monthStr=months[md.getUTCMonth()]+' '+md.getUTCFullYear();}
   }
   try{
     const parts=monthStr.split(' ');
@@ -4564,6 +4570,15 @@ function showDMTimeDetail(type,rowId){
       });
       body.appendChild(dc);
       const sdb=document.createElement('button');sdb.style.cssText='width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px';sdb.textContent='Save Decision';sdb.onclick=(()=>{const _t=type,_r=rowId;return function(){savePartial(_t,_r,document.getElementById('dm-note-field').value);};})();body.appendChild(sdb);
+      // Status override row for multi-day — Deny all / Approve all / ↺ Sent / Pending
+      const bgmd=document.createElement('div');bgmd.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
+      const dbmd=document.createElement('button');dbmd.style.cssText='padding:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';dbmd.textContent='Deny All';dbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
+      const abmd=document.createElement('button');abmd.style.cssText='padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';abmd.textContent='Approve All';abmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      bgmd.appendChild(dbmd);bgmd.appendChild(abmd);body.appendChild(bgmd);
+      const bgmd2=document.createElement('div');bgmd2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
+      const sbmd=document.createElement('button');sbmd.style.cssText='padding:10px;background:rgba(255,255,255,.04);border:1px solid #444;border-radius:var(--r2);color:#aaa;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sbmd.textContent='↺ Sent';sbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
+      const pbmd=document.createElement('button');pbmd.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pbmd.textContent='Pending';pbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
+      bgmd2.appendChild(sbmd);bgmd2.appendChild(pbmd);body.appendChild(bgmd2);
     } else if(type==='to'){
       const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
       phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
@@ -4723,9 +4738,10 @@ function buildPartialCopyText(r){
   const status=allApproved?'Approved':allDenied?'Denied':'Partial';
   const firstName=r.name?r.name.split(' ')[0]:r.uid;
   const action=status==='Partial'?'has been partially approved':status==='Approved'?'has been approved':'has been denied';
-  // Format days with month and year
-  const monthStr=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();
-  const yearStr=(r.month||'').match(/\d{4}/)?.[0]||'2026';
+  // Format days with month and year — fmtTOMonth cleans any raw Date string first
+  const cleanMonth=fmtTOMonth(r.month||'');
+  const monthStr=cleanMonth.replace(/\s*\d{4}\s*$/,'').trim();
+  const yearStr=cleanMonth.match(/\d{4}/)?.[0]||'2026';
   const fmtDay=d=>monthStr+' '+d.trim()+', '+yearStr;
   let txt=firstName+',\n\nYour time off request '+action+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+status;
   if(status==='Partial'){
