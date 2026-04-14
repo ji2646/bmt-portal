@@ -9,28 +9,28 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --g:#00A94F;--gd:#007A38;--gl:#00D45F;
-  --bg:#080808;--s1:#111;--s2:#161616;--s3:#1E1E1E;--s4:#252525;
-  --bd:#333;--bd2:#444;
-  --t1:#FFFFFF;--t2:#E0E0E0;--t3:#AAAAAA;
+  --bg:#F8F9FA;--s1:#FFFFFF;--s2:#F3F4F6;--s3:#EAECEF;--s4:#E2E5E9;
+  --bd:#E2E5E9;--bd2:#CBD0D8;
+  --t1:#111827;--t2:#374151;--t3:#374151;
   --bread:#3B82F6;--prog:#F97316;
   --warn:#F59E0B;--err:#EF4444;--ok:#22C55E;
   --purple:#8B5CF6;--indigo:#6366F1;
   --r:12px;--r2:8px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:13px}
+body{font-family:'DM Sans',sans-serif;background:#F8F9FA;color:var(--t1);min-height:100vh;font-size:13px;-webkit-text-size-adjust:100%}
 .app-content{display:none}
-header{background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
+header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
 .hbug{width:32px;height:32px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;color:#000}
 .htitle{font-family:'Bebas Neue';font-size:20px;letter-spacing:4px}
 .hsub{font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700;opacity:.8}
 .hbadge{background:var(--s3);color:var(--t2);font-size:9px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid var(--bd2)}
-.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}}
 
 /* SECTIONS */
-.sec{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
-.sec-head{padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:var(--s2)}
+.sec{background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,169,79,.06)}
+.sec-head{padding:10px 14px;border-bottom:1.5px solid rgba(0,169,79,.2);display:flex;align-items:center;justify-content:space-between;background:rgba(0,169,79,.04)}
 .sec-title{font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g);text-transform:uppercase}
 .sec-meta{font-size:10px;color:var(--t3)}
 .sec-body{padding:14px}
@@ -40,21 +40,21 @@ header{background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-bottom:2px s
 .acct-btn{padding:14px;text-align:center;cursor:pointer;background:var(--s3);color:var(--t3);font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;transition:all .15s;user-select:none;border-right:1px solid var(--bd)}
 .acct-btn:last-child{border-right:none}
 .acct-btn small{font-size:9px;font-weight:400;opacity:.6;display:block;margin-top:3px;text-transform:none;letter-spacing:0}
-.acct-btn.active{background:var(--g);color:#000}
-.acct-btn.active small{opacity:.7}
+.acct-btn.active{background:var(--g);color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.acct-btn.active small{opacity:.9;color:#fff}
 
 /* PLAN */
 .plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--bd);border-radius:var(--r2);overflow:hidden}
 .plan-btn{padding:11px 4px;border-right:1px solid var(--bd);background:var(--s3);cursor:pointer;text-align:center;transition:all .15s;color:var(--t3);user-select:none}
 .plan-btn:last-child{border-right:none}
 .plan-btn:hover{background:var(--s4);color:var(--t2)}
-.plan-btn.active{background:rgba(0,169,79,.12);color:var(--t1)}
+.plan-btn.active{background:var(--g);color:#fff}
 .plan-btn .pn{font-weight:800;font-size:10px;display:block;margin-bottom:2px;line-height:1.2;letter-spacing:.3px}
 .plan-btn .pp{font-family:'Bebas Neue';font-size:20px;color:var(--g);letter-spacing:.5px;display:block}
 .plan-btn.active .pp{color:var(--g)}
 .plan-btn .ps{font-size:9px;color:var(--t3);display:block;margin-top:1px}
-.plan-btn.active .ps{color:var(--t2)}
-.plan-btn.active .pn{color:var(--t1)}
+.plan-btn.active .ps{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.plan-btn.active .pn{color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .ap-row{display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:var(--r2);border:1px solid var(--bd)}
 .toggle{position:relative;width:34px;height:20px;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0;position:absolute}
@@ -72,7 +72,7 @@ input:checked+.tslide:before{transform:translateX(14px)}
 .apo-info{flex:1}
 .apo-lbl{font-size:12px;font-weight:700;color:var(--t2)}
 .apo-hint{font-size:10px;color:var(--t3);margin-top:2px}
-.apo-inp{width:110px;padding:8px 10px;background:var(--s4);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:15px;font-weight:700;text-align:right;outline:none;transition:border-color .15s}
+.apo-inp{width:110px;padding:8px 10px;background:#fff;border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:15px;font-weight:700;text-align:right;outline:none;transition:border-color .15s}
 .apo-inp:focus{border-color:var(--g)}
 
 /* ADD BTNS */
@@ -93,17 +93,17 @@ input:checked+.tslide:before{transform:translateX(14px)}
 .lcard{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
 .lcard-head{padding:9px 12px;display:flex;align-items:center;gap:7px;background:var(--s2);border-bottom:1px solid var(--bd)}
 .lnum{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;letter-spacing:-.5px}
-.lnum.v{background:var(--g);color:#000}
+.lnum.v{background:var(--g);color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
 .lnum.w{background:var(--indigo);color:#fff}
 .lnum.t{background:var(--purple);color:#fff}
-.lnum.h{background:var(--warn);color:#000}
+.lnum.h{background:var(--warn);color:#fff;font-weight:800}
 .lcat{font-size:9px;font-weight:900;color:var(--t3);min-width:40px;letter-spacing:1px;text-transform:uppercase}
 .ltypes{display:flex;gap:0;border:1px solid var(--bd2);border-radius:6px;overflow:hidden}
 .lt{padding:3px 9px;border-right:1px solid var(--bd2);background:var(--s4);color:var(--t3);font-size:9px;font-weight:800;cursor:pointer;transition:all .12s;font-family:'DM Sans';letter-spacing:.5px;user-select:none;text-transform:uppercase}
 .lt:last-child{border-right:none}
 .lt:hover{color:var(--t2);background:var(--s3)}
-.lt.sw.on{background:var(--warn);border-color:var(--warn);color:#000}
-.lt.nw.on{background:var(--g);border-color:var(--g);color:#000}
+.lt.sw.on{background:var(--warn);border-color:var(--warn);color:#fff;font-weight:800}
+.lt.nw.on{background:var(--g);border-color:var(--g);color:#fff;font-weight:800}
 .lt.up.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .byod-chip{padding:3px 9px;border:1px solid var(--bd2);border-radius:6px;cursor:pointer;font-size:9px;font-weight:800;color:var(--t3);transition:all .12s;user-select:none;background:var(--s4);text-transform:uppercase;letter-spacing:.3px}
 .byod-chip.on{background:var(--purple);border-color:var(--purple);color:#fff}
@@ -118,7 +118,7 @@ select,input[type=number]{width:100%;padding:7px 9px;background:var(--s3);border
 button{touch-action:manipulation}
 input,select,textarea{touch-action:manipulation;font-size:max(16px,1em)}
 select:focus,input:focus{border-color:var(--g)}
-select option,select optgroup{background:#1a1a1a}
+select option,select optgroup{background:#fff;color:#111827}
 .fnote{font-size:9px;color:var(--t3);margin-top:1px}
 .qpill{font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.3px;white-space:nowrap;display:inline-block}
 .q-ok{background:rgba(34,197,94,.1);color:var(--ok);border:1px solid rgba(34,197,94,.2)}
@@ -212,12 +212,12 @@ select option,select optgroup{background:#1a1a1a}
 .apo-tile{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;transition:all .12s;user-select:none;border-right:1px solid var(--bd);background:var(--s3)}
 .apo-tile:last-child{border-right:none}
 .apo-tile:hover{background:var(--s4);color:var(--t2)}
-.apo-tile.active{background:var(--g)!important;color:#000!important;font-weight:900;box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)}
+.apo-tile.active{background:var(--g)!important;color:#fff!important;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
 
 .wiz-tile{padding:11px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;transition:all .12s;user-select:none;background:var(--s2)}
 .wiz-tile:hover{background:var(--s3);color:var(--t2)}
-.wiz-tile.on{background:var(--g)!important;color:#000!important;font-weight:900;box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)}
-.wiz-tile.on *{color:rgba(0,0,0,.6)!important}
+.wiz-tile.on{background:var(--g)!important;color:#fff!important;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.wiz-tile.on *{color:#fff!important}
 
 /* Financing type tiles */
 .ftype.on{border-width:2px}
@@ -256,31 +256,104 @@ select option,select optgroup{background:#1a1a1a}
 .deal-card.iphone .deal-tag{color:var(--bread)}
 .deal-name{font-size:10px;font-weight:700;color:var(--t2);margin-bottom:2px;line-height:1.2}
 .deal-price{font-family:'Bebas Neue';font-size:26px;letter-spacing:.5px;line-height:1;margin-bottom:2px}
-.deal-card.android .deal-price{color:var(--g)}
-.deal-card.select .deal-price{color:var(--warn)}
-.deal-card.iphone .deal-price{color:var(--bread)}
+
+
+
 .deal-sub{font-size:9px;color:var(--t3);line-height:1.4}
 @media(max-width:500px){.deal-strip{grid-template-columns:1fr 1fr}}
+.wchip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1}
+.wdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wlbl{font-size:10px;font-weight:700;white-space:nowrap}
+.wchip-past{border-color:#CBD0D8;background:#F3F4F6}.wchip-past .wdot{background:#9CA3AF}.wchip-past .wlbl{color:#9CA3AF}.wchip-past span{color:#9CA3AF}
+.wchip-locked{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.06)}.wchip-locked .wdot{background:#ef4444}.wchip-locked .wlbl{color:#dc2626}.wchip-locked span{color:#dc2626}
+.wchip-current{border-color:#00a94f;background:rgba(0,169,79,.08)}.wchip-current .wdot{background:#00a94f;box-shadow:0 0 0 2px rgba(0,169,79,.1),0 0 0 3px #00a94f}.wchip-current .wlbl{color:#047857}.wchip-current span{color:#047857}
+.wchip-warn{border-color:rgba(249,115,22,.5);background:rgba(249,115,22,.07)}.wchip-warn .wdot{background:#f97316}.wchip-warn .wlbl{color:#C2410C}.wchip-warn span{color:#C2410C}
+.wchip-open{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.07)}.wchip-open .wdot{background:#3b82f6}.wchip-open .wlbl{color:#2563EB}.wchip-open span{color:#2563EB}
+.wchip-amber{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.07)}.wchip-amber .wdot{background:#f59e0b}.wchip-amber .wlbl{color:#92400E}.wchip-amber span{color:#92400E}
+.wchip-sel{outline:2px solid;outline-offset:2px}
+.wchip-current.wchip-sel{outline-color:#00a94f}.wchip-warn.wchip-sel{outline-color:#f97316}.wchip-open.wchip-sel{outline-color:#3b82f6}.wchip-amber.wchip-sel{outline-color:#f59e0b}.wchip-locked.wchip-sel{outline-color:#ef4444}.wchip-past.wchip-sel{outline-color:#374151}
+
+html.dark-mode{
+  --bg:#080808;--s1:#111;--s2:#161616;--s3:#1E1E1E;--s4:#252525;
+  --bd:#333;--bd2:#444;
+  --t1:#FFFFFF;--t2:#E0E0E0;--t3:#AAAAAA;
+}
+/* Dark mode — body & layout */
+html.dark-mode body{background:#080808 !important;color:#fff}
+html.dark-mode .wrap{background:#080808}
+html.dark-mode #app-content{background:#080808}
+html.dark-mode #login-screen{background:#080808 !important}
+
+/* Dark mode — header */
+html.dark-mode header{background:rgba(0,0,0,.95) !important;box-shadow:none}
+html.dark-mode header button{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
+
+/* Dark mode — sections */
+html.dark-mode .sec{background:#111 !important;border-color:#333 !important;box-shadow:none}
+html.dark-mode .sec-head{background:#161616 !important;border-bottom-color:#333 !important}
+
+/* Dark mode — login card */
+html.dark-mode .login-card{background:#111 !important;border-color:#222 !important;box-shadow:none}
+html.dark-mode .login-body{background:#111}
+html.dark-mode .login-field input{background:#1a1a1a !important;border-color:#2a2a2a !important;color:#fff !important}
+html.dark-mode select option,html.dark-mode select optgroup{background:#1a1a1a;color:#fff}
+
+/* Dark mode — menu buttons */
+html.dark-mode #ls-menu button:not(#login-btn){background:#1E1E1E !important;border-color:#333 !important;color:#E0E0E0 !important}
+html.dark-mode #ls-menu #btn-activity{background:#1E1E1E !important;border-color:#333 !important;color:#E0E0E0 !important}
+html.dark-mode #ls-menu button[onclick="doLogout()"]{background:transparent !important;border-color:#333 !important;color:#AAAAAA !important}
+html.dark-mode #ls-menu-name{color:#AAAAAA !important}
+
+/* Dark mode — 2FA screen */
+html.dark-mode #ls-2fa label{color:#AAAAAA !important}
+html.dark-mode #ls-2fa input{background:#1a1a1a !important;border-color:#2a2a2a !important;color:#fff !important}
+html.dark-mode #ls-2fa button:first-child{background:#1E1E1E !important;border-color:#333 !important;color:#AAAAAA !important}
+
+/* Dark mode — plan/acct buttons */
+html.dark-mode .acct-btn{background:#1E1E1E !important;color:#AAAAAA !important}
+html.dark-mode .acct-btn.active{background:var(--g) !important;color:#fff !important}
+html.dark-mode .plan-btn{background:#1E1E1E !important;color:#AAAAAA !important}
+html.dark-mode .plan-btn.active{background:var(--g) !important;color:#fff !important}
+
+/* Dark mode — deal cards */
+html.dark-mode .deal-card{background:#111 !important;border-color:#333 !important}
+html.dark-mode .deal-strip-wrap{background:#111}
+html.dark-mode .deal-tag{color:#AAAAAA}
+html.dark-mode .deal-sub{color:#AAAAAA}
+
+/* Dark mode — wchip */
+html.dark-mode .wchip-past{border-color:#3a3a3a !important;background:rgba(255,255,255,.03) !important}
+html.dark-mode .wchip-past .wdot{background:#4a4a4a !important}
+html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.dark-mode) {
+    --bg:#F8F9FA;--s1:#FFFFFF;--s2:#F3F4F6;--s3:#EAECEF;--s4:#E2E5E9;
+    --bd:#E2E5E9;--bd2:#CBD0D8;
+    --t1:#111827;--t2:#374151;--t3:#374151;
+  }
+  html:not(.dark-mode) body { background:#F8F9FA !important; }
+}
 </style>
 </head>
 <body>
 
 <style>
 #login-screen{
-  position:fixed;inset:0;background:#080808;z-index:99999;
+  position:fixed;inset:0;background:#F8F9FA;z-index:99999;
   display:flex;align-items:center;justify-content:center;
   font-family:'DM Sans',sans-serif;
 }
-.login-card{width:300px;background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;}
+.login-card{width:300px;background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);}
 .login-header{background:linear-gradient(135deg,#00a94f,#00c85f);padding:22px 22px 18px;}
 .login-header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#000;margin:0 0 3px;letter-spacing:.5px;}
 .login-header p{font-size:10px;font-weight:700;color:rgba(0,0,0,.5);margin:0;}
 .login-body{padding:20px 22px 22px;}
-.login-field label{display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px;}
-.login-field input{width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none;transition:border-color .15s;}
+.login-field label{display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px;}
+.login-field input{width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none;transition:border-color .15s;}
 .login-field input:focus{border-color:#00a94f;}
 #login-error{display:none;font-size:10px;color:#ef4444;margin:8px 0 10px;font-weight:700;}
-#login-btn{width:100%;padding:11px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;margin-top:14px;}
+#login-btn{width:100%;padding:11px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;margin-top:14px;}
 .login-footer{font-size:9px;color:#333;text-align:center;margin-top:12px;letter-spacing:.5px;text-transform:uppercase;}
 </style>
 
@@ -291,7 +364,6 @@ select option,select optgroup{background:#1a1a1a}
       <!-- STEP 1: UID -->
       <div id="ls-uid">
         <div class="login-field">
-          <label>UID</label>
           <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
         <div id="login-error">UID not recognized or access not granted</div>
@@ -301,34 +373,41 @@ select option,select optgroup{background:#1a1a1a}
       <!-- STEP 2: Menu -->
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
-        <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
-        <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">🕐 Time Management</button>
-        <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px">📋 Activity</button>
-        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#555;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
+        <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
+        <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
+        <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
+        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
       <div id="ls-2fa" style="display:none">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:12px">Verify Identity</div>
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:12px">Verify Identity</div>
         <div class="login-field" style="margin-bottom:10px">
           <label>Store #</label>
-          <input type="text" id="act-store" placeholder="e.g. 775" autocomplete="off" autocorrect="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="text" id="act-store" placeholder="e.g. 775" autocomplete="off" autocorrect="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
         </div>
         <div class="login-field" style="margin-bottom:4px">
           <label>PIN</label>
-          <input type="password" id="act-pin" placeholder="••••••" onkeydown="if(event.key==='Enter')verify2FA()" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="password" id="act-pin" placeholder="••••••" onkeydown="if(event.key==='Enter')verify2FA()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
         </div>
         <div id="act-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 4px;font-weight:700">Incorrect store or PIN</div>
         <div style="display:flex;gap:8px;margin-top:14px">
-          <button onclick="showMenu()" style="flex:1;padding:10px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#aaa;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
-          <button onclick="verify2FA()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Continue</button>
+          <button onclick="showMenu()" style="flex:1;padding:10px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#6B7280;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
+          <button onclick="verify2FA()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Continue</button>
         </div>
       </div>
 
 
     </div>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#444;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-09APR2026-0717PM</div>
+  <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Sans',sans-serif">
+    <span style="font-size:10px;color:#9CA3AF;font-weight:600" id="theme-label">Light</span>
+    <div onclick="toggleTheme()" id="theme-toggle" style="width:40px;height:22px;background:#E2E5E9;border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">
+      <div id="theme-knob" style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>
+    </div>
+    <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
+  </div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-13APR2026-0700PM</div>
 </div>
 
 <script>
@@ -361,8 +440,8 @@ function resetSessionTimer(){
       <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
         <div style="font-size:28px;margin-bottom:12px">⏱</div>
         <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Session Expired</div>
-        <div style="font-size:12px;color:#aaa;margin-bottom:24px">Logged out after 10 minutes of inactivity</div>
-        <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
+        <div style="font-size:12px;color:#4B5563;margin-bottom:24px">Logged out after 10 minutes of inactivity</div>
+        <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
       </div>`);
     setTimeout(()=>location.reload(), 30000);
   }, 10*60*1000);
@@ -381,8 +460,8 @@ function doLogout(){
     <div style="position:fixed;inset:0;background:#080808;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif">
       <div style="font-size:28px;margin-bottom:12px">👋</div>
       <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Signed Out</div>
-      <div style="font-size:12px;color:#aaa;margin-bottom:24px">You've been signed out successfully.</div>
-      <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
+      <div style="font-size:12px;color:#4B5563;margin-bottom:24px">You've been signed out successfully.</div>
+      <button onclick="location.reload()" style="padding:12px 32px;background:#00a94f;border:none;border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Sign In Again</button>
     </div>`);
   setTimeout(()=>location.reload(),8000);
 }
@@ -392,13 +471,13 @@ function showModal({icon='⚠️',title,msg='',confirmLabel,confirmColor='var(--
   const id='_modal_'+Date.now();
   const div=document.createElement('div');
   div.id=id;
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
   const btns=confirmLabel
     ?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <button onclick="document.getElementById('${id}').remove()" style="padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t2);font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer">${cancelLabel}</button>
         <button id="${id}-ok" style="padding:10px;background:${confirmColor};border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">${confirmLabel}</button>
       </div>`
-    :`<button onclick="document.getElementById('${id}').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">OK</button>`;
+    :`<button onclick="document.getElementById('${id}').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">OK</button>`;
   div.innerHTML=`<div style="background:var(--s1);border:1px solid ${borderColor};border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
     <div style="font-size:28px;margin-bottom:12px">${icon}</div>
     <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:${msg?'8':'20'}px">${title}</div>
@@ -412,7 +491,7 @@ function showModal({icon='⚠️',title,msg='',confirmLabel,confirmColor='var(--
 // Non-blocking toast for brief inline feedback
 function showToast(msg){
   const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--bd2);border-radius:8px;color:var(--t2);font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;padding:10px 20px;z-index:9999999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.5)';
+  t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--bd2);border-radius:8px;color:var(--t2);box-shadow:0 4px 16px rgba(0,0,0,.12);font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;padding:10px 20px;z-index:9999999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.5)';
   t.textContent=msg;document.body.appendChild(t);
   setTimeout(()=>t.remove(),2500);
 }
@@ -596,7 +675,7 @@ let _actSessions=[];
 
 function showLoginError(uid, type){
   document.getElementById('login-screen').innerHTML=`
-    <div style="background:#8B0000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
+    <div style="background:#FEF2F2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
       <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:12px">${type} UID</div>
       <div style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:32px">Contact admin for further assistance.</div>
       <button onclick="location.reload()" style="background:#fff;color:#8B0000;font-weight:900;font-size:15px;padding:14px 36px;border:none;border-radius:8px;cursor:pointer">↺ Try Again</button>
@@ -661,12 +740,14 @@ function launchRepActivity(){
   document.getElementById('rep-act-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
   repActLoadData();
   startSessionTracking();
+  setTimeout(()=>buildWeekChips('ra-to-week-chips',_raToWeekChip,null),100);
 }
 
 function launchTimeMgmt(){
   document.getElementById('login-screen').style.display='none';
   document.body.style.overflow='';
   setTimeout(buildTODayChips,100);
+  setTimeout(()=>buildWeekChips('tm-to-week-chips',null,null),100);
   document.getElementById('tm-overlay').style.display='block';
   document.getElementById('tm-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
   startSessionTracking();
@@ -688,6 +769,12 @@ function closeRepActivity(){
   document.body.style.overflow='hidden';
 }
 
+function closeQuoteTool(){
+  document.getElementById('app-content').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.body.style.overflow='hidden';
+  showMenu();
+}
 function launchQuoteTool(){
   // Under construction for specific UIDs
   const underConstruction=[];
@@ -698,7 +785,7 @@ function launchQuoteTool(){
     el.style.cssText='position:fixed;inset:0;background:#7C6000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:DM Sans,sans-serif;padding:40px;text-align:center';
     el.innerHTML=`<div style="font-size:48px;margin-bottom:16px">🚧</div>
       <div style="font-size:24px;font-weight:900;color:#fff;margin-bottom:8px">Coming Soon</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:32px">Quote Tool is not yet available for your account.</div>
+      <div style="font-size:13px;color:rgba(0,0,0,.6);margin-bottom:32px">Quote Tool is not yet available for your account.</div>
       <button onclick="this.closest('div[style]').remove();document.getElementById('login-screen').style.display='flex';document.body.style.overflow='hidden';" style="padding:12px 32px;background:#fff;color:#7C6000;font-family:DM Sans;font-size:13px;font-weight:900;border:none;border-radius:8px;cursor:pointer">← Back</button>`;
     document.body.appendChild(el);
     return;
@@ -739,6 +826,22 @@ function launchActivity(){
   setTimeout(actLoadData, 500);
 }
 
+
+function toggleTheme(){
+  const isDark=document.documentElement.classList.toggle('dark-mode');
+  const knob=document.getElementById('theme-knob');
+  const tog=document.getElementById('theme-toggle');
+  const lbl=document.getElementById('theme-label');
+  if(isDark){
+    knob.style.transform='translateX(18px)';
+    tog.style.background='#111827';
+    lbl.style.color='#9CA3AF';
+  } else {
+    knob.style.transform='translateX(0)';
+    tog.style.background='#E2E5E9';
+    lbl.style.color='#9CA3AF';
+  }
+}
 function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
   const err=document.getElementById('login-error');
@@ -776,25 +879,26 @@ function doLogin(){
 document.body.style.overflow='hidden';
 </script>
 
-<div class="app-content" id="app-content">
+<div class="app-content" id="app-content" style="background:#F8F9FA;min-height:100vh">
 <div class="hi-banner">
   <div style="padding:8px 14px;border-right:1px solid rgba(139,92,246,.3);display:flex;flex-direction:column;gap:2px">
     <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:1px">📡 AT&T Internet Air</div>
     <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$47/mo + taxes w/ AutoPay!</div>
-    <div style="font-size:8px;color:rgba(255,255,255,.5);line-height:1.3">Any Govt ID Accepted · Only at Cricket</div>
-    <div style="font-size:7px;color:rgba(255,255,255,.3);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
+    <div style="font-size:8px;color:rgba(255,255,255,.6);line-height:1.3">Any Govt ID Accepted · Only at Cricket</div>
+    <div style="font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
   </div>
   <div style="padding:8px 14px;display:flex;flex-direction:column;gap:2px;background:rgba(0,169,79,.04)">
     <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin-bottom:1px">🌐 AT&T Fiber — NEW PROMO</div>
     <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$15 OFF 300 Mbps or Higher!</div>
-    <div style="font-size:8px;color:rgba(255,255,255,.5);line-height:1.3">New customers · +taxes · Only at Cricket</div>
-    <div style="font-size:7px;color:rgba(255,255,255,.3);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
+    <div style="font-size:8px;color:rgba(255,255,255,.6);line-height:1.3">New customers · +taxes · Only at Cricket</div>
+    <div style="font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
   </div>
 </div>
 <header>
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/3/2026</div></div>
   </div>
+  <button onclick="closeQuoteTool()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation">&#8592; Back</button>
 </header>
 <div class="wrap">
 <div id="left">
@@ -1519,7 +1623,7 @@ function buildCard(l,idx){
 
 function featTile(label,sub,on,onclick,color){
   const bg=on?color:'var(--s3)';
-  const fg=on?'#000':'var(--t3)';
+  const fg=on?'#fff':'var(--t3)';
   const shadow=on?';box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)':'';
   return `<div class="apo-tile${on?' active':''}" onclick="${onclick}" style="border-right:1px solid var(--bd);background:${bg}${shadow}">
     <div style="font-weight:800;color:${fg}">${label}</div>
@@ -1746,6 +1850,12 @@ let _DL = {
 let _dealGlobalLt=null; // null = individual, 'switcher'/'new'/'upgrade' = all locked
 let _dealSelAp=true;
 
+
+function ltColor(lt){
+  if(lt==='switcher') return 'var(--warn)';
+  if(lt==='upgrade') return 'var(--indigo)';
+  return 'var(--g)'; // new
+}
 function setDealLt(card, lt){ _DL[card].lt=lt; _dealGlobalLt=null; renderDealStrip(); }
 function setDealDev(card, dev){ _DL[card].dev=dev; renderDealStrip(); }
 function setDealGlobalLt(lt){
@@ -1772,7 +1882,7 @@ function calcDeal(devId, lt, apo, protect, planId, ap){
 
 function ltBtn(card, lbl, lt, color){
   const on=_DL[card].lt===lt;
-  return `<span onclick="event.stopPropagation();setDealLt('${card}','${lt}')" style="padding:2px 7px;font-size:9px;font-weight:800;background:${on?color:'transparent'};color:${on?'#000':'var(--t3)'};cursor:pointer">${lbl}</span>`;
+  return `<span onclick="event.stopPropagation();setDealLt('${card}','${lt}')" style="padding:2px 7px;font-size:9px;font-weight:800;background:${on?color:'transparent'};color:${on?'#fff':'var(--t3)'};font-weight:${on?'900':'800'};cursor:pointer;text-shadow:${on?'0 1px 2px rgba(0,0,0,.2)':'none'}">${lbl}</span>`;
 }
 function ltRow3(card, colors){
   return `<div style="display:block;margin-bottom:4px"><div onclick="event.stopPropagation()" style="display:inline-flex;gap:0;border:1px solid var(--bd2);border-radius:20px;overflow:hidden;cursor:pointer">
@@ -1789,12 +1899,12 @@ function ltRow2(card, colors){
 }
 function devPick(card, opts){
   return `<div onclick="event.stopPropagation()" style="display:inline-flex;gap:0;margin-bottom:4px;border:1px solid var(--bd2);border-radius:6px;overflow:hidden;width:100%">
-    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;text-align:center;padding:3px 4px;font-size:9px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#000':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2">${o.lbl}</span>`).join('')}
+    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;text-align:center;padding:3px 4px;font-size:9px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#fff':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2">${o.lbl}</span>`).join('')}
   </div>`;
 }
 function devPick4(card, opts){
   return `<div onclick="event.stopPropagation()" style="display:inline-flex;gap:0;margin-bottom:4px;border:1px solid var(--bd2);border-radius:6px;overflow:hidden;width:100%">
-    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;text-align:center;padding:2px 2px;font-size:7.5px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#000':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2">${o.lbl}</span>`).join('')}
+    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;text-align:center;padding:2px 2px;font-size:7.5px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#fff':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2">${o.lbl}</span>`).join('')}
   </div>`;
 }
 const APD_NOTE=`<div style="flex:1"></div>`;
@@ -1810,7 +1920,7 @@ function renderDealStrip(){
     const opts=[{lt:'switcher',lbl:'SW',col:wc},{lt:'new',lbl:'NEW',col:gc},{lt:'upgrade',lbl:'UP',col:'var(--indigo)'}];
     tog.innerHTML=opts.map(o=>{
       const on=_dealGlobalLt===o.lt;
-      return `<span onclick="setDealGlobalLt('${o.lt}')" style="padding:4px 12px;font-size:10px;font-weight:800;background:${on?o.col:'transparent'};color:${on?'#000':'var(--t3)'};cursor:pointer;touch-action:manipulation">${o.lbl}</span>`;
+      return `<span onclick="setDealGlobalLt('${o.lt}')" style="padding:4px 12px;font-size:10px;font-weight:800;background:${on?o.col:'transparent'};color:${on?'#fff':'var(--t3)'};cursor:pointer;touch-action:manipulation">${o.lbl}</span>`;
     }).join('');
   }
 
@@ -1894,9 +2004,9 @@ function renderDealStrip(){
   };
   const pppNone=(devPr)=>{
     const msg=devPr>0?'Requires anchor device of $149.99+ for PPP':'Not PPP Eligible — Device is $0';
-    const color=devPr>0?'rgba(249,115,22,.6)':'rgba(255,255,255,.25)';
-    const bg=devPr>0?'rgba(249,115,22,.06)':'rgba(255,255,255,.03)';
-    const border=devPr>0?'rgba(249,115,22,.2)':'rgba(255,255,255,.08)';
+    const color=devPr>0?'#C2410C':'#9CA3AF';
+    const bg=devPr>0?'rgba(249,115,22,.06)':'rgba(0,0,0,.02)';
+    const border=devPr>0?'rgba(249,115,22,.2)':'rgba(0,0,0,.06)';
     return `<div style="background:${bg};border:1px solid ${border};border-radius:4px;padding:4px 8px;margin-top:4px;display:flex;align-items:center">
       <div style="font-size:8px;font-weight:700;color:${color};line-height:1.3">${msg}</div>
     </div>`;
@@ -1907,7 +2017,7 @@ function renderDealStrip(){
       <div class="deal-tag">📱 iPhone Deals</div>
       ${devPick('iphone',[{id:'i16e_128',lbl:'iPhone 16e'},{id:'i15_128',lbl:'iPhone 15'},{id:'i13_128',lbl:'iPhone 13'}])}
       ${ltRow3('iphone',['var(--warn)',gc,'var(--indigo)'])}
-      <div class="deal-price">${fmt(Math.round(c1otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c1.lt)}">${fmt(Math.round(c1otd*100)/100)}</div>
       <div class="deal-sub">Supreme UNL · ${c1.lt==='upgrade'?'$90':'$45'} APD · Protect</div>
       ${c1.lt==='upgrade'?`<div style="font-size:8px;color:var(--g);margin-top:2px;font-weight:700">✓ Qualified Upgrade</div>`:`<div style="font-size:8px;color:#60a5fa;margin-top:2px;opacity:.8">⚠ CHECKID · Max 4 every 3 years</div>`}
       ${c1pr>=149.99?pppSub(c1pr,c1apo):pppNone(c1pr)}
@@ -1917,7 +2027,7 @@ function renderDealStrip(){
       <div class="deal-tag">📱 Latest from Apple</div>
       ${devPick4('i17e',[{id:'iair_256',lbl:'iPhone\nAir'},{id:'i17_256',lbl:'iPhone\n17'},{id:'i17e_256',lbl:'iPhone\n17e'},{id:'i17pm_256',lbl:'17\nPro Max'}])}
       ${ltRow3('i17e',['var(--warn)',gc,'var(--indigo)'])}
-      <div class="deal-price">${fmt(Math.round(c2otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c2.lt)}">${fmt(Math.round(c2otd*100)/100)}</div>
       <div class="deal-sub">${c2is17e?'Supreme UNL · $90':'$130'} APD · Protect</div>
       ${c2.lt==='upgrade'?`<div style="font-size:8px;color:var(--g);margin-top:2px;font-weight:700">✓ Qualified Upgrade</div>`:c2is17e?`<div style="font-size:8px;color:#60a5fa;margin-top:2px;opacity:.8">⚠ CHECKID · Max 4 every 3 years</div>`:`<div style="font-size:8px;margin-top:2px;opacity:0">·</div>`}
       ${c2pr>=149.99?pppSub(c2pr,c2apo):pppNone(c2pr)}
@@ -1927,7 +2037,7 @@ function renderDealStrip(){
       <div class="deal-tag">📱 Mid-Tier Android</div>
       ${devPick('a36',[{id:'a36',lbl:'Galaxy A36'},{id:'medge',lbl:'edge 2025'},{id:'mgsty',lbl:'g stylus 2025'}])}
       ${ltRow3('a36',['var(--warn)',gc,'var(--indigo)'])}
-      <div class="deal-price">${fmt(Math.round(c3otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c3.lt)}">${fmt(Math.round(c3otd*100)/100)}</div>
       <div class="deal-sub">${c3plan?c3plan.full+' · ':'Supreme UNL · '}${c3.lt==='upgrade'?'$90':'$45'} APD · Protect</div>
       <div style="font-size:8px;margin-top:2px;opacity:0">·</div>
       ${c3pr>=149.99?pppSub(c3pr,c3.lt==='upgrade'?90:45):pppNone(c3pr)}
@@ -1937,7 +2047,7 @@ function renderDealStrip(){
       <div class="deal-tag">📱 High End Android</div>
       ${devPick('hiend',[{id:'razr',lbl:'Razr 2025'},{id:'s25',lbl:'Galaxy S25'},{id:'s25fe',lbl:'Galaxy S25 FE'}])}
       ${ltRow3('hiend',['var(--warn)',gc,'var(--indigo)'])}
-      <div class="deal-price">${fmt(Math.round(c4otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c4.lt)}">${fmt(Math.round(c4otd*100)/100)}</div>
       <div class="deal-sub">Supreme UNL · $90 APD · Protect</div>
       ${c4.lt==='upgrade'?`<div style="font-size:8px;color:var(--g);margin-top:2px;font-weight:700">✓ Qualified Upgrade</div>`:`<div style="font-size:8px;margin-top:2px;opacity:0">·</div>`}
       ${c4pr>=149.99?pppSub(c4pr,90):pppNone(c4pr)}
@@ -1947,7 +2057,7 @@ function renderDealStrip(){
       <div class="deal-tag">📱 Androids Under $300</div>
       ${devPick('budget',[{id:'mgplay',lbl:'moto g play 2026'},{id:'a16',lbl:'Galaxy A16'},{id:'a17',lbl:'Galaxy A17'}])}
       ${ltRow3('budget',['var(--warn)',gc,'var(--indigo)'])}
-      <div class="deal-price">${fmt(Math.round(c5otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c5.lt)}">${fmt(Math.round(c5otd*100)/100)}</div>
       <div class="deal-sub">${c5plan?c5plan.full+' · ':''}${c5.lt==='upgrade'?'$60':'$45'} APD · Protect</div>
       <div style="font-size:8px;margin-top:2px;opacity:0">·</div>
       ${c5pr>=149.99?pppSub(c5pr,c5.lt==='upgrade'?60:45):pppNone(c5pr)}
@@ -1957,7 +2067,7 @@ function renderDealStrip(){
       <div class="deal-tag" style="color:var(--warn)">⭐ Select Unlimited Deals</div>
       ${devPick('select',[{id:'mgplay',lbl:'g play 2026'},{id:'icon',lbl:'Icon 2026'},{id:'iconp',lbl:'Icon Plus 2026'}])}
       ${ltRow2('select',['var(--warn)',gc])}
-      <div class="deal-price" style="color:var(--warn)">${fmt(Math.round(c6otd*100)/100)}</div>
+      <div class="deal-price" style="color:${ltColor(c6.lt)}">${fmt(Math.round(c6otd*100)/100)}</div>
       <div class="deal-sub">${c6name} · $40 Select UNL · Protect</div>
       <div style="font-size:8px;margin-top:2px;opacity:0">·</div>
       ${c6pr>=149.99?pppSub(c6pr,0):pppNone(c6pr)}
@@ -2541,7 +2651,7 @@ function renderSummary(c){
     </div>
 
     <button class="reset-btn" onclick="resetAll()">↺ Reset Calculator</button>
-    <button onclick="document.getElementById('rsm-overlay').style.display='flex'" style="width:100%;padding:10px;margin-top:6px;background:linear-gradient(135deg,#00a94f,#00c85f);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer">📲 Generate Price Card</button>
+    <button onclick="document.getElementById('rsm-overlay').style.display='flex'" style="width:100%;padding:10px;margin-top:6px;background:linear-gradient(135deg,#00a94f,#00c85f);border:none;border-radius:var(--r2);color:#fff;font-family:'DM Sans';font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer">📲 Generate Price Card</button>
 `;
 }
 
@@ -2820,7 +2930,7 @@ function showDMCard(){
       });
       const planOnlyMo=planCost+tabLines.length*TABLET_PLAN+watchLines.filter(l=>l.lt!=='upgrade').length*WATCH_PLAN+hotspotLines.length*15+allV.reduce((s,l)=>{if(l.protect){const dev=l.byod?null:devById(l.device,'v');s+=protectCost(dev?dev.frp:0);}if(l.upgplus)s+=5;if(l.intl)s+=10;if(l.hotspot&&l.hsRecur)s+=10;return s;},0);
       const monthlyLabel=S.acct==='aal'?'Added to Bill':'Monthly Service Charges';
-      tileData.push({l:monthlyLabel,v:fmt(planOnlyMo)+'/mo',c:'rgba(255,255,255,.4)',span:true});
+      tileData.push({l:monthlyLabel,v:fmt(planOnlyMo)+'/mo',c:'rgba(0,0,0,.45)',span:true});
     }
     let pppSection='';
     if(c.hasQual&&S.finOn){
@@ -2863,8 +2973,8 @@ function showDMCard(){
 
       const waiverNote='';
       pppSection=`
-        <div style="padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)">
-          <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px">Phone Payment Plan</div>
+        <div style="padding:14px 18px;border-top:1px solid rgba(0,0,0,.06)">
+          <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.2);margin-bottom:10px">Phone Payment Plan</div>
           <!-- Progressive: full width -->
           <div style="${tileStyle('#f97316')}margin-bottom:8px">
             ${lbl('Progressive Leasing','#f97316')}
@@ -2893,14 +3003,14 @@ function showDMCard(){
       const includes=[];
       if(S.apoPerDevice>0) includes.push(fmt(S.apoPerDevice)+' APO × '+apoDevCount+' device'+(apoDevCount>1?'s':''));
       Object.values(swCounts).forEach(s=>includes.push(s.count+'x '+s.n+' — '+fmt(s.price*(s.count||1))));
-      tileData.push({l:'Total Accessories',v:fmt(totalAcc),c:'rgba(255,255,255,.4)'});
-      tileData.push({l:'APO',v:fmt(effectivePerDev),c:'rgba(255,255,255,.4)'});
+      tileData.push({l:'Total Accessories',v:fmt(totalAcc),c:'rgba(0,0,0,.45)'});
+      tileData.push({l:'APO',v:fmt(effectivePerDev),c:'rgba(0,0,0,.45)'});
     }
     // Features now inside Monthly Service Charges tile
     // Tablet/Watch plans now inside Monthly tile
     if(watchCreditStr) tileData.push({l:'Watch Credits',v:watchCreditStr,c:'#00c85f',small:true,span:true});
 
-    const mkTile=(d,span)=>`<div style="background:#161616;border-right:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>${d.small?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`:`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}${d.sub?`<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:5px;line-height:1.6">Includes:<br>${d.sub}</div>`:''}</div>`;
+    const mkTile=(d,span)=>`<div style="background:#161616;border-right:1px solid rgba(0,0,0,.05);border-bottom:1px solid rgba(0,0,0,.05);padding:12px 14px;${span?'grid-column:span 2;border-right:none;':''}"><div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${d.c};margin-bottom:5px">${d.l}</div>${d.small?`<div style="font-size:11px;font-weight:700;color:#fff;line-height:1.6">${d.v}</div>`:`<div style="font-family:'Bebas Neue';font-size:26px;color:#fff;line-height:1">${d.v}</div>`}${d.sub?`<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:5px;line-height:1.6">Includes:<br>${d.sub}</div>`:''}</div>`;
     const normalTiles=tileData.filter(d=>!d.span);
     const spanTiles=tileData.filter(d=>d.span);
     const isOdd=normalTiles.length%2===1;
@@ -2924,7 +3034,7 @@ function showDMCard(){
       if(needsIdCheck){
         req+=' · CHECKID required · Max 4 every 3 years — verify customer\'s last iPhone deal date';
       }
-      wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(255,255,255,.3);line-height:1.5;border-bottom:1px solid rgba(255,255,255,.06)">${req}</div>`;
+      wide=`<div style="padding:8px 14px;font-size:9px;color:rgba(0,0,0,.2);line-height:1.5;border-bottom:1px solid rgba(0,0,0,.04)">${req}</div>`;
       // SW act fee waiver note
       const swCount=voiceLines.filter(l=>l.lt==='switcher').length;
 
@@ -2945,11 +3055,11 @@ function showDMCard(){
         ${d.headlineSub?`<div style="font-size:10px;font-weight:800;color:rgba(0,0,0,.5);margin-top:2px;letter-spacing:.3px">${d.headlineSub}</div>`:''}
         <div style="margin-top:8px">${d.sub}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,.06)">${d.tilesHtml}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid rgba(0,0,0,.04)">${d.tilesHtml}</div>
       ${d.wide}${d.pppSection||''}
       <div style="padding:7px 16px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.18)">Internal Use Only</div>
-        <div id="dm-footer-date" style="font-size:9px;font-weight:700;color:rgba(255,255,255,.25)"></div>
+        <div style="font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.12)">Internal Use Only</div>
+        <div id="dm-footer-date" style="font-size:9px;font-weight:700;color:rgba(0,0,0,.18)"></div>
       </div>
     </div>`;
   };
@@ -3074,9 +3184,9 @@ function saveDMPng(){
       const imgUrl=canvas.toDataURL('image/png');
       // Show full-screen so user can long-press to save to Photos
       const overlay=document.createElement('div');
-      overlay.style.cssText='position:fixed;inset:0;background:#000;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+      overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
       overlay.innerHTML=`
-        <div style="font-size:11px;font-weight:700;color:#aaa;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase">
+        <div style="font-size:11px;font-weight:700;color:#4B5563;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase">
           Long press image to Save to Photos
         </div>
         <img src="${imgUrl}" style="max-width:100%;max-height:80vh;border-radius:10px;box-shadow:0 0 40px rgba(0,169,79,.2)"/>
@@ -3184,32 +3294,32 @@ try {
 </div><!-- end app-content -->
 
 <!-- RSM LOGIN OVERLAY -->
-<div id="rsm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9998;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="width:300px;background:#111;border:1px solid #222;border-radius:12px;overflow:hidden">
+<div id="rsm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="width:300px;background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.14)">
     <div style="background:linear-gradient(135deg,#00a94f,#00c85f);padding:20px 22px 16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#000;letter-spacing:.5px">Price Card</div>
-      <div style="font-size:10px;font-weight:700;color:rgba(0,0,0,.5)">RSM Access Required</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:.5px">Price Card</div>
+      <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">RSM Access Required</div>
     </div>
     <div style="padding:20px 22px 22px">
       <div style="margin-bottom:12px">
-        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px">Store #</label>
-        <input type="text" id="rsm-user" placeholder="e.g. 775" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
+        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px">Store #</label>
+        <input type="text" id="rsm-user" placeholder="e.g. 775" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
       </div>
       <div style="margin-bottom:4px">
-        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:6px">PIN</label>
-        <input type="password" id="rsm-pin" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRSMLogin()" style="width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
+        <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px">PIN</label>
+        <input type="password" id="rsm-pin" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRSMLogin()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
       </div>
       <div id="rsm-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 10px;font-weight:700">Incorrect credentials</div>
       <div style="display:flex;gap:8px;margin-top:14px">
-        <button onclick="document.getElementById('rsm-overlay').style.display='none'" style="flex:1;padding:10px;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#aaa;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Cancel</button>
-        <button onclick="doRSMLogin()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#000;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">Sign In</button>
+        <button onclick="document.getElementById('rsm-overlay').style.display='none'" style="flex:1;padding:10px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#374151;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Cancel</button>
+        <button onclick="doRSMLogin()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">Sign In</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- DM CARD MODAL -->
-<div id="dm-overlay" onclick="if(event.target===this)closeDMCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;overflow-y:auto;padding:20px;backdrop-filter:blur(4px)">
+<div id="dm-overlay" onclick="if(event.target===this)closeDMCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;overflow-y:auto;padding:20px;backdrop-filter:blur(4px)">
   <div style="max-width:400px;margin:0 auto">
     <!-- Cards rendered here -->
     <div id="dm-cards-container"></div>
@@ -3217,9 +3327,9 @@ try {
     <div id="dm-card-date" style="display:none"></div>
     <!-- Buttons -->
     <div style="display:flex;gap:8px;margin-top:8px">
-      <button onclick="closeDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #333;border-radius:var(--r2);color:#aaa;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Close</button>
+      <button onclick="closeDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #333;border-radius:var(--r2);color:#4B5563;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Close</button>
       <button id="dm-copy-btn" onclick="copyDMCard()" style="flex:1;padding:11px;background:#1a1a1a;border:1px solid #444;border-radius:var(--r2);color:#ddd;font-family:'DM Sans';font-size:11px;font-weight:700;cursor:pointer">Copy Text</button>
-      <button id="dm-save-btn" onclick="saveDMPng()" style="flex:2;padding:11px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:11px;font-weight:900;cursor:pointer">Save PNG</button>
+      <button id="dm-save-btn" onclick="saveDMPng()" style="flex:2;padding:11px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:'DM Sans';font-size:11px;font-weight:900;cursor:pointer">Save PNG</button>
     </div>
   </div>
 </div>
@@ -3229,7 +3339,7 @@ try {
 <div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;font-family:'DM Sans',sans-serif">
 
   <!-- Header -->
-  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+  <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div>
       <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
       <div style="font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700" id="act-header-store"></div>
@@ -3262,7 +3372,7 @@ try {
         </div>
         <!-- Filter tabs -->
         <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);overflow-x:auto">
-          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#000;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
+          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
           <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">QTool</button>
           <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Main</button>
           <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Activity</button>
@@ -3271,7 +3381,7 @@ try {
         </div>
         <!-- Search + Sort -->
         <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
-          <input id="act-search" type="text" placeholder="Search name or UID..." oninput="actRenderList()" style="padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
+          <input id="act-search" type="text" placeholder="Search name or UID..." oninput="actRenderList()" style="padding:8px 12px;background:#fff;border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
           <select id="act-sort" onchange="actRenderList()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -3283,6 +3393,7 @@ try {
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
+          <div id="dm-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3305,6 +3416,7 @@ try {
 
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
+          <div id="dm-tc-cycle-chips" style="display:flex;gap:6px;overflow-x:auto;padding:8px 14px;border-bottom:1px solid var(--bd);flex-wrap:nowrap"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3446,7 +3558,7 @@ function actRenderList(){
 
   const badgeMap={
     'QTool':    ['rgba(0,169,79,.12)','var(--g)','rgba(0,169,79,.2)'],
-    'Main':     ['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.14)'],
+    'Main':     ['rgba(0,0,0,.04)','#6B7280','rgba(0,0,0,.08)'],
     'Activity': ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.2)'],
     'PriceCard':['rgba(251,191,36,.1)','#fbbf24','rgba(251,191,36,.2)'],
   };
@@ -3454,7 +3566,7 @@ function actRenderList(){
   el.innerHTML=sessions.map(s=>{
     const initials=(s.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     const isInvalid=(s.loginType||'').includes('INVALID');
-    const bc=isInvalid?['rgba(239,68,68,.1)','var(--err)','rgba(239,68,68,.2)']:(badgeMap[s.loginType]||['rgba(255,255,255,.06)','#aaa','rgba(255,255,255,.14)']);
+    const bc=isInvalid?['rgba(239,68,68,.1)','var(--err)','rgba(239,68,68,.2)']:(badgeMap[s.loginType]||['rgba(0,0,0,.04)','#6B7280','rgba(0,0,0,.08)']);
 
     // Time display — use local browser time from sessionId timestamp (reliable)
     const ts=getTs(s);
@@ -3539,10 +3651,10 @@ function renderQuoteBlock(d, ismod){
     if(protMatch) feats.push('Protect $'+protMatch[1]+'/mo');
     if(dv.upgplus) feats.push('Upgrade Plus');
     if(dv.intl) feats.push('Intl Calling');
-    const featStr=feats.length?`<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;padding-left:12px">${feats.join(' · ')}</div>`:'';
+    const featStr=feats.length?`<div style="font-size:11px;color:rgba(0,0,0,.35);margin-top:1px;padding-left:12px">${feats.join(' · ')}</div>`:'';
     const txnLabel=ltMap[dv.lt]||dv.lt;
     return `<div style="margin-bottom:6px">
-      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3">${dv.name} <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.4)">· ${txnLabel}</span></div>
+      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3">${dv.name} <span style="font-size:10px;font-weight:600;color:rgba(0,0,0,.35)">· ${txnLabel}</span></div>
       ${featStr}
     </div>`;
   }).join('');
@@ -3551,33 +3663,33 @@ function renderQuoteBlock(d, ismod){
   const apdAmt=d.apd?d.apd.replace('APD',''):'$0';
   const hasAcc=d.apd&&d.apd!=='APD$0';
 
-  return `<div style="background:#111;border:1px solid ${ismod?'rgba(255,255,255,.08)':'rgba(0,169,79,.25)'};border-radius:10px;overflow:hidden;margin-bottom:8px">
-    <div style="padding:4px 14px 3px;background:${ismod?'rgba(255,255,255,.04)':'rgba(0,169,79,.08)'};border-bottom:1px solid ${ismod?'rgba(255,255,255,.06)':'rgba(0,169,79,.15)'}">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${ismod?'rgba(255,255,255,.3)':'var(--g)'}">
+  return `<div style="background:#111;border:1px solid ${ismod?'rgba(0,0,0,.06)':'rgba(0,169,79,.25)'};border-radius:10px;overflow:hidden;margin-bottom:8px">
+    <div style="padding:4px 14px 3px;background:${ismod?'rgba(0,0,0,.03)':'rgba(0,169,79,.08)'};border-bottom:1px solid ${ismod?'rgba(0,0,0,.04)':'rgba(0,169,79,.15)'}">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${ismod?'rgba(0,0,0,.2)':'var(--g)'}">
         ${ismod?'↩ Modified':'Quote Start'}
       </div>
     </div>
     <div style="padding:12px 14px">
       ${devLines}
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">Plan</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">Plan</span>
           <span style="font-size:12px;font-weight:700;color:#fff">${planFull}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">AutoPay</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">AutoPay</span>
           <span style="font-size:12px;font-weight:700;color:${d.ap?'var(--g)':'var(--err)'}">${d.ap?'On':'Off'}</span>
         </div>
         ${hasAcc?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">Accessories</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">Accessories</span>
           <span style="font-size:12px;font-weight:700;color:var(--g)">${apdAmt}</span>
         </div>`:''}
         ${d.fin?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">Financing</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">Financing</span>
           <span style="font-size:12px;font-weight:700;color:var(--prog)">PPP Active</span>
         </div>`:''}
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)">
-          <span style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4)">OTD</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.05)">
+          <span style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.35)">OTD</span>
           <span style="font-family:'Bebas Neue';font-size:26px;color:#fff;letter-spacing:.5px;line-height:1">${d.otd} Today</span>
         </div>
       </div>
@@ -3605,35 +3717,35 @@ function actShowDetail(sid){
     let attempted='';
     if((isActInvalid||isPCInvalid)&&s.uid&&s.uid.includes(':')){
       const parts=s.uid.split(':');
-      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">Store Entered</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">Store Entered</span>
           <span style="font-size:12px;font-weight:700;color:#fff">${parts[0]||'—'}</span>
         </div>
         <div style="display:flex;justify-content:space-between">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">PIN Entered</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">PIN Entered</span>
           <span style="font-size:12px;font-weight:700;color:#ef4444">${parts[1]||'—'}</span>
         </div>
       </div>`;
     } else if(isInvalid){
-      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
         <div style="display:flex;justify-content:space-between">
-          <span style="font-size:11px;color:rgba(255,255,255,.4)">UID Entered</span>
+          <span style="font-size:11px;color:rgba(0,0,0,.35)">UID Entered</span>
           <span style="font-size:12px;font-weight:700;color:#ef4444">${s.uid||'—'}</span>
         </div>
       </div>`;
     }
-    quotesEl.innerHTML=`<div style="background:#111;border:1px solid ${isInvalid?'rgba(239,68,68,.25)':'rgba(255,255,255,.08)'};border-radius:10px;padding:14px">
+    quotesEl.innerHTML=`<div style="background:#111;border:1px solid ${isInvalid?'rgba(239,68,68,.25)':'rgba(0,0,0,.06)'};border-radius:10px;padding:14px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:rgba(255,255,255,.4)">Login Type</span>
+        <span style="font-size:11px;color:rgba(0,0,0,.35)">Login Type</span>
         <span style="font-size:12px;font-weight:800;color:${isInvalid?'var(--err)':'var(--g)'}">${s.loginType}</span>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:rgba(255,255,255,.4)">IP Address</span>
+        <span style="font-size:11px;color:rgba(0,0,0,.35)">IP Address</span>
         <span style="font-size:12px;font-weight:700;color:#fff">${s.ip||'—'}</span>
       </div>
       <div style="display:flex;justify-content:space-between">
-        <span style="font-size:11px;color:rgba(255,255,255,.4)">Device</span>
+        <span style="font-size:11px;color:rgba(0,0,0,.35)">Device</span>
         <span style="font-size:12px;font-weight:700;color:#fff">${s.device||'—'}</span>
       </div>
       ${attempted}
@@ -3683,7 +3795,7 @@ function closeActivity(){
      TIME MANAGEMENT OVERLAY
 ══════════════════════════════════ -->
 <div id="tm-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto">
-  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+  <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div onclick="closeTM()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
     <div id="tm-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
@@ -3744,12 +3856,13 @@ function closeActivity(){
           <input type="time" id="tc-end" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none"/>
         </div>
         <div style="padding:12px 14px">
-          <button onclick="submitTC()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Correction</button>
+          <button onclick="submitTC()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Correction</button>
         </div>
       </div>
 
       <!-- TIME OFF -->
       <div id="tm-to" style="display:none">
+        <div id="tm-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Month</div>
           <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline();buildTODayChips()">
@@ -3787,8 +3900,11 @@ function closeActivity(){
             </div>
           </div>
         </div>
-        <div style="padding:12px 14px">
-          <button onclick="submitTO()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Request</button>
+        <div style="padding:10px 14px 4px">
+          <div style="font-size:9px;color:var(--t3);line-height:1.5;font-family:'DM Sans';text-align:center;padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2)">⚠ Time off requests are not guaranteed. Approval is subject to manager discretion and store coverage requirements.</div>
+        </div>
+        <div style="padding:8px 14px 14px">
+          <button onclick="submitTO()" style="width:100%;padding:13px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:'DM Sans';font-size:13px;font-weight:900;cursor:pointer">Submit Request</button>
         </div>
       </div>
     </div>
@@ -3799,7 +3915,7 @@ function closeActivity(){
      REP ACTIVITY OVERLAY
 ══════════════════════════════════ -->
 <div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto">
-  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+  <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div onclick="closeRepActivity()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -3814,9 +3930,11 @@ function closeActivity(){
         <div id="ra-tab-to" onclick="raTab('to')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Time Off</div>
         <div id="ra-tab-tc" onclick="raTab('tc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
       </div>
+      <!-- Week chips -->
+      <div id="ra-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
       <!-- Filter -->
       <div id="ra-filter-bar" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto">
-        <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#000;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
+        <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
         <button onclick="raFilter('Sent',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Sent</button>
         <button onclick="raFilter('Pending',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Pending</button>
         <button onclick="raFilter('Action Required',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Action Req.</button>
@@ -3830,7 +3948,7 @@ function closeActivity(){
 
 <!-- REP ACTIVITY DETAIL -->
 <div id="ra-detail-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99999;overflow-y:auto">
-  <div style="background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
+  <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div onclick="closeRADetail()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px" id="ra-detail-title">Request</div>
     <div></div>
@@ -3852,6 +3970,7 @@ function tmTab(t){
     el.style.borderBottomColor=x===t?'var(--g)':'transparent';
     document.getElementById('tm-'+x).style.display=x===t?'block':'none';
   });
+  if(t==='to') buildWeekChips('tm-to-week-chips',null,null);
 }
 
 let _tcBreak=true;
@@ -3979,7 +4098,7 @@ function toggleTODay(day){
     if(!btn) continue;
     const sel=_toDaysSelected.includes(d);
     btn.style.background=sel?'var(--g)':'var(--s3)';
-    btn.style.color=sel?'#000':'var(--t2)';
+    btn.style.color=sel?'#fff':'var(--t2)';
     btn.style.borderColor=sel?'var(--g)':'var(--bd2)';
   }
   document.getElementById('to-days').value=_toDaysSelected.join(', ');
@@ -4052,16 +4171,16 @@ function tmError(title,msg){
 }
 
 function tmConfirm(msg,status,showNotify=false,rowId=''){
-  const colors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+  const colors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
   const div=document.createElement('div');
   div.id='tm-confirm-overlay';
   div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999998;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
   div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
     <div style="font-size:28px;margin-bottom:12px">${status==='Denied'?'⚠️':'✓'}</div>
     <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">${msg}</div>
-    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:800;color:${colors[status]||'#aaa'};margin-bottom:20px">${status}</div>
+    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06);font-size:11px;font-weight:800;color:${colors[status]||'#4B5563'};margin-bottom:20px">${status}</div>
     ${showNotify?`<button id="notify-dm-btn" onclick="notifyDM('${rowId}',this)" style="width:100%;padding:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:8px">📣 Notify DM for Review</button>`:''}
-    <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
+    <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
   </div>`;
   document.body.appendChild(div);
 }
@@ -4099,6 +4218,9 @@ function raTab(t){
   if(filterBar) filterBar.style.display='flex';
   const raList=document.getElementById('ra-list');
   if(raList) raList.style.display='block';
+  if(t==='to') buildWeekChips('ra-to-week-chips',_raToWeekChip,null);
+  const wc=document.getElementById('ra-to-week-chips');
+  if(wc) wc.style.display=t==='to'?'flex':'none';
   renderRA();
 }
 
@@ -4140,17 +4262,22 @@ function renderRA(){
   const el=document.getElementById('ra-list');
   let items=_raData[_raTab]||[];
   if(_raFilter!=='all') items=items.filter(r=>r.status===_raFilter);
+  // Filter by week chip when on TO tab
+  if(_raTab==='to'&&_raToWeekChip!==null){
+    const sun=new Date(_raToWeekChip);const sat=new Date(_raToWeekChip+6*86400000);
+    items=items.filter(r=>{const fd=parseFirstDay(r);return fd&&fd>=sun&&fd<=sat;});
+  }
   items=[...items].sort((a,b)=>b.submitted.localeCompare(a.submitted));
   if(!items.length){
     el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px">No submissions found</div></div>';
     return;
   }
-  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
-  const statusBg={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)','Action Required':'rgba(139,92,246,.1)','Corrected':'rgba(0,169,79,.1)'};
+  const statusColors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  const statusBg={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)','Action Required':'rgba(139,92,246,.1)','Corrected':'rgba(0,169,79,.1)'};
   const statusBd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)','Action Required':'rgba(139,92,246,.25)','Corrected':'rgba(0,169,79,.25)'};
   el.innerHTML=items.map(r=>{
-    const c=statusColors[r.status]||'#aaa';
-    const bg=statusBg[r.status]||'rgba(255,255,255,.06)';
+    const c=statusColors[r.status]||'#4B5563';
+    const bg=statusBg[r.status]||'rgba(0,0,0,.04)';
     const bd=statusBd[r.status]||'#333';
     const title=_raTab==='to'?`${r.days} — ${r.month}`:`${fmtDateOnly(r.date)} — ${r.location}`;
     const sub=_raTab==='to'?`${r.reason} · ${r.duration}`:`${r.reason}`;
@@ -4176,7 +4303,7 @@ function showRADetail(rowId){
   if(!r){console.warn('showRADetail: rowId not found in _raData',rowId,_raData);return;}
   const isTO=r.rowId.includes('-TO-');
   document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
-  const statusColors={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  const statusColors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
   // canEdit: status must be Sent/Pending/Action Required AND not within 7 days of week start
   const _canEditStatus=r.status==='Sent'||r.status==='Pending'||r.status==='Action Required';
   let _withinLockout=false;
@@ -4219,10 +4346,10 @@ function showRADetail(rowId){
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
       <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Status</div>
-        <div style="background:rgba(255,255,255,.06);color:${statusColors[r.status]||'#aaa'};border:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;font-family:'DM Sans'">${r.status}</div>
+        <div style="background:rgba(0,0,0,.04);color:${statusColors[r.status]||'#4B5563'};border:1px solid rgba(0,0,0,.06);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;font-family:'DM Sans'">${r.status}</div>
       </div>
       ${rows.map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:${c||'var(--t1)'};text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
-      ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#aaa'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
+      ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#4B5563'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
     </div>
     ${showLockMsg?`<div style="font-size:10px;color:var(--warn);text-align:center;padding:10px 14px;font-family:'DM Sans'">🔒 Request locked — within 7 days of week start</div>`:''}
     ${canEdit?`<button onclick="editRequest('${rowId}')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t3);font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">Edit Request</button>
@@ -4291,10 +4418,15 @@ function dmToRender(){
     const sunTs=parseInt(wk);const sun=new Date(sunTs);const sat=new Date(sunTs+6*86400000);
     items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
   }
+  // Also filter by chip selection
+  if(_dmToWeekChip!==null){
+    const sun=new Date(_dmToWeekChip);const sat=new Date(_dmToWeekChip+6*86400000);
+    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
+  }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
+  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
+  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
   const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)','Action Required':'rgba(139,92,246,.25)',Corrected:'rgba(0,169,79,.25)'};
   const weekCounts={};
   [..._dmToData].forEach(row=>{const fd=parseFirstDay(row);if(!fd)return;const wkk=getWeekStart(fd).getTime();if(!weekCounts[wkk])weekCounts[wkk]=[];weekCounts[wkk].push(row.rowId);});
@@ -4327,10 +4459,11 @@ function dmTcRender(){
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
   if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});}
+  if(_dmTcCycleChip!==null){const cycles=getPayCycles();if(cycles[_dmTcCycleChip])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[_dmTcCycleChip].start&&d<=cycles[_dmTcCycleChip].end;});}
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)','Action Required':'var(--purple)'};
-  const sb={Sent:'rgba(255,255,255,.06)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
+  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)','Action Required':'var(--purple)'};
+  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
   const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)','Action Required':'rgba(139,92,246,.25)'};
   const cycles2=getPayCycles();const cycleCounts={};
   [..._dmTcData].forEach(row=>{const d=parseDate(row.date);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
@@ -4359,8 +4492,8 @@ function actMasterTab(pane){
     if(tab){tab.style.color=isOn?'var(--g)':'var(--t3)';tab.style.borderBottomColor=isOn?'var(--g)':'transparent';}
     if(el) el.style.display=isOn?'block':'none';
   });
-  if(pane==='to'){dmLoadTO();}
-  if(pane==='tc'){dmLoadTC();}
+  if(pane==='to'){buildWeekChips('dm-to-week-chips',_dmToWeekChip,null);dmLoadTO();}
+  if(pane==='tc'){buildCycleChips('dm-tc-cycle-chips',_dmTcCycleChip);dmLoadTC();}
 }
 
 function dmLoadTO(){
@@ -4470,6 +4603,120 @@ function getWeekLabel(sun){
   const fmt=d=>(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
   return fmt(sun)+' – '+fmt(sat);
 }
+
+// ── Week Status Chips ──────────────────────────────────────
+// State: which week is selected per context
+let _dmToWeekChip=null; // null = all
+let _raToWeekChip=null;
+
+function buildWeekChips(containerId, selectedTs, onSelect){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  const today=new Date();
+  const todayMid=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const currentSun=getWeekStart(today);
+  const DEADLINE_DAYS=14;
+  const WARNING_DAYS=7;
+  const weeks=[];
+  for(let i=-1;i<=5;i++){
+    const sun=new Date(currentSun);
+    sun.setDate(currentSun.getDate()+i*7);
+    weeks.push(sun);
+  }
+  el.style.overflowX='auto';
+  el.style.flexWrap='nowrap';
+  el.innerHTML=weeks.map(sun=>{
+    const ts=sun.getTime();
+    const deadline=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()-DEADLINE_DAYS);
+    const isCurrent=ts===currentSun.getTime();
+    const isPast=sun.getTime()<currentSun.getTime();
+    const deadlinePassed=todayMid>deadline;
+    const daysToDeadline=Math.ceil((deadline-todayMid)/(1000*60*60*24));
+    const isWarning=!isPast&&!deadlinePassed&&daysToDeadline<=WARNING_DAYS;
+    const isSelected=selectedTs===ts;
+    const sat=new Date(sun); sat.setDate(sun.getDate()+6);
+    const lbl=(sun.getMonth()+1)+'/'+sun.getDate()+' \u2013 '+(sat.getMonth()+1)+'/'+sat.getDate();
+    let cls, sublabel;
+    if(isPast){
+      cls='wchip-locked'; sublabel='Locked';
+    } else if(deadlinePassed&&isCurrent){
+      cls='wchip-locked'; sublabel='Locked (Current)';
+    } else if(deadlinePassed){
+      cls='wchip-locked'; sublabel='Locked';
+    } else if(isWarning){
+      cls='wchip-warn'; sublabel='Closes in '+daysToDeadline+' day'+(daysToDeadline===1?'':'s');
+    } else {
+      cls='wchip-open'; sublabel='Open';
+    }
+    return `<div onclick="selectWeekChip('${containerId}',${ts})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:flex-start;gap:2px;padding:4px 9px">
+      <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
+      <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectWeekChip(containerId,ts){
+  if(containerId==='dm-to-week-chips'){
+    _dmToWeekChip=(_dmToWeekChip===ts)?null:ts;
+    buildWeekChips('dm-to-week-chips',_dmToWeekChip,null);
+    dmToRender();
+  } else if(containerId==='ra-to-week-chips'){
+    _raToWeekChip=(_raToWeekChip===ts)?null:ts;
+    buildWeekChips('ra-to-week-chips',_raToWeekChip,null);
+    renderRA();
+  }
+  // tm-to-week-chips: display only, no filter
+}
+
+// ── Pay Cycle Chips (TC) ────────────────────────────────────
+let _dmTcCycleChip=null;
+
+function buildCycleChips(containerId, selectedIdx){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  const cycles=getPayCycles();
+  const today=new Date();
+  const todayMid=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  let currentIdx=cycles.findIndex(c=>{
+    const s=new Date(c.start.getFullYear(),c.start.getMonth(),c.start.getDate());
+    const e=new Date(c.end.getFullYear(),c.end.getMonth(),c.end.getDate());
+    return todayMid>=s&&todayMid<=e;
+  });
+  if(currentIdx<0){
+    currentIdx=cycles.reduce((best,c,i)=>{
+      const mid=new Date((c.start.getTime()+c.end.getTime())/2);
+      return Math.abs(mid-today)<Math.abs(new Date((cycles[best].start.getTime()+cycles[best].end.getTime())/2)-today)?i:best;
+    },0);
+  }
+  // 4 total including current — last 3 + current, oldest to the left
+  const startIdx=Math.max(0,currentIdx-3);
+  const visible=cycles.slice(startIdx,currentIdx+1); // oldest first
+  el.style.overflowX='auto';
+  el.style.flexWrap='nowrap';
+  el.innerHTML=visible.map((c,ri)=>{
+    const actualIdx=startIdx+ri;
+    const isCurrent=actualIdx===currentIdx;
+    const isSelected=selectedIdx===actualIdx;
+    const cls=isCurrent?'wchip-current':'wchip-amber';
+    const sublabel=isCurrent?'Current':'Past';
+    const lbl=fmtCycleDate(c.start)+' \u2013 '+fmtCycleDate(c.end);
+    return `<div onclick="selectCycleChip('${containerId}',${actualIdx})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:flex-start;gap:2px;padding:4px 9px">
+      <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
+      <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectCycleChip(containerId,idx){
+  _dmTcCycleChip=(_dmTcCycleChip===idx)?null:idx;
+  buildCycleChips(containerId,_dmTcCycleChip);
+  dmTcRender();
+}
+
+function initWeekChips(){
+  buildWeekChips('dm-to-week-chips',_dmToWeekChip,null);
+  buildWeekChips('ra-to-week-chips',_raToWeekChip,null);
+}
 function parseFirstDay(r){
   let rawDay=String(r.days||'').split(',')[0].trim();
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4553,16 +4800,23 @@ function showDMTimeDetail(type,rowId){
   const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial'||r.status==='Corrected');
   // DM always sees action buttons regardless of current status
   const showActions=!isViewOnly;
-  const sc={Sent:'#aaa',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
+  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
   let copyText='';
   let copySubject='';
-  if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){copyText=buildPartialCopyText(r).txt;}
+  if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){
+    const {txt,status}=buildPartialCopyText(r);
+    copyText=txt;
+    const statusLabel=status==='Approved'?'Approved':status==='Denied'?'Denied':'Partial';
+    copySubject='Time Off Update – '+statusLabel+' – '+(r.name||r.uid)+(r.uid?' ('+r.uid+')':'');
+  }
   else if(!isViewOnly&&isDone&&type==='to'){
     const ms=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();const ys=(r.month||'').match(/\d{4}/)?.[0]||'2026';
     const ds=String(r.days||'').split(',').map(d=>ms+' '+d.trim()+', '+ys).join(', ');
     const fn=r.name?r.name.split(' ')[0]:r.uid;
     const hl=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
     const al=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
+    const statusLabel=r.status==='Approved'?'Approved':r.status==='Denied'?'Denied':'Partial';
+    copySubject='Time Off Update – '+statusLabel+' – '+(r.name||r.uid)+(r.uid?' ('+r.uid+')':'');
     copyText=fn+',\n\nYour time off request for '+ds+' '+al+'.\n\nRequest ID: '+r.rowId+'\nStatus: '+r.status+'\n'+hl+(r.note?'\nNote: '+r.note:'');
   } else if(!isViewOnly&&type==='tc'){
     const fn=r.name?r.name.split(' ')[0]:r.uid;
@@ -4576,13 +4830,13 @@ function showDMTimeDetail(type,rowId){
   const rows=type==='to'?[['Employee',r.name+' ('+r.uid+')'],['Month',fmtTOMonth(r.month)],['Days',String(r.days||'')],['Reason',r.reason],['Duration',r.duration],...dmAdvRow(r,type),...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])]:
     [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtDateOnly(r.date)],['Reason',r.reason],['Shift',fmtTime(r.shiftStart)+' – '+fmtTime(r.shiftEnd)],['Break',r.breakStart&&r.breakStart!=='None'?fmtTime(r.breakStart)+' – '+fmtTime(r.breakEnd):'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
   const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
-  const hdr=document.createElement('div');hdr.style.cssText='background:rgba(0,0,0,.95);border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10';
+  const hdr=document.createElement('div');hdr.style.cssText='background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)';
   const bb=document.createElement('div');bb.style.cssText='font-size:11px;font-weight:700;color:var(--t3);cursor:pointer';bb.textContent='\u2190 Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
   const tl=document.createElement('div');tl.style.cssText='font-family:Bebas Neue;font-size:20px;letter-spacing:3px';tl.textContent=type==='to'?'Time Off':'Time Correction';
   hdr.appendChild(bb);hdr.appendChild(tl);hdr.appendChild(document.createElement('div'));ov.appendChild(hdr);
   const body=document.createElement('div');body.style.cssText='max-width:500px;margin:0 auto;padding:16px 14px 80px';
   const ic=document.createElement('div');ic.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';
-  ic.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;color:var(--t3)">Status</div><div style="color:'+(sc[r.status]||'#aaa')+';font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">'+(r.status||'\u2014')+'</div></div>'+rows.map(([l,v,c])=>'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">'+l+'</div><div style="font-size:12px;font-weight:700;color:'+(c||'var(--t1)')+';text-align:right;max-width:60%">'+(v||'\u2014')+'</div></div>').join('');
+  ic.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;color:var(--t3)">Status</div><div style="color:'+(sc[r.status]||'#4B5563')+';font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06)">'+(r.status||'\u2014')+'</div></div>'+rows.map(([l,v,c])=>'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">'+l+'</div><div style="font-size:12px;font-weight:700;color:'+(c||'var(--t1)')+';text-align:right;max-width:60%">'+(v||'\u2014')+'</div></div>').join('');
   body.appendChild(ic);
   const nc=document.createElement('div');nc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px';
   const nl=document.createElement('div');nl.style.cssText='font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px';nl.textContent='Notes';nc.appendChild(nl);
@@ -4624,40 +4878,40 @@ function showDMTimeDetail(type,rowId){
         bw.appendChild(ab);bw.appendChild(db);dr.appendChild(dl);dr.appendChild(bw);dc.appendChild(dr);
       });
       body.appendChild(dc);
-      const sdb=document.createElement('button');sdb.style.cssText='width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px';sdb.textContent='Save Decision';sdb.onclick=(()=>{const _t=type,_r=rowId;return function(){savePartial(_t,_r,document.getElementById('dm-note-field').value);};})();body.appendChild(sdb);
+      const sdb=document.createElement('button');sdb.style.cssText='width:100%;padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px';sdb.textContent='Save Decision';sdb.onclick=(()=>{const _t=type,_r=rowId;return function(){savePartial(_t,_r,document.getElementById('dm-note-field').value);};})();body.appendChild(sdb);
       // Status override row for multi-day — Deny all / Approve all / ↺ Sent / Pending
       const bgmd=document.createElement('div');bgmd.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
       const dbmd=document.createElement('button');dbmd.style.cssText='padding:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';dbmd.textContent='Deny All';dbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
-      const abmd=document.createElement('button');abmd.style.cssText='padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';abmd.textContent='Approve All';abmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      const abmd=document.createElement('button');abmd.style.cssText='padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';abmd.textContent='Approve All';abmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
       bgmd.appendChild(dbmd);bgmd.appendChild(abmd);body.appendChild(bgmd);
       const bgmd2=document.createElement('div');bgmd2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
-      const sbmd=document.createElement('button');sbmd.style.cssText='padding:10px;background:rgba(255,255,255,.04);border:1px solid #444;border-radius:var(--r2);color:#aaa;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sbmd.textContent='↺ Sent';sbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
+      const sbmd=document.createElement('button');sbmd.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sbmd.textContent='↺ Sent';sbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
       const pbmd=document.createElement('button');pbmd.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pbmd.textContent='Pending';pbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bgmd2.appendChild(sbmd);bgmd2.appendChild(pbmd);body.appendChild(bgmd2);
     } else if(type==='to'){
       const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
       phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
-      const cpb=document.createElement('button');cpb.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer';cpb.textContent='Confirm Partial';
+      const cpb=document.createElement('button');cpb.style.cssText='margin-top:10px;width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer';cpb.textContent='Confirm Partial';
       cpb.onclick=(()=>{const _r=rowId,_t=type;return function(){const f=document.getElementById('partial-from-'+_r).value,u=document.getElementById('partial-until-'+_r).value;if(!f||!u){showToast('Enter both times.');return;}function fh(t){const p=t.split(':');const h=parseInt(p[0]);return(h>12?h-12:(h||12))+':'+p[1]+' '+(h>=12?'PM':'AM');}const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Partial',ta?ta.value:'','hours:'+fh(f)+' \u2013 '+fh(u));};})();
       phd.appendChild(cpb);body.appendChild(phd);
       const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px';
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
       const pb=document.createElement('button');pb.style.cssText='padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';pb.textContent='Partial';pb.onclick=(()=>{const _r=rowId;return function(){const ph=document.getElementById('partial-hours-'+_r);if(ph)ph.style.display=ph.style.display==='none'?'block':'none';};})();
-      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
       bg.appendChild(db);bg.appendChild(pb);bg.appendChild(ab);body.appendChild(bg);
       // Second row: Sent, Pending
       const bg2to=document.createElement('div');bg2to.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
-      const sb2=document.createElement('button');sb2.style.cssText='padding:10px;background:rgba(255,255,255,.04);border:1px solid #444;border-radius:var(--r2);color:#aaa;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2.textContent='↺ Sent';sb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
+      const sb2=document.createElement('button');sb2.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2.textContent='↺ Sent';sb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
       const pb2to=document.createElement('button');pb2to.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2to.textContent='Pending';pb2to.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bg2to.appendChild(sb2);bg2to.appendChild(pb2to);body.appendChild(bg2to);
     } else {
       const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px';
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
-      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#000;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
+      const ab=document.createElement('button');ab.style.cssText='padding:12px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';ab.textContent='Approve';ab.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Approved',ta?ta.value:'','');};})();
       bg.appendChild(db);bg.appendChild(ab);body.appendChild(bg);
       // Second row: Sent, Pending
       const bg2=document.createElement('div');bg2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
-      const sb2tc=document.createElement('button');sb2tc.style.cssText='padding:10px;background:rgba(255,255,255,.04);border:1px solid #444;border-radius:var(--r2);color:#aaa;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2tc.textContent='↺ Sent';sb2tc.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
+      const sb2tc=document.createElement('button');sb2tc.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2tc.textContent='↺ Sent';sb2tc.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
       const pb2=document.createElement('button');pb2.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2.textContent='Pending';pb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bg2.appendChild(sb2tc);bg2.appendChild(pb2);body.appendChild(bg2);
       // Third row: Action Required only
