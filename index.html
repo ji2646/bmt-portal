@@ -261,7 +261,7 @@ select option,select optgroup{background:#fff;color:#111827}
 
 .deal-sub{font-size:9px;color:var(--t3);line-height:1.4}
 @media(max-width:500px){.deal-strip{grid-template-columns:1fr 1fr}}
-.wchip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1}
+.wchip{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:5px 10px;border-radius:20px;cursor:pointer;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1;min-width:130px;text-align:center;box-sizing:border-box;flex-shrink:0}
 .wdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .wlbl{font-size:10px;font-weight:700;white-space:nowrap}
 .wchip-past{border-color:#CBD0D8;background:#F3F4F6}.wchip-past .wdot{background:#9CA3AF}.wchip-past .wlbl{color:#9CA3AF}.wchip-past span{color:#9CA3AF}
@@ -364,19 +364,22 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       <!-- STEP 1: UID -->
       <div id="ls-uid">
         <div class="login-field">
-          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <div style="position:relative;display:flex;align-items:center">
+          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" name="username" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:52px;-webkit-text-security:disc"/>
+          <span onclick="toggleVisibility('login-uid',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
+        </div>
         </div>
         <div id="login-error">UID not recognized or access not granted</div>
-        <button id="login-btn" onclick="doLogin()">Sign In</button>
+        <button type="button" id="login-btn" onclick="doLogin()">Sign In</button>
       </div>
 
       <!-- STEP 2: Menu -->
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
-        <button onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
-        <button id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
-        <button id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
-        <button onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
+        <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
+        <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
+        <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
+        <button type="button" onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -392,12 +395,26 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         </div>
         <div id="act-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 4px;font-weight:700">Incorrect store or PIN</div>
         <div style="display:flex;gap:8px;margin-top:14px">
-          <button onclick="showMenu()" style="flex:1;padding:10px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#6B7280;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
-          <button onclick="verify2FA()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Continue</button>
+          <button type="button" onclick="showMenu()" style="flex:1;padding:10px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#6B7280;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
+          <button type="button" onclick="verify2FA()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Continue</button>
         </div>
       </div>
 
-
+      <!-- STEP: RSM/DM PIN (replaces Activity 2FA) -->
+      <div id="ls-pin" style="display:none">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:12px">Enter Your PIN</div>
+        <div class="login-field" style="margin-bottom:4px">
+          <div style="position:relative;display:flex;align-items:center">
+          <input type="password" id="login-pin" placeholder="••••••" autocomplete="current-password" name="password" onkeydown="if(event.key==='Enter')verifyPin()" style="width:100%;padding:10px 12px;padding-right:52px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <span onclick="toggleVisibility('login-pin',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
+        </div>
+        </div>
+        <div id="pin-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 4px;font-weight:700">Incorrect PIN</div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button onclick="document.getElementById('ls-pin').style.display='none';document.getElementById('ls-uid').style.display='block';document.getElementById('login-uid').value=''" type="button" style="flex:1;padding:10px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">Back</button>
+          <button type="button" onclick="verifyPin()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Sign In</button>
+        </div>
+      </div>
     </div>
   </div>
   <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Sans',sans-serif">
@@ -417,7 +434,7 @@ const ALLOWED_UIDS=[
   'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j','ju512j'
 ];
 
-const DISABLED_UIDS=['ji2646'];
+const DISABLED_UIDS=[];
 
 const UID_NAMES={
   'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
@@ -425,7 +442,7 @@ const UID_NAMES={
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','ec934j':'Elva Cruz','bb8326':'Bryan Barajas',
   'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ju512j':'Jonatan Ramirez',
-  'ji2646dm':'Josue Garcia','ji2646':'Josue Garcia (OLD)'
+  'ji2646dm':'Josue Garcia',
 };
 
 const LOG_URL='https://script.google.com/macros/s/AKfycbyEmTA-KcaJnoQRi9QCCZfwd1RGV2OoQ6SLc6ndljocJQER25UeadnDefvJ4Qe7QTYy/exec';
@@ -674,17 +691,54 @@ let _activityUserName='';
 let _actSessions=[];
 
 function showLoginError(uid, type){
-  document.getElementById('login-screen').innerHTML=`
-    <div style="background:#FEF2F2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center">
-      <div style="font-size:30px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:12px">${type} UID</div>
-      <div style="font-size:16px;color:rgba(255,255,255,.8);margin-bottom:32px">Contact admin for further assistance.</div>
-      <button onclick="location.reload()" style="background:#fff;color:#8B0000;font-weight:900;font-size:15px;padding:14px 36px;border:none;border-radius:8px;cursor:pointer">↺ Try Again</button>
-    </div>`;
+  // Show inline error — don't wipe the login screen
+  const err=document.getElementById('login-error');
+  if(err){
+    err.textContent=type==='Disabled'?'This account has been disabled. Contact your manager.':'UID not recognized or access not granted.';
+    err.style.display='block';
+  }
+  const input=document.getElementById('login-uid');
+  if(input){ input.value=''; input.focus(); }
+}
+
+function showPinStep(){
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-2fa').style.display='none';
+  document.getElementById('ls-menu').style.display='none';
+  document.getElementById('ls-pin').style.display='block';
+  document.getElementById('pin-error').style.display='none';
+  document.getElementById('login-pin').value='';
+  setTimeout(()=>document.getElementById('login-pin').focus(),100);
+}
+
+function verifyPin(){
+  const pin=document.getElementById('login-pin').value.trim().toLowerCase();
+  const err=document.getElementById('pin-error');
+  // Use ACTIVITY_CREDS — store key is the UID itself for RSMs, 'dm' for DM
+  const uid=_pendingUid;
+  const storeKey=uid==='ji2646dm'?'dm':
+    uid==='jq6635'?'777':
+    uid==='gs0426'?'747':
+    uid==='mg221k'?'775':
+    uid==='rg8855'?'769':
+    uid==='jq286d'?'752':
+    uid==='jx820u'?'768':
+    uid==='ec934j'?'768':null;
+  const validPin=storeKey?ACTIVITY_CREDS[storeKey]:null;
+  if(validPin&&validPin===pin){
+    _activityStore=storeKey;
+    document.getElementById('ls-pin').style.display='none';
+    showMenu();
+  } else {
+    err.style.display='block';
+    document.getElementById('login-pin').value='';
+  }
 }
 
 function showMenu(){
   document.getElementById('ls-uid').style.display='none';
   document.getElementById('ls-2fa').style.display='none';
+  document.getElementById('ls-pin').style.display='none';
   document.getElementById('ls-menu').style.display='block';
   const name=UID_NAMES[_pendingUid]||_pendingUid;
   document.getElementById('ls-menu-name').textContent='Welcome, '+name;
@@ -727,7 +781,16 @@ function handleActivityClick(){
   const actLogSid=_pendingUid+'-ACT-'+Date.now();
   logWithIP({type:'activity',sessionId:actLogSid,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   if(isDM||isRSM){
-    showActivity2FA(); // RSM/DM need 2FA
+    // Already authenticated via PIN at login — go straight to activity
+    _activityStore=_activityStore||(_pendingUid==='ji2646dm'?'dm':
+      _pendingUid==='jq6635'?'777':
+      _pendingUid==='gs0426'?'747':
+      _pendingUid==='mg221k'?'775':
+      _pendingUid==='rg8855'?'769':
+      _pendingUid==='jq286d'?'752':
+      _pendingUid==='jx820u'?'768':
+      _pendingUid==='ec934j'?'768':'dm');
+    launchActivity(); // already PIN-authed
   } else {
     launchRepActivity(); // Rep goes straight in - no 2FA
   }
@@ -842,6 +905,20 @@ function toggleTheme(){
     lbl.style.color='#9CA3AF';
   }
 }
+
+function toggleVisibility(id, btn){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(id==='login-uid'){
+    const isHidden=el.style.webkitTextSecurity==='disc'||el.style.webkitTextSecurity==='';
+    el.style.webkitTextSecurity=isHidden?'none':'disc';
+    btn.textContent=isHidden?'Hide':'Show';
+  } else {
+    const isHidden=el.type==='password';
+    el.type=isHidden?'text':'password';
+    btn.textContent=isHidden?'Hide':'Show';
+  }
+}
 function doLogin(){
   const uid=document.getElementById('login-uid').value.trim().toLowerCase();
   const err=document.getElementById('login-error');
@@ -855,18 +932,14 @@ function doLogin(){
     _sessionId=uid+'-'+Date.now();
     _sessionQuote=''; _lastQuoteStr='';
     logWithIP({type:'main',sessionId:_sessionId,name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice(),status:'OK'});
-    if(RSM_UIDS.includes(uid)){
-      showMenu();
+    const needsPin=RSM_UIDS.includes(uid)||uid==='ji2646dm';
+    if(needsPin){
+      // RSM/DM — show PIN step
+      showPinStep();
     } else {
-      // Rep — show menu with 3 options
-      _pendingUid=uid;
-      document.getElementById('ls-uid').style.display='none';
-      document.getElementById('ls-menu').style.display='block';
-      document.getElementById('ls-menu-name').textContent='Welcome, '+(UID_NAMES[uid]||uid);
-      const btnTM=document.getElementById('btn-timemgmt');
-      const btnAct=document.getElementById('btn-activity');
-      if(btnTM) btnTM.style.display='block';
-      if(btnAct) btnAct.style.display='block';
+      // RSC — straight to menu
+      document.getElementById('ls-pin').style.display='none';
+      showMenu();
     }
   } else {
     // Main log: invalid
@@ -3345,9 +3418,9 @@ try {
       <div style="font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700" id="act-header-store"></div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="actLoadData()" style="padding:5px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t3);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans'">↺ Refresh</button>
-      <button onclick="closeActivity()" style="padding:5px 12px;background:var(--s3);border:1px solid rgba(239,68,68,.4);border-radius:6px;color:var(--err);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans'">✕ Exit</button>
-      <div style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px" id="act-header-name"></div>
+      <button onclick="actLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
+      <div id="act-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+      <button onclick="closeActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
 
@@ -3371,13 +3444,13 @@ try {
           <div style="font-size:9px;color:var(--t3)" id="act-session-count"></div>
         </div>
         <!-- Filter tabs -->
-        <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);overflow-x:auto">
-          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
-          <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">QTool</button>
-          <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Main</button>
-          <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Activity</button>
-          <button onclick="actSetFilter('PriceCard',this)" id="act-f-pricecard" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Price Card</button>
-          <button onclick="actSetFilter('invalid',this)" id="act-f-invalid" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Invalid</button>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);">
+          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">All</button>
+          <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">QTool</button>
+          <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Main</button>
+          <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Activity</button>
+          <button onclick="actSetFilter('PriceCard',this)" id="act-f-pricecard" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Price Card</button>
+          <button onclick="actSetFilter('invalid',this)" id="act-f-invalid" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Invalid</button>
         </div>
         <!-- Search + Sort -->
         <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
@@ -3393,7 +3466,7 @@ try {
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
-          <div id="dm-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
+          <div id="dm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3401,7 +3474,7 @@ try {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-to-status" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Approved</option><option>Denied</option><option>Partial</option>
+                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Late</option><option>Approved</option><option>Denied</option><option>Partial</option>
               </select>
               <select id="dm-to-sort" onchange="dmToRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="name">By Name</option>
@@ -3416,7 +3489,7 @@ try {
 
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
-          <div id="dm-tc-cycle-chips" style="display:flex;gap:6px;overflow-x:auto;padding:8px 14px;border-bottom:1px solid var(--bd);flex-wrap:nowrap"></div>
+          <div id="dm-tc-cycle-chips" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3424,7 +3497,7 @@ try {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               <select id="dm-tc-status" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
-                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Action Required</option><option>Approved</option><option>Denied</option><option>Corrected</option>
+                <option value="all">All Status</option><option>Sent</option><option>Pending</option><option>Late</option><option>Action Required</option><option>Approved</option><option>Denied</option><option>Corrected</option>
               </select>
               <select id="dm-tc-sort" onchange="dmTcRender()" style="padding:7px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:11px;outline:none;cursor:pointer">
                 <option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="name">By Name</option>
@@ -3444,7 +3517,7 @@ try {
     <!-- DETAIL VIEW -->
     <div id="act-detail-view" style="display:none">
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
-        <div onclick="actShowList()" style="display:flex;align-items:center;gap:6px;padding:10px 14px;cursor:pointer;color:var(--t3);font-size:11px;font-weight:700;border-bottom:1px solid var(--bd);transition:color .15s">← All Sessions</div>
+        <div style="padding:8px 14px;border-bottom:1px solid var(--bd)"><button onclick="actShowList()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation">&#8592; Back</button></div>
         <div style="padding:14px 16px;border-bottom:1px solid var(--bd);background:var(--s2)">
           <div style="font-size:16px;font-weight:800" id="act-detail-name"></div>
           <div style="font-size:10px;color:var(--t3);margin-top:2px" id="act-detail-meta"></div>
@@ -3651,10 +3724,10 @@ function renderQuoteBlock(d, ismod){
     if(protMatch) feats.push('Protect $'+protMatch[1]+'/mo');
     if(dv.upgplus) feats.push('Upgrade Plus');
     if(dv.intl) feats.push('Intl Calling');
-    const featStr=feats.length?`<div style="font-size:11px;color:rgba(0,0,0,.35);margin-top:1px;padding-left:12px">${feats.join(' · ')}</div>`:'';
+    const featStr=feats.length?`<div style="font-size:11px;color:var(--t3);margin-top:1px;padding-left:12px">${feats.join(' · ')}</div>`:'';
     const txnLabel=ltMap[dv.lt]||dv.lt;
     return `<div style="margin-bottom:6px">
-      <div style="font-size:14px;font-weight:800;color:#fff;line-height:1.3">${dv.name} <span style="font-size:10px;font-weight:600;color:rgba(0,0,0,.35)">· ${txnLabel}</span></div>
+      <div style="font-size:14px;font-weight:800;color:var(--t1);line-height:1.3">${dv.name} <span style="font-size:10px;font-weight:600;color:var(--t3)">· ${txnLabel}</span></div>
       ${featStr}
     </div>`;
   }).join('');
@@ -3663,34 +3736,34 @@ function renderQuoteBlock(d, ismod){
   const apdAmt=d.apd?d.apd.replace('APD',''):'$0';
   const hasAcc=d.apd&&d.apd!=='APD$0';
 
-  return `<div style="background:#111;border:1px solid ${ismod?'rgba(0,0,0,.06)':'rgba(0,169,79,.25)'};border-radius:10px;overflow:hidden;margin-bottom:8px">
-    <div style="padding:4px 14px 3px;background:${ismod?'rgba(0,0,0,.03)':'rgba(0,169,79,.08)'};border-bottom:1px solid ${ismod?'rgba(0,0,0,.04)':'rgba(0,169,79,.15)'}">
+  return `<div style="background:var(--s1);border:1.5px solid ${ismod?'var(--bd)':'rgba(0,169,79,.3)'};border-radius:10px;overflow:hidden;margin-bottom:8px">
+    <div style="padding:4px 14px 3px;background:${ismod?'var(--s2)':'rgba(0,169,79,.06)'};border-bottom:1px solid ${ismod?'var(--bd)':'rgba(0,169,79,.15)'}">
       <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${ismod?'rgba(0,0,0,.2)':'var(--g)'}">
         ${ismod?'↩ Modified':'Quote Start'}
       </div>
     </div>
     <div style="padding:12px 14px">
       ${devLines}
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">Plan</span>
-          <span style="font-size:12px;font-weight:700;color:#fff">${planFull}</span>
+          <span style="font-size:11px;color:var(--t3)">Plan</span>
+          <span style="font-size:12px;font-weight:700;color:var(--t1)">${planFull}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">AutoPay</span>
+          <span style="font-size:11px;color:var(--t3)">AutoPay</span>
           <span style="font-size:12px;font-weight:700;color:${d.ap?'var(--g)':'var(--err)'}">${d.ap?'On':'Off'}</span>
         </div>
         ${hasAcc?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">Accessories</span>
+          <span style="font-size:11px;color:var(--t3)">Accessories</span>
           <span style="font-size:12px;font-weight:700;color:var(--g)">${apdAmt}</span>
         </div>`:''}
         ${d.fin?`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">Financing</span>
+          <span style="font-size:11px;color:var(--t3)">Financing</span>
           <span style="font-size:12px;font-weight:700;color:var(--prog)">PPP Active</span>
         </div>`:''}
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.05)">
-          <span style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.35)">OTD</span>
-          <span style="font-family:'Bebas Neue';font-size:26px;color:#fff;letter-spacing:.5px;line-height:1">${d.otd} Today</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">
+          <span style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3)">OTD</span>
+          <span style="font-family:'Bebas Neue';font-size:26px;color:var(--t1);letter-spacing:.5px;line-height:1">${d.otd} Today</span>
         </div>
       </div>
     </div>
@@ -3717,36 +3790,36 @@ function actShowDetail(sid){
     let attempted='';
     if((isActInvalid||isPCInvalid)&&s.uid&&s.uid.includes(':')){
       const parts=s.uid.split(':');
-      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">Store Entered</span>
-          <span style="font-size:12px;font-weight:700;color:#fff">${parts[0]||'—'}</span>
+          <span style="font-size:11px;color:var(--t3)">Store Entered</span>
+          <span style="font-size:12px;font-weight:700;color:var(--t1)">${parts[0]||'—'}</span>
         </div>
         <div style="display:flex;justify-content:space-between">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">PIN Entered</span>
+          <span style="font-size:11px;color:var(--t3)">PIN Entered</span>
           <span style="font-size:12px;font-weight:700;color:#ef4444">${parts[1]||'—'}</span>
         </div>
       </div>`;
     } else if(isInvalid){
-      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.05)">
+      attempted=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">
         <div style="display:flex;justify-content:space-between">
-          <span style="font-size:11px;color:rgba(0,0,0,.35)">UID Entered</span>
+          <span style="font-size:11px;color:var(--t3)">UID Entered</span>
           <span style="font-size:12px;font-weight:700;color:#ef4444">${s.uid||'—'}</span>
         </div>
       </div>`;
     }
-    quotesEl.innerHTML=`<div style="background:#111;border:1px solid ${isInvalid?'rgba(239,68,68,.25)':'rgba(0,0,0,.06)'};border-radius:10px;padding:14px">
+    quotesEl.innerHTML=`<div style="background:var(--s1);border:1.5px solid ${isInvalid?'rgba(239,68,68,.3)':'var(--bd)'};border-radius:10px;padding:14px">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:rgba(0,0,0,.35)">Login Type</span>
+        <span style="font-size:11px;color:var(--t3)">Login Type</span>
         <span style="font-size:12px;font-weight:800;color:${isInvalid?'var(--err)':'var(--g)'}">${s.loginType}</span>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:rgba(0,0,0,.35)">IP Address</span>
-        <span style="font-size:12px;font-weight:700;color:#fff">${s.ip||'—'}</span>
+        <span style="font-size:11px;color:var(--t3)">IP Address</span>
+        <span style="font-size:12px;font-weight:700;color:var(--t1)">${s.ip||'—'}</span>
       </div>
       <div style="display:flex;justify-content:space-between">
-        <span style="font-size:11px;color:rgba(0,0,0,.35)">Device</span>
-        <span style="font-size:12px;font-weight:700;color:#fff">${s.device||'—'}</span>
+        <span style="font-size:11px;color:var(--t3)">Device</span>
+        <span style="font-size:12px;font-weight:700;color:var(--t1)">${s.device||'—'}</span>
       </div>
       ${attempted}
     </div>`;
@@ -3796,9 +3869,11 @@ function closeActivity(){
 ══════════════════════════════════ -->
 <div id="tm-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div onclick="closeTM()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
-    <div id="tm-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div id="tm-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+      <button onclick="closeTM()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+    </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
@@ -3862,7 +3937,7 @@ function closeActivity(){
 
       <!-- TIME OFF -->
       <div id="tm-to" style="display:none">
-        <div id="tm-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
+        <div id="tm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Month</div>
           <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline();buildTODayChips()">
@@ -3916,11 +3991,11 @@ function closeActivity(){
 ══════════════════════════════════ -->
 <div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div onclick="closeRepActivity()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="repActLoadData()" style="padding:4px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:20px;color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">↺ Refresh</button>
-      <div id="rep-act-username" style="font-size:9px;font-weight:700;color:var(--t3);padding:4px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:20px;font-family:'DM Sans'"></div>
+      <button onclick="repActLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
+      <div id="rep-act-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+      <button onclick="closeRepActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
@@ -3931,15 +4006,15 @@ function closeActivity(){
         <div id="ra-tab-tc" onclick="raTab('tc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
       </div>
       <!-- Week chips -->
-      <div id="ra-to-week-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
+      <div id="ra-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
       <!-- Filter -->
-      <div id="ra-filter-bar" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto">
-        <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">All</button>
-        <button onclick="raFilter('Sent',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Sent</button>
-        <button onclick="raFilter('Pending',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Pending</button>
-        <button onclick="raFilter('Action Required',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Action Req.</button>
-        <button onclick="raFilter('Approved',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Approved</button>
-        <button onclick="raFilter('Denied',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">Denied</button>
+      <div id="ra-filter-bar" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">All</button>
+        <button onclick="raFilter('Sent',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">Sent</button>
+        <button onclick="raFilter('Pending',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">Pending</button>
+        <button onclick="raFilter('Action Required',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">Action Req.</button>
+        <button onclick="raFilter('Approved',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">Approved</button>
+        <button onclick="raFilter('Denied',this)" class="ra-f" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">Denied</button>
       </div>
       <div id="ra-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px;font-family:'DM Sans'">Loading...</div></div>
     </div>
@@ -3949,9 +4024,8 @@ function closeActivity(){
 <!-- REP ACTIVITY DETAIL -->
 <div id="ra-detail-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99999;overflow-y:auto">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div onclick="closeRADetail()" style="font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;font-family:'DM Sans'">← Back</div>
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px" id="ra-detail-title">Request</div>
-    <div></div>
+    <button onclick="closeRADetail()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px" id="ra-detail-content"></div>
 </div>
@@ -4010,6 +4084,27 @@ function checkDeadline(days){
   }catch(e){return false;}
 }
 
+
+function isTCLate(){
+  // Pay cycle ends every other Saturday (anchor: March 29 = Saturday, end of cycle)
+  // Cutoff is Saturday EOD — if today is Sunday or later in the same window, it's late
+  const anchor=new Date(Date.UTC(2026,2,29)); // March 29 2026 UTC (Saturday)
+  const now=new Date();
+  const nowUTC=new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()));
+  const diff=Math.floor((nowUTC-anchor)/(86400000));
+  const dayInCycle=((diff%14)+14)%14; // 0=Sunday after cycle close, 13=Saturday=cycle end
+  // Saturday=day 13 in cycle (still open), Sunday=day 0 (late), Mon-Sat next=days 1-6 (late)
+  // Actually: cycle ends Saturday. So Saturday is last day (open). Sunday+ = late.
+  // day 13 = Saturday of cycle end = still ok
+  // day 0 = Sunday after cycle end = LATE
+  // days 1-12 = Mon-Fri of new cycle = LATE (until next Saturday closes)
+  // Wait — biweekly: new cycle starts Sunday after the Saturday close
+  // So: Saturday (day 13) = last day of cycle = OPEN
+  // Sunday (day 0) = first day of NEW cycle, but previous cycle is now closed = LATE for prior cycle
+  return dayInCycle!==13; // any day except Saturday = could be late
+  // More precise: day 0 (Sun) through day 12 (Fri) = late for closed cycle
+  // day 13 (Sat) = cycle closes today, still accepting
+}
 function submitTC(){
   const loc=document.getElementById('tc-loc').value;
   const date=document.getElementById('tc-date').value;
@@ -4025,7 +4120,8 @@ function submitTC(){
   const submitted=getDatetime();
   const rowId=uid+'-TC-'+Date.now();
   sendLog({type:'tc_submit',rowId,uid,name,submitted,location:loc,date,reason,shiftStart:fmtT(start),shiftEnd:fmtT(end),breakStart:_tcBreak?brkS:'None',breakEnd:_tcBreak?brkE:'None',status:'Sent',note:''});
-  tmConfirm('Time correction submitted.','Sent');
+  const _tcLateWarn=isTCLate()?'<div style="margin-top:10px;padding:8px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;color:#f87171;font-weight:700;text-align:left;line-height:1.5">&#9888; This correction was submitted after the pay period deadline. Payout may be delayed to the next pay cycle.</div>':'';
+  tmConfirm('Time correction submitted.','Sent',false,'',_tcLateWarn);
 }
 
 let _toDaysSelected=[];
@@ -4170,23 +4266,24 @@ function tmError(title,msg){
   document.body.appendChild(div);
 }
 
-function tmConfirm(msg,status,showNotify=false,rowId=''){
-  const colors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)'};
+function tmConfirm(msg,status,showNotify=false,rowId='',extraHtml=''){
+  const colors={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309'};
   const div=document.createElement('div');
   div.id='tm-confirm-overlay';
   div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999998;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
   div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
     <div style="font-size:28px;margin-bottom:12px">${status==='Denied'?'⚠️':'✓'}</div>
     <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">${msg}</div>
-    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06);font-size:11px;font-weight:800;color:${colors[status]||'#4B5563'};margin-bottom:20px">${status}</div>
+    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06);font-size:11px;font-weight:800;color:${colors[status]||'#4B5563'};margin-bottom:20px">${fmtStatus(status)}</div>
     ${showNotify?`<button id="notify-dm-btn" onclick="notifyDM('${rowId}',this)" style="width:100%;padding:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:8px">📣 Notify DM for Review</button>`:''}
-    <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer">Done</button>
+    ${extraHtml}
+    <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer;margin-top:${extraHtml?'8px':'0'}">Done</button>
   </div>`;
   document.body.appendChild(div);
 }
 
 function notifyDM(rowId,btn){
-  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
+  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Late',note:'Late entry — DM notified for review'});
   btn.textContent='✓ DM Notified';btn.disabled=true;btn.style.opacity='.5';
 }
 
@@ -4272,9 +4369,9 @@ function renderRA(){
     el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px;opacity:.4">📋</div><div style="font-size:11px">No submissions found</div></div>';
     return;
   }
-  const statusColors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
-  const statusBg={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)','Action Required':'rgba(139,92,246,.1)','Corrected':'rgba(0,169,79,.1)'};
-  const statusBd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)','Action Required':'rgba(139,92,246,.25)','Corrected':'rgba(0,169,79,.25)'};
+  const statusColors={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  const statusBg={Sent:'rgba(0,0,0,.04)',Pending:'rgba(139,92,246,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)','Action Required':'rgba(139,92,246,.1)','Corrected':'rgba(0,169,79,.1)'};
+  const statusBd={Sent:'#333',Pending:'rgba(139,92,246,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)','Action Required':'rgba(139,92,246,.25)','Corrected':'rgba(0,169,79,.25)'};
   el.innerHTML=items.map(r=>{
     const c=statusColors[r.status]||'#4B5563';
     const bg=statusBg[r.status]||'rgba(0,0,0,.04)';
@@ -4290,9 +4387,9 @@ function renderRA(){
           <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">Submitted ${fmtSubmitted(r.submitted)}</div>
           ${edited}
         </div>
-        <div style="background:${bg};color:${c};border:1px solid ${bd};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+        <div style="background:${bg};color:${c};border:1px solid ${bd};font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
-      ${r.note?`<div style="font-size:10px;color:${r.status==='Approved'||r.status==='Corrected'?'var(--g)':r.status==='Denied'?'var(--err)':r.status==='Action Required'?'var(--purple)':'var(--warn)'};margin-top:4px;font-family:'DM Sans';font-style:italic">${r.note}</div>`:''}
+      ${r.note?`<div style="font-size:10px;color:${r.status==='Approved'||r.status==='Corrected'?'var(--g)':r.status==='Denied'?'var(--err)':r.status==='Action Required'?'var(--purple)':r.status==='Pending'?'var(--purple)':'var(--warn)'};margin-top:4px;font-family:'DM Sans';font-style:italic">${r.note}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -4303,7 +4400,7 @@ function showRADetail(rowId){
   if(!r){console.warn('showRADetail: rowId not found in _raData',rowId,_raData);return;}
   const isTO=r.rowId.includes('-TO-');
   document.getElementById('ra-detail-title').textContent=isTO?'Time Off Request':'Time Correction';
-  const statusColors={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)','Action Required':'var(--purple)','Corrected':'var(--g)'};
+  const statusColors={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309','Action Required':'var(--purple)','Corrected':'var(--g)'};
   // canEdit: status must be Sent/Pending/Action Required AND not within 7 days of week start
   const _canEditStatus=r.status==='Sent'||r.status==='Pending'||r.status==='Action Required';
   let _withinLockout=false;
@@ -4346,7 +4443,7 @@ function showRADetail(rowId){
     <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
       <div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Status</div>
-        <div style="background:rgba(0,0,0,.04);color:${statusColors[r.status]||'#4B5563'};border:1px solid rgba(0,0,0,.06);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;font-family:'DM Sans'">${r.status}</div>
+        <div style="background:rgba(0,0,0,.04);color:${statusColors[r.status]||'#4B5563'};border:1px solid rgba(0,0,0,.06);font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
       ${rows.map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${l}</div><div style="font-size:12px;font-weight:700;color:${c||'var(--t1)'};text-align:right;max-width:60%;font-family:'DM Sans'">${v}</div></div>`).join('')}
       ${r.note?`<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">Note</div><div style="font-size:12px;font-weight:700;color:${statusColors[r.status]||'#4B5563'};text-align:right;max-width:65%;font-family:'DM Sans';font-style:italic">${r.note}</div></div>`:''}
@@ -4371,8 +4468,8 @@ function deleteRequest(rowId){
 }
 
 function notifyDMFromDetail(rowId){
-  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Pending',note:'DM notified for approval'});
-  showModal({icon:'📣',title:'DM Notified',msg:'Your DM has been notified and will review your request.',borderColor:'rgba(59,130,246,.3)'});
+  sendLog({type:'to_notify',rowId,uid:_pendingUid,status:'Late',note:'Late entry — DM notified for review'});
+  showModal({icon:'📣',title:'DM Notified',msg:'Your DM has been notified. This request is marked Late and may still be denied.',borderColor:'rgba(239,68,68,.25)'});
   closeRADetail();
   repActLoadData();
 }
@@ -4401,6 +4498,31 @@ let _dmCurrentPane='log';
 
 
 
+
+function getLateColor(r,type){
+  // Late(soft)=amber when rep-notified, Late(final)=red when DM finalized
+  if(r.status!=='Late') return null;
+  const note=r.note||'';
+  const isFinal=note.includes('cannot be approved') || note.includes('plan ahead');
+  return isFinal?'var(--err)':'#b45309';
+}
+function getLateBg(r){
+  if(r.status!=='Late') return null;
+  const note=r.note||'';
+  const isFinal=note.includes('cannot be approved') || note.includes('plan ahead');
+  return isFinal?'rgba(239,68,68,.1)':'rgba(245,158,11,.1)';
+}
+function getLateBd(r){
+  if(r.status!=='Late') return null;
+  const note=r.note||'';
+  const isFinal=note.includes('cannot be approved') || note.includes('plan ahead');
+  return isFinal?'rgba(239,68,68,.25)':'rgba(245,158,11,.25)';
+}
+
+function fmtStatus(s){
+  if(s==='Late') return 'Sent Late';
+  return s;
+}
 function dmToRender(){
   const el=document.getElementById('dm-to-list');
   if(!el) return;
@@ -4416,30 +4538,31 @@ function dmToRender(){
   if(f!=='all') items=items.filter(r=>r.status===f);
   if(wk!=='all'){
     const sunTs=parseInt(wk);const sun=new Date(sunTs);const sat=new Date(sunTs+6*86400000);
-    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
+    items=items.filter(r=>{const d=parseFirstDay(r);return !d||( d>=sun&&d<=sat);});
   }
   // Also filter by chip selection
   if(_dmToWeekChip!==null){
     const sun=new Date(_dmToWeekChip);const sat=new Date(_dmToWeekChip+6*86400000);
-    items=items.filter(r=>{const d=parseFirstDay(r);return d&&d>=sun&&d<=sat;});
+    items=items.filter(r=>{const d=parseFirstDay(r);return !d||(d>=sun&&d<=sat);});
   }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
-  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
-  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Partial:'rgba(59,130,246,.25)','Action Required':'rgba(139,92,246,.25)',Corrected:'rgba(0,169,79,.25)'};
+  const sc={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
+  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(139,92,246,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Late:'rgba(245,158,11,.08)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(139,92,246,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Late:'rgba(245,158,11,.2)',Partial:'rgba(59,130,246,.25)','Action Required':'rgba(139,92,246,.25)',Corrected:'rgba(0,169,79,.25)'};
   const weekCounts={};
   [..._dmToData].forEach(row=>{const fd=parseFirstDay(row);if(!fd)return;const wkk=getWeekStart(fd).getTime();if(!weekCounts[wkk])weekCounts[wkk]=[];weekCounts[wkk].push(row.rowId);});
   el.innerHTML=items.map(r=>{
-    const fd=parseFirstDay(r);let weekLabel='--';let subNum='';
+    const fd=parseFirstDay(r);let weekLabel='';let subNum='';
     if(fd){const sun=getWeekStart(fd);const sat=new Date(sun);sat.setDate(sun.getDate()+6);weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate()+'/'+sat.getFullYear();const wkk=sun.getTime();if(weekCounts[wkk]){const idx=weekCounts[wkk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}}
+    const metaLine=weekLabel?(weekLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted)):fmtSubmitted(r.submitted);
     return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${weekLabel} · ${subNum} · ${fmtSubmitted(r.submitted)}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${metaLine}</div>
         </div>
-        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+        <div style="background:${getLateBg(r)||sb[r.status]||sb.Sent};color:${getLateColor(r)||sc[r.status]||sc.Sent};border:1px solid ${getLateBd(r)||sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
     </div>`;
   }).join('');
@@ -4454,29 +4577,30 @@ function dmTcRender(){
   const srt=(document.getElementById('dm-tc-sort')||{value:'newest'}).value||'newest';
   populateTCCycles();
   let items=[..._dmTcData];
-  if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return db-da;});
-  else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||new Date(0);const db=parseDate(b.date)||new Date(0);return da-db;});
+  if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||parseDate(a.submitted)||new Date(0);const db=parseDate(b.date)||parseDate(b.submitted)||new Date(0);return db-da;});
+  else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||parseDate(a.submitted)||new Date(0);const db=parseDate(b.date)||parseDate(b.submitted)||new Date(0);return da-db;});
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
-  if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[ci].start&&d<=cycles[ci].end;});}
-  if(_dmTcCycleChip!==null){const cycles=getPayCycles();if(cycles[_dmTcCycleChip])items=items.filter(r=>{const d=parseDate(r.date);return d&&d>=cycles[_dmTcCycleChip].start&&d<=cycles[_dmTcCycleChip].end;});}
+  if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);return !d||(d>=cycles[ci].start&&d<=cycles[ci].end);});}
+  if(_dmTcCycleChip!==null){const cycles=getPayCycles();if(cycles[_dmTcCycleChip])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);return !d||(d>=cycles[_dmTcCycleChip].start&&d<=cycles[_dmTcCycleChip].end);});}
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
-  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Corrected:'var(--g)','Action Required':'var(--purple)'};
-  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(245,158,11,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
-  const sbd={Sent:'#333',Pending:'rgba(245,158,11,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Corrected:'rgba(0,169,79,.25)','Action Required':'rgba(139,92,246,.25)'};
+  const sc={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309',Corrected:'var(--g)','Action Required':'var(--purple)'};
+  const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(139,92,246,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Late:'rgba(245,158,11,.08)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
+  const sbd={Sent:'#333',Pending:'rgba(139,92,246,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Late:'rgba(245,158,11,.2)',Corrected:'rgba(0,169,79,.25)','Action Required':'rgba(139,92,246,.25)'};
   const cycles2=getPayCycles();const cycleCounts={};
-  [..._dmTcData].forEach(row=>{const d=parseDate(row.date);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
+  [..._dmTcData].forEach(row=>{const d=parseDate(row.date)||parseDate(row.submitted);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
   el.innerHTML=items.map(r=>{
-    const d=parseDate(r.date);let cycleLabel='--';let subNum='';
+    const d=parseDate(r.date);let cycleLabel='';let subNum='';
     if(d){cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}};});}
+    const tcMeta=cycleLabel?(cycleLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted||r.date)):(r.date?fmtSubmitted(r.date)+' · '+fmtSubmitted(r.submitted):fmtSubmitted(r.submitted));
     return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${cycleLabel} · ${subNum} · ${fmtSubmitted(r.submitted||r.date)}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${tcMeta}</div>
         </div>
-        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans'">${r.status}</div>
+        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
     </div>`;
   }).join('');
@@ -4571,16 +4695,23 @@ function setDMTcDemo(){
 
 // ── PAY CYCLE HELPERS ──
 function getPayCycles(){
-  const anchor=new Date(2026,2,29); // March 29 2026, biweekly
+  // Use UTC midnight to avoid timezone drift when comparing with parsed ISO dates
+  const anchor=new Date(Date.UTC(2026,2,29)); // March 29 2026 UTC
   const cycles=[];
   for(let i=-10;i<=12;i++){
-    const s=new Date(anchor); s.setDate(anchor.getDate()+i*14);
-    const e=new Date(s); e.setDate(s.getDate()+13);
-    cycles.push({start:s,end:e,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
+    const s=new Date(anchor.getTime()+i*14*86400000);
+    const e=new Date(s.getTime()+13*86400000);
+    // end = end of day (23:59:59 UTC) so all times on that day match
+    const eEnd=new Date(e.getTime()+86399999);
+    cycles.push({start:s,end:eEnd,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
   }
   return cycles;
 }
-function fmtCycleDate(d){return (d.getMonth()+1)+'/'+(d.getDate())+'/'+d.getFullYear();}
+function toUTCMidnight(d){
+  if(!d) return null;
+  return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));
+}
+function fmtCycleDate(d){return (d.getUTCMonth()+1)+'/'+(d.getUTCDate())+'/'+d.getUTCFullYear();}
 function fmtWeekDate(d){return (d.getMonth()+1)+'/'+(d.getDate());}
 function dateInCycle(dateStr,cycle){
   const d=parseDate(dateStr); if(!d) return false;
@@ -4648,7 +4779,7 @@ function buildWeekChips(containerId, selectedTs, onSelect){
     } else {
       cls='wchip-open'; sublabel='Open';
     }
-    return `<div onclick="selectWeekChip('${containerId}',${ts})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:flex-start;gap:2px;padding:4px 9px">
+    return `<div onclick="selectWeekChip('${containerId}',${ts})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:center;gap:2px;padding:4px 9px;text-align:center">
       <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
       <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
     </div>`;
@@ -4676,11 +4807,9 @@ function buildCycleChips(containerId, selectedIdx){
   if(!el) return;
   const cycles=getPayCycles();
   const today=new Date();
-  const todayMid=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const todayMid=new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()));
   let currentIdx=cycles.findIndex(c=>{
-    const s=new Date(c.start.getFullYear(),c.start.getMonth(),c.start.getDate());
-    const e=new Date(c.end.getFullYear(),c.end.getMonth(),c.end.getDate());
-    return todayMid>=s&&todayMid<=e;
+    return todayMid>=c.start&&todayMid<=c.end;
   });
   if(currentIdx<0){
     currentIdx=cycles.reduce((best,c,i)=>{
@@ -4700,7 +4829,7 @@ function buildCycleChips(containerId, selectedIdx){
     const cls=isCurrent?'wchip-current':'wchip-amber';
     const sublabel=isCurrent?'Current':'Past';
     const lbl=fmtCycleDate(c.start)+' \u2013 '+fmtCycleDate(c.end);
-    return `<div onclick="selectCycleChip('${containerId}',${actualIdx})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:flex-start;gap:2px;padding:4px 9px">
+    return `<div onclick="selectCycleChip('${containerId}',${actualIdx})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:center;gap:2px;padding:4px 9px;text-align:center">
       <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
       <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
     </div>`;
@@ -4800,7 +4929,7 @@ function showDMTimeDetail(type,rowId){
   const isDone=(r.status==='Approved'||r.status==='Denied'||r.status==='Partial'||r.status==='Corrected');
   // DM always sees action buttons regardless of current status
   const showActions=!isViewOnly;
-  const sc={Sent:'#4B5563',Pending:'var(--warn)',Approved:'var(--g)',Denied:'var(--err)',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
+  const sc={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
   let copyText='';
   let copySubject='';
   if(!isViewOnly&&isDone&&type==='to'&&isMultiDay){
@@ -4831,12 +4960,12 @@ function showDMTimeDetail(type,rowId){
     [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtDateOnly(r.date)],['Reason',r.reason],['Shift',fmtTime(r.shiftStart)+' – '+fmtTime(r.shiftEnd)],['Break',r.breakStart&&r.breakStart!=='None'?fmtTime(r.breakStart)+' – '+fmtTime(r.breakEnd):'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
   const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   const hdr=document.createElement('div');hdr.style.cssText='background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)';
-  const bb=document.createElement('div');bb.style.cssText='font-size:11px;font-weight:700;color:var(--t3);cursor:pointer';bb.textContent='\u2190 Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
+  const bb=document.createElement('div');bb.style.cssText="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation";bb.innerHTML='&#8592; Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
   const tl=document.createElement('div');tl.style.cssText='font-family:Bebas Neue;font-size:20px;letter-spacing:3px';tl.textContent=type==='to'?'Time Off':'Time Correction';
-  hdr.appendChild(bb);hdr.appendChild(tl);hdr.appendChild(document.createElement('div'));ov.appendChild(hdr);
+  hdr.appendChild(tl);hdr.appendChild(bb);ov.appendChild(hdr);
   const body=document.createElement('div');body.style.cssText='max-width:500px;margin:0 auto;padding:16px 14px 80px';
   const ic=document.createElement('div');ic.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px';
-  ic.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;color:var(--t3)">Status</div><div style="color:'+(sc[r.status]||'#4B5563')+';font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06)">'+(r.status||'\u2014')+'</div></div>'+rows.map(([l,v,c])=>'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">'+l+'</div><div style="font-size:12px;font-weight:700;color:'+(c||'var(--t1)')+';text-align:right;max-width:60%">'+(v||'\u2014')+'</div></div>').join('');
+  ic.innerHTML='<div style="padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"><div style="font-size:10px;color:var(--t3)">Status</div><div style="color:'+(sc[r.status]||'#4B5563')+';font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06);width:82px;text-align:center;display:inline-block;box-sizing:border-box">'+(fmtStatus(r.status||'\u2014'))+'</div></div>'+rows.map(([l,v,c])=>'<div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--bd)"><div style="font-size:10px;color:var(--t3)">'+l+'</div><div style="font-size:12px;font-weight:700;color:'+(c||'var(--t1)')+';text-align:right;max-width:60%">'+(v||'\u2014')+'</div></div>').join('');
   body.appendChild(ic);
   const nc=document.createElement('div');nc.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px';
   const nl=document.createElement('div');nl.style.cssText='font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px';nl.textContent='Notes';nc.appendChild(nl);
@@ -4886,8 +5015,14 @@ function showDMTimeDetail(type,rowId){
       bgmd.appendChild(dbmd);bgmd.appendChild(abmd);body.appendChild(bgmd);
       const bgmd2=document.createElement('div');bgmd2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
       const sbmd=document.createElement('button');sbmd.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sbmd.textContent='↺ Sent';sbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
-      const pbmd=document.createElement('button');pbmd.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pbmd.textContent='Pending';pbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
+      const pbmd=document.createElement('button');pbmd.style.cssText='padding:10px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pbmd.textContent='Pending';pbmd.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bgmd2.appendChild(sbmd);bgmd2.appendChild(pbmd);body.appendChild(bgmd2);
+      const bgmd3=document.createElement('div');bgmd3.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
+      const lbmds=document.createElement('button');lbmds.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:var(--r2);color:#b45309;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';lbmds.textContent='Late (Soft)';
+      lbmds.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Late',ta?ta.value||'Late entry — DM notified. Request has been reviewed.':'Late entry — DM notified. Request has been reviewed.','');};})();
+      const lbmdf=document.createElement('button');lbmdf.style.cssText='padding:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';lbmdf.textContent='Late (Final)';
+      lbmdf.onclick=(()=>{const _r=rowId,_t=type;return function(){dmTimeAction(_t,_r,'Late','Your time off request was submitted after the deadline and cannot be approved for this period. Please plan ahead and submit at least 14 days in advance.','');};})();
+      bgmd3.appendChild(lbmds);bgmd3.appendChild(lbmdf);body.appendChild(bgmd3);
     } else if(type==='to'){
       const phd=document.createElement('div');phd.id='partial-hours-'+rowId;phd.style.cssText='display:none;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px';
       phd.innerHTML='<div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Approved Hours</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">From</div><input type="time" id="partial-from-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div><div><div style="font-size:9px;color:var(--t3);margin-bottom:4px">Until</div><input type="time" id="partial-until-'+rowId+'" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:DM Sans;font-size:13px;outline:none"/></div></div>';
@@ -4902,8 +5037,15 @@ function showDMTimeDetail(type,rowId){
       // Second row: Sent, Pending
       const bg2to=document.createElement('div');bg2to.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
       const sb2=document.createElement('button');sb2.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2.textContent='↺ Sent';sb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
-      const pb2to=document.createElement('button');pb2to.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2to.textContent='Pending';pb2to.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
+      const pb2to=document.createElement('button');pb2to.style.cssText='padding:10px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2to.textContent='Pending';pb2to.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bg2to.appendChild(sb2);bg2to.appendChild(pb2to);body.appendChild(bg2to);
+      // Late row (TO only) — yellow=soft, clicking Late sets final denial with auto-note
+      const bg3to=document.createElement('div');bg3to.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
+      const lb_soft=document.createElement('button');lb_soft.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:var(--r2);color:#b45309;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';lb_soft.textContent='Late (Soft)';
+      lb_soft.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Late',ta?ta.value||'Late entry — DM notified. Request has been reviewed.':'Late entry — DM notified. Request has been reviewed.','');};})();
+      const lb_final=document.createElement('button');lb_final.style.cssText='padding:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';lb_final.textContent='Late (Final)';
+      lb_final.onclick=(()=>{const _r=rowId,_t=type;return function(){dmTimeAction(_t,_r,'Late','Your time off request was submitted after the deadline and cannot be approved for this period. Please plan ahead and submit at least 14 days in advance.','');};})();
+      bg3to.appendChild(lb_soft);bg3to.appendChild(lb_final);body.appendChild(bg3to);
     } else {
       const bg=document.createElement('div');bg.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px';
       const db=document.createElement('button');db.style.cssText='padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);color:var(--err);font-family:DM Sans;font-size:13px;font-weight:900;cursor:pointer';db.textContent='Deny';db.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Denied',ta?ta.value:'','');};})();
@@ -4912,8 +5054,13 @@ function showDMTimeDetail(type,rowId){
       // Second row: Sent, Pending
       const bg2=document.createElement('div');bg2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px';
       const sb2tc=document.createElement('button');sb2tc.style.cssText='padding:10px;background:rgba(0,0,0,.03);border:1px solid #444;border-radius:var(--r2);color:#4B5563;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';sb2tc.textContent='↺ Sent';sb2tc.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Sent',ta?ta.value:'','');};})();
-      const pb2=document.createElement('button');pb2.style.cssText='padding:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r2);color:var(--warn);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2.textContent='Pending';pb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
+      const pb2=document.createElement('button');pb2.style.cssText='padding:10px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';pb2.textContent='Pending';pb2.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Pending',ta?ta.value:'','');};})();
       bg2.appendChild(sb2tc);bg2.appendChild(pb2);body.appendChild(bg2);
+      // Late (TC) — yellow only, no final denial path
+      const bg3tc=document.createElement('div');bg3tc.style.cssText='margin-top:8px';
+      const lbtc=document.createElement('button');lbtc.style.cssText='padding:10px;width:100%;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:var(--r2);color:#b45309;font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';lbtc.textContent='Late';
+      lbtc.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Late',ta?ta.value||'This correction was submitted after the pay period deadline. Please review and approve if valid.':'This correction was submitted after the pay period deadline. Please review and approve if valid.','');};})();
+      bg3tc.appendChild(lbtc);body.appendChild(bg3tc);
       // Third row: Action Required only
       const bg3=document.createElement('div');bg3.style.cssText='margin-top:8px';
       const arb=document.createElement('button');arb.style.cssText='padding:10px;width:100%;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--r2);color:var(--purple);font-family:DM Sans;font-size:11px;font-weight:900;cursor:pointer';arb.textContent='Action Required';arb.onclick=(()=>{const _r=rowId,_t=type;return function(){const ta=document.getElementById('dm-note-field');dmTimeAction(_t,_r,'Action Required',ta?ta.value:'','');};})();
