@@ -261,7 +261,7 @@ select option,select optgroup{background:#fff;color:#111827}
 
 .deal-sub{font-size:9px;color:var(--t3);line-height:1.4}
 @media(max-width:500px){.deal-strip{grid-template-columns:1fr 1fr}}
-.wchip{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:5px 10px;border-radius:20px;cursor:pointer;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1;min-width:130px;text-align:center;box-sizing:border-box;flex-shrink:0}
+.wchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 10px;border-radius:20px;cursor:pointer;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1;min-width:130px;text-align:center;box-sizing:border-box;flex-shrink:0;white-space:normal}
 .wdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .wlbl{font-size:10px;font-weight:700;white-space:nowrap}
 .wchip-past{border-color:#CBD0D8;background:#F3F4F6}.wchip-past .wdot{background:#9CA3AF}.wchip-past .wlbl{color:#9CA3AF}.wchip-past span{color:#9CA3AF}
@@ -3466,7 +3466,7 @@ try {
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
-          <div id="dm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
+          <div id="dm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;white-space:nowrap"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-to-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmToRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3489,7 +3489,7 @@ try {
 
         <!-- CORRECTIONS PANE -->
         <div id="act-pane-tc" style="display:none">
-          <div id="dm-tc-cycle-chips" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd)"></div>
+          <div id="dm-tc-cycle-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;white-space:nowrap"></div>
                     <div style="display:flex;flex-direction:column;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2)">
             <div style="display:flex;gap:6px;align-items:center">
               <input id="dm-tc-search" type="text" placeholder="Search name, UID, date, status..." oninput="dmTcRender()" style="flex:1;padding:8px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;box-sizing:border-box"/>
@@ -3937,7 +3937,7 @@ function closeActivity(){
 
       <!-- TIME OFF -->
       <div id="tm-to" style="display:none">
-        <div id="tm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
+        <div id="tm-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;white-space:nowrap"></div>
         <div style="padding:12px 14px;border-bottom:1px solid var(--bd)">
           <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Sans'">Month</div>
           <select id="to-month" style="width:100%;padding:9px 12px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none" onchange="toUpdateDeadline();buildTODayChips()">
@@ -4006,7 +4006,7 @@ function closeActivity(){
         <div id="ra-tab-tc" onclick="raTab('tc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
       </div>
       <!-- Week chips -->
-      <div id="ra-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
+      <div id="ra-to-week-chips" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;white-space:nowrap"></div>
       <!-- Filter -->
       <div id="ra-filter-bar" style="display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch">
         <button onclick="raFilter('all',this)" class="ra-f on" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-align:center;justify-content:center;">All</button>
@@ -4620,9 +4620,15 @@ function actMasterTab(pane){
   if(pane==='tc'){buildCycleChips('dm-tc-cycle-chips',_dmTcCycleChip);dmLoadTC();}
 }
 
+
+function fetchWithTimeout(url,options={},ms=12000){
+  const ctrl=new AbortController();
+  const id=setTimeout(()=>ctrl.abort(),ms);
+  return fetch(url,{...options,signal:ctrl.signal}).finally(()=>clearTimeout(id));
+}
 function dmLoadTO(){
   document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+  fetchWithTimeout(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
@@ -4638,7 +4644,7 @@ function dmLoadTO(){
     })
     .catch(err=>{
       console.error('[dmLoadTO] fetch failed:', err);
-      document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:24px"><div style="font-size:20px;margin-bottom:8px">⚠️</div><div style="font-size:12px;font-weight:800;color:var(--warn);margin-bottom:4px">Could not load data</div><div style="font-size:10px;color:var(--t3);margin-bottom:12px">'+err.message+'</div><button onclick="dmLoadTO()" style="padding:7px 18px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">↺ Try Again</button></div>';
+      setDMToDemo();
     });
 }
 function setDMToDemo(){
@@ -4657,7 +4663,7 @@ function setDMToDemo(){
 
 function dmLoadTC(){
   document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetch(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+  fetchWithTimeout(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
@@ -4672,7 +4678,7 @@ function dmLoadTC(){
     })
     .catch(err=>{
       console.error('[dmLoadTC] fetch failed:', err);
-      document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:24px"><div style="font-size:20px;margin-bottom:8px">⚠️</div><div style="font-size:12px;font-weight:800;color:var(--warn);margin-bottom:4px">Could not load data</div><div style="font-size:10px;color:var(--t3);margin-bottom:12px">'+err.message+'</div><button onclick="dmLoadTC()" style="padding:7px 18px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t2);font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">↺ Try Again</button></div>';
+      setDMTcDemo();
     });
 }
 function setDMTcDemo(){
@@ -4779,7 +4785,7 @@ function buildWeekChips(containerId, selectedTs, onSelect){
     } else {
       cls='wchip-open'; sublabel='Open';
     }
-    return `<div onclick="selectWeekChip('${containerId}',${ts})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:center;gap:2px;padding:4px 9px;text-align:center">
+    return `<div onclick="selectWeekChip('${containerId}',${ts})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="align-items:center;gap:2px;padding:4px 9px;text-align:center">
       <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
       <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
     </div>`;
@@ -4829,7 +4835,7 @@ function buildCycleChips(containerId, selectedIdx){
     const cls=isCurrent?'wchip-current':'wchip-amber';
     const sublabel=isCurrent?'Current':'Past';
     const lbl=fmtCycleDate(c.start)+' \u2013 '+fmtCycleDate(c.end);
-    return `<div onclick="selectCycleChip('${containerId}',${actualIdx})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="flex-direction:column;align-items:center;gap:2px;padding:4px 9px;text-align:center">
+    return `<div onclick="selectCycleChip('${containerId}',${actualIdx})" class="wchip ${cls}${isSelected?' wchip-sel':''}" style="align-items:center;gap:2px;padding:4px 9px;text-align:center">
       <div style="display:flex;align-items:center;gap:6px"><div class="wdot"></div><span class="wlbl">${lbl}</span></div>
       <span style="font-size:8px;font-weight:600;opacity:.7;padding-left:14px;font-family:'DM Sans'">${sublabel}</span>
     </div>`;
