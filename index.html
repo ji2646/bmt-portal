@@ -341,16 +341,21 @@ html.dark-mode .deal-sub{color:#AAAAAA}
 /* ── DESKTOP/TABLET PERFORMANCE SPLIT (768px+ gets split layout) ── */
 @media (min-width: 768px){
   #perf-overlay{ display:none;flex-direction:column }
-  #perf-overlay.perf-open{ display:flex !important }
+  #perf-overlay.perf-open{ display:flex !important;flex-direction:column }
   #perf-left{ width:300px !important;flex-shrink:0;border-right:1px solid var(--bd) }
   #perf-right{ display:block !important }
   .login-card{ width:400px !important;box-shadow:0 8px 40px rgba(0,0,0,.10) !important;border-radius:16px !important }
   #ls-menu .menu-btn-grid{ display:grid;grid-template-columns:1fr 1fr;gap:8px }
 }
 @media (max-width: 767px){
-  #perf-overlay.perf-open{ display:block !important }
+  #perf-overlay.perf-open{ display:flex !important;flex-direction:column }
   #perf-right{ display:none !important }
-  #perf-left{ width:100% !important }
+  #perf-left{ width:100% !important;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 }
+  #perf-layout{ flex:1;overflow:hidden;min-height:0 }
+  /* Mobile header: hide name badge and dashboard btn, compact buttons */
+  #perf-header-name{ display:none !important }
+  #perf-dashboard-btn{ display:none !important }
+  .perf-hdr-btn{ padding:6px 10px !important;font-size:11px !important }
 }
 /* Dark mode — wchip */
 html.dark-mode .wchip-past{border-color:#3a3a3a !important;background:rgba(255,255,255,.03) !important}
@@ -4831,7 +4836,7 @@ try {
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="actLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
       <div id="act-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="actRefresh()" title="Refresh" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="actRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
       Home</button><button onclick="closeActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
@@ -5306,16 +5311,16 @@ function closeActivity(){
 <!-- ══════════════════════════════════
      PERFORMANCE OVERLAY
 ══════════════════════════════════ -->
-<div id="perf-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;flex-direction:column">
+<div id="perf-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;flex-direction:column;overflow:hidden">
   <!-- Header -->
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:10">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Performance</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="perf-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button type="button" onclick="perfRefresh()" title="Refresh" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button type="button" onclick="perfRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
       <button type="button" id="perf-dashboard-btn" onclick="perfGoToDashboard()" style="display:none;padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Dashboard</button>
-      <button type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button>
-      <button type="button" onclick="closePerformance()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button>
+      <button type="button" onclick="goHome()" class="perf-hdr-btn" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button>
+      <button type="button" onclick="closePerformance()" class="perf-hdr-btn" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
   <!-- Split body -->
@@ -5337,7 +5342,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Sales Tracker</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="st-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="stRefresh()" title="Refresh" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="stRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
       Home</button><button type="button" onclick="closeSalesTracker()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
@@ -5359,7 +5364,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="tm-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="tmRefresh()" title="Refresh" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="tmRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
       Home</button><button onclick="closeTM()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
@@ -5483,7 +5488,7 @@ function closeActivity(){
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="repActLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
       <div id="rep-act-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="repActRefresh()" title="Refresh" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap"><button onclick="repActRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
       Home</button><button onclick="closeRepActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
