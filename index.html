@@ -1461,12 +1461,30 @@ function launchPerformance(){
 function closePerformance(){
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-  // If DM/RSM and viewing a rep, go back to picker first
-  if((isDM||isRSM)&&_perfRepUid){
-    _perfRepUid=null;
+  const isRSC=!isDM&&!isRSM;
+
+  // Mobile: if viewing someone else's detail, go back to own view
+  if(isRSC&&_perfRepUid&&_perfRepUid!==_pendingUid&&window.innerWidth<768){
+    _perfRepUid=_pendingUid;
     renderPerfBody();
     return;
   }
+  // DM/RSM mobile: if viewing a rep, go back to picker
+  if((isDM||isRSM)&&_perfRepUid&&window.innerWidth<768){
+    _perfRepUid=null;
+    setTimeout(updatePerfDashBtn,50);
+    renderPerfBody();
+    return;
+  }
+  // Desktop DM/RSM: if a rep is selected, clear selection and restore picker
+  if((isDM||isRSM)&&_perfRepUid&&window.innerWidth>=768){
+    _perfRepUid=null;
+    setTimeout(updatePerfDashBtn,50);
+    renderPerfBody();
+    loadDistrictDashboard();
+    return;
+  }
+  // Everyone else: close overlay → menu
   const po2=document.getElementById('perf-overlay');po2.style.display='none';po2.classList.remove('perf-open');
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('ls-uid').style.display='none';
@@ -1539,9 +1557,14 @@ function selectPerfRep(uid){
   _perfRepUid=uid;
   setTimeout(updatePerfDashBtn,50);
   if(window.innerWidth>=768){
-    // Desktop: update right panel with visual dashboard, left panel with metric detail
-    loadIndividualDashboard(uid);
-    loadPerfData(uid); // loads metric detail + payout into left panel
+    const isDMsel=_pendingUid==='ji2646dm';
+    const isRSMsel=RSM_UIDS.includes(_pendingUid)&&!isDMsel;
+    const isRSCsel=!isDMsel&&!isRSMsel;
+    // Desktop: load metric detail into left panel always
+    loadPerfData(uid);
+    // RSC: right panel stays as team comparison — don't replace with individual
+    // DM/RSM: right panel shows individual dashboard
+    if(!isRSCsel) loadIndividualDashboard(uid);
     // Highlight selected row
     document.querySelectorAll('.perf-rep-btn').forEach(b=>{
       b.style.background=b.dataset.uid===uid?'var(--s3)':'var(--s1)';
