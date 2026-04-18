@@ -34,8 +34,9 @@ header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box
   transition:background .12s,box-shadow .12s;
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
   line-height:1;vertical-align:middle;
+  font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;
 }
-.hdr-home svg,.hdr-back svg,.hdr-refresh svg{ display:block;flex-shrink:0; }
+.hdr-home svg,.hdr-back svg,.hdr-refresh svg{ display:block;flex-shrink:0;width:17px;height:17px; }
 .hdr-home:hover,.hdr-back:hover,.hdr-refresh:hover{
   background:#F0F1F3;
   box-shadow:0 2px 6px rgba(0,0,0,.1);
@@ -468,7 +469,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       <!-- STEP 2: Menu -->
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
-        <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.85)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Quote Tool</span></span></button>
+        <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.85)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="15" height="15" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Quote Tool</span></span></button>
         <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Performance</span></span></button>
         <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Sales Tracker</span></span></button>
         <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Time Management</span></span></button>
@@ -1310,7 +1311,12 @@ function switchToCycle(cycleStart){
   if(cycleStart===null){
     _perfViewingCycle=null;
     _perfAllData=[];
-    if(isMobile()){ renderPerfBody(); return; }
+    if(isMobile()){
+      const el2=document.getElementById('perf-mobile-district');
+      if(el2){ el2.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; loadDistrictDashboardMobile(); }
+      else renderPerfBody();
+      return;
+    }
     loadDistrictDashboard(true);
   } else {
     _perfViewingCycle=cycleStart;
@@ -1323,7 +1329,13 @@ function switchToCycle(cycleStart){
     else if(isRSMv){ const t=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&t.includes(r.uid.toLowerCase())); }
     else { const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))); }
     _perfAllData=reps;
-    renderDistrictDashboard();
+    if(isMobile()){
+      const el=document.getElementById('perf-mobile-district');
+      if(el){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; renderDistrictDashboardMobile(); }
+      else renderPerfBody();
+    } else {
+      renderDistrictDashboard();
+    }
   }
 }
 function renderCyclePicker(){
@@ -1430,6 +1442,20 @@ function loadDistrictDashboard(forceRefresh){
       });
   } else {
     renderDistrictDashboard();
+  }
+}
+
+
+function refreshDashboard(){
+  _perfAllData=[];
+  if(isMobile()){
+    const el=document.getElementById('perf-mobile-district');
+    if(el){
+      el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>';
+      loadDistrictDashboardMobile();
+    }
+  } else {
+    loadDistrictDashboard(true);
   }
 }
 
@@ -1602,10 +1628,10 @@ function renderDistrictDashboard(){
   // Build filter chips for DM only
   const rsmFilterChips=isDMd?`
     <div style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;margin-bottom:12px;padding-bottom:2px;scrollbar-width:none">
-      <button onclick="_perfDashFilter='all';_perfAllData=[];loadDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter==='all'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='all'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='all'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">All Reps</button>
+      <button onclick="_perfDashFilter='all';refreshDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter==='all'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='all'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='all'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">All Reps</button>
       ${RSM_UIDS.filter(u=>u!=='ji2646dm').map(u=>{
         const label=(UID_NAMES[u]||u)+' · '+u;
-        return `<button onclick="_perfDashFilter='${u}';_perfAllData=[];loadDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter===u?'var(--g)':'var(--bd)'};background:${_perfDashFilter===u?'var(--g)':'var(--s1)'};color:${_perfDashFilter===u?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">${label}</button>`;
+        return `<button onclick="_perfDashFilter='${u}';refreshDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter===u?'var(--g)':'var(--bd)'};background:${_perfDashFilter===u?'var(--g)':'var(--s1)'};color:${_perfDashFilter===u?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">${label}</button>`;
       }).join('')}
     </div>`:'';
 
@@ -1880,10 +1906,10 @@ function loadDistrictDashboardMobile(){
 
 function renderDistrictDashboardMobile(){
   const el=document.getElementById('perf-mobile-district');
-  if(!el||!_perfAllData.length) return;
-  // Temporarily swap target so renderDistrictDashboard writes here
+  if(!el) return;
+  if(!_perfAllData.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">No data.</div>'; return; }
   const real=document.getElementById('perf-dashboard');
-  if(real) real.id='perf-dashboard-hidden';
+  if(real) real.id='perf-dashboard-swap';
   el.id='perf-dashboard';
   renderDistrictDashboard();
   el.id='perf-mobile-district';
@@ -1919,42 +1945,45 @@ function renderMobileRepView(uid){
   const container=document.getElementById('perf-mobile-rep-view');
   if(!container) return;
   const r=_perfData;
-  const name=UID_NAMES[uid]||uid;
-  const isDM=_pendingUid==='ji2646dm';
-  const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-
-  // Build visual dashboard HTML (reuse renderIndividualDashboard logic inline)
-  // Then append metric list + payout below it
-  // First get the visual card HTML
-  const visDiv=document.createElement('div');
-  visDiv.id='perf-dashboard';
-  const hiddenReal=document.getElementById('perf-dashboard');
-  if(hiddenReal) hiddenReal.id='perf-dashboard-real';
-  container.appendChild(visDiv);
-  renderIndividualDashboard(r,uid);
-  // Restore
-  visDiv.id='perf-mobile-visual-card';
-  if(hiddenReal) hiddenReal.id='perf-dashboard';
-  container.removeChild(visDiv);
-
-  // PNG button for mobile
   const canSnap=['ji2646dm','jq6635'].includes(_pendingUid);
-  const pngBtn=canSnap?`<button onclick="doCapture(document.getElementById('perf-mobile-rep-view'))" style="width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Save PNG</button>`:'';
 
-  container.innerHTML=pngBtn+visDiv.outerHTML;
-  // Now append metric + payout below
+  // ── Step 1: Render visual dashboard into a temp off-screen div ──
+  const visDiv=document.createElement('div');
+  visDiv.style.cssText='position:absolute;left:-9999px;top:-9999px';
+  visDiv.id='perf-dashboard';
+  document.body.appendChild(visDiv);
+  renderIndividualDashboard(r,uid);
+  document.body.removeChild(visDiv);
+  visDiv.style.cssText='';
+  visDiv.id='';
+
+  // ── Step 2: Render metric list into a temp off-screen div ──
   const metricDiv=document.createElement('div');
-  metricDiv.id='perf-body-metric';
-  container.appendChild(metricDiv);
-  // Render metric list into metricDiv
-  const realBody=document.getElementById('perf-body');
-  const savedBody=realBody?realBody.innerHTML:'';
-  // Temporarily point perf-body to metricDiv
-  if(realBody) realBody.id='perf-body-real';
+  metricDiv.style.cssText='position:absolute;left:-9999px;top:-9999px';
   metricDiv.id='perf-body';
+  document.body.appendChild(metricDiv);
   renderPerfView(uid);
-  metricDiv.id='perf-body-metric';
-  if(realBody) realBody.id='perf-body';
+  document.body.removeChild(metricDiv);
+  metricDiv.style.cssText='';
+  metricDiv.id='';
+
+  // ── Step 3: Assemble into container ──
+  container.innerHTML='';
+
+  // PNG button (png-hide so it's excluded from the capture)
+  if(canSnap){
+    const btn=document.createElement('button');
+    btn.className='png-hide';
+    btn.onclick=()=>doCapture(container);
+    btn.style.cssText='width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px';
+    btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Save PNG';
+    container.appendChild(btn);
+  }
+
+  // Visual dashboard
+  container.appendChild(visDiv);
+
+  // Metric list + payout
   container.appendChild(metricDiv);
 }
 
@@ -2157,7 +2186,7 @@ function renderIndividualDashboard(r,uid){
         <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
         <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
       </div>
-      ${['ji2646dm','jq6635'].includes(_pendingUid)?`<button class="png-hide" onclick="doCaptureDiv(document.getElementById('perf-dashboard'))" style="padding:5px 14px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:DM Sans;flex-shrink:0">PNG</button>`:''}
+      ${['ji2646dm','jq6635'].includes(_pendingUid)&&isDesktop()?`<button class="png-hide" onclick="doCaptureDiv(document.getElementById('perf-dashboard'))" style="padding:5px 14px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:DM Sans;flex-shrink:0">PNG</button>`:''}
     </div>
 
     <!-- Row 1: Acts vs Upgrades | Voice vs Non-Voice -->
