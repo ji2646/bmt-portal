@@ -355,11 +355,16 @@ html.dark-mode .deal-sub{color:#AAAAAA}
   #perf-layout{ flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;display:block !important }
   #perf-left{ width:100% !important;overflow:visible }
   #perf-body{ padding-bottom:60px }
-  /* Mobile header: hide name badge and dashboard btn, compact buttons */
   #perf-header-name{ display:none !important }
   #perf-dashboard-btn{ display:none !important }
   .perf-hdr-btn{ padding:6px 10px !important;font-size:11px !important }
 }
+/* PWA/homescreen: body.is-mobile class mirrors matchMedia — more reliable than innerWidth in standalone mode */
+body.is-mobile #perf-right{ display:none !important }
+body.is-mobile #perf-header-name{ display:none !important }
+body.is-mobile #perf-dashboard-btn{ display:none !important }
+body.is-mobile #perf-left{ width:100% !important }
+body:not(.is-mobile) #perf-right{ display:block }
 
 /* ── MOBILE HEADER COMPACT ── */
 @media (max-width: 767px){
@@ -480,7 +485,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z6</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z7</div>
 </div>
 
 <script>
@@ -559,6 +564,20 @@ function doCapture(el){
 }
 function doCaptureDiv(el){ doCapture(el); }
 const LOG_URL='https://script.google.com/macros/s/AKfycbzT0K1EWx-0pCcHBjnBTxLTxbpegklrRYu6k_yVoyJlTzJXcKd33pq9RwajYe_OBUue/exec';
+// ── RELIABLE MOBILE DETECTION ──
+// window.innerWidth is unreliable in PWA/homescreen mode (can be 0 or wrong at load)
+// Use screen.width + matchMedia + UA as fallback
+function isMobile(){
+  // Primary: CSS media query — most reliable across PWA, browser, homescreen
+  if(window.matchMedia) return window.matchMedia('(max-width:767px)').matches;
+  // Fallback: screen width (physical, not viewport)
+  if(screen.width) return screen.width<=767;
+  // Last resort: userAgent
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+function isDesktop(){ return !isMobile(); }
+
+
 
 // ── SESSION TIMEOUT: 10 minutes ──
 let _sessionTimer=null;
@@ -1143,6 +1162,15 @@ function doLogin(){
   }
 }
 
+// Re-evaluate mobile layout on load and resize (PWA homescreen fix)
+function applyMobileLayout(){
+  document.body.classList.toggle('is-mobile', isMobile());
+}
+document.addEventListener('DOMContentLoaded', applyMobileLayout);
+window.addEventListener('resize', applyMobileLayout);
+window.addEventListener('orientationchange', ()=>setTimeout(applyMobileLayout, 100));
+applyMobileLayout();
+
 // Always require login on every page load
 document.body.style.overflow='hidden';
 
@@ -1273,7 +1301,7 @@ function updatePerfDashBtn(){
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   // Show dashboard btn only on desktop when a rep is selected
-  btn.style.display=_perfRepUid&&window.innerWidth>=768?'block':'none';
+  btn.style.display=_perfRepUid&&isDesktop()?'block':'none';
 }
 let _dashLoading=false;
 function loadDistrictDashboard(forceRefresh){
@@ -1602,7 +1630,7 @@ function launchPerformance(){
   renderPerfBody();
   loadPerfHistory(()=>renderCyclePicker());
   // Desktop: always load district dashboard in right panel on open
-  if(window.innerWidth>=768){
+  if(isDesktop()){
     setTimeout(()=>loadDistrictDashboard(),300);
   }
 }
@@ -1612,14 +1640,14 @@ function closePerformance(){
   const isRSC=!isDM&&!isRSM;
 
   // Mobile: if viewing a rep, back goes to picker
-  if(_perfRepUid&&window.innerWidth<768){
+  if(_perfRepUid&&isMobile()){
     _perfRepUid=null;
     setTimeout(updatePerfDashBtn,50);
     renderPerfBody();
     return;
   }
   // Desktop: if a rep is selected, clear selection and restore picker+dashboard
-  if(_perfRepUid&&window.innerWidth>=768){
+  if(_perfRepUid&&isDesktop()){
     _perfRepUid=null;
     setTimeout(updatePerfDashBtn,50);
     renderPerfBody();
@@ -1659,7 +1687,7 @@ function renderPerfBody(){
       })();
 
     body.innerHTML=`
-      ${window.innerWidth<768?`
+      ${isMobile()?`
       <div style="margin-bottom:12px">
         <button type="button" onclick="toggleMobileDashboard()" id="mobile-dash-btn" style="width:100%;padding:10px;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;color:var(--t1)">📊 View District Dashboard</button>
         <div id="mobile-dashboard-panel" style="display:none;margin-top:8px"></div>
@@ -1671,13 +1699,13 @@ function renderPerfBody(){
           <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
           <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
         </div>`:''}
-        ${window.innerWidth<768?`
+        ${isMobile()?`
         <select onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer;margin-bottom:4px;-webkit-appearance:none;appearance:none">
           <option value="">— Select a rep —</option>
           ${repList.map(([uid,name])=>`<option value="${uid}" ${uid===_perfRepUid?'selected':''}>${name||uid}</option>`).join('')}
         </select>
       `:`
-        ${window.innerWidth<768?`
+        ${isMobile()?`
         <select onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer">
           <option value="">— Select a rep —</option>
           ${repList.map(([uid,name])=>`<option value="${uid}">${name||uid} (${uid})</option>`).join('')}
@@ -1703,7 +1731,7 @@ function renderPerfBody(){
 
   // Rep selected — hide right panel on mobile, show individual
   const perfRight=document.getElementById('perf-right');
-  if(perfRight&&window.innerWidth>=860) perfRight.style.display='block';
+  if(perfRight&&isDesktop()) perfRight.style.display='block';
   body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--t3);font-size:11px">Loading...</div>`;
   loadPerfData(_perfRepUid||_pendingUid);
 }
@@ -1721,7 +1749,7 @@ function _doSelectPerfRep(uid){
   _perfLoadToken++; // new token — stale callbacks will no-op
   setTimeout(updatePerfDashBtn,50);
 
-  if(window.innerWidth>=768){
+  if(isDesktop()){
     const isDMsel=_pendingUid==='ji2646dm';
     const isRSMsel=RSM_UIDS.includes(_pendingUid)&&!isDMsel;
     const isRSCsel=!isDMsel&&!isRSMsel;
@@ -1838,7 +1866,7 @@ function loadIndividualDashboard(uid){
 }
 
 function renderIndividualDashboard(r,uid){
-  const isMobile=window.innerWidth<768;
+  const isMobile=isMobile();
   const dash=isMobile?document.getElementById('perf-mobile-visual'):document.getElementById('perf-dashboard');
   const name=UID_NAMES[uid]||uid;
   function fmtRawDate(s){ if(!s) return ''; const p=s.split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
@@ -2300,7 +2328,7 @@ function renderPerfView(uid){
 
   const mobileCompareBtn='';
   // On mobile, after metric list renders, inject visual card below
-  if(window.innerWidth<768){
+  if(isMobile()){
     setTimeout(()=>{
       const pb=document.getElementById('perf-body');
       if(!pb) return;
