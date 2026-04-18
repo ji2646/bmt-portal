@@ -403,7 +403,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 .login-header p{font-size:10px;font-weight:700;color:rgba(0,0,0,.5);margin:0;}
 .login-body{padding:20px 22px 22px;}
 .login-field label{display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px;}
-.login-field input{width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none;transition:border-color .15s;}
+.login-field input{width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;outline:none;transition:border-color .15s;}
 .login-field input:focus{border-color:#00a94f;}
 #login-error{display:none;font-size:10px;color:#ef4444;margin:8px 0 10px;font-weight:700;}
 #login-btn{width:100%;padding:11px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;margin-top:14px;}
@@ -443,11 +443,11 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:12px">Verify Identity</div>
         <div class="login-field" style="margin-bottom:10px">
           <label>Store #</label>
-          <input type="text" id="act-store" placeholder="e.g. 775" autocomplete="off" autocorrect="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="text" id="act-store" placeholder="e.g. 775" autocomplete="off" autocorrect="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;outline:none"/>
         </div>
         <div class="login-field" style="margin-bottom:4px">
           <label>PIN</label>
-          <input type="password" id="act-pin" placeholder="••••••" onkeydown="if(event.key==='Enter')verify2FA()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="password" id="act-pin" placeholder="••••••" onkeydown="if(event.key==='Enter')verify2FA()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;outline:none"/>
         </div>
         <div id="act-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 4px;font-weight:700">Incorrect store or PIN</div>
         <div style="display:flex;gap:8px;margin-top:14px">
@@ -461,7 +461,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:12px">Enter Your PIN</div>
         <div class="login-field" style="margin-bottom:4px">
           <div style="position:relative;display:flex;align-items:center">
-          <input type="password" id="login-pin" placeholder="••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')verifyPin()" style="width:100%;padding:10px 12px;padding-right:52px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="password" id="login-pin" placeholder="••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')verifyPin()" style="width:100%;padding:10px 12px;padding-right:52px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;outline:none"/>
           <span onclick="toggleVisibility('login-pin',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
         </div>
         </div>
@@ -480,7 +480,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z3</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z5</div>
 </div>
 
 <script>
@@ -517,7 +517,10 @@ function doCapture(el){
     clone.querySelectorAll('.png-hide').forEach(b=>b.remove());
     wrapper.appendChild(clone);
     document.body.appendChild(wrapper);
-    html2canvas(wrapper,{scale:2,backgroundColor:'#f8f9fa',useCORS:true,logging:false,borderRadius:12}).then(canvas=>{
+    const wasDark=document.documentElement.classList.contains('dark-mode');
+    if(wasDark) document.documentElement.classList.remove('dark-mode');
+    html2canvas(wrapper,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false,onclone:(doc)=>{doc.documentElement.classList.remove('dark-mode');}}).then(canvas=>{
+    if(wasDark) document.documentElement.classList.add('dark-mode');
       document.body.removeChild(wrapper);
       btns.forEach(b=>b.style.visibility='');
       // Add rounded corners to canvas output
@@ -532,9 +535,19 @@ function doCapture(el){
       ctx.fill();
       ctx.drawImage(canvas,0,0);
       const link=document.createElement('a');
-      link.download='dashboard-'+Date.now()+'.png';
-      link.href=out.toDataURL('image/png');
-      link.click();
+      const dataUrl=out.toDataURL('image/png');
+      const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if(isMobile){
+        // Mobile: show image in overlay so user can long-press to save
+        const ov=document.createElement('div');
+        ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px';
+        ov.innerHTML=`<div style="font-family:'DM Sans';font-size:12px;font-weight:700;color:rgba(255,255,255,.6)">Long-press the image to save</div><img src="${dataUrl}" style="max-width:100%;max-height:75vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"/><button onclick="this.parentNode.remove()" style="padding:10px 28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer">Close</button>`;
+        document.body.appendChild(ov);
+      } else {
+        link.download='dashboard-'+Date.now()+'.png';
+        link.href=dataUrl;
+        link.click();
+      }
     }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); btns.forEach(b=>b.style.visibility=''); alert('Screenshot failed: '+e); });
   }
   if(window.html2canvas){ run(); return; }
@@ -1501,7 +1514,7 @@ function renderDistrictDashboard(){
 
   // Build filter chips for DM only
   const rsmFilterChips=isDMd?`
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+    <div style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;margin-bottom:12px;padding-bottom:2px;scrollbar-width:none">
       <button onclick="_perfDashFilter='all';_perfAllData=[];loadDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter==='all'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='all'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='all'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">All Reps</button>
       ${RSM_UIDS.filter(u=>u!=='ji2646dm').map(u=>{
         const label=(UID_NAMES[u]||u)+' · '+u;
@@ -1657,6 +1670,12 @@ function renderPerfBody(){
           <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
           <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
         </div>`:''}
+        ${window.innerWidth<768?`
+        <select onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer;margin-bottom:4px;-webkit-appearance:none;appearance:none">
+          <option value="">— Select a rep —</option>
+          ${repList.map(([uid,name])=>`<option value="${uid}" ${uid===_perfRepUid?'selected':''}>${name||uid}</option>`).join('')}
+        </select>
+      `:`
         <div style="display:flex;flex-direction:column;gap:8px">
           ${repList.map(([uid,name])=>`
             <button type="button" class="perf-rep-btn" data-uid="${uid}" onclick="selectPerfRep('${uid}')" style="width:100%;padding:11px 14px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);text-align:left;cursor:pointer;font-family:'DM Sans';display:flex;justify-content:space-between;align-items:center;transition:background .1s,border-color .1s" onmouseover="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s2)'" onmouseout="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s1)'">
@@ -1667,6 +1686,7 @@ function renderPerfBody(){
               <div style="font-size:16px;color:var(--t3)">›</div>
             </button>`).join('')}
         </div>
+      `}
       </div>`;
     // On desktop, show district dashboard in right panel
     loadDistrictDashboard();
@@ -1712,6 +1732,20 @@ function selectPerfRep(uid){
     renderPerfBody();
     const perfLeft=document.getElementById('perf-left');
     if(perfLeft) perfLeft.scrollTop=0;
+    // Also inject visual dashboard below the metric list on mobile
+    loadPerfData(uid);
+    setTimeout(()=>{
+      const dash=document.createElement('div');
+      dash.id='perf-mobile-dash';
+      dash.style.cssText='padding:0 14px 80px';
+      const pb=document.getElementById('perf-body');
+      if(pb){
+        const old=document.getElementById('perf-mobile-dash');
+        if(old) old.remove();
+        pb.parentNode.insertBefore(dash,pb.nextSibling);
+        dash.innerHTML=document.getElementById('perf-dashboard')?document.getElementById('perf-dashboard').innerHTML:'';
+      }
+    },1200);
   }
 }
 
@@ -1852,14 +1886,14 @@ function renderIndividualDashboard(r,uid){
   const actsVsUpg=`
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--g);line-height:1">Acts ${totalActs}</div>
         <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
         <div style="height:10px;border-radius:4px;background:var(--g);width:${actsBarW}%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--purple);line-height:1">Upg ${r.upgrades}</div>
         <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:10px">
@@ -1871,18 +1905,18 @@ function renderIndividualDashboard(r,uid){
   const voiceW=totalActs>0?Math.round(r.voiceActs/totalActs*100):0;
   const nvW=totalActs>0?Math.round(r.nonVoice/totalActs*100):0;
   const voiceBreakdown=`
-    <div style="margin-bottom:4px;display:flex;justify-content:space-between">
-      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Voice <span style="color:var(--t3);font-weight:400">${r.voiceActs}</span></div>
-      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Non-Voice <span style="color:var(--t3);font-weight:400">${r.nonVoice}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--g);line-height:1">Voice ${r.voiceActs}</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:#60a5fa;line-height:1">Non-Voice ${r.nonVoice}</div>
     </div>
-    <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:4px">
+    <div style="display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:4px">
       ${r.voiceActs?`<div style="flex:${r.voiceActs};background:var(--g)"></div>`:''}
       ${r.nonVoice?`<div style="flex:${r.nonVoice};background:#60a5fa"></div>`:''}
       ${!r.voiceActs&&!r.nonVoice?`<div style="flex:1;background:var(--s3)"></div>`:''}
     </div>
-    <div style="display:flex;gap:10px">
-      <div style="font-size:8px;color:var(--g);font-family:DM Sans">▌ Voice ${voiceW}%</div>
-      <div style="font-size:8px;color:#60a5fa;font-family:DM Sans">▌ Non-Voice ${nvW}%</div>
+    <div style="display:flex;gap:10px;margin-top:2px">
+      <div style="font-size:8px;color:var(--g);font-family:DM Sans">${voiceW}% Voice</div>
+      <div style="font-size:8px;color:#60a5fa;font-family:DM Sans">${nvW}% Non-Voice</div>
     </div>`;
 
   const sec=(title,content)=>`
@@ -2027,14 +2061,14 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
   const actsVsUpg=`
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--g);line-height:1">Acts ${totalActs}</div>
         <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:9px;margin-bottom:8px">
         <div style="height:9px;border-radius:4px;background:var(--g);width:${Math.round(totalActs/maxBar*100)}%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--purple);line-height:1">Upg ${r.upgrades}</div>
         <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:9px">
@@ -2045,9 +2079,9 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
   const voiceW=totalActs>0?Math.round(r.voiceActs/totalActs*100):0;
   const nvW=100-voiceW;
   const voiceBreakdown=`
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Voice <span style="color:var(--t3);font-weight:400">${r.voiceActs}</span></div>
-      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Non-Voice <span style="color:var(--t3);font-weight:400">${r.nonVoice}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <div style="font-family:'Bebas Neue';font-size:22px;color:var(--g);line-height:1">Voice ${r.voiceActs}</div>
+      <div style="font-family:'Bebas Neue';font-size:22px;color:#60a5fa;line-height:1">Non-Voice ${r.nonVoice}</div>
     </div>
     <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:4px">
       ${r.voiceActs?`<div style="flex:${r.voiceActs};background:var(--g)"></div>`:''}
@@ -4909,9 +4943,18 @@ function saveDMCard(){
       logging:false
     }).then(canvas=>{
       const link=document.createElement('a');
-      link.download='cricket-deal.png';
-      link.href=canvas.toDataURL('image/png');
-      link.click();
+      const qtDataUrl=canvas.toDataURL('image/png');
+      const qtMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if(qtMobile){
+        const ov=document.createElement('div');
+        ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px';
+        ov.innerHTML=`<div style="font-family:'DM Sans';font-size:12px;font-weight:700;color:rgba(255,255,255,.6)">Long-press the image to save</div><img src="${qtDataUrl}" style="max-width:100%;max-height:75vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"/><button onclick="this.parentNode.remove()" style="padding:10px 28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer">Close</button>`;
+        document.body.appendChild(ov);
+      } else {
+        link.download='cricket-deal.png';
+        link.href=qtDataUrl;
+        link.click();
+      }
       btn.textContent='Saved!';
       setTimeout(()=>btn.textContent='Save Image',2000);
     }).catch(()=>{
@@ -5117,11 +5160,11 @@ try {
     <div style="padding:20px 22px 22px">
       <div style="margin-bottom:12px">
         <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px">Store #</label>
-        <input type="text" id="rsm-user" placeholder="e.g. 775" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
+        <input type="text" id="rsm-user" placeholder="e.g. 775" autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:16px;box-sizing:border-box;outline:none"/>
       </div>
       <div style="margin-bottom:4px">
         <label style="display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px">PIN</label>
-        <input type="password" id="rsm-pin" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRSMLogin()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none"/>
+        <input type="password" id="rsm-pin" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRSMLogin()" style="width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:16px;box-sizing:border-box;outline:none"/>
       </div>
       <div id="rsm-error" style="display:none;font-size:10px;color:#ef4444;margin:8px 0 10px;font-weight:700">Incorrect credentials</div>
       <div style="display:flex;gap:8px;margin-top:14px">
@@ -6119,8 +6162,8 @@ function tmConfirm(msg,status,showNotify=false,rowId='',extraHtml=''){
   div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999998;display:flex;align-items:center;justify-content:center;padding:24px;font-family:DM Sans,sans-serif';
   div.innerHTML=`<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;max-width:300px;width:100%;text-align:center">
     <div style="font-size:28px;margin-bottom:12px">${status==='Denied'?'⚠️':'✓'}</div>
-    <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">${msg}</div>
-    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.06);font-size:11px;font-weight:800;color:${colors[status]||'#4B5563'};margin-bottom:20px">${fmtStatus(status)}</div>
+    <div style="font-size:14px;font-weight:800;color:var(--t1);margin-bottom:8px">${msg}</div>
+    <div style="display:inline-block;padding:4px 14px;border-radius:20px;background:var(--s3);border:1px solid var(--bd2);font-size:11px;font-weight:800;color:${colors[status]||'var(--t2)'};margin-bottom:20px">${fmtStatus(status)}</div>
     ${showNotify?`<button id="notify-dm-btn" onclick="notifyDM('${rowId}',this)" style="width:100%;padding:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);color:#60a5fa;font-family:DM Sans;font-size:12px;font-weight:800;cursor:pointer;margin-bottom:8px">📣 Notify DM for Review</button>`:''}
     ${extraHtml}
     <button onclick="document.getElementById('tm-confirm-overlay').remove()" style="width:100%;padding:10px;background:var(--g);border:none;border-radius:var(--r2);color:#fff;font-family:DM Sans;font-size:12px;font-weight:900;cursor:pointer;margin-top:${extraHtml?'8px':'0'}">Done</button>
