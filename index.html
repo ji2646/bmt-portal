@@ -25,6 +25,20 @@ header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box
 .htitle{font-family:'Bebas Neue';font-size:20px;letter-spacing:4px}
 .hsub{font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700;opacity:.8}
 .hbadge{background:var(--s3);color:var(--t2);font-size:9px;font-weight:700;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid var(--bd2)}
+.hdr-home,.hdr-back,.hdr-refresh{
+  background:#F8F9FA;
+  border:1px solid #E5E7EB;
+  border-radius:10px;
+  color:#6B7280;
+  box-shadow:0 1px 3px rgba(0,0,0,.07);
+  transition:background .12s,box-shadow .12s;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+}
+.hdr-home:hover,.hdr-back:hover,.hdr-refresh:hover{
+  background:#F0F1F3;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  color:#374151;
+}
 .wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}}
 
@@ -287,7 +301,7 @@ html.dark-mode #login-screen{background:#080808 !important}
 /* Dark mode — header */
 html.dark-mode header{background:rgba(0,0,0,.95) !important;box-shadow:none}
 html.dark-mode header button{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
-html.dark-mode .hdr-back,html.dark-mode .hdr-home,html.dark-mode .hdr-refresh{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
+html.dark-mode .hdr-back,html.dark-mode .hdr-home,html.dark-mode .hdr-refresh{background:#1E1E1E !important;border-color:#333 !important;color:#9CA3AF !important;box-shadow:none !important}
 html.dark-mode .hdr-name{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
 
 /* Dark mode — sections */
@@ -298,12 +312,14 @@ html.dark-mode .sec-head{background:#161616 !important;border-bottom-color:#333 
 html.dark-mode .login-card{background:#111 !important;border-color:#222 !important;box-shadow:none}
 html.dark-mode .login-body{background:#111}
 html.dark-mode .login-field input{background:#1a1a1a !important;border-color:#2a2a2a !important;color:#fff !important}
+html.dark-mode #device-btn-mobile,html.dark-mode #device-btn-desktop{background:#1E1E1E !important;border-color:#333 !important}
+html.dark-mode #device-btn-mobile div,html.dark-mode #device-btn-desktop div{color:#E0E0E0 !important}
 html.dark-mode select option,html.dark-mode select optgroup{background:#1a1a1a;color:#fff}
 
 /* Dark mode — menu buttons */
 html.dark-mode #ls-menu button:not(#login-btn){background:#1E1E1E !important;border-color:#333 !important;color:#E0E0E0 !important}
 html.dark-mode #ls-menu #btn-activity{background:#1E1E1E !important;border-color:#333 !important;color:#E0E0E0 !important}
-html.dark-mode #ls-menu button[onclick="doLogout()"]{background:transparent !important;border-color:#333 !important;color:#AAAAAA !important}
+html.dark-mode #ls-menu button[onclick="doLogout()"],html.dark-mode #ls-menu button[onclick="showDevicePicker()"]{background:transparent !important;border-color:#333 !important;color:#AAAAAA !important}
 html.dark-mode #ls-menu-name{color:#AAAAAA !important}
 
 /* Dark mode — 2FA screen */
@@ -369,11 +385,24 @@ body:not(.is-mobile) #perf-right{ display:block }
 /* ── MOBILE HEADER COMPACT ── */
 @media (max-width: 767px){
   .hdr-home-text{ display:none }
-  .hdr-refresh{ font-size:14px !important;padding:6px 10px !important }
-  .hdr-home{ padding:6px 10px !important;font-size:13px !important }
-  .hdr-back{ padding:6px 10px !important;font-size:13px !important }
+  .hdr-back-text{ display:none }
+  .hdr-refresh{ padding:7px 9px !important;min-width:36px }
+  .hdr-home{ padding:7px 9px !important;min-width:36px }
+  .hdr-back{ padding:7px 9px !important;min-width:36px }
   .hdr-name{ display:none !important }
+  .hdr-refresh-label{ display:none !important }
+  header{ padding:9px 12px !important }
+  header .hlogo .htitle{ font-size:17px !important }
+  header > div:last-child{ gap:5px !important }
 }
+/* PWA/mobile class: strip headers to icon-only */
+body.is-mobile .hdr-name{ display:none !important }
+body.is-mobile .hdr-refresh-label{ display:none !important }
+body.is-mobile .hdr-refresh{ padding:6px 9px !important;min-width:34px }
+body.is-mobile .hdr-home-text,body.is-mobile .hdr-back-text{ display:none }
+body.is-mobile .hdr-home{ padding:7px 9px !important;min-width:36px }
+body.is-mobile .hdr-back{ padding:7px 9px !important;min-width:36px }
+body.is-mobile .hdr-refresh{ width:36px !important;padding:6px !important;justify-content:center !important;font-size:16px !important }
 @media (max-width: 600px){
   /* Perf tile grids: 2 columns on phone */
   .perf-tile-row { grid-template-columns: 1fr 1fr !important; }
@@ -435,12 +464,15 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       <!-- STEP 2: Menu -->
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
-        <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
-        <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">Performance</button>
-        <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🗂 Sales Tracker</button>
-        <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
-        <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
-        <button type="button" onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
+        <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.85)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Quote Tool</span></span></button>
+        <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Performance</span></span></button>
+        <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Sales Tracker</span></span></button>
+        <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Time Management</span></span></button>
+        <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Activity</span></span></button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+          <button type="button" onclick="showDevicePicker()" style="padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/></svg> View</button>
+          <button type="button" onclick="doLogout()" style="padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px"><span style="display:flex;align-items:center;justify-content:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</span></button>
+        </div>
       </div>
 
       <!-- STEP 3: Activity 2FA -->
@@ -476,6 +508,26 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
           <button type="button" onclick="verifyPin()" style="flex:2;padding:10px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;cursor:pointer">Sign In</button>
         </div>
       </div>
+
+      <!-- STEP: Device Picker -->
+      <div id="ls-device" style="display:none">
+        <div style="text-align:center;margin-bottom:18px">
+          <div style="font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:4px">How are you viewing this?</div>
+          <div style="font-size:10px;color:#9CA3AF">Pick your layout</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <button type="button" id="device-btn-mobile" onclick="setDeviceMode('mobile')" style="padding:18px 8px;background:#F3F4F6;border:2px solid #E2E5E9;border-radius:10px;cursor:pointer;font-family:'DM Sans';display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+            <div style="font-size:26px">📱</div>
+            <div style="font-size:12px;font-weight:900;color:#111827">Mobile</div>
+            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Phone or tablet<br>Single column</div>
+          </button>
+          <button type="button" id="device-btn-desktop" onclick="setDeviceMode('desktop')" style="padding:18px 8px;background:#F3F4F6;border:2px solid #E2E5E9;border-radius:10px;cursor:pointer;font-family:'DM Sans';display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+            <div style="font-size:26px">💻</div>
+            <div style="font-size:12px;font-weight:900;color:#111827">Desktop</div>
+            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Computer or laptop<br>Split view</div>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Sans',sans-serif">
@@ -485,7 +537,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z7</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z9</div>
 </div>
 
 <script>
@@ -564,18 +616,29 @@ function doCapture(el){
 }
 function doCaptureDiv(el){ doCapture(el); }
 const LOG_URL='https://script.google.com/macros/s/AKfycbzT0K1EWx-0pCcHBjnBTxLTxbpegklrRYu6k_yVoyJlTzJXcKd33pq9RwajYe_OBUue/exec';
-// ── RELIABLE MOBILE DETECTION ──
-// window.innerWidth is unreliable in PWA/homescreen mode (can be 0 or wrong at load)
-// Use screen.width + matchMedia + UA as fallback
-function isMobile(){
-  // Primary: CSS media query — most reliable across PWA, browser, homescreen
-  if(window.matchMedia) return window.matchMedia('(max-width:767px)').matches;
-  // Fallback: screen width (physical, not viewport)
-  if(screen.width) return screen.width<=767;
-  // Last resort: userAgent
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+// ── DEVICE MODE — set manually by user on login ──
+// Avoids all unreliable detection in PWA/homescreen/browser scenarios
+let _deviceMode = null; // 'mobile' | 'desktop' — set in login flow
+
+function isMobile(){ return _deviceMode === 'mobile'; }
+function isDesktop(){ return _deviceMode === 'desktop'; }
+
+function showDevicePicker(){
+  // Hide all login steps
+  ['ls-uid','ls-2fa','ls-pin','ls-menu'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  document.getElementById('ls-device').style.display='block';
 }
-function isDesktop(){ return !isMobile(); }
+
+function setDeviceMode(mode){
+  _deviceMode = mode;
+  // Apply body class for CSS rules
+  document.body.classList.toggle('is-mobile', mode==='mobile');
+  document.getElementById('ls-device').style.display='none';
+  showMenu();
+}
 
 
 
@@ -893,7 +956,7 @@ function verifyPin(){
   if(validPin&&validPin===pin){
     _activityStore=storeKey;
     document.getElementById('ls-pin').style.display='none';
-    showMenu();
+    showDevicePicker();
   } else {
     err.style.display='block';
     document.getElementById('login-pin').value='';
@@ -1151,9 +1214,9 @@ function doLogin(){
       // RSM/DM — show PIN step
       showPinStep();
     } else {
-      // RSC — straight to menu
+      // RSC — straight to device picker then menu
       document.getElementById('ls-pin').style.display='none';
-      showMenu();
+      showDevicePicker();
     }
   } else {
     // Main log: invalid
@@ -1161,15 +1224,6 @@ function doLogin(){
     showLoginError(uid,'Invalid');
   }
 }
-
-// Re-evaluate mobile layout on load and resize (PWA homescreen fix)
-function applyMobileLayout(){
-  document.body.classList.toggle('is-mobile', isMobile());
-}
-document.addEventListener('DOMContentLoaded', applyMobileLayout);
-window.addEventListener('resize', applyMobileLayout);
-window.addEventListener('orientationchange', ()=>setTimeout(applyMobileLayout, 100));
-applyMobileLayout();
 
 // Always require login on every page load
 document.body.style.overflow='hidden';
@@ -1687,11 +1741,7 @@ function renderPerfBody(){
       })();
 
     body.innerHTML=`
-      ${isMobile()?`
-      <div style="margin-bottom:12px">
-        <button type="button" onclick="toggleMobileDashboard()" id="mobile-dash-btn" style="width:100%;padding:10px;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;color:var(--t1)">📊 View District Dashboard</button>
-        <div id="mobile-dashboard-panel" style="display:none;margin-top:8px"></div>
-      </div>`:''}
+
       <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.2);border-radius:var(--r);padding:20px;margin-bottom:12px">
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;font-family:'DM Sans'">Select a Representative</div>
         ${isDM?`<div style="display:flex;gap:6px;margin-bottom:12px">
@@ -2794,9 +2844,9 @@ if(typeof showToast==='undefined'){
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/3/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
-    <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
-    <button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button>
-    <button class="hdr-back" onclick="closeQuoteTool()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+    <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
+    <button class="hdr-home" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button>
+    <button class="hdr-back" onclick="closeQuoteTool()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
   </div>
 </header>
 <div class="wrap">
@@ -5253,9 +5303,9 @@ try {
       <div style="font-size:9px;color:var(--g);letter-spacing:2px;text-transform:uppercase;font-weight:700" id="act-header-store"></div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="actLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
+      <button onclick="actLoadData()" class="hdr-refresh-label" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:\'DM Sans\';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> <span>Refresh</span></button>
       <div id="act-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="actRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="actRefresh()" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button><button class="hdr-home" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button><button class="hdr-back" onclick="closeActivity()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button></div>
     </div>
   </div>
 
@@ -5735,10 +5785,10 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Performance</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="perf-header-name" class="hdr-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" type="button" onclick="perfRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+      <button class="hdr-refresh" type="button" onclick="perfRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
       <button type="button" id="perf-dashboard-btn" onclick="perfGoToDashboard()" style="display:none;padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Dashboard</button>
-      <button class="hdr-home" type="button" onclick="goHome()" class="perf-hdr-btn" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button>
-      <button class="hdr-back" type="button" onclick="closePerformance()" class="perf-hdr-btn" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button>
+      <button class="hdr-home" type="button" onclick="goHome()" class="perf-hdr-btn" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button>
+      <button class="hdr-back" type="button" onclick="closePerformance()" class="perf-hdr-btn" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
     </div>
   </div>
   <!-- Cycle picker strip -->
@@ -5762,7 +5812,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Sales Tracker</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="st-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="stRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" type="button" onclick="closeSalesTracker()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button></div>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="stRefresh()" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button><button class="hdr-home" type="button" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button><button class="hdr-back" type="button" onclick="closeSalesTracker()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button></div>
     </div>
   </div>
   <!-- Tabs -->
@@ -5783,7 +5833,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="tm-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="tmRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeTM()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="tmRefresh()" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button><button class="hdr-home" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button><button class="hdr-back" onclick="closeTM()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button></div>
     </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
@@ -5904,9 +5954,9 @@ function closeActivity(){
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="repActLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
+      <button onclick="repActLoadData()" class="hdr-refresh-label" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:\'DM Sans\';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> <span>Refresh</span></button>
       <div id="rep-act-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="repActRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeRepActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="repActRefresh()" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button><button class="hdr-home" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button><button class="hdr-back" onclick="closeRepActivity()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button></div>
     </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
@@ -5936,7 +5986,7 @@ function closeActivity(){
 <div id="ra-detail-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99999;overflow-y:auto">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px" id="ra-detail-title">Request</div>
-    <button class="hdr-back" onclick="closeRADetail()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+    <button class="hdr-back" onclick="closeRADetail()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px" id="ra-detail-content"></div>
 </div>
