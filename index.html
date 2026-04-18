@@ -287,6 +287,8 @@ html.dark-mode #login-screen{background:#080808 !important}
 /* Dark mode — header */
 html.dark-mode header{background:rgba(0,0,0,.95) !important;box-shadow:none}
 html.dark-mode header button{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
+html.dark-mode .hdr-back,html.dark-mode .hdr-home,html.dark-mode .hdr-refresh{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
+html.dark-mode .hdr-name{background:#1E1E1E !important;border-color:#444 !important;color:#E0E0E0 !important}
 
 /* Dark mode — sections */
 html.dark-mode .sec{background:#111 !important;border-color:#333 !important;box-shadow:none}
@@ -350,8 +352,9 @@ html.dark-mode .deal-sub{color:#AAAAAA}
 @media (max-width: 767px){
   #perf-overlay.perf-open{ display:flex !important;flex-direction:column }
   #perf-right{ display:none !important }
-  #perf-left{ width:100% !important;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 }
-  #perf-layout{ flex:1;overflow:hidden;min-height:0 }
+  #perf-layout{ flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;display:block !important }
+  #perf-left{ width:100% !important;overflow:visible }
+  #perf-body{ padding-bottom:60px }
   /* Mobile header: hide name badge and dashboard btn, compact buttons */
   #perf-header-name{ display:none !important }
   #perf-dashboard-btn{ display:none !important }
@@ -365,6 +368,11 @@ html.dark-mode .deal-sub{color:#AAAAAA}
   .hdr-home{ padding:6px 10px !important;font-size:13px !important }
   .hdr-back{ padding:6px 10px !important;font-size:13px !important }
   .hdr-name{ display:none !important }
+}
+@media (max-width: 600px){
+  /* Perf tile grids: 2 columns on phone */
+  .perf-tile-row { grid-template-columns: 1fr 1fr !important; }
+  [style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; }
 }
 /* Dark mode — wchip */
 html.dark-mode .wchip-past{border-color:#3a3a3a !important;background:rgba(255,255,255,.03) !important}
@@ -408,9 +416,10 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 
       <!-- STEP 1: UID -->
       <div id="ls-uid">
+        <div style="position:absolute;left:-9999px"><input type="text" tabindex="-1" aria-hidden="true"/><input type="password" tabindex="-1" aria-hidden="true"/></div>
         <div class="login-field">
           <div style="position:relative;display:flex;align-items:center">
-          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" name="username" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:52px;-webkit-text-security:disc"/>
+          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:52px"/>
           <span onclick="toggleVisibility('login-uid',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
         </div>
         </div>
@@ -422,12 +431,10 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
         <button type="button" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px">📱 Quote Tool</button>
-        <div class="menu-btn-grid" style="margin-bottom:0">
-          <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">Performance</button>
-          <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🗂 Sales Tracker</button>
-          <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
-          <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
-        </div>
+        <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">Performance</button>
+        <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🗂 Sales Tracker</button>
+        <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">🕐 Time Management</button>
+        <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)">📋 Activity</button>
         <button type="button" onclick="doLogout()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;margin-top:10px;letter-spacing:.3px">Sign Out</button>
       </div>
 
@@ -454,7 +461,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:12px">Enter Your PIN</div>
         <div class="login-field" style="margin-bottom:4px">
           <div style="position:relative;display:flex;align-items:center">
-          <input type="password" id="login-pin" placeholder="••••••" autocomplete="current-password" name="password" onkeydown="if(event.key==='Enter')verifyPin()" style="width:100%;padding:10px 12px;padding-right:52px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
+          <input type="password" id="login-pin" placeholder="••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')verifyPin()" style="width:100%;padding:10px 12px;padding-right:52px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;outline:none"/>
           <span onclick="toggleVisibility('login-pin',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
         </div>
         </div>
@@ -473,14 +480,14 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-16APR2026-DEPLOY</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z3</div>
 </div>
 
 <script>
 const ALLOWED_UIDS=[
   'gs0426','ap485d','dg8674','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'ec934j','bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j','ju512j'
+  'bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j'
 ];
 
 const DISABLED_UIDS=[];
@@ -489,13 +496,56 @@ const UID_NAMES={
   'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
-  'cx7250':'Christina Muzquiz','ec934j':'Elva Cruz','bb8326':'Bryan Barajas',
-  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ju512j':'Jonatan Ramirez',
+  'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
+  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez',
   'ji2646dm':'Josue Garcia',
 };
 function fullName(uid){ return UID_NAMES[uid]||uid; }
 
-const LOG_URL='https://script.google.com/macros/s/AKfycbyEmTA-KcaJnoQRi9QCCZfwd1RGV2OoQ6SLc6ndljocJQER25UeadnDefvJ4Qe7QTYy/exec';
+// ── SECTION SCREENSHOT ──
+function doCapture(el){
+  if(!el) return;
+  // Hide PNG buttons during capture
+  const btns=el.querySelectorAll('.png-hide');
+  btns.forEach(b=>b.style.visibility='hidden');
+  function run(){
+    // Wrap element in padded container so corners and spacing are visible
+    const wrapper=document.createElement('div');
+    wrapper.style.cssText='position:fixed;left:-9999px;top:-9999px;padding:24px 32px;background:#f8f9fa;border-radius:0;display:block;width:900px;box-sizing:border-box';
+    const clone=el.cloneNode(true);
+    // Remove png-hide buttons from clone
+    clone.querySelectorAll('.png-hide').forEach(b=>b.remove());
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+    html2canvas(wrapper,{scale:2,backgroundColor:'#f8f9fa',useCORS:true,logging:false,borderRadius:12}).then(canvas=>{
+      document.body.removeChild(wrapper);
+      btns.forEach(b=>b.style.visibility='');
+      // Add rounded corners to canvas output
+      const out=document.createElement('canvas');
+      const r=16; // border radius px (at scale 1 — html2canvas doubles it)
+      out.width=canvas.width;
+      out.height=canvas.height;
+      const ctx=out.getContext('2d');
+      ctx.fillStyle='#f8f9fa';
+      ctx.beginPath();
+      ctx.roundRect(0,0,out.width,out.height,r*2);
+      ctx.fill();
+      ctx.drawImage(canvas,0,0);
+      const link=document.createElement('a');
+      link.download='dashboard-'+Date.now()+'.png';
+      link.href=out.toDataURL('image/png');
+      link.click();
+    }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); btns.forEach(b=>b.style.visibility=''); alert('Screenshot failed: '+e); });
+  }
+  if(window.html2canvas){ run(); return; }
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload=run;
+  s.onerror=()=>{ btns.forEach(b=>b.style.visibility=''); alert('Could not load screenshot library.'); };
+  document.head.appendChild(s);
+}
+function doCaptureDiv(el){ doCapture(el); }
+const LOG_URL='https://script.google.com/macros/s/AKfycbzT0K1EWx-0pCcHBjnBTxLTxbpegklrRYu6k_yVoyJlTzJXcKd33pq9RwajYe_OBUue/exec';
 
 // ── SESSION TIMEOUT: 10 minutes ──
 let _sessionTimer=null;
@@ -713,7 +763,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','ji2646dm','ec934j'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -744,7 +794,6 @@ const RSM_TEAM_MAP={
   'rg8855':['rg8855','bb8326'],
   'jq286d':['jq286d','cx7250'],                 // Josue Sosa (RSC but leads 752)
   'jx820u':['jx820u','nc3647','ju512j'],
-  'ec934j':['ec934j'],                           // Elva Cruz store 768 RSM
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
 // so her team = all reps
@@ -764,7 +813,6 @@ const STORE_PEER_MAP=(()=>{
   map['rg8855']=(STORE_REPS['769']||[]).filter(u=>u!=='rg8855');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
   map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d');
-  map['ec934j']=(STORE_REPS['768']||[]).filter(u=>u!=='ec934j');
   // Store 777 (Jaquelin's store) — Joseph and Sergio are teammates
   map['jv6394']=['sc417e'];
   map['sc417e']=['jv6394'];
@@ -808,8 +856,7 @@ function verifyPin(){
     uid==='mg221k'?'775':
     uid==='rg8855'?'769':
     uid==='jq286d'?'752':
-    uid==='jx820u'?'768':
-    uid==='ec934j'?'768':null;
+    uid==='jx820u'?'768':null;
   const validPin=storeKey?ACTIVITY_CREDS[storeKey]:null;
   if(validPin&&validPin===pin){
     _activityStore=storeKey;
@@ -838,44 +885,22 @@ function showMenu(){
   // Time Management: reps and RSMs only (not DM)
   if(btnTM) btnTM.style.display=isDM?'none':'block';
   if(btnAct) btnAct.style.display='block';
-  // Performance: ji2646dm and jq6635 only until Sunday deployment
-  const perfAllowed=['ji2646dm','jq6635','jv6394'];
+  // Performance: unlocked for all
   if(btnPerf){
     btnPerf.style.display='block';
-    if(perfAllowed.includes(_pendingUid)){
-      btnPerf.style.opacity='1';
-      btnPerf.disabled=false;
-      btnPerf.title='';
-      btnPerf.style.cursor='pointer';
-      btnPerf.style.color='#111827';
-    } else {
-      btnPerf.style.opacity='.4';
-      btnPerf.disabled=true;
-      btnPerf.title='Available soon';
-      btnPerf.style.cursor='not-allowed';
-      btnPerf.style.color='#6B7280';
-    }
+    btnPerf.disabled=false;
+    btnPerf.style.opacity='1';
+    btnPerf.style.cursor='pointer';
+    btnPerf.style.color='#111827';
+    btnPerf.title='';
   }
-  // Sales Tracker: ji2646dm and jq6635 only until Sunday
+  // Sales Tracker: RSC and RSM only (not DM)
   if(btnST){
-    if(isDM){
-      btnST.style.display='none';
-    } else {
-      btnST.style.display='block';
-      if(perfAllowed.includes(_pendingUid)){
-        btnST.style.opacity='1';
-        btnST.disabled=false;
-        btnST.title='';
-        btnST.style.cursor='pointer';
-        btnST.style.color='#111827';
-      } else {
-        btnST.style.opacity='.4';
-        btnST.disabled=true;
-        btnST.title='Available soon';
-        btnST.style.cursor='not-allowed';
-        btnST.style.color='#6B7280';
-      }
-    }
+    btnST.style.display=isDM?'none':'block';
+    btnST.style.opacity='1';
+    btnST.disabled=false;
+    btnST.style.cursor='pointer';
+    btnST.style.color='#111827';
   }
 }
 
@@ -918,7 +943,7 @@ function handleActivityClick(){
       _pendingUid==='rg8855'?'769':
       _pendingUid==='jq286d'?'752':
       _pendingUid==='jx820u'?'768':
-      _pendingUid==='ec934j'?'768':'dm');
+      'dm');
     launchActivity(); // already PIN-authed
   } else {
     launchRepActivity(); // Rep goes straight in - no 2FA
@@ -1127,8 +1152,13 @@ function fmtCycleKey(d){
 
 // ── LAUNCH / CLOSE ──
 let _perfRepUid=null;
+let _perfLoadToken=0; // increments on each rep click — stale responses are ignored
+let _perfAbortCtrl=null; // abort controller for in-flight requests
 let _perfFilter='all';
 let _perfDashFilter='all'; // dashboard team filter: 'all' or RSM uid
+let _perfHistoryCycles=[]; // [{cycleStart,cycleEnd,throughDate,reps:[]}] newest first
+let _perfViewingCycle=null; // null=current, else cycleStart string
+let _perfHistoryLoaded=false;
 let _perfData=null;
 let _perfAllData=[]; // all reps for district dashboard
 
@@ -1139,9 +1169,81 @@ const PERF_GOALS={autopayMin:0.28,autopayTarget:0.30,protectTarget:0.50,pppTarge
 
 function perfRefresh(){
   _perfAllData=[];
+  _perfHistoryLoaded=false;
+  _perfViewingCycle=null;
   loadDistrictDashboard(true);
   if(_perfRepUid) loadPerfData(_perfRepUid||_pendingUid);
   else if(!RSM_UIDS.includes(_pendingUid)||_pendingUid==='ji2646dm') loadPerfData(_pendingUid);
+}
+
+function onCycleSelect(sel){
+  const v=sel.value;
+  switchToCycle(v==='current'?null:v);
+}
+function loadPerfHistory(cb){
+  if(_perfHistoryLoaded){ if(cb) cb(); return; }
+  fetchWithTimeout(LOG_URL+'?type=perf_history_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},20000)
+    .then(r=>r.json()).then(data=>{
+      if(Array.isArray(data)&&data.length){
+        function normD(s){
+          if(!s) return '';
+          const str=String(s).trim();
+          if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+          const d=new Date(str);
+          if(!isNaN(d.getTime())) return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');
+          return str;
+        }
+        const map={};
+        data.forEach(row=>{
+          const cs=normD(row.cycleStart||'');
+          const ce=normD(row.cycleEnd||'');
+          const td=normD(row.throughDate||'');
+          row.cycleStart=cs; row.cycleEnd=ce; row.throughDate=td;
+          if(!map[cs]) map[cs]={cycleStart:cs,cycleEnd:ce,throughDate:td,reps:[]};
+          map[cs].reps.push(row);
+        });
+        _perfHistoryCycles=Object.values(map).sort((a,b)=>b.cycleStart.localeCompare(a.cycleStart));
+      } else { _perfHistoryCycles=[]; }
+      _perfHistoryLoaded=true;
+      if(cb) cb();
+    }).catch(()=>{ _perfHistoryCycles=[]; _perfHistoryLoaded=true; if(cb) cb(); });
+}
+function switchToCycle(cycleStart){
+  if(cycleStart===null){
+    _perfViewingCycle=null;
+    _perfAllData=[];
+    loadDistrictDashboard(true);
+  } else {
+    _perfViewingCycle=cycleStart;
+    const cycle=_perfHistoryCycles.find(c=>c.cycleStart===cycleStart);
+    if(!cycle) return;
+    const isDMv=_pendingUid==='ji2646dm';
+    const isRSMv=RSM_UIDS.includes(_pendingUid)&&!isDMv;
+    let reps=cycle.reps;
+    if(isDMv) reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ji2646'&&r.uid!=='ec934j');
+    else if(isRSMv){ const t=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&t.includes(r.uid.toLowerCase())); }
+    else { const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))); }
+    _perfAllData=reps;
+    renderDistrictDashboard();
+  }
+}
+function renderCyclePicker(){
+  const wrap=document.getElementById('cycle-picker-wrap');
+  if(!wrap) return;
+  if(!_perfAllData.length&&!_perfHistoryCycles.length){ wrap.style.display='none'; return; }
+  function fmt(s){ if(!s) return ''; const p=s.split('-'); return p.length!==3?s:(parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]); }
+  const cs=_perfAllData.length?(_perfAllData[0].cycleStart||''):'';
+  const ce=_perfAllData.length?(_perfAllData[0].cycleEnd||''):'';
+  const curLabel=cs&&ce?(fmt(cs)+' – '+fmt(ce)):'Current Cycle';
+  const pastCycles=_perfHistoryCycles.filter(c=>c.cycleStart!==cs);
+  const cycles=[{cycleStart:null,label:curLabel+' ✦'},...pastCycles.map(c=>({cycleStart:c.cycleStart,label:fmt(c.cycleStart)+' – '+fmt(c.cycleEnd)}))];
+  const selVal=_perfViewingCycle===null?'current':(_perfViewingCycle||'current');
+  wrap.style.display='flex';
+  wrap.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:7px 16px;background:var(--s1)">'
+    +'<div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;white-space:nowrap">Cycle</div>'
+    +'<select id="cycle-select" onchange="onCycleSelect(this)" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:DM Sans;font-size:11px;font-weight:700;outline:none;cursor:pointer;max-width:260px">'
+    +cycles.map(c=>{ const val=c.cycleStart===null?'current':c.cycleStart; return '<option value="'+val+'"'+(val===selVal?' selected':'')+'>'+c.label+'</option>'; }).join('')
+    +'</select></div>';
 }
 function actRefresh(){ fetchActivity(); }
 function tmRefresh(){ loadTMData && loadTMData(); }
@@ -1158,7 +1260,7 @@ function updatePerfDashBtn(){
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   // Show dashboard btn only on desktop when a rep is selected
-  btn.style.display=(isDM||isRSM)&&_perfRepUid&&window.innerWidth>=768?'block':'none';
+  btn.style.display=_perfRepUid&&window.innerWidth>=768?'block':'none';
 }
 function loadDistrictDashboard(forceRefresh){
   const dash=document.getElementById('perf-dashboard');
@@ -1182,16 +1284,16 @@ function loadDistrictDashboard(forceRefresh){
         const isDM=_pendingUid==='ji2646dm';
         const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
         if(Array.isArray(data)&&data.length){
-          if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm');
+          if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           else if(isRSM){
-            const myReps=(STORE_REPS[_activityStore||_pendingUid]||[]).map(u=>u.toLowerCase());
-            const myUid=_pendingUid.toLowerCase();
-            _perfAllData=data.filter(r=>r.uid&&(r.uid===myUid||myReps.includes(r.uid.toLowerCase())));
+            const myTeam=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]).map(u=>u.toLowerCase());
+            _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           } else {
             const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
-            _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase())));
+            _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           }
           renderDistrictDashboard();
+          loadPerfHistory(()=>renderCyclePicker());
         } else {
           if(dash2) dash2.innerHTML=`<div style='padding:24px;font-family:DM Sans;font-size:11px;color:var(--t1)'>
             <div style='font-weight:800;color:var(--t2);margin-bottom:8px'>Script returned: ${JSON.stringify(data).slice(0,200)}</div>
@@ -1210,8 +1312,8 @@ function loadDistrictDashboard(forceRefresh){
         let uidsToFetch=[];
         if(isDMf) uidsToFetch=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
         else if(isRSMf){
-          const myReps=(STORE_REPS[_activityStore||_pendingUid]||[]);
-          uidsToFetch=[_pendingUid,...myReps];
+          const myReps=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]);
+          uidsToFetch=[...myReps];
         } else {
           const peers=(STORE_PEER_MAP[_pendingUid]||[]);
           uidsToFetch=[_pendingUid,...peers];
@@ -1220,9 +1322,9 @@ function loadDistrictDashboard(forceRefresh){
           fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
             .then(r=>r.json()).catch(()=>null)
         )).then(results=>{
-          _perfAllData=results.filter(r=>r&&r.uid);
+          _perfAllData=results.filter(r=>r&&r.uid&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           renderDistrictDashboard();
-        }).catch(()=>{ 
+                }).catch(()=>{ 
           if(dash2) dash2.innerHTML=`<div style='padding:24px;font-family:DM Sans;font-size:11px;color:var(--err);text-align:center'>Could not load dashboard. Check connection and try again.<br><button onclick="loadDistrictDashboard(true)" style="margin-top:8px;padding:6px 16px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">↻ Retry</button></div>`;
         });
       });
@@ -1353,16 +1455,18 @@ function renderDistrictDashboard(){
     }).join('');
   }
 
-  // Acts breakdown per rep (Opps = Voice + Upgrades; Non-Voice shown in bar + right side)
+  // Acts breakdown per rep (Opps = Voice + Upgrades; Non-Voice shown in bar)
+  // Bar always fills 100% width — segments proportional to their values only
+  // Empty space only if rep has ZERO everything
   function actsBreakdown(){
     const sorted3=[..._dashReps].sort((a,b)=>(b.voiceActs+b.upgrades)-(a.voiceActs+a.upgrades));
-    const maxTotal=Math.max(..._dashReps.map(r=>r.voiceActs+r.upgrades+r.nonVoice),1);
     return sorted3.map(r=>{
       const opps=r.voiceActs+r.upgrades;
       const vFlex=r.voiceActs||0;
       const ugFlex=r.upgrades||0;
       const nvFlex=r.nonVoice||0;
-      const emptyFlex=Math.max(0,maxTotal-opps-nvFlex);
+      const total=vFlex+ugFlex+nvFlex;
+      // Bar always full width — only show empty bg if truly zero
       return `<div style="margin-bottom:12px;cursor:pointer" onclick="selectPerfRep('${r.uid}')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
           <div style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;margin-right:8px">${fullName(r.uid)} <span style="font-size:11px;font-weight:400;color:var(--t3)">${r.uid}</span></div>
@@ -1371,21 +1475,26 @@ function renderDistrictDashboard(){
             ${nvFlex?`<div style="font-size:11px;font-weight:800;color:#60a5fa;font-family:DM Sans;line-height:1">Non-Voice ${r.nonVoice}</div>`:''}
           </div>
         </div>
-        <div style="display:flex;height:24px;border-radius:6px;overflow:hidden;background:var(--s3)">
-          ${vFlex?`<div style="background:var(--g);flex:${vFlex};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;font-family:DM Sans">${r.voiceActs}</div>`:''}
-          ${ugFlex?`<div style="background:var(--purple);flex:${ugFlex};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;font-family:DM Sans">${r.upgrades}</div>`:''}
-          ${nvFlex?`<div style="background:#60a5fa;flex:${nvFlex};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;font-family:DM Sans">${r.nonVoice}</div>`:''}
-          ${emptyFlex>0?`<div style="flex:${emptyFlex}"></div>`:''}
+        <div style="display:flex;height:24px;border-radius:6px;overflow:hidden;background:${total===0?'var(--s3)':'transparent'}">
+          ${total===0?'<div style="flex:1;background:var(--s3)"></div>':`
+            ${vFlex?`<div style="background:var(--g);flex:${vFlex};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;font-family:DM Sans">${r.voiceActs}</div>`:''}
+            ${ugFlex?`<div style="background:var(--purple);flex:${ugFlex};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;font-family:DM Sans">${r.upgrades}</div>`:''}
+            ${nvFlex?`<div style="background:#60a5fa;flex:${nvFlex};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;font-family:DM Sans">${r.nonVoice}</div>`:''}
+          `}
         </div>
       </div>`;
     }).join('');
   }
 
+  const canSnap=['ji2646dm','jq6635'].includes(_pendingUid);
   const sec=(title,content,extra='')=>`
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+    <div class="dash-section" style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
       <div style="padding:8px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
-        ${extra}
+        <div style="display:flex;align-items:center;gap:8px">
+          ${extra}
+          ${canSnap?`<button class="png-hide" onclick="doCapture(this.closest('.dash-section'))" style="padding:3px 8px;background:transparent;border:1px solid var(--bd2);border-radius:4px;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer;font-family:DM Sans" title="Save as PNG">PNG</button>`:''}
+        </div>
       </div>
       <div style="padding:12px 14px">${content}</div>
     </div>`;
@@ -1393,15 +1502,18 @@ function renderDistrictDashboard(){
   // Build filter chips for DM only
   const rsmFilterChips=isDMd?`
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-      <button onclick="_perfDashFilter='all';renderDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter==='all'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='all'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='all'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">All Reps</button>
+      <button onclick="_perfDashFilter='all';_perfAllData=[];loadDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter==='all'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='all'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='all'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">All Reps</button>
       ${RSM_UIDS.filter(u=>u!=='ji2646dm').map(u=>{
         const label=(UID_NAMES[u]||u)+' · '+u;
-        return `<button onclick="_perfDashFilter='${u}';renderDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter===u?'var(--g)':'var(--bd)'};background:${_perfDashFilter===u?'var(--g)':'var(--s1)'};color:${_perfDashFilter===u?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">${label}</button>`;
+        return `<button onclick="_perfDashFilter='${u}';_perfAllData=[];loadDistrictDashboard()" style="padding:5px 12px;border-radius:20px;border:1.5px solid ${_perfDashFilter===u?'var(--g)':'var(--bd)'};background:${_perfDashFilter===u?'var(--g)':'var(--s1)'};color:${_perfDashFilter===u?'#fff':'var(--t2)'};font-family:DM Sans;font-size:10px;font-weight:800;cursor:pointer">${label}</button>`;
       }).join('')}
     </div>`:'';
 
   // Use filteredReps for all renders below (reps already declared above)
   // We shadow reps inside template via IIFE in each section
+  // Always refresh cycle picker (it lives outside dash.innerHTML so it survives re-renders)
+
+  renderCyclePicker();
 
   dash.innerHTML=`
     ${rsmFilterChips}
@@ -1455,6 +1567,8 @@ function renderDistrictDashboard(){
   `;
 }
 
+// Cycle picker — compact dropdown matching TC/TO style
+
 let _perfAccEntries=[];
 let _perfFeeEntries=[];
 let _perfFiberEntries=[];
@@ -1466,12 +1580,15 @@ function launchPerformance(){
   document.getElementById('perf-header-name').textContent=UID_NAMES[_pendingUid]||_pendingUid;
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-  _perfRepUid=isDM||isRSM?null:_pendingUid;
+  _perfRepUid=null; // everyone starts at picker; RSC right panel auto-loads below
   _perfAllData=[]; // always reset so fresh data loads
   _perfDashFilter='all'; // reset team filter
+  _perfViewingCycle=null;
+  _perfHistoryLoaded=false;
   renderPerfBody();
-  // RSC: also load comparison dashboard on right panel
-  if(!isDM&&!isRSM&&window.innerWidth>=768){
+  loadPerfHistory(()=>renderCyclePicker());
+  // Desktop: always load district dashboard in right panel on open
+  if(window.innerWidth>=768){
     setTimeout(()=>loadDistrictDashboard(),300);
   }
 }
@@ -1480,21 +1597,15 @@ function closePerformance(){
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   const isRSC=!isDM&&!isRSM;
 
-  // Mobile: if viewing someone else's detail, go back to own view
-  if(isRSC&&_perfRepUid&&_perfRepUid!==_pendingUid&&window.innerWidth<768){
-    _perfRepUid=_pendingUid;
-    renderPerfBody();
-    return;
-  }
-  // DM/RSM mobile: if viewing a rep, go back to picker
-  if((isDM||isRSM)&&_perfRepUid&&window.innerWidth<768){
+  // Mobile: if viewing a rep, back goes to picker
+  if(_perfRepUid&&window.innerWidth<768){
     _perfRepUid=null;
     setTimeout(updatePerfDashBtn,50);
     renderPerfBody();
     return;
   }
-  // Desktop DM/RSM: if a rep is selected, clear selection and restore picker
-  if((isDM||isRSM)&&_perfRepUid&&window.innerWidth>=768){
+  // Desktop: if a rep is selected, clear selection and restore picker+dashboard
+  if(_perfRepUid&&window.innerWidth>=768){
     _perfRepUid=null;
     setTimeout(updatePerfDashBtn,50);
     renderPerfBody();
@@ -1514,38 +1625,37 @@ function renderPerfBody(){
   const body=document.getElementById('perf-body');
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-  const needPicker=isDM||isRSM;
+  const needPicker=true; // everyone gets the picker
 
-  if(needPicker&&!_perfRepUid){
-    // Show rep picker
-    // RSM UIDs for filter button
-    const rsmUidsInData=RSM_UIDS.filter(u=>u!=='ji2646dm');
-    let _perfShowRSMOnly=false; // toggle state
+  if(!_perfRepUid){
+    // Show rep picker — DM sees all, RSM sees team, RSC sees peers + self
     const allReps=Object.entries(UID_NAMES).filter(([uid])=>uid!=='ji2646dm');
     const rscReps=allReps.filter(([uid])=>!RSM_UIDS.includes(uid));
     const rsmReps=allReps.filter(([uid])=>RSM_UIDS.includes(uid));
     const repList=isDM?((_perfFilter==='rsm'?rsmReps:_perfFilter==='rsc'?rscReps:allReps).sort((a,b)=>a[1].localeCompare(b[1]))):
+      isRSM?(()=>{
+        const teamUids=RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[];
+        return teamUids.map(uid=>[uid,UID_NAMES[uid]||uid]);
+      })():
       (()=>{
-        const rsmReps=(STORE_REPS[_activityStore||_pendingUid]||[]);
-        // Include RSM themselves at top
-        const selfEntry=[[_pendingUid, UID_NAMES[_pendingUid]||_pendingUid]];
-        const repEntries=rsmReps.map(uid=>[uid,UID_NAMES[uid]||uid]);
-        return [...selfEntry,...repEntries];
+        // RSC: show self + store peers
+        const peers=STORE_PEER_MAP[_pendingUid]||[];
+        const teamUids=[_pendingUid,...peers.filter(u=>u!==_pendingUid)];
+        return teamUids.map(uid=>[uid,UID_NAMES[uid]||uid]);
       })();
 
     body.innerHTML=`
       ${window.innerWidth<768?`
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button type="button" onclick="toggleMobileDashboard()" id="mobile-dash-btn" style="flex:1;padding:10px;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;color:var(--t1)">View Dashboard</button>
-      </div>
-      <div id="mobile-dashboard-panel" style="display:none;margin-bottom:12px"></div>
-      `:''}
+      <div style="margin-bottom:12px">
+        <button type="button" onclick="toggleMobileDashboard()" id="mobile-dash-btn" style="width:100%;padding:10px;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;color:var(--t1)">📊 View District Dashboard</button>
+        <div id="mobile-dashboard-panel" style="display:none;margin-top:8px"></div>
+      </div>`:''}
       <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.2);border-radius:var(--r);padding:20px;margin-bottom:12px">
         <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;font-family:'DM Sans'">Select a Representative</div>
-        ${(isDM||isRSM)?`<div style="display:flex;gap:6px;margin-bottom:12px">
+        ${isDM?`<div style="display:flex;gap:6px;margin-bottom:12px">
           <button type="button" onclick="_perfFilter='all';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='all'?'var(--g)':'var(--s3)'};border:${_perfFilter==='all'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='all'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">All</button>
-          ${isDM?`<button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
-          <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>`:''}
+          <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
+          <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
         </div>`:''}
         <div style="display:flex;flex-direction:column;gap:8px">
           ${repList.map(([uid,name])=>`
@@ -1571,22 +1681,31 @@ function renderPerfBody(){
 }
 
 function selectPerfRep(uid){
+  // Cancel any in-flight request
+  if(_perfAbortCtrl) try{_perfAbortCtrl.abort();}catch(e){}
+  _perfAbortCtrl=new AbortController();
   _perfRepUid=uid;
+  _perfLoadToken++; // new token — stale callbacks will no-op
   setTimeout(updatePerfDashBtn,50);
+
   if(window.innerWidth>=768){
     const isDMsel=_pendingUid==='ji2646dm';
     const isRSMsel=RSM_UIDS.includes(_pendingUid)&&!isDMsel;
     const isRSCsel=!isDMsel&&!isRSMsel;
-    // Desktop: load metric detail into left panel always
-    loadPerfData(uid);
-    // RSC: right panel stays as team comparison — don't replace with individual
-    // DM/RSM: right panel shows individual dashboard
-    if(!isRSCsel) loadIndividualDashboard(uid);
-    // Highlight selected row
+
+    // Highlight selected rep row in picker
     document.querySelectorAll('.perf-rep-btn').forEach(b=>{
       b.style.background=b.dataset.uid===uid?'var(--s3)':'var(--s1)';
       b.style.borderColor=b.dataset.uid===uid?'var(--g)':'var(--bd)';
     });
+
+    // Everyone: left = rep detail, right = individual card dashboard
+    const perfBody=document.getElementById('perf-body');
+    if(perfBody) perfBody.innerHTML=`<div style="padding:40px 0;text-align:center;color:var(--t3);font-size:12px;font-family:DM Sans">${UID_NAMES[uid]||uid}<br><span style="font-size:10px;opacity:.6">Loading...</span></div>`;
+    const dash=document.getElementById('perf-dashboard');
+    if(dash) dash.innerHTML=`<div style="padding:40px 0;text-align:center;color:var(--t3);font-size:12px;font-family:DM Sans">Loading ${UID_NAMES[uid]||uid}...</div>`;
+    loadPerfData(uid);
+    loadIndividualDashboard(uid);
   } else {
     // Mobile: replace left panel with individual view
     _perfRepUid=uid;
@@ -1624,10 +1743,12 @@ function toggleMobileDashboard(){
         if(Array.isArray(data)){
           if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm');
           else if(isRSM){
-            const myReps=(STORE_REPS[_activityStore||uid]||[]).map(u=>u.toLowerCase());
-            const myUidLower=uid.toLowerCase();
-            _perfAllData=data.filter(r=>r.uid&&(r.uid===myUidLower||myReps.includes(r.uid.toLowerCase())));
-          } else _perfAllData=data.filter(r=>r.uid===uid);
+            const myTeam2=(RSM_TEAM_MAP[uid]||STORE_REPS[_activityStore||uid]||[]).map(u=>u.toLowerCase());
+            _perfAllData=data.filter(r=>r.uid&&myTeam2.includes(r.uid.toLowerCase()));
+          } else {
+            const peers2=(STORE_PEER_MAP[uid]||[]).map(u=>u.toLowerCase());
+            _perfAllData=data.filter(r=>r.uid&&(r.uid===uid||peers2.includes(r.uid.toLowerCase())));
+          }
         }
         // Temporarily override perf-dashboard to render into mobile panel
         const realDash=document.getElementById('perf-dashboard');
@@ -1641,7 +1762,23 @@ function toggleMobileDashboard(){
         panel.innerHTML='';
         panel.appendChild(fakeDiv);
       }).catch(()=>{
-        panel.innerHTML='<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px">Script needs redeployment with Code_new.gs.</div>';
+        // Fallback: fetch each peer individually
+        const peers3=(STORE_PEER_MAP[uid]||[]);
+        const uids3=isDM?Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm'):isRSM?(STORE_REPS[_activityStore||uid]||[]):[uid,...peers3];
+        Promise.all(uids3.map(u=>fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(u)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000).then(r=>r.json()).catch(()=>null)))
+          .then(results=>{
+            _perfAllData=results.filter(r=>r&&r.uid);
+            const realDash2=document.getElementById('perf-dashboard');
+            const fakeDiv2=document.createElement('div');
+            fakeDiv2.id='perf-dashboard';
+            panel.appendChild(fakeDiv2);
+            if(realDash2) realDash2.id='perf-dashboard-real';
+            renderDistrictDashboard();
+            if(realDash2) realDash2.id='perf-dashboard';
+            fakeDiv2.id='perf-dashboard-mobile';
+            panel.innerHTML='';
+            panel.appendChild(fakeDiv2);
+          }).catch(()=>{ panel.innerHTML='<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px">Could not load. Check connection.</div>'; });
       });
   } else {
     panel.style.display='none';
@@ -1757,47 +1894,63 @@ function renderIndividualDashboard(r,uid){
     </div>`;
 
   // Helper for stat tile
-  const tile=(label,val,color)=>`
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:16px 18px;text-align:center">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:6px">${label}</div>
-      <div style="font-family:'Bebas Neue';font-size:36px;color:${color||'var(--t1)'};line-height:1">${val}</div>
+  const tile=(label,val,color,sub)=>`
+    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">${label}</div>
+      <div style="font-family:'Bebas Neue';font-size:32px;color:${color||'var(--t1)'};line-height:1">${val}</div>
+      ${sub?`<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:3px">${sub}</div>`:''}
     </div>`;
+  // Compute APD + avg fees for this rep using tracker data
+  const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
+  const _indivTotalOpps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
+  const _indivFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+  const _indivNetFee=Math.max(0,_indivTotalOpps*25-_indivFeeDisc);
+  const _indivAvgFee=_indivTotalOpps>0?_indivNetFee/_indivTotalOpps:0;
 
   dash.innerHTML=`
-    <div style="margin-bottom:16px">
-      <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
-      <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
+        <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
+      </div>
+      ${['ji2646dm','jq6635'].includes(_pendingUid)?`<button class="png-hide" onclick="doCaptureDiv(document.getElementById('perf-dashboard'))" style="padding:5px 14px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:DM Sans;flex-shrink:0">PNG</button>`:''}
     </div>
 
     <!-- Row 1: Acts vs Upgrades | Voice vs Non-Voice -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('Activations vs Upgrades',actsVsUpg)}
       ${sec('Voice vs Non-Voice',voiceBreakdown)}
     </div>
 
     <!-- Row 2: AutoPay | Protect -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('AutoPay',gauge('AutoPay Rate',r.autopayRate,PERF_GOALS.autopayTarget,PERF_GOALS.autopayMin))}
       ${sec('Protect',gauge('Protect Rate',r.protectRate,PERF_GOALS.protectTarget,PERF_GOALS.protectTarget))}
     </div>
 
-    <!-- Row 3: PPP | Accessory Revenue -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <!-- Row 3: PPP | Internet -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,PERF_GOALS.pppTarget))}
-      ${tile('Accessory Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
+      ${sec('Internet',(()=>{
+        const hit=(r.aiaOrders||0)>=1;
+        const col=hit?'var(--g)':'var(--err)';
+        const barW=Math.min(100,Math.round((r.aiaOrders||0)/3*100));
+        return `<div style="font-family:'Bebas Neue';font-size:28px;color:${col};line-height:1;margin-bottom:6px">${r.aiaOrders||0}</div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
+      })())}
     </div>
 
-    <!-- Row 4: Bill Pay | Internet | Voice Acts | Upgrades -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-      ${tile('Voice Acts',r.voiceActs||0,'var(--g)')}
-      ${tile('Upgrades',r.upgrades||0,'var(--purple)')}
+    <!-- Row 4: Bill Pay | Acc Revenue | APD | Avg Fees -->
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
       ${tile('Bill Pay',r.billPay||0,'')}
-      ${tile('Internet',r.aiaOrders||0,(r.aiaOrders||0)>=1?'var(--g)':'var(--err)')}
+      ${tile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
+      ${tile('APD',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'No Data','var(--prog)',_indivApdTotal>0?'from tracker':'not entered yet')}
+      ${tile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
     </div>
   `;
 }
 function loadPerfData(uid){
   const cs=fmtCycleKey(getCurrentCycleStart());
+  const myToken=_perfLoadToken; // capture current token
   Promise.all([
     fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
     fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
@@ -1806,6 +1959,7 @@ function loadPerfData(uid){
   ])
   .then(responses=>Promise.all(responses.map(r=>r.json())))
   .then(([perf,acc,fee,fiber])=>{
+    if(myToken!==_perfLoadToken) return; // stale — newer rep was clicked
     _perfData=perf;
     _perfAccEntries=Array.isArray(acc)?acc:[];
     _perfFeeEntries=Array.isArray(fee)?fee:[];
@@ -1813,9 +1967,143 @@ function loadPerfData(uid){
     renderPerfView(uid);
   })
   .catch(()=>{
+    if(myToken!==_perfLoadToken) return;
     _perfData=null;_perfAccEntries=[];_perfFeeEntries=[];_perfFiberEntries=[];
     renderPerfView(uid);
   });
+}
+
+// ── REP CARD VIEW (RSC own view + DM/RSM right panel visual) ──
+function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
+  const name=UID_NAMES[uid]||uid;
+  const pct=v=>v===null||v===undefined?'—':((v||0)*100).toFixed(2)+'%';
+  const totalActs=r.voiceActs+r.nonVoice;
+  const totalOpps=totalActs+r.upgrades;
+
+  // Payout data from _perfFeeEntries/_perfAccEntries
+  const totalFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+  const grossFeeRevenue=totalOpps*25;
+  const netFeeRev=Math.max(0,grossFeeRevenue-totalFeeDisc);
+  const avgFee=totalOpps>0?netFeeRev/totalOpps:0;
+  const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
+  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+
+  function gauge(label,val,target,min){
+    const pctVal=Math.min(100,Math.round((val||0)*100));
+    const pctExact=val?((val||0)*100).toFixed(2):'0.00';
+    const hit=val>=target; const partial=min&&val>=(min||0);
+    const col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
+    return `<div>
+      <div style="font-family:'Bebas Neue';font-size:28px;color:${col};line-height:1;margin-bottom:6px">${pctExact}%</div>
+      <div style="position:relative;background:var(--s3);border-radius:6px;height:9px">
+        <div style="position:absolute;left:0;top:0;height:9px;border-radius:6px;background:${col};width:${pctVal}%"></div>
+        <div style="position:absolute;top:-4px;height:17px;width:2px;background:var(--g);border-radius:1px;left:${Math.round(target*100)}%;transform:translateX(-50%)"></div>
+        ${min?`<div style="position:absolute;top:-4px;height:17px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:${Math.round(min*100)}%;transform:translateX(-50%)"></div>`:''}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:3px">
+        <div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: ${Math.round(target*100)}%</div>
+        ${min?`<div style="font-size:8px;color:var(--err);opacity:.7;font-family:DM Sans">Min: ${Math.round(min*100)}%</div>`:''}
+      </div>
+    </div>`;
+  }
+  function sec(title,content){
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+      <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
+        <div style="font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+      </div>
+      <div style="padding:12px 14px">${content}</div>
+    </div>`;
+  }
+  function tile(label,val,color,sub){
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">${label}</div>
+      <div style="font-family:'Bebas Neue';font-size:32px;color:${color||'var(--t1)'};line-height:1">${val}</div>
+      ${sub?`<div style="font-size:9px;color:var(--t3);margin-top:3px;font-family:DM Sans">${sub}</div>`:''}
+    </div>`;
+  }
+
+  // Acts vs Upgrades bars
+  const maxBar=Math.max(totalActs,r.upgrades,1);
+  const actsVsUpg=`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:9px;margin-bottom:8px">
+        <div style="height:9px;border-radius:4px;background:var(--g);width:${Math.round(totalActs/maxBar*100)}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:9px">
+        <div style="height:9px;border-radius:4px;background:var(--purple);width:${Math.round(r.upgrades/maxBar*100)}%"></div>
+      </div>
+    </div>`;
+  // Voice vs Non-Voice
+  const voiceW=totalActs>0?Math.round(r.voiceActs/totalActs*100):0;
+  const nvW=100-voiceW;
+  const voiceBreakdown=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Voice <span style="color:var(--t3);font-weight:400">${r.voiceActs}</span></div>
+      <div style="font-size:11px;font-weight:700;color:var(--t1);font-family:DM Sans">Non-Voice <span style="color:var(--t3);font-weight:400">${r.nonVoice}</span></div>
+    </div>
+    <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:4px">
+      ${r.voiceActs?`<div style="flex:${r.voiceActs};background:var(--g)"></div>`:''}
+      ${r.nonVoice?`<div style="flex:${r.nonVoice};background:#60a5fa"></div>`:''}
+      ${!r.voiceActs&&!r.nonVoice?`<div style="flex:1;background:var(--s3)"></div>`:''}
+    </div>
+    <div style="display:flex;gap:10px">
+      <div style="font-size:8px;color:var(--g);font-family:DM Sans">▌ Voice ${voiceW}%</div>
+      <div style="font-size:8px;color:#60a5fa;font-family:DM Sans">▌ Non-Voice ${nvW}%</div>
+    </div>`;
+
+  body.innerHTML=mobileBtn+`
+    <!-- Header -->
+    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+      <div style="padding:14px 16px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div>
+          <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${cycleLabel}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 1: Acts vs Upgrades | Voice vs Non-Voice -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('Activations vs Upgrades',actsVsUpg)}
+      ${sec('Voice vs Non-Voice',voiceBreakdown)}
+    </div>
+    <!-- Row 2: AutoPay | Protect -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('AutoPay',gauge('AutoPay Rate',r.autopayRate,0.30,0.28))}
+      ${sec('Protect',gauge('Protect Rate',r.protectRate,0.50,0.50))}
+    </div>
+    <!-- Row 3: PPP | Internet -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20))}
+      ${sec('Internet',(()=>{
+        const hit=(r.aiaOrders||0)>=1;
+        const col=hit?'var(--g)':'var(--err)';
+        const barW=Math.min(100,Math.round((r.aiaOrders||0)/3*100));
+        return `<div style="font-family:'Bebas Neue';font-size:28px;color:${col};line-height:1;margin-bottom:6px">${r.aiaOrders||0}</div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
+      })())}
+    </div>
+    <!-- Row 4: Bill Pay | Acc Revenue | APD | Avg Fees -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      ${tile('Bill Pay',r.billPay||0,'')}
+      ${tile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
+      ${tile('APD',apdTotal>0?'$'+apdTotal.toFixed(0):'No Data','var(--prog)',apdTotal>0?'from tracker':'not entered yet')}
+      ${tile('Avg Fees','$'+avgFee.toFixed(2),avgFee>=22?'var(--g)':avgFee>=20?'var(--warn)':'var(--err)')}
+    </div>
+    <div style="font-size:10px;color:var(--t3);padding:8px 0 24px;font-family:DM Sans,sans-serif;line-height:1.6">
+      Data from Metric Detail — may not include returns or adjustments.
+    </div>
+  `;
 }
 
 // ── RENDER PERFORMANCE VIEW ──
@@ -1962,12 +2250,18 @@ function renderPerfView(uid){
   const qualNotesHtml=qualWarningsHtml||qualInfosHtml;
 
   const isRSCViewer=!isDM&&!isRSM;
+
+  // All roles: left panel = metric list, right panel = visual card (via loadIndividualDashboard)
+
   const mobileCompareBtn=isRSCViewer&&window.innerWidth<768?`
     <div style="margin-bottom:12px">
       <button type="button" onclick="toggleMobileDashboard()" id="mobile-dash-btn" style="width:100%;padding:10px;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;color:var(--t1)">Compare with Team</button>
       <div id="mobile-dashboard-panel" style="display:none;margin-top:8px"></div>
     </div>`:'';
 
+  // Hide payout: archived cycles always hidden; RSC viewing teammate also hidden
+  const isRSCViewingTeammate=(!isDM&&!isRSM&&uid!==_pendingUid);
+  const payoutVisible=(_perfViewingCycle!==null||isRSCViewingTeammate)?false:(document.getElementById('perf-payout-section')?document.getElementById('perf-payout-section').style.display!=='none':true);
   body.innerHTML=backBtn+mobileCompareBtn+`
     <!-- Header card -->
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
@@ -1976,9 +2270,10 @@ function renderPerfView(uid){
           <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div>
           <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${cycleLabel}</div>
         </div>
-        <div style="text-align:right">
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
-          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${repIsRSM?'RSM Structure':'RSC Structure'}</div>
+          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${repIsRSM?'RSM Structure':'RSC Structure'}</div>
+          ${(isDM||isRSM||uid===_pendingUid)&&!isRSCViewingTeammate&&_perfViewingCycle===null?`<button type="button" id="toggle-payout-btn" onclick="togglePayoutVisibility()" style="margin-top:2px;padding:3px 9px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-family:DM Sans;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer">${payoutVisible?'Hide Payout':'Show Payout'}</button>`:''}
         </div>
       </div>
     </div>
@@ -2015,12 +2310,13 @@ function renderPerfView(uid){
     </div>
 
     <!-- Payout Estimate -->
+    <div id="perf-payout-section" style="display:${payoutVisible?'block':'none'}">
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
       ${sectionHead('Payout Estimate')}
       ${metricRow('Voice Activations',fmtPay(voicePay))}
       ${metricRow('Non-Voice Activations',fmtPay(nvPay))}
       ${metricRow('Upgrades',fmtPay(upgPay))}
-      ${metricRow('Activation Fees',fmtPay(feePay))}
+      ${metricRow('Activation Fees',fmtPay(feePay)+` <span style="font-size:9px;color:var(--t3)">avg $${avgFee.toFixed(2)}/opp${totalFeeDisc>0?' ('+fmtPay(totalFeeDisc)+' discounts)':''}</span>`)}
       ${metricRow('AutoPay',fmtPay(apPay))}
       ${metricRow('Protect',fmtPay(protPay))}
       ${metricRow('Internet',fmtPay(aiaPay+fiberPay))}
@@ -2038,8 +2334,21 @@ function renderPerfView(uid){
     </div>
     ${qualWarningsHtml?`<div style="background:rgba(245,158,11,.04);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r);overflow:hidden;margin-bottom:8px">${qualWarningsHtml}</div>`:''}
     ${qualInfosHtml?`<div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">${qualInfosHtml}</div>`:''}
+    </div>
 
   `;
+  // Restore payout visibility state across re-renders
+  const ps=document.getElementById('perf-payout-section');
+  if(ps) ps.style.display=payoutVisible?'block':'none';
+}
+
+function togglePayoutVisibility(){
+  const ps=document.getElementById('perf-payout-section');
+  const btn=document.getElementById('toggle-payout-btn');
+  if(!ps||!btn) return;
+  const isHidden=ps.style.display==='none';
+  ps.style.display=isHidden?'block':'none';
+  btn.textContent=isHidden?'Hide Payout':'Show Payout';
 }
 
 // ── DM PASTE MODAL ──
@@ -2399,7 +2708,11 @@ if(typeof showToast==='undefined'){
   <div class="hlogo">
     <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/3/2026</div></div>
   </div>
-  <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeQuoteTool()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button>
+    <button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button>
+    <button class="hdr-back" onclick="closeQuoteTool()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+  </div>
 </header>
 <div class="wrap">
 <div id="left">
@@ -4848,7 +5161,7 @@ try {
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="actLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
       <div id="act-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" onclick="actRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="actRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
     </div>
   </div>
 
@@ -5334,6 +5647,8 @@ function closeActivity(){
       <button class="hdr-back" type="button" onclick="closePerformance()" class="perf-hdr-btn" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button>
     </div>
   </div>
+  <!-- Cycle picker strip -->
+  <div id="cycle-picker-wrap" style="display:none;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0"></div>
   <!-- Split body -->
   <div id="perf-layout" style="flex:1;overflow:hidden;display:flex;min-height:0">
     <div id="perf-left" style="overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%">
@@ -5353,7 +5668,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Sales Tracker</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="st-header-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" onclick="stRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Home</button><button class="hdr-back" type="button" onclick="closeSalesTracker()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap">&#8592; Back</button>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="stRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" type="button" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" type="button" onclick="closeSalesTracker()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">&#8592; Back</button></div>
     </div>
   </div>
   <!-- Tabs -->
@@ -5374,7 +5689,7 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Time Management</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="tm-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" onclick="tmRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeTM()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="tmRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeTM()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
     </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
@@ -5497,7 +5812,7 @@ function closeActivity(){
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="repActLoadData()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px;height:32px;box-sizing:border-box;touch-action:manipulation">&#8635; Refresh</button>
       <div id="rep-act-username" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" onclick="repActRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeRepActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation;white-space:nowrap">&#8592; Back</button>
+      <div style="display:flex;align-items:center;gap:8px"><button class="hdr-refresh" onclick="repActRefresh()" style="padding:7px 12px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">↻</button><button class="hdr-home" onclick="goHome()" style="padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Home</button><button class="hdr-back" onclick="closeRepActivity()" style="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap">&#8592; Back</button></div>
     </div>
   </div>
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px">
@@ -5607,6 +5922,33 @@ function isTCLate(){
   // More precise: day 0 (Sun) through day 12 (Fri) = late for closed cycle
   // day 13 (Sat) = cycle closes today, still accepting
 }
+function resetTC(){
+  document.getElementById('tc-loc').value='';
+  document.getElementById('tc-date').value='';
+  document.getElementById('tc-reason').value='';
+  document.getElementById('tc-start').value='';
+  document.getElementById('tc-end').value='';
+  const brkRow=document.getElementById('tc-brk-row');
+  if(brkRow) brkRow.style.display='none';
+  _tcBreak=false;
+  const brkBtn=document.getElementById('tc-brk-btn');
+  if(brkBtn){brkBtn.textContent='+ Add Break';brkBtn.style.color='';}
+}
+function resetTO(){
+  document.getElementById('to-month').value='';
+  document.getElementById('to-reason').value='';
+  document.getElementById('to-days').value='';
+  _toDaysSelected=[];
+  const chips=document.getElementById('to-day-chips');
+  if(chips) chips.innerHTML='<div style="font-size:11px;color:var(--t3)">Select a month above</div>';
+  _toDurFull=true;
+  const durFull=document.getElementById('to-dur-full');
+  const durPart=document.getElementById('to-dur-part');
+  const durHours=document.getElementById('to-dur-hours');
+  if(durFull){durFull.style.background='var(--g)';durFull.style.color='#fff';}
+  if(durPart){durPart.style.background='';durPart.style.color='';}
+  if(durHours) durHours.style.display='none';
+}
 function submitTC(){
   const loc=document.getElementById('tc-loc').value;
   const date=document.getElementById('tc-date').value;
@@ -5623,6 +5965,7 @@ function submitTC(){
   const rowId=uid+'-TC-'+Date.now();
   sendLog({type:'tc_submit',rowId,uid,name,submitted,location:loc,date,reason,shiftStart:fmtT(start),shiftEnd:fmtT(end),breakStart:_tcBreak?brkS:'None',breakEnd:_tcBreak?brkE:'None',status:'Sent',note:''});
   const _tcLateWarn=isTCLate()?'<div style="margin-top:10px;padding:8px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;color:#f87171;font-weight:700;text-align:left;line-height:1.5">&#9888; This correction was submitted after the pay period deadline. Payout may be delayed to the next pay cycle.</div>':'';
+  resetTC();
   tmConfirm('Time correction submitted.','Sent',false,'',_tcLateWarn);
 }
 
@@ -5752,6 +6095,7 @@ function submitTO(){
   const _toMsg=toStatus==='Denied'
     ?'Your request was automatically denied. Time off must be submitted at least 14 days before the week starts. You may notify your DM for review.'
     :'Time off request submitted successfully.';
+  resetTO();
   tmConfirm(_toMsg,toStatus,toShowNotify,rowId);
 }
 
@@ -6159,7 +6503,6 @@ function setDMToDemo(){
   const rawToDemo=[
     {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
     {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
-    {rowId:'ec934j-TO-OLD-36',submitted:'03/23/2026, 9:17 AM',uid:'ec934j',name:'Elva Cruz',reason:'Out of town',duration:'Full Day',month:'April',days:'04, 05, 06',daysStatus:'Apr 04:Denied,Apr 05:Denied,Apr 06:Denied',status:'Denied',note:'Late entry / first weekend of month',edited:''},
     {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
     {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
     {rowId:'gs0426-TO-OLD-44',submitted:'04/04/2026, 2:00 PM',uid:'gs0426',name:'Gabbisette Sanchez',reason:'Personal appointment',duration:'Full Day',month:'April',days:'20',daysStatus:'',status:'Sent',note:'',edited:''},
@@ -6192,7 +6535,6 @@ function dmLoadTC(){
 function setDMTcDemo(){
   const rawTcDemo=[
     {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'ec934j-TC-OLD-096',submitted:'',uid:'ec934j',name:'Elva Cruz',date:'3/6/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock in',shiftStart:'9:40 AM',breakStart:'3:04 PM',breakEnd:'4:05 PM',shiftEnd:'7:08 PM',status:'Corrected',note:'',edited:''},
     {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
     {rowId:'ap485d-TC-OLD-098',submitted:'',uid:'ap485d',name:'Alfredo Parra',date:'3/10/2026',location:'College St (747)',reason:'No Internet at college location',shiftStart:'11:31 AM',breakStart:'3:00 PM',breakEnd:'4:08 PM',shiftEnd:'8:13 PM',status:'Corrected',note:'',edited:''},
     {rowId:'mg221k-TC-OLD-099',submitted:'',uid:'mg221k',name:'Matthew Gomez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Internet down',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'6:00 PM',status:'Corrected',note:'',edited:''},
@@ -6474,7 +6816,7 @@ function showDMTimeDetail(type,rowId){
     [['Employee',r.name+' ('+r.uid+')'],['Location',r.location],['Date',fmtDateOnly(r.date)],['Reason',r.reason],['Shift',fmtTime(r.shiftStart)+' – '+fmtTime(r.shiftEnd)],['Break',r.breakStart&&r.breakStart!=='None'?fmtTime(r.breakStart)+' – '+fmtTime(r.breakEnd):'None'],['Submitted',fmtSubmitted(r.submitted)],...(r.edited?[['Edited',fmtSubmitted(r.edited)]]:[])];
   const ov=document.createElement('div');ov.id='dm-time-detail-overlay';ov.style.cssText='position:fixed;inset:0;background:var(--bg);z-index:999999;overflow-y:auto;font-family:DM Sans,sans-serif';
   const hdr=document.createElement('div');hdr.style.cssText='background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)';
-  const bb=document.createElement('div');bb.style.cssText="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation";bb.innerHTML='&#8592; Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
+  const bb=document.createElement('div');bb.className='hdr-back';bb.style.cssText="padding:7px 16px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;touch-action:manipulation";bb.innerHTML='&#8592; Back';bb.onclick=()=>{const d=document.getElementById('dm-time-detail-overlay');if(d)d.remove();};
   const tl=document.createElement('div');tl.style.cssText='font-family:Bebas Neue;font-size:20px;letter-spacing:3px';tl.textContent=type==='to'?'Time Off':'Time Correction';
   hdr.appendChild(tl);hdr.appendChild(bb);ov.appendChild(hdr);
   const body=document.createElement('div');body.style.cssText='max-width:500px;margin:0 auto;padding:16px 14px 80px';
