@@ -33,12 +33,16 @@ header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box
   box-shadow:0 1px 3px rgba(0,0,0,.07);
   transition:background .12s,box-shadow .12s;
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  line-height:1;vertical-align:middle;
 }
+.hdr-home svg,.hdr-back svg,.hdr-refresh svg{ display:block;flex-shrink:0; }
 .hdr-home:hover,.hdr-back:hover,.hdr-refresh:hover{
   background:#F0F1F3;
   box-shadow:0 2px 6px rgba(0,0,0,.1);
   color:#374151;
 }
+/* Menu button icon alignment */
+#ls-menu button svg{ display:inline-block;vertical-align:middle;flex-shrink:0; }
 .wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}}
 
@@ -1266,9 +1270,8 @@ function perfRefresh(){
   _perfAllData=[];
   _perfHistoryLoaded=false;
   _perfViewingCycle=null;
-  loadDistrictDashboard(true);
-  if(_perfRepUid) loadPerfData(_perfRepUid||_pendingUid);
-  else if(!RSM_UIDS.includes(_pendingUid)||_pendingUid==='ji2646dm') loadPerfData(_pendingUid);
+  _perfRepUid=null;
+  renderPerfBody(); // rebuilds picker + loads dashboard
 }
 
 function onCycleSelect(sel){
@@ -1307,6 +1310,7 @@ function switchToCycle(cycleStart){
   if(cycleStart===null){
     _perfViewingCycle=null;
     _perfAllData=[];
+    if(isMobile()){ renderPerfBody(); return; }
     loadDistrictDashboard(true);
   } else {
     _perfViewingCycle=cycleStart;
@@ -1721,10 +1725,9 @@ function renderPerfBody(){
   const body=document.getElementById('perf-body');
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
-  const needPicker=true; // everyone gets the picker
 
   if(!_perfRepUid){
-    // Show rep picker — DM sees all, RSM sees team, RSC sees peers + self
+    // ── PICKER SCREEN ──
     const allReps=Object.entries(UID_NAMES).filter(([uid])=>uid!=='ji2646dm');
     const rscReps=allReps.filter(([uid])=>!RSM_UIDS.includes(uid));
     const rsmReps=allReps.filter(([uid])=>RSM_UIDS.includes(uid));
@@ -1734,56 +1737,68 @@ function renderPerfBody(){
         return teamUids.map(uid=>[uid,UID_NAMES[uid]||uid]);
       })():
       (()=>{
-        // RSC: show self + store peers
         const peers=STORE_PEER_MAP[_pendingUid]||[];
         const teamUids=[_pendingUid,...peers.filter(u=>u!==_pendingUid)];
         return teamUids.map(uid=>[uid,UID_NAMES[uid]||uid]);
       })();
 
-    body.innerHTML=`
+    const filterChips=isDM?`<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px">
+      <button type="button" onclick="_perfFilter='all';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='all'?'var(--g)':'var(--s3)'};border:${_perfFilter==='all'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='all'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">All</button>
+      <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
+      <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
+    </div>`:'';
 
-      <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.2);border-radius:var(--r);padding:20px;margin-bottom:12px">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;font-family:'DM Sans'">Select a Representative</div>
-        ${isDM?`<div style="display:flex;gap:6px;margin-bottom:12px">
-          <button type="button" onclick="_perfFilter='all';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='all'?'var(--g)':'var(--s3)'};border:${_perfFilter==='all'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='all'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">All</button>
-          <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
-          <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex:1;padding:6px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
-        </div>`:''}
-        ${isMobile()?`
-        <select onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer;margin-bottom:4px;-webkit-appearance:none;appearance:none">
-          <option value="">— Select a rep —</option>
-          ${repList.map(([uid,name])=>`<option value="${uid}" ${uid===_perfRepUid?'selected':''}>${name||uid}</option>`).join('')}
-        </select>
+    const pickerHtml=`<div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.2);border-radius:var(--r);padding:16px;margin-bottom:12px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:10px;font-family:'DM Sans'">Select a Representative</div>
+      ${filterChips}
+      ${isMobile()?`
+      <select id="perf-rep-select" onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
+        <option value="">— Select a rep —</option>
+        ${repList.map(([uid,name])=>`<option value="${uid}" ${uid===_perfRepUid?'selected':''}>${name||uid}</option>`).join('')}
+      </select>
       `:`
-        ${isMobile()?`
-        <select onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer">
-          <option value="">— Select a rep —</option>
-          ${repList.map(([uid,name])=>`<option value="${uid}">${name||uid} (${uid})</option>`).join('')}
-        </select>
-        `:`
-        <div style="display:flex;flex-direction:column;gap:8px">
-          ${repList.map(([uid,name])=>`
-            <button type="button" class="perf-rep-btn" data-uid="${uid}" onclick="selectPerfRep('${uid}')" style="width:100%;padding:11px 14px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);text-align:left;cursor:pointer;font-family:'DM Sans';display:flex;justify-content:space-between;align-items:center;transition:background .1s,border-color .1s" onmouseover="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s2)'" onmouseout="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s1)'">
-              <div>
-                <div style="font-size:12px;font-weight:800;color:var(--t1)">${name||uid}</div>
-                <div style="font-size:10px;color:var(--t3);margin-top:1px">${uid}</div>
-              </div>
-              <div style="font-size:16px;color:var(--t3)">›</div>
-            </button>`).join('')}
-        </div>
-        `}
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${repList.map(([uid,name])=>`
+          <button type="button" class="perf-rep-btn" data-uid="${uid}" onclick="selectPerfRep('${uid}')" style="width:100%;padding:11px 14px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r2);text-align:left;cursor:pointer;font-family:'DM Sans';display:flex;justify-content:space-between;align-items:center;transition:background .1s,border-color .1s" onmouseover="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s2)'" onmouseout="if(this.dataset.uid!==_perfRepUid)this.style.background='var(--s1)'">
+            <div>
+              <div style="font-size:12px;font-weight:800;color:var(--t1)">${name||uid}</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:1px">${uid}</div>
+            </div>
+            <div style="font-size:16px;color:var(--t3)">›</div>
+          </button>`).join('')}
+      </div>
       `}
-      </div>`;
-    // On desktop, show district dashboard in right panel
-    loadDistrictDashboard();
+    </div>`;
+
+    if(isMobile()){
+      // Mobile: picker + district dashboard as one long scroll in perf-body
+      body.innerHTML=pickerHtml+`<div id="perf-mobile-district" style="min-height:200px"><div style="text-align:center;padding:40px;color:var(--t3);font-size:12px;font-family:DM Sans">Loading dashboard...</div></div>`;
+      loadDistrictDashboardMobile();
+    } else {
+      // Desktop: picker in left, dashboard in right panel
+      body.innerHTML=pickerHtml;
+      loadDistrictDashboard();
+    }
     return;
   }
 
-  // Rep selected — hide right panel on mobile, show individual
+  // ── REP SELECTED ──
   const perfRight=document.getElementById('perf-right');
   if(perfRight&&isDesktop()) perfRight.style.display='block';
-  body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--t3);font-size:11px">Loading...</div>`;
-  loadPerfData(_perfRepUid||_pendingUid);
+
+  if(isMobile()){
+    // Mobile: full portrait scroll — render everything into perf-body
+    body.innerHTML=`<div id="perf-mobile-rep-view" style="padding-bottom:80px">
+      <div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:12px;font-family:DM Sans">
+        <div style="font-weight:800;color:var(--t1);margin-bottom:4px">${UID_NAMES[_perfRepUid]||_perfRepUid}</div>
+        Loading...
+      </div>
+    </div>`;
+    loadPerfDataMobile(_perfRepUid);
+  } else {
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--t3);font-size:11px">Loading...</div>`;
+    loadPerfData(_perfRepUid||_pendingUid);
+  }
 }
 
 let _selectPerfRepDebounce=null;
@@ -1818,7 +1833,7 @@ function _doSelectPerfRep(uid){
     loadPerfData(uid);
     loadIndividualDashboard(uid);
   } else {
-    // Mobile: replace left panel with individual view
+    // Mobile: full portrait scroll
     _perfRepUid=uid;
     renderPerfBody();
     const perfLeft=document.getElementById('perf-left');
@@ -1828,6 +1843,120 @@ function _doSelectPerfRep(uid){
 
 // ── LOAD DATA ──
 
+
+
+// ── MOBILE DISTRICT DASHBOARD ──
+function loadDistrictDashboardMobile(){
+  const el=document.getElementById('perf-mobile-district');
+  if(!el) return;
+  if(_perfAllData.length){
+    renderDistrictDashboardMobile();
+    return;
+  }
+  fetchWithTimeout(LOG_URL+'?type=perf_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},30000)
+    .then(r=>r.json()).then(data=>{
+      const isDM=_pendingUid==='ji2646dm';
+      const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
+      if(Array.isArray(data)&&data.length){
+        if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+        else if(isRSM){
+          const myTeam=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
+          _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+        } else {
+          const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
+          _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+        }
+        loadPerfHistory(()=>renderCyclePicker());
+        renderDistrictDashboardMobile();
+      } else {
+        const el2=document.getElementById('perf-mobile-district');
+        if(el2) el2.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No data yet.</div>';
+      }
+    }).catch(()=>{
+      const el2=document.getElementById('perf-mobile-district');
+      if(el2) el2.innerHTML=`<div style="text-align:center;padding:24px;color:var(--t3);font-size:11px">Could not load.<br><button onclick="loadDistrictDashboardMobile()" style="margin-top:10px;padding:7px 18px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">↻ Retry</button></div>`;
+    });
+}
+
+function renderDistrictDashboardMobile(){
+  const el=document.getElementById('perf-mobile-district');
+  if(!el||!_perfAllData.length) return;
+  // Temporarily swap target so renderDistrictDashboard writes here
+  const real=document.getElementById('perf-dashboard');
+  if(real) real.id='perf-dashboard-hidden';
+  el.id='perf-dashboard';
+  renderDistrictDashboard();
+  el.id='perf-mobile-district';
+  if(real) real.id='perf-dashboard';
+}
+
+// ── MOBILE INDIVIDUAL REP VIEW ──
+// Loads both metric list AND visual dashboard into one portrait scroll
+function loadPerfDataMobile(uid){
+  const cs=fmtCycleKey(getCurrentCycleStart());
+  const myToken=_perfLoadToken;
+  Promise.all([
+    fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+  ]).then(responses=>Promise.all(responses.map(r=>r.json())))
+  .then(([perf,acc,fee,fiber])=>{
+    if(myToken!==_perfLoadToken) return;
+    _perfData=perf;
+    _perfAccEntries=Array.isArray(acc)?acc:[];
+    _perfFeeEntries=Array.isArray(fee)?fee:[];
+    _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+    renderMobileRepView(uid);
+  }).catch(()=>{
+    if(myToken!==_perfLoadToken) return;
+    _perfData=null;_perfAccEntries=[];_perfFeeEntries=[];_perfFiberEntries=[];
+    renderMobileRepView(uid);
+  });
+}
+
+function renderMobileRepView(uid){
+  const container=document.getElementById('perf-mobile-rep-view');
+  if(!container) return;
+  const r=_perfData;
+  const name=UID_NAMES[uid]||uid;
+  const isDM=_pendingUid==='ji2646dm';
+  const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
+
+  // Build visual dashboard HTML (reuse renderIndividualDashboard logic inline)
+  // Then append metric list + payout below it
+  // First get the visual card HTML
+  const visDiv=document.createElement('div');
+  visDiv.id='perf-dashboard';
+  const hiddenReal=document.getElementById('perf-dashboard');
+  if(hiddenReal) hiddenReal.id='perf-dashboard-real';
+  container.appendChild(visDiv);
+  renderIndividualDashboard(r,uid);
+  // Restore
+  visDiv.id='perf-mobile-visual-card';
+  if(hiddenReal) hiddenReal.id='perf-dashboard';
+  container.removeChild(visDiv);
+
+  // PNG button for mobile
+  const canSnap=['ji2646dm','jq6635'].includes(_pendingUid);
+  const pngBtn=canSnap?`<button onclick="doCapture(document.getElementById('perf-mobile-rep-view'))" style="width:100%;padding:10px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Save PNG</button>`:'';
+
+  container.innerHTML=pngBtn+visDiv.outerHTML;
+  // Now append metric + payout below
+  const metricDiv=document.createElement('div');
+  metricDiv.id='perf-body-metric';
+  container.appendChild(metricDiv);
+  // Render metric list into metricDiv
+  const realBody=document.getElementById('perf-body');
+  const savedBody=realBody?realBody.innerHTML:'';
+  // Temporarily point perf-body to metricDiv
+  if(realBody) realBody.id='perf-body-real';
+  metricDiv.id='perf-body';
+  renderPerfView(uid);
+  metricDiv.id='perf-body-metric';
+  if(realBody) realBody.id='perf-body';
+  container.appendChild(metricDiv);
+}
 
 function toggleMobileDashboard(){
   const panel=document.getElementById('mobile-dashboard-panel');
@@ -1916,8 +2045,7 @@ function loadIndividualDashboard(uid){
 }
 
 function renderIndividualDashboard(r,uid){
-  const isMobile=isMobile();
-  const dash=isMobile?document.getElementById('perf-mobile-visual'):document.getElementById('perf-dashboard');
+  const dash=document.getElementById('perf-dashboard');
   const name=UID_NAMES[uid]||uid;
   function fmtRawDate(s){ if(!s) return ''; const p=s.split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
   if(!r){
@@ -2377,22 +2505,6 @@ function renderPerfView(uid){
   // All roles: left panel = metric list, right panel = visual card (via loadIndividualDashboard)
 
   const mobileCompareBtn='';
-  // On mobile, after metric list renders, inject visual card below
-  if(isMobile()){
-    setTimeout(()=>{
-      const pb=document.getElementById('perf-body');
-      if(!pb) return;
-      // Create visual card section below the metric list
-      let mobileCard=document.getElementById('perf-mobile-visual');
-      if(!mobileCard){
-        mobileCard=document.createElement('div');
-        mobileCard.id='perf-mobile-visual';
-        mobileCard.style.cssText='padding:0 0 80px';
-        pb.parentNode.insertBefore(mobileCard,pb.nextSibling);
-      }
-      loadIndividualDashboard(uid);
-    },50);
-  }
 
   // Hide payout: archived cycles always hidden; RSC viewing teammate also hidden
   const isRSCViewingTeammate=(!isDM&&!isRSM&&uid!==_pendingUid);
