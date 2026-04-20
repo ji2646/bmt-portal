@@ -18,6 +18,11 @@
   --r:12px;--r2:8px;
 }
 body{font-family:'DM Sans',sans-serif;background:#F8F9FA;color:var(--t1);min-height:100vh;font-size:13px;-webkit-text-size-adjust:100%}
+body.is-mobile{font-size:14px;}
+body.is-mobile .sec-title{font-size:13px;letter-spacing:2.5px;}
+body.is-mobile .sec-body{padding:16px;}
+body.is-mobile .sr .sl{font-size:12px;}
+body.is-mobile .sr .sv{font-size:13px;}
 .app-content{display:none}
 header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
@@ -436,11 +441,17 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
   display:flex;align-items:center;justify-content:center;
   font-family:'DM Sans',sans-serif;
 }
-.login-card{width:300px;background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+.login-card{width:min(360px,calc(100vw - 48px));background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);}
 .login-header{background:linear-gradient(135deg,#00a94f,#00c85f);padding:22px 22px 18px;}
 .login-header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#000;margin:0 0 3px;letter-spacing:.5px;}
 .login-header p{font-size:10px;font-weight:700;color:rgba(0,0,0,.5);margin:0;}
 .login-body{padding:20px 22px 22px;}
+@media(max-width:480px){
+  .login-body{padding:22px 20px 24px;}
+  .login-header h1{font-size:30px;}
+  .login-field input{font-size:16px;padding:12px 14px;}
+  #login-btn{padding:13px;font-size:13px;}
+}
 .login-field label{display:block;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:#374151;margin-bottom:6px;}
 .login-field input{width:100%;padding:10px 12px;background:#F3F4F6;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;outline:none;transition:border-color .15s;}
 .login-field input:focus{border-color:#00a94f;}
@@ -1459,8 +1470,8 @@ function refreshDashboard(){
   }
 }
 
-function renderDistrictDashboard(){
-  const dash=document.getElementById('perf-dashboard');
+function renderDistrictDashboard(_targetEl){
+  const dash=_targetEl||document.getElementById('perf-dashboard');
   if(!dash) return;
   const reps=_perfAllData;
   if(!reps.length){
@@ -1908,12 +1919,8 @@ function renderDistrictDashboardMobile(){
   const el=document.getElementById('perf-mobile-district');
   if(!el) return;
   if(!_perfAllData.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">No data.</div>'; return; }
-  const real=document.getElementById('perf-dashboard');
-  if(real) real.id='perf-dashboard-swap';
-  el.id='perf-dashboard';
-  renderDistrictDashboard();
-  el.id='perf-mobile-district';
-  if(real) real.id='perf-dashboard';
+  // Pass el directly — no ID swapping, no conflicts
+  renderDistrictDashboard(el);
 }
 
 // ── MOBILE INDIVIDUAL REP VIEW ──
@@ -1947,30 +1954,20 @@ function renderMobileRepView(uid){
   const r=_perfData;
   const canSnap=['ji2646dm','jq6635'].includes(_pendingUid);
 
-  // ── Step 1: Render visual dashboard into a temp off-screen div ──
+  // Create target divs — NO id set, pass directly to avoid getElementById conflicts
   const visDiv=document.createElement('div');
-  visDiv.style.cssText='position:absolute;left:-9999px;top:-9999px';
-  visDiv.id='perf-dashboard';
-  document.body.appendChild(visDiv);
-  renderIndividualDashboard(r,uid);
-  document.body.removeChild(visDiv);
-  visDiv.style.cssText='';
-  visDiv.id='';
-
-  // ── Step 2: Render metric list into a temp off-screen div ──
   const metricDiv=document.createElement('div');
-  metricDiv.style.cssText='position:absolute;left:-9999px;top:-9999px';
-  metricDiv.id='perf-body';
-  document.body.appendChild(metricDiv);
-  renderPerfView(uid);
-  document.body.removeChild(metricDiv);
-  metricDiv.style.cssText='';
-  metricDiv.id='';
 
-  // ── Step 3: Assemble into container ──
+  // Render visual dashboard directly into visDiv
+  renderIndividualDashboard(r,uid,visDiv);
+
+  // Render metric list + payout directly into metricDiv
+  renderPerfView(uid,metricDiv);
+
+  // Assemble
   container.innerHTML='';
 
-  // PNG button (png-hide so it's excluded from the capture)
+  // PNG button — png-hide excludes it from the capture
   if(canSnap){
     const btn=document.createElement('button');
     btn.className='png-hide';
@@ -1980,10 +1977,7 @@ function renderMobileRepView(uid){
     container.appendChild(btn);
   }
 
-  // Visual dashboard
   container.appendChild(visDiv);
-
-  // Metric list + payout
   container.appendChild(metricDiv);
 }
 
@@ -2255,9 +2249,10 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
 
   // Payout data from _perfFeeEntries/_perfAccEntries
   const totalFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const grossFeeRevenue=totalOpps*25;
+  const feeOpps=totalActs; // fees charged on voice + non-voice acts only, not upgrades
+  const grossFeeRevenue=feeOpps*25;
   const netFeeRev=Math.max(0,grossFeeRevenue-totalFeeDisc);
-  const avgFee=totalOpps>0?netFeeRev/totalOpps:0;
+  const avgFee=feeOpps>0?netFeeRev/feeOpps:0;
   const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
   const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
 
@@ -2387,8 +2382,8 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
 }
 
 // ── RENDER PERFORMANCE VIEW ──
-function renderPerfView(uid){
-  const body=document.getElementById('perf-body');
+function renderPerfView(uid,_targetBody){
+  const body=_targetBody||document.getElementById('perf-body');
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   const name=UID_NAMES[uid]||uid;
@@ -2443,10 +2438,11 @@ function renderPerfView(uid){
   const nvPay     = d.nonVoice*4;
   const upgPay    = d.upgrades*3;
   // Act fees
-  const grossFeeRevenue = totalOpps*25;
+  const feeOpps = d.grossAdds; // fees on voice + non-voice acts only (grossAdds = voiceActs + nonVoice)
+  const grossFeeRevenue = feeOpps*25;
   const totalFeeDisc = _perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
   const netFeeRev = Math.max(0, grossFeeRevenue - totalFeeDisc);
-  const avgFee = totalOpps>0?netFeeRev/totalOpps:0;
+  const avgFee = feeOpps>0?netFeeRev/feeOpps:0;
   const feePay = avgFee>=22?(totalOpps*2):avgFee>=20?(totalOpps*1):0;
   // AutoPay — only if rate >= 28% (RSC) or always (RSM)
   const apQty = Math.floor(d.grossAdds*(d.autopayRate||0));
@@ -2742,6 +2738,7 @@ let _stTab='acc';
 let _stAccEntries=[];
 let _stFeeEntries=[];
 let _stFiberEntries=[];
+
 
 function launchSalesTracker(){
   document.getElementById('login-screen').style.display='none';
@@ -5937,7 +5934,7 @@ function closeActivity(){
   <!-- Split body -->
   <div id="perf-layout" style="flex:1;overflow:hidden;display:flex;min-height:0">
     <div id="perf-left" style="overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%">
-      <div style="padding:16px 14px 80px" id="perf-body"></div>
+      <div style="padding:16px 14px 100px" id="perf-body"></div>
     </div>
     <div id="perf-right" style="display:none;flex:1;overflow-y:auto;border-left:1.5px solid var(--bd);padding:20px 32px 80px;min-width:0"><div>
       <div id="perf-dashboard"></div>
