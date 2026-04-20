@@ -2248,6 +2248,14 @@ function renderIndividualDashboard(r,uid,_targetEl){
   // ── Calculated values ──
   const totalAllOpps = (r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
   const apo = totalAllOpps>0 ? (r.accRevenue||0)/totalAllOpps : 0;
+  const apoCol2 = apo>=45?'var(--g)':'var(--err)';
+  const totalVoiceUpg = (r.voiceActs||0)+(r.upgrades||0);
+  const maxActRate = totalAllOpps>0?(r.voiceActs||0)/totalAllOpps:0;
+  const maxActRatePct = (maxActRate*100).toFixed(0);
+  // Bill Pay Conversion = OPPs / BillPay (goal 20% = 1 opp per 5 bill pays)
+  const bpConv = (r.billPay||0)>0 ? totalVoiceUpg/(r.billPay||0) : 0;
+  const bpConvPct = (bpConv*100).toFixed(1);
+  const bpConvCol = bpConv>=0.20?'var(--g)':'var(--err)';
 
   // ── Activations vs Upgrades — separate labeled bars ──
   const maxAU = Math.max(totalActs, r.upgrades, 1);
@@ -2341,7 +2349,6 @@ function renderIndividualDashboard(r,uid,_targetEl){
   }
 
   // ── APO color ──
-  const apoCol = apo>=30?'var(--g)':apo>=20?'var(--warn)':'var(--err)';
 
   // ── Pre-compute WTR HTML — bar style like AutoPay/Protect ──
   var _wtrRaw=r.wtr!==null&&r.wtr!==undefined?r.wtr:null;
@@ -2349,6 +2356,9 @@ function renderIndividualDashboard(r,uid,_targetEl){
   var wtrHtml=_wtrRaw===null
     ? gBar(null,0.80)
     : gBar(_wtrRaw/100, 0.80);
+
+  // ── Pre-compute Bill Pay Conversion HTML (gBar style) ──
+  var bpConvHtml = gBar(bpConv, 0.20);
 
   // ── Pre-compute Internet HTML ──
   var _aia=r.aiaOrders||0;
@@ -2391,24 +2401,35 @@ function renderIndividualDashboard(r,uid,_targetEl){
       ${sec('60RP Mix',gBar(r.mix60rp,0.80))}
     </div>
 
-    <!-- Row 4: WTR | Internet -->
+    <!-- Row 4: WTR | Bill Pay Conversion -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('WTR',wtrHtml)}
+      ${sec('Bill Pay Conv.',bpConvHtml)}
+    </div>
+
+    <!-- Row 5: Internet (full width) -->
+    <div style="margin-bottom:10px">
       ${sec('Internet',internetHtml)}
     </div>
 
-    <!-- Tile grid: 4 cols desktop, 2 cols mobile -->
+    <!-- Tile grid rows -->
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${smTile('Total OPPs',totalVoiceUpg,totalVoiceUpg>=10?'var(--g)':'var(--err)')}
+      ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol2)}
+      ${smTile('APD Acc',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)')}
+      ${smTile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
+    </div>
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
       ${smTile('Bill Pay',r.billPay||0,'')}
       ${smTile('Total Accessories','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
-      ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol)}
       ${smTile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)')}
+      ${smTile('ILD Adds',r.ildAdds||0,'')}
     </div>
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-      ${smTile('ILD Adds',r.ildAdds||0,'')}
       ${smTile('Upgrade Plus',r.upgPlusAdds||0,'')}
       ${smTile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','')}
       ${smTile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','')}
+      ${smTile('Max Act Rate',maxActRatePct+'%',maxActRate>=0.80?'var(--g)':'var(--err)')}
     </div>
 
   `;
