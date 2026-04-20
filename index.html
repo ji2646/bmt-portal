@@ -23,6 +23,14 @@ body.is-mobile .sec-title{font-size:13px;letter-spacing:2.5px;}
 body.is-mobile .sec-body{padding:16px;}
 body.is-mobile .sr .sl{font-size:12px;}
 body.is-mobile .sr .sv{font-size:13px;}
+/* Also apply via media query so it works before device picker is chosen */
+@media(max-width:767px){
+  body{font-size:14px;}
+  .sec-title{font-size:13px;letter-spacing:2.5px;}
+  .sec-body{padding:16px;}
+  .sr .sl{font-size:12px;}
+  .sr .sv{font-size:13px;}
+}
 .app-content{display:none}
 header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
@@ -441,6 +449,14 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
   display:flex;align-items:center;justify-content:center;
   font-family:'DM Sans',sans-serif;
 }
+@media(max-width:480px){
+  .login-card{width:calc(100vw - 32px) !important;}
+  .login-body{padding:24px !important;}
+  .login-field input{font-size:16px !important;padding:13px 14px !important;}
+  #login-btn{padding:14px !important;font-size:14px !important;}
+  #ls-menu-name{font-size:13px !important;}
+  #ls-menu button{padding:15px !important;font-size:14px !important;}
+}
 .login-card{width:min(360px,calc(100vw - 48px));background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);}
 .login-header{background:linear-gradient(135deg,#00a94f,#00c85f);padding:22px 22px 18px;}
 .login-header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#000;margin:0 0 3px;letter-spacing:.5px;}
@@ -469,7 +485,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         <div style="position:absolute;left:-9999px"><input type="text" tabindex="-1" aria-hidden="true"/><input type="password" tabindex="-1" aria-hidden="true"/></div>
         <div class="login-field">
           <div style="position:relative;display:flex;align-items:center">
-          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:52px"/>
+          <input type="text" id="login-uid" placeholder="Enter UID" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:52px;-webkit-text-security:disc"/>
           <span onclick="toggleVisibility('login-uid',this)" style="position:absolute;right:10px;font-size:10px;font-weight:700;color:#9CA3AF;cursor:pointer;user-select:none;font-family:'DM Sans'">Show</span>
         </div>
         </div>
@@ -1203,7 +1219,8 @@ function toggleVisibility(id, btn){
   const el=document.getElementById(id);
   if(!el) return;
   if(id==='login-uid'){
-    const isHidden=el.style.webkitTextSecurity==='disc'||el.style.webkitTextSecurity==='';
+    // Start visible. Toggle to disc (hidden) on first tap.
+    const isHidden=el.style.webkitTextSecurity!=='none';
     el.style.webkitTextSecurity=isHidden?'none':'disc';
     btn.textContent=isHidden?'Hide':'Show';
   } else {
@@ -1266,6 +1283,7 @@ let _perfRepUid=null;
 let _perfLoadToken=0; // increments on each rep click — stale responses are ignored
 let _perfAbortCtrl=null; // abort controller for in-flight requests
 let _perfFilter='all';
+let _perfCategoryFilter='all'; // 'all'|'rsc'|'rsm' — filters district dashboard by role
 let _perfDashFilter='all'; // dashboard team filter: 'all' or RSM uid
 let _perfHistoryCycles=[]; // [{cycleStart,cycleEnd,throughDate,reps:[]}] newest first
 let _perfViewingCycle=null; // null=current, else cycleStart string
@@ -1483,9 +1501,16 @@ function renderDistrictDashboard(_targetEl){
   const isDMd=_pendingUid==='ji2646dm';
   const isRSMd=RSM_UIDS.includes(_pendingUid)&&!isDMd;
   let _dashReps=reps;
+  // Category filter (from All/RSC/RSM picker chips)
+  if(_perfCategoryFilter==='rsc'){
+    _dashReps=_dashReps.filter(r=>!RSM_UIDS.includes(r.uid));
+  } else if(_perfCategoryFilter==='rsm'){
+    _dashReps=_dashReps.filter(r=>RSM_UIDS.includes(r.uid)&&r.uid!=='ji2646dm');
+  }
+  // Team filter (from district dashboard RSM chips)
   if(_perfDashFilter!=='all'){
     const teamUids=(RSM_TEAM_MAP[_perfDashFilter]||[]).map(u=>u.toLowerCase());
-    _dashReps=reps.filter(r=>teamUids.includes(r.uid.toLowerCase()));
+    _dashReps=_dashReps.filter(r=>teamUids.includes(r.uid.toLowerCase()));
   }
 
   const sum=k=>reps.reduce((s,r)=>s+(Number(r[k])||0),0);
@@ -1720,6 +1745,8 @@ function launchPerformance(){
   _perfRepUid=null; // everyone starts at picker; RSC right panel auto-loads below
   _perfAllData=[]; // always reset so fresh data loads
   _perfDashFilter='all'; // reset team filter
+  _perfCategoryFilter='all'; // reset category filter
+  _perfFilter='all'; // reset picker filter
   _perfViewingCycle=null;
   _perfHistoryLoaded=false;
   renderPerfBody();
@@ -1780,9 +1807,9 @@ function renderPerfBody(){
       })();
 
     const filterChips=isDM?`<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px">
-      <button type="button" onclick="_perfFilter='all';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='all'?'var(--g)':'var(--s3)'};border:${_perfFilter==='all'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='all'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">All</button>
-      <button type="button" onclick="_perfFilter='rsc';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
-      <button type="button" onclick="_perfFilter='rsm';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
+      <button type="button" onclick="_perfFilter='all';_perfCategoryFilter='all';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='all'?'var(--g)':'var(--s3)'};border:${_perfFilter==='all'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='all'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">All</button>
+      <button type="button" onclick="_perfFilter='rsc';_perfCategoryFilter='rsc';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsc'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsc'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsc'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSC</button>
+      <button type="button" onclick="_perfFilter='rsm';_perfCategoryFilter='rsm';renderPerfBody()" style="flex-shrink:0;padding:6px 14px;background:${_perfFilter==='rsm'?'var(--g)':'var(--s3)'};border:${_perfFilter==='rsm'?'none':'1px solid var(--bd2)'};border-radius:6px;color:${_perfFilter==='rsm'?'#fff':'var(--t2)'};font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer">RSM</button>
     </div>`:'';
 
     const pickerHtml=`<div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.2);border-radius:var(--r);padding:16px;margin-bottom:12px">
@@ -1790,7 +1817,7 @@ function renderPerfBody(){
       ${filterChips}
       ${isMobile()?`
       <select id="perf-rep-select" onchange="if(this.value)selectPerfRep(this.value)" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--bd2);border-radius:var(--r2);color:var(--t1);font-family:'DM Sans';font-size:16px;font-weight:700;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none">
-        <option value="">— Select a rep —</option>
+        <option value="">— Select a rep (${repList.length}) —</option>
         ${repList.map(([uid,name])=>`<option value="${uid}" ${uid===_perfRepUid?'selected':''}>${name||uid}</option>`).join('')}
       </select>
       `:`
@@ -1809,8 +1836,13 @@ function renderPerfBody(){
 
     if(isMobile()){
       // Mobile: picker + district dashboard as one long scroll in perf-body
-      body.innerHTML=pickerHtml+`<div id="perf-mobile-district" style="min-height:200px"><div style="text-align:center;padding:40px;color:var(--t3);font-size:12px;font-family:DM Sans">Loading dashboard...</div></div>`;
-      loadDistrictDashboardMobile();
+      const districtPlaceholder=_perfAllData.length?'':'<div style="text-align:center;padding:40px;color:var(--t3);font-size:12px;font-family:DM Sans">Loading dashboard...</div>';
+      body.innerHTML=pickerHtml+`<div id="perf-mobile-district" style="min-height:200px">${districtPlaceholder}</div>`;
+      if(_perfAllData.length){
+        renderDistrictDashboardMobile(); // data already in memory, just re-render
+      } else {
+        loadDistrictDashboardMobile(); // first load — fetch from network
+      }
     } else {
       // Desktop: picker in left, dashboard in right panel
       body.innerHTML=pickerHtml;
@@ -2067,8 +2099,8 @@ function loadIndividualDashboard(uid){
   renderIndividualDashboard(rep,uid);
 }
 
-function renderIndividualDashboard(r,uid){
-  const dash=document.getElementById('perf-dashboard');
+function renderIndividualDashboard(r,uid,_targetEl){
+  const dash=_targetEl||document.getElementById('perf-dashboard');
   const name=UID_NAMES[uid]||uid;
   function fmtRawDate(s){ if(!s) return ''; const p=s.split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
   if(!r){
