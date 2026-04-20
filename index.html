@@ -449,13 +449,19 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
   display:flex;align-items:center;justify-content:center;
   font-family:'DM Sans',sans-serif;
 }
-@media(max-width:480px){
-  .login-card{width:calc(100vw - 32px) !important;}
-  .login-body{padding:24px !important;}
+@media(max-width:600px){
+  .login-card{width:calc(100vw - 24px) !important;border-radius:14px !important;}
+  .login-body{padding:24px 20px 28px !important;}
+  .login-header{padding:24px 20px 20px !important;}
+  .login-header h1{font-size:28px !important;}
   .login-field input{font-size:16px !important;padding:13px 14px !important;}
-  #login-btn{padding:14px !important;font-size:14px !important;}
-  #ls-menu-name{font-size:13px !important;}
-  #ls-menu button{padding:15px !important;font-size:14px !important;}
+  #login-btn{padding:15px !important;font-size:15px !important;border-radius:8px !important;}
+  #ls-menu-name{font-size:14px !important;margin-bottom:16px !important;}
+  #ls-menu button{padding:16px 13px !important;font-size:15px !important;border-radius:8px !important;}
+  #ls-menu > div[style*="grid"]{gap:10px !important;}
+  #ls-device button{padding:22px 10px !important;}
+  #ls-device button div:first-child{font-size:32px !important;}
+  #ls-device button div:nth-child(2){font-size:14px !important;}
 }
 .login-card{width:min(360px,calc(100vw - 48px));background:#fff;border:1px solid #E2E5E9;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);}
 .login-header{background:linear-gradient(135deg,#00a94f,#00c85f);padding:22px 22px 18px;}
@@ -588,6 +594,7 @@ const UID_NAMES={
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
   'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez',
   'ji2646dm':'Josue Garcia',
+  'tbd752':'Store 752 (TBD)',
 };
 function fullName(uid){ return UID_NAMES[uid]||uid; }
 
@@ -890,7 +897,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','tbd752','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -921,6 +928,7 @@ const RSM_TEAM_MAP={
   'rg8855':['rg8855','bb8326'],
   'jq286d':['jq286d','cx7250'],                 // Josue Sosa (RSC but leads 752)
   'jx820u':['jx820u','nc3647','ju512j'],
+  'tbd752':['tbd752','jq286d','cx7250'],  // Store 752 placeholder
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
 // so her team = all reps
@@ -939,10 +947,11 @@ const STORE_PEER_MAP=(()=>{
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['rg8855']=(STORE_REPS['769']||[]).filter(u=>u!=='rg8855');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
-  map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d');
-  // Store 777 (Jaquelin's store) — Joseph and Sergio are teammates
-  map['jv6394']=['sc417e'];
-  map['sc417e']=['jv6394'];
+  map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d').concat(['tbd752']);
+  map['cx7250']=(STORE_REPS['752']||[]).filter(u=>u!=='cx7250').concat(['tbd752']);
+  // Store 777 (Jaquelin's store) — Joseph and Sergio see each other + their RSM Jaquelin
+  map['jv6394']=['sc417e','jq6635'];
+  map['sc417e']=['jv6394','jq6635'];
   return map;
 })();
 let _pendingUid=null;
@@ -2116,28 +2125,29 @@ function renderIndividualDashboard(r,uid,_targetEl){
   const pppOk=r.pppRate>=PERF_GOALS.pppTarget;
 
   function gauge(label,val,target,min,secondaryLabel){
-    const pctVal=Math.min(100,Math.round((val||0)*100));
-    const pctExact=val?((val||0)*100).toFixed(2):'0.00';
-    const targetPct=Math.round(target*100);
-    const hit=val>=target;
-    const partial=min&&val>=(min||0);
-    const col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
-    return `<div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">${label}</div>
-        <div style="font-family:'Bebas Neue';font-size:22px;color:${col};line-height:1">${pctExact}%</div>
-      </div>
-      <div style="position:relative;background:var(--s3);border-radius:6px;height:10px">
-        <div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${pctVal}%;transition:width .5s"></div>
-        <div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px;left:${targetPct}%;transform:translateX(-50%)"></div>
-        ${min?`<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:${Math.round(min*100)}%;transform:translateX(-50%)"></div>`:''}
-      </div>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: ${targetPct}%</div>
-        ${min?`<div style="font-size:8px;color:var(--err);opacity:.7;font-family:DM Sans">Min: ${Math.round(min*100)}%</div>`:''}
-        ${secondaryLabel?`<div style="font-size:8px;color:var(--t3);font-family:DM Sans">${secondaryLabel}</div>`:''}
-      </div>
-    </div>`;
+    var pctVal=Math.min(100,Math.round((val||0)*100));
+    var pctExact=val?((val||0)*100).toFixed(2):'0.00';
+    var targetPct=Math.round(target*100);
+    var hit=val>=target;
+    var partial=min&&val>=(min||0);
+    var col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
+    var minBar=min?'<div style="position:absolute;left:'+Math.round((min||0)*100)+'%;top:-4px;height:18px;width:2px;background:rgba(255,80,80,.5);border-radius:1px"></div>':'';
+    var secLabel=secondaryLabel?'<div style="font-size:8px;color:var(--t3);font-family:DM Sans">'+secondaryLabel+'</div>':'';
+    return '<div style="margin-bottom:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+      +'<div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">'+label+'</div>'
+      +'<div style="font-family:'Bebas Neue';font-size:22px;color:'+col+';line-height:1">'+pctExact+'%</div>'
+      +'</div>'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
+      +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+col+';width:'+pctVal+'%;transition:width .5s"></div>'
+      +'<div style="position:absolute;left:'+targetPct+'%;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px"></div>'
+      +minBar
+      +'</div>'
+      +'<div style="display:flex;gap:10px;margin-top:4px">'
+      +'<div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: '+targetPct+'%</div>'
+      +secLabel
+      +'</div>'
+      +'</div>';
   }
 
   // Acts vs Upgrades comparison bar
@@ -2193,12 +2203,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     </div>`;
 
   // Helper for stat tile
-  const tile=(label,val,color,sub)=>`
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">${label}</div>
-      <div style="font-family:'Bebas Neue';font-size:32px;color:${color||'var(--t1)'};line-height:1">${val}</div>
-      ${sub?`<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:3px">${sub}</div>`:''}
-    </div>`;
+
   // Compute APD + avg fees for this rep using tracker data
   const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
   const _indivTotalOpps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
@@ -2206,45 +2211,180 @@ function renderIndividualDashboard(r,uid,_targetEl){
   const _indivNetFee=Math.max(0,_indivTotalOpps*25-_indivFeeDisc);
   const _indivAvgFee=_indivTotalOpps>0?_indivNetFee/_indivTotalOpps:0;
 
+  // ── Calculated values ──
+  const totalAllOpps = (r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
+  const apo = totalAllOpps>0 ? (r.accRevenue||0)/totalAllOpps : 0;
+
+  // ── Activations vs Upgrades — separate labeled bars ──
+  const maxAU = Math.max(totalActs, r.upgrades, 1);
+  const actsBarW2 = Math.round(totalActs/maxAU*100);
+  const upgBarW2  = Math.round((r.upgrades||0)/maxAU*100);
+  const actsVsUpg2 = `
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice Activations</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
+        <div style="height:10px;border-radius:4px;background:var(--g);width:${actsBarW2}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades||0}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:10px">
+        <div style="height:10px;border-radius:4px;background:var(--purple);width:${upgBarW2}%"></div>
+      </div>
+    </div>`;
+
+  // ── Voice vs Non-Voice bars ──
+  const maxVNV3 = Math.max(r.voiceActs||0, r.nonVoice||0, 1);
+  const vBarW3  = Math.round((r.voiceActs||0)/maxVNV3*100);
+  const nvBarW3 = Math.round((r.nonVoice||0)/maxVNV3*100);
+  const vnvBars = `
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
+        <div style="height:10px;border-radius:4px;background:var(--g);width:${vBarW3}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+        <div style="font-size:11px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:#60a5fa;line-height:1">${r.nonVoice||0}</div>
+      </div>
+      <div style="background:var(--s3);border-radius:4px;height:10px">
+        <div style="height:10px;border-radius:4px;background:#60a5fa;width:${nvBarW3}%"></div>
+      </div>
+    </div>`;
+
+  // ── Line-style metric row helper ──
+  function lineRow(label,display,status,target){
+    var dot=status==='good'?'<span style="color:var(--g);font-size:13px;margin-right:4px">●</span>'
+            :status==='warn'?'<span style="color:var(--warn);font-size:13px;margin-right:4px">●</span>'
+            :status==='bad'?'<span style="color:var(--err);font-size:13px;margin-right:4px">●</span>':'';
+    var sub=target?'<span style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-left:6px">Goal: '+target+'</span>':'';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd)">'
+      +'<div style="font-size:12px;color:var(--t3);font-family:DM Sans">'+label+'</div>'
+      +'<div style="display:flex;align-items:center">'+dot+'<span style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans">'+display+'</span>'+sub+'</div>'
+      +'</div>';
+  }
+
+  // ── Gauge helper (inline for rate bars) ──
+  function gBar(val,target,min){
+    var pct=Math.min(100,Math.round((val||0)*100));
+    var hit=val>=target; var partial=min&&val>=(min||0);
+    var col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
+    var tPct=Math.round(target*100);
+    var minMark=min?'<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:'+Math.round(min*100)+'%;transform:translateX(-50%)"></div>':'';
+    var minLabel=min?'<div style="font-size:8px;color:var(--err);opacity:.7;font-family:DM Sans">Min: '+Math.round(min*100)+'%</div>':'';
+    return '<div style="margin-bottom:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+      +'<div style="font-family:'Bebas Neue';font-size:22px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
+      +'</div>'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
+      +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
+      +'<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
+      +minMark
+      +'</div>'
+      +'<div style="display:flex;gap:10px;margin-top:4px">'
+      +'<div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: '+tPct+'%</div>'
+      +minLabel
+      +'</div>'
+      +'</div>';
+  }
+
+  // ── Small tile helper ──
+  function smTile(label,val,color,sub){
+    var subHtml=sub?'<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+sub+'</div>':'';
+    return '<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80px">'
+      +'<div style="font-size:8px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">'+label+'</div>'
+      +'<div style="font-family:'Bebas Neue';font-size:26px;color:'+(color||'var(--t1)')+';line-height:1">'+val+'</div>'
+      +subHtml
+      +'</div>';
+  }
+
+  // ── APO color ──
+  const apoCol = apo>=30?'var(--g)':apo>=20?'var(--warn)':'var(--err)';
+
+  // ── Pre-compute WTR HTML ──
+  var _wtrVal=r.wtr!==null&&r.wtr!==undefined?r.wtr:null;
+  var wtrHtml;
+  if(_wtrVal===null){
+    wtrHtml='<div style="font-family:'Bebas Neue';font-size:28px;color:var(--t3)">—</div><div style="font-size:8px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: 80%+</div>';
+  } else {
+    var _wtrHit=_wtrVal>=80; var _wtrCol=_wtrHit?'var(--g)':_wtrVal>=60?'var(--warn)':'var(--err)';
+    var _wtrBarW=Math.min(100,Math.round(_wtrVal));
+    wtrHtml='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">WTR</div><div style="font-family:'Bebas Neue';font-size:22px;color:'+_wtrCol+';line-height:1">'+_wtrVal+'%</div></div>'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
+      +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+_wtrCol+';width:'+_wtrBarW+'%;transition:width .5s"></div>'
+      +'<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px;left:80%;transform:translateX(-50%)"></div>'
+      +'</div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 80%+</div>';
+  }
+
+  // ── Pre-compute Internet HTML ──
+  var _aia=r.aiaOrders||0;
+  var _aiahit=_aia>=1; var _aiacol=_aiahit?'var(--g)':'var(--err)';
+  var _aiaBarW=Math.min(100,Math.round(_aia/3*100));
+  var internetHtml='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+    +'<div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div>'
+    +'<div style="font-family:'Bebas Neue';font-size:22px;color:'+_aiacol+';line-height:1">'+_aia+'</div></div>'
+    +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
+    +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+_aiacol+';width:'+_aiaBarW+'%;transition:width .5s"></div>'
+    +'</div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>';
+
+  // ── Pre-compute PNG button ──
+  var pngBtnHtml=(['ji2646dm','jq6635'].includes(_pendingUid)&&isDesktop())?'<button class="png-hide" onclick="doCaptureDiv(document.getElementById('perf-dashboard'))" style="padding:5px 14px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:DM Sans;flex-shrink:0">PNG</button>':'';
+
   dash.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+    <!-- Rep header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div>
         <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
         <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
       </div>
-      ${['ji2646dm','jq6635'].includes(_pendingUid)&&isDesktop()?`<button class="png-hide" onclick="doCaptureDiv(document.getElementById('perf-dashboard'))" style="padding:5px 14px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:DM Sans;flex-shrink:0">PNG</button>`:''}
+      ${pngBtnHtml}
     </div>
 
-    <!-- Row 1: Acts vs Upgrades | Voice vs Non-Voice -->
+    <!-- Row 1: Activations vs Upgrades | Voice vs Non-Voice -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Activations vs Upgrades',actsVsUpg)}
-      ${sec('Voice vs Non-Voice',voiceBreakdown)}
+      ${sec('Activations vs Upgrades',actsVsUpg2)}
+      ${sec('Voice vs Non-Voice',vnvBars)}
     </div>
 
     <!-- Row 2: AutoPay | Protect -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('AutoPay',gauge('AutoPay Rate',r.autopayRate,PERF_GOALS.autopayTarget,PERF_GOALS.autopayMin))}
-      ${sec('Protect',gauge('Protect Rate',r.protectRate,PERF_GOALS.protectTarget,PERF_GOALS.protectTarget))}
+      ${sec('AutoPay',gBar(r.autopayRate,PERF_GOALS.autopayTarget,PERF_GOALS.autopayMin))}
+      ${sec('Protect',gBar(r.protectRate,PERF_GOALS.protectTarget,PERF_GOALS.protectTarget))}
     </div>
 
-    <!-- Row 3: PPP | Internet -->
+    <!-- Row 3: PPP | 60RP Mix -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,PERF_GOALS.pppTarget))}
-      ${sec('Internet',(()=>{
-        const hit=(r.aiaOrders||0)>=1;
-        const col=hit?'var(--g)':'var(--err)';
-        const barW=Math.min(100,Math.round((r.aiaOrders||0)/3*100));
-        return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div><div style="font-family:'Bebas Neue';font-size:22px;color:${col};line-height:1">${r.aiaOrders||0}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
-      })())}
+      ${sec('PPP Attach',gBar(r.pppRate,PERF_GOALS.pppTarget))}
+      ${sec('60RP Mix',gBar(r.mix60rp,0.80))}
     </div>
 
-    <!-- Row 4: Bill Pay | Acc Revenue | APD | Avg Fees -->
-    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-      ${tile('Bill Pay',r.billPay||0,'')}
-      ${tile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
-      ${tile('APD',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'No Data','var(--prog)',_indivApdTotal>0?'from tracker':'not entered yet')}
-      ${tile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
+    <!-- Row 4: WTR | Internet -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('WTR',wtrHtml)}
+      ${sec('Internet',internetHtml)}
     </div>
+
+    <!-- Tile grid: 4 cols desktop, 2 cols mobile -->
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${smTile('Bill Pay',r.billPay||0,'')}
+      ${smTile('Total Acc','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
+      ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol,'per opp')}
+      ${smTile('Plan Dngrd',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)')}
+    </div>
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      ${smTile('ILD Adds',r.ildAdds||0,'')}
+      ${smTile('Upg Plus',r.upgPlusAdds||0,'')}
+      ${smTile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','')}
+      ${smTile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','')}
+    </div>
+
   `;
 }
 function loadPerfData(uid){
