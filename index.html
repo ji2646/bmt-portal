@@ -18,18 +18,83 @@
   --r:12px;--r2:8px;
 }
 body{font-family:'DM Sans',sans-serif;background:#F8F9FA;color:var(--t1);min-height:100vh;font-size:13px;-webkit-text-size-adjust:100%}
-body.is-mobile{font-size:14px;}
-body.is-mobile .sec-title{font-size:13px;letter-spacing:2.5px;}
-body.is-mobile .sec-body{padding:16px;}
-body.is-mobile .sr .sl{font-size:12px;}
-body.is-mobile .sr .sv{font-size:13px;}
-/* Also apply via media query so it works before device picker is chosen */
+body.is-mobile{font-size:15px;}
+body.is-mobile .sec-title{font-size:14px;letter-spacing:2px;}
+body.is-mobile .sec-body{padding:18px;}
+body.is-mobile .sr .sl{font-size:15px;}
+body.is-mobile .sr .sv{font-size:16px;font-weight:800;}
+
+/* ── MOBILE SCALE-UP — every overlay inherits bigger base ── */
+body.is-mobile #app-content,
+body.is-mobile #activity-overlay,
+body.is-mobile #tm-overlay,
+body.is-mobile #sales-tracker-overlay,
+body.is-mobile #rep-activity-overlay,
+body.is-mobile #ra-detail-overlay,
+body.is-mobile #perf-overlay{ font-size:15px; }
+
+/* Quote Tool — plan chips */
+body.is-mobile .plan-btn{ padding:18px 6px !important; min-height:76px !important; }
+body.is-mobile .plan-btn .pn{ font-size:14px !important; margin-bottom:5px !important; }
+body.is-mobile .plan-btn .pp{ font-size:30px !important; }
+body.is-mobile .plan-btn .ps{ font-size:12px !important; }
+/* Account type + add-on chips */
+body.is-mobile .acct-btn{ padding:20px 10px !important; font-size:14px !important; }
+body.is-mobile .add-btn{ padding:18px 10px !important; font-size:14px !important; min-height:58px !important; }
+body.is-mobile .apo-tile{ padding:18px 8px !important; font-size:14px !important; }
+body.is-mobile .wiz-tile{ padding:18px 10px !important; font-size:14px !important; }
+/* Feature chips (AutoPay, Protect, Intl, etc.) */
+body.is-mobile .chip{ padding:12px 20px !important; font-size:14px !important; border-radius:12px !important; }
+body.is-mobile .chip-sub{ font-size:12px !important; opacity:.7 !important; }
+body.is-mobile .byod-chip{ padding:10px 16px !important; font-size:13px !important; border-radius:8px !important; }
+body.is-mobile .feat-chips{ gap:10px !important; }
+/* All inputs + selects — 16px prevents iOS zoom */
+body.is-mobile select{ font-size:16px !important; padding:14px 12px !important; }
+body.is-mobile input{ font-size:16px !important; padding:14px 12px !important; }
+body.is-mobile textarea{ font-size:15px !important; padding:14px 12px !important; line-height:1.7 !important; }
+/* Note boxes, result rows, reset */
+body.is-mobile .note-box{ font-size:14px !important; padding:14px 16px !important; line-height:1.8 !important; }
+body.is-mobile .reset-btn{ font-size:14px !important; padding:16px !important; }
+body.is-mobile .sr{ padding:12px 0 !important; }
+/* Monthly total */
+body.is-mobile .mo-total{ font-size:16px !important; }
+/* Section headers */
+body.is-mobile .sec-hdr{ font-size:14px !important; padding:14px 18px !important; }
+/* Week chips in TM/TC */
+body.is-mobile .wchip{ padding:14px 18px !important; min-width:120px !important; font-size:14px !important; }
+body.is-mobile .wlbl{ font-size:13px !important; }
+/* TO/TC card padding */
+body.is-mobile .to-card,.to-card{ padding:18px !important; }
+/* Activity filter buttons */
+body.is-mobile [id^="act-f-"]{ font-size:14px !important; padding:10px 20px !important; }
+/* Sales Tracker entries */
+body.is-mobile .st-entry{ font-size:14px !important; padding:14px 16px !important; }
+
+/* Same via @media for pre-picker page load coverage */
 @media(max-width:767px){
-  body{font-size:14px;}
-  .sec-title{font-size:13px;letter-spacing:2.5px;}
-  .sec-body{padding:16px;}
-  .sr .sl{font-size:12px;}
-  .sr .sv{font-size:13px;}
+  body{ font-size:15px; }
+  #app-content,#activity-overlay,#tm-overlay,#sales-tracker-overlay,
+  #rep-activity-overlay,#ra-detail-overlay,#perf-overlay{ font-size:15px; }
+  .sec-title{ font-size:14px; letter-spacing:2px; }
+  .sec-body{ padding:18px; }
+  .sr .sl{ font-size:15px; }
+  .sr .sv{ font-size:16px; font-weight:800; }
+  .plan-btn{ padding:18px 6px !important; min-height:76px !important; }
+  .plan-btn .pn{ font-size:14px !important; }
+  .plan-btn .pp{ font-size:30px !important; }
+  .plan-btn .ps{ font-size:12px !important; }
+  .acct-btn{ padding:20px 10px !important; font-size:14px !important; }
+  .add-btn{ padding:18px 10px !important; font-size:14px !important; }
+  .chip{ padding:12px 20px !important; font-size:14px !important; }
+  .byod-chip{ padding:10px 16px !important; font-size:13px !important; }
+  .feat-chips{ gap:10px !important; }
+  select{ font-size:16px !important; padding:14px 12px !important; }
+  input{ font-size:16px !important; padding:14px 12px !important; }
+  textarea{ font-size:15px !important; padding:14px 12px !important; }
+  .note-box{ font-size:14px !important; padding:14px 16px !important; }
+  .reset-btn{ font-size:14px !important; padding:16px !important; }
+  .wchip{ padding:14px 18px !important; min-width:120px !important; font-size:14px !important; }
+  [id^="act-f-"]{ font-size:14px !important; padding:10px 20px !important; }
 }
 .app-content{display:none}
 header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
@@ -1644,19 +1709,21 @@ function renderDistrictDashboard(_targetEl){
   // Per-rep bar charts for AP/Protect/PPP
   function repBars(metric,target,label,fmt){
     const sorted2=[..._dashReps].sort((a,b)=>(b[metric]||0)-(a[metric]||0));
+    const mob=isMobile();
+    const barH=mob?16:12; const nameSz=mob?15:13; const valSz=mob?15:13; const barMaxW=mob?'70%':'100%';
     return sorted2.map(r=>{
       const val=r[metric]||0;
       const pct=Math.min(100,Math.round(val*100));
       const hit=val>=target;
       const col=hit?'var(--g)':val>=(target*0.85)?'var(--warn)':'var(--err)';
-      return `<div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-          <div style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65%">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:10px">${r.uid}</span></div>
-          <div style="font-size:13px;font-weight:900;color:${col};font-family:DM Sans">${((val||0)*100).toFixed(2)}%</div>
+      return `<div style="margin-bottom:${mob?14:8}px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65%">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${mob?11:10}px">${r.uid}</span></div>
+          <div style="font-size:${valSz}px;font-weight:900;color:${col};font-family:DM Sans">${((val||0)*100).toFixed(2)}%</div>
         </div>
-        <div style="position:relative;background:var(--s3);border-radius:5px;height:12px">
-          <div style="position:absolute;left:0;top:0;height:12px;border-radius:5px;background:${col};width:${pct}%;transition:width .4s"></div>
-          <div style="position:absolute;top:-3px;height:16px;width:2px;background:rgba(0,0,0,.2);left:${Math.round(target*100)}%;transform:translateX(-50%)"></div>
+        <div style="position:relative;background:var(--s3);border-radius:5px;height:${barH}px;max-width:${barMaxW}">
+          <div style="position:absolute;left:0;top:0;height:${barH}px;border-radius:5px;background:${col};width:${pct}%;transition:width .4s"></div>
+          <div style="position:absolute;top:-3px;height:${barH+6}px;width:2px;background:rgba(0,0,0,.2);left:${Math.round(target*100)}%;transform:translateX(-50%)"></div>
         </div>
       </div>`;
     }).join('');
@@ -1778,19 +1845,24 @@ function renderDistrictDashboard(_targetEl){
         if(!window._districtAccFetching){
           window._districtAccFetching=true;
           const cycleKey=_perfCurrentCycleStart||getTrackerCycleKey();
-          // Single request — returns all entries, filtered client-side by cycleStart string
-          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},10000)
-            .then(r=>r.json()).then(d=>{
-              window._districtAccEntries=Array.isArray(d)?d:[];
-              window._districtAccLoaded=true;
-              window._districtAccFetching=false;
-              renderDistrictDashboard();
-            }).catch(()=>{
-              window._districtAccEntries=[];
-              window._districtAccLoaded=true;
-              window._districtAccFetching=false;
-              renderDistrictDashboard(); // re-render even on failure so it doesn't stay stuck
-            });
+          // Fetch all entries per rep (no cycleStart filter — Apps Script may serialize dates differently)
+          // Filter client-side by cycleStart string
+          const uids=[..._dashReps].map(r=>r.uid);
+          Promise.all(uids.map(u=>
+            fetch(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(u)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+              .then(r=>r.json()).catch(()=>[])
+          )).then(results=>{
+            const all=results.flat();
+            // Filter to current cycle client-side — entries stored as 'YYYY-MM-DD' string
+            window._districtAccEntries=cycleKey?all.filter(e=>String(e.cycleStart||'')===cycleKey):all;
+            window._districtAccLoaded=true;
+            window._districtAccFetching=false;
+            renderDistrictDashboard();
+          }).catch(()=>{
+            window._districtAccEntries=[];
+            window._districtAccLoaded=true;
+            window._districtAccFetching=false;
+          });
         }
         return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
       }
@@ -2297,24 +2369,26 @@ function renderIndividualDashboard(r,uid,_targetEl){
   }
 
   // Acts vs Upgrades comparison bar
+  const _mob=isMobile();
+  const _barH=_mob?18:10; const _numSz=_mob?28:20; const _lblSz=_mob?13:11; const _barMaxW=_mob?'72%':'100%';
   const maxBar=Math.max(totalActs,r.upgrades,1);
   const actsBarW=Math.round(totalActs/maxBar*100);
   const upgBarW=Math.round(r.upgrades/maxBar*100);
   const actsVsUpg=`
     <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
+        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
       </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
-        <div style="height:10px;border-radius:4px;background:var(--g);width:${actsBarW}%"></div>
+      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;margin-bottom:10px;max-width:${_barMaxW}">
+        <div style="height:${_barH}px;border-radius:4px;background:var(--g);width:${actsBarW}%"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-family:Bebas Neue;font-size:22px;color:var(--purple);line-height:1">Upg ${r.upgrades}</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
+        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--purple);line-height:1">${r.upgrades}</div>
       </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px">
-        <div style="height:10px;border-radius:4px;background:var(--purple);width:${upgBarW}%"></div>
+      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;max-width:${_barMaxW}">
+        <div style="height:${_barH}px;border-radius:4px;background:var(--purple);width:${upgBarW}%"></div>
       </div>
     </div>`;
 
@@ -2324,28 +2398,28 @@ function renderIndividualDashboard(r,uid,_targetEl){
   const nvVNVBarW=Math.round(r.nonVoice/maxVNV*100);
   const voiceBreakdown=`
     <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${r.voiceActs}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div>
+        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--g);line-height:1">${r.voiceActs}</div>
       </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
-        <div style="height:10px;border-radius:4px;background:var(--g);width:${voiceVNVBarW}%"></div>
+      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;margin-bottom:10px;max-width:${_barMaxW}">
+        <div style="height:${_barH}px;border-radius:4px;background:var(--g);width:${voiceVNVBarW}%"></div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:11px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:#60a5fa;line-height:1">${r.nonVoice}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:${_lblSz}px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div>
+        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:#60a5fa;line-height:1">${r.nonVoice}</div>
       </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px">
-        <div style="height:10px;border-radius:4px;background:#60a5fa;width:${nvVNVBarW}%"></div>
+      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;max-width:${_barMaxW}">
+        <div style="height:${_barH}px;border-radius:4px;background:#60a5fa;width:${nvVNVBarW}%"></div>
       </div>
     </div>`;
 
   const sec=(title,content)=>`
     <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
-      <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
-        <div style="font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+      <div style="padding:${_mob?'9px 16px':'7px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
+        <div style="font-size:${_mob?'12px':'10px'};font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
       </div>
-      <div style="padding:12px 14px">${content}</div>
+      <div style="padding:${_mob?'16px':'12px 14px'}">${content}</div>
     </div>`;
 
   // Helper for stat tile
@@ -2429,24 +2503,26 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // ── Gauge helper (inline for rate bars) ──
   function gBar(val,target,min){
-    if(val===null||val===undefined) return '<div style="font-family:Bebas Neue;font-size:28px;color:var(--t3)">—</div><div style="font-size:8px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: '+Math.round(target*100)+'%+</div>';
+    var mob=isMobile();
+    var barH=mob?16:10; var valSize=mob?32:22; var labelSize=mob?10:8;
+    if(val===null||val===undefined) return '<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:var(--t3)">—</div><div style="font-size:'+labelSize+'px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: '+Math.round(target*100)+'%+</div>';
     var pct=Math.min(100,Math.round((val||0)*100));
     var hit=val>=target; var partial=min&&val>=(min||0);
     var col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
     var tPct=Math.round(target*100);
-    var minMark=min?'<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:'+Math.round(min*100)+'%;transform:translateX(-50%)"></div>':'';
-    var minLabel=min?'<div style="font-size:8px;color:var(--err);opacity:.7;font-family:DM Sans">Min: '+Math.round(min*100)+'%</div>':'';
+    var minMark=min?'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:'+Math.round(min*100)+'%;transform:translateX(-50%)"></div>':'';
+    var minLabel=min?'<div style="font-size:'+labelSize+'px;color:var(--err);opacity:.7;font-family:DM Sans">Min: '+Math.round(min*100)+'%</div>':'';
     return '<div style="margin-bottom:14px">'
       +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
-      +'<div style="font-family:Bebas Neue;font-size:22px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
+      +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
       +'</div>'
-      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
-      +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
-      +'<div style="position:absolute;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px;max-width:'+(mob?'75%':'100%')+'">'
+      +'<div style="position:absolute;left:0;top:0;height:'+barH+'px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
+      +'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
       +minMark
       +'</div>'
       +'<div style="display:flex;gap:10px;margin-top:4px">'
-      +'<div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: '+tPct+'%</div>'
+      +'<div style="font-size:'+labelSize+'px;color:var(--g);font-family:DM Sans">Goal: '+tPct+'%</div>'
       +minLabel
       +'</div>'
       +'</div>';
@@ -2454,10 +2530,12 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // ── Small tile helper ──
   function smTile(label,val,color,sub){
-    var subHtml=sub?'<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+sub+'</div>':'';
-    return '<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80px">'
-      +'<div style="font-size:8px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">'+label+'</div>'
-      +'<div style="font-family:Bebas Neue;font-size:26px;color:'+(color||'var(--t1)')+';line-height:1">'+val+'</div>'
+    var mob=isMobile();
+    var valSize=mob?32:26; var lblSize=mob?10:8; var subSize=mob?11:9;
+    var subHtml=sub?'<div style="font-size:'+subSize+'px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+sub+'</div>':'';
+    return '<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:'+(mob?'16px 10px':'12px 10px')+';text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:'+(mob?'96px':'80px')+'">'
+      +'<div style="font-size:'+lblSize+'px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">'+label+'</div>'
+      +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+(color||'var(--t1)')+';line-height:1">'+val+'</div>'
       +subHtml
       +'</div>';
   }
