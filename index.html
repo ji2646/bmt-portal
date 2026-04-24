@@ -898,7 +898,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','tbd752','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -929,7 +929,7 @@ const RSM_TEAM_MAP={
   'rg8855':['rg8855','bb8326'],
   'jq286d':['jq286d','cx7250'],                 // Josue Sosa (RSC but leads 752)
   'jx820u':['jx820u','nc3647','ju512j'],
-  'tbd752':['tbd752','jq286d','cx7250'],  // Store 752 placeholder
+  'tbd752':['jq286d','cx7250'],  // Store 752 placeholder
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
 // so her team = all reps
@@ -952,8 +952,8 @@ const STORE_PEER_MAP=(()=>{
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['rg8855']=(STORE_REPS['769']||[]).filter(u=>u!=='rg8855');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
-  map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d').concat(['tbd752']);
-  map['cx7250']=(STORE_REPS['752']||[]).filter(u=>u!=='cx7250').concat(['tbd752']);
+  map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d');
+  map['cx7250']=(STORE_REPS['752']||[]).filter(u=>u!=='cx7250');
   // Store 777 (Jaquelin's store) — Joseph and Sergio see each other + their RSM Jaquelin
   map['jv6394']=['sc417e','jq6635'];
   map['sc417e']=['jv6394','jq6635'];
@@ -2280,8 +2280,8 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // Compute APD + avg fees for this rep using tracker data
   const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
-  // DEBUG — remove after confirming APD works
-  console.log('[APD DEBUG] uid='+uid+' _perfAccEntries.length='+_perfAccEntries.length+' apdEntries='+_perfAccEntries.filter(e=>e.accType==='APD').length+' total=$'+_indivApdTotal+' entries='+JSON.stringify(_perfAccEntries.slice(0,3)));
+  const _indivApdDenom=Math.max(1,(r.voiceActs||0)+(r.upgrades||0));
+  const _indivApdAvg=_indivApdTotal>0?_indivApdTotal/_indivApdDenom:0;
   const _indivTotalOpps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
   const _indivFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
   const _indivNetFee=Math.max(0,_indivTotalOpps*25-_indivFeeDisc);
@@ -2454,7 +2454,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
       ${smTile('Total OPPs',totalVoiceUpg,totalVoiceUpg>=10?'var(--g)':'var(--err)')}
       ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol2)}
-      ${smTile('APD',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)')}
+      ${smTile('APD',_indivApdTotal>0?'$'+_indivApdAvg.toFixed(2):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)',_indivApdTotal>0?'Total $'+_indivApdTotal.toFixed(0):'')}
       ${smTile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
     </div>
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
@@ -2868,7 +2868,7 @@ function renderPerfView(uid,_targetBody){
       ${metricRow('AutoPay',fmtPay(apPay))}
       ${metricRow('Protect',fmtPay(protPay))}
       ${metricRow('Internet',fmtPay(aiaPay+fiberPay))}
-      ${metricRow('APD Accessories',fmtPay(apdPay)+(apdTotal>0?` <span style="font-size:9px;color:var(--t3)">avg $${apdAvg.toFixed(2)} / ${apdDenominator} device opps${byodCount>0?' ('+byodCount+' BYOD excl.)':''}</span>`:''))}
+      ${metricRow('APD Accessories',fmtPay(apdPay))}
       ${metricRow('Other Accessories',fmtPay(otherPay))}
       ${!repIsRSM?`
       <div style="height:1px;background:var(--bd);margin:0 14px"></div>
