@@ -1778,8 +1778,8 @@ function renderDistrictDashboard(_targetEl){
         if(!window._districtAccFetching){
           window._districtAccFetching=true;
           const cycleKey=_perfCurrentCycleStart||getTrackerCycleKey();
-          // Single request — acc_fetch_all returns all entries, we filter client-side
-          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&cycleStart='+encodeURIComponent(cycleKey)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
+          // Single request — returns all entries, filtered client-side by cycleStart string
+          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},10000)
             .then(r=>r.json()).then(d=>{
               window._districtAccEntries=Array.isArray(d)?d:[];
               window._districtAccLoaded=true;
@@ -1789,6 +1789,7 @@ function renderDistrictDashboard(_targetEl){
               window._districtAccEntries=[];
               window._districtAccLoaded=true;
               window._districtAccFetching=false;
+              renderDistrictDashboard(); // re-render even on failure so it doesn't stay stuck
             });
         }
         return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
