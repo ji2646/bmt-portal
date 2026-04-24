@@ -1822,6 +1822,36 @@ function renderDistrictDashboard(_targetEl){
         </div>`;
       }).join('');
     })())}
+    ${sec('Bill Pay Conversion by Rep',(()=>{
+      // BP Conv = bill pays ÷ total opps (voice+NV+upgrades). Goal 50%, min 40%
+      const bpTarget=0.50; const bpMin=0.40;
+      const sorted8=[..._dashReps].map(r=>{
+        const opps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
+        const conv=opps>0?(r.billPay||0)/opps:0;
+        return {...r,bpConv:conv};
+      }).sort((a,b)=>b.bpConv-a.bpConv);
+      return sorted8.map(r=>{
+        const pct=Math.min(200,Math.round(r.bpConv*100));
+        const hit=r.bpConv>=bpTarget; const partial=r.bpConv>=bpMin;
+        const col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
+        const barW=Math.min(100,Math.round(r.bpConv/2*100)); // cap bar at 200%
+        return `<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <div style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${fullName(r.uid)}<span style="font-weight:400;color:var(--t3);font-size:9px;margin-left:4px">${r.uid}</span></div>
+            <div style="font-size:13px;font-weight:900;color:${col};font-family:DM Sans">${pct}%</div>
+          </div>
+          <div style="position:relative;background:var(--s3);border-radius:5px;height:12px">
+            <div style="background:${col};height:12px;border-radius:5px;width:${barW}%;transition:width .4s"></div>
+            <div style="position:absolute;top:-3px;height:18px;width:2px;background:var(--g);opacity:.6;border-radius:1px;left:${Math.round(bpTarget/2*100)}%;transform:translateX(-50%)"></div>
+            <div style="position:absolute;top:-3px;height:18px;width:2px;background:var(--err);opacity:.4;border-radius:1px;left:${Math.round(bpMin/2*100)}%;transform:translateX(-50%)"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:3px">
+            <div style="font-size:9px;color:var(--g);font-family:DM Sans">Goal: 50%</div>
+            <div style="font-size:9px;color:var(--err);opacity:.7;font-family:DM Sans">Min: 40%</div>
+          </div>
+        </div>`;
+      }).join('');
+    })())}
     ${sec('Accessory Revenue by Rep',(()=>{
       const sorted4=[..._dashReps].sort((a,b)=>(b.accRevenue||0)-(a.accRevenue||0));
       const maxAcc=Math.max(..._dashReps.map(r=>r.accRevenue||0),1);
@@ -1839,30 +1869,24 @@ function renderDistrictDashboard(_targetEl){
       }).join('');
     })())}
 
-    ${isDMd?sec('Tracker Coverage by Rep',(()=>{
+    ${isDMd?sec('Tracker Coverage by Rep'+(window._districtAccLoaded?' ('+((window._districtAccEntries||[]).length)+' entries)':''), (()=>{
       const entries=window._districtAccEntries||[];
       if(!window._districtAccLoaded){
         if(!window._districtAccFetching){
           window._districtAccFetching=true;
-          const cycleKey=_perfCurrentCycleStart||getTrackerCycleKey();
-          // Fetch all entries per rep (no cycleStart filter — Apps Script may serialize dates differently)
-          // Filter client-side by cycleStart string
-          const uids=[..._dashReps].map(r=>r.uid);
-          Promise.all(uids.map(u=>
-            fetch(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(u)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-              .then(r=>r.json()).catch(()=>[])
-          )).then(results=>{
-            const all=results.flat();
-            // Filter to current cycle client-side — entries stored as 'YYYY-MM-DD' string
-            window._districtAccEntries=cycleKey?all.filter(e=>String(e.cycleStart||'')===cycleKey):all;
-            window._districtAccLoaded=true;
-            window._districtAccFetching=false;
-            renderDistrictDashboard();
-          }).catch(()=>{
-            window._districtAccEntries=[];
-            window._districtAccLoaded=true;
-            window._districtAccFetching=false;
-          });
+          // No cycleStart filter — return all entries, compare by matching _perfAllData accRevenue
+          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},10000)
+            .then(r=>r.json()).then(d=>{
+              window._districtAccEntries=Array.isArray(d)?d:[];
+              window._districtAccLoaded=true;
+              window._districtAccFetching=false;
+              renderDistrictDashboard();
+            }).catch(()=>{
+              window._districtAccEntries=[];
+              window._districtAccLoaded=true;
+              window._districtAccFetching=false;
+              renderDistrictDashboard();
+            });
         }
         return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
       }
