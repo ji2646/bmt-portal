@@ -898,7 +898,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','jq286d','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -927,9 +927,9 @@ const RSM_TEAM_MAP={
   'gs0426':['gs0426','ap485d','dg8674'],
   'mg221k':['mg221k','tg4507'],
   'rg8855':['rg8855','bb8326'],
-  'jq286d':['jq286d','cx7250'],                 // Josue Sosa (RSC but leads 752)
+  'jq286d':['jq286d','cx7250'],                // Josue Sosa RSM + Christina
   'jx820u':['jx820u','nc3647','ju512j'],
-  'tbd752':['jq286d','cx7250'],  // Store 752 placeholder
+  // tbd752 placeholder removed — jq286d is now RSM for store 752
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
 // so her team = all reps
@@ -952,8 +952,8 @@ const STORE_PEER_MAP=(()=>{
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['rg8855']=(STORE_REPS['769']||[]).filter(u=>u!=='rg8855');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
-  map['jq286d']=(STORE_REPS['752']||[]).filter(u=>u!=='jq286d');
-  map['cx7250']=(STORE_REPS['752']||[]).filter(u=>u!=='cx7250');
+  map['jq286d']=['cx7250'];                     // Josue Sosa RSM sees Christina
+  map['cx7250']=['jq286d'];
   // Store 777 (Jaquelin's store) — Joseph and Sergio see each other + their RSM Jaquelin
   map['jv6394']=['sc417e','jq6635'];
   map['sc417e']=['jv6394','jq6635'];
@@ -1466,7 +1466,7 @@ function loadDistrictDashboard(forceRefresh){
         const isDM=_pendingUid==='ji2646dm';
         const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
         if(Array.isArray(data)&&data.length){
-          if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+          if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
           else if(isRSM){
             const myTeam=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]).map(u=>u.toLowerCase());
             _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
@@ -1778,21 +1778,18 @@ function renderDistrictDashboard(_targetEl){
         if(!window._districtAccFetching){
           window._districtAccFetching=true;
           const cycleKey=_perfCurrentCycleStart||getTrackerCycleKey();
-          // Fetch tracker entries for every rep in the district in parallel
-          const uids=[..._dashReps].map(r=>r.uid);
-          Promise.all(uids.map(u=>
-            fetch(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(u)+'&cycleStart='+encodeURIComponent(cycleKey)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-              .then(r=>r.json()).catch(()=>[])
-          )).then(results=>{
-            window._districtAccEntries=results.flat();
-            window._districtAccLoaded=true;
-            window._districtAccFetching=false;
-            renderDistrictDashboard();
-          }).catch(()=>{
-            window._districtAccEntries=[];
-            window._districtAccLoaded=true;
-            window._districtAccFetching=false;
-          });
+          // Single request — acc_fetch_all returns all entries, we filter client-side
+          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&cycleStart='+encodeURIComponent(cycleKey)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
+            .then(r=>r.json()).then(d=>{
+              window._districtAccEntries=Array.isArray(d)?d:[];
+              window._districtAccLoaded=true;
+              window._districtAccFetching=false;
+              renderDistrictDashboard();
+            }).catch(()=>{
+              window._districtAccEntries=[];
+              window._districtAccLoaded=true;
+              window._districtAccFetching=false;
+            });
         }
         return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
       }
@@ -2052,7 +2049,7 @@ function loadDistrictDashboardMobile(){
       const isDM=_pendingUid==='ji2646dm';
       const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
       if(Array.isArray(data)&&data.length){
-        if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+        if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
         else if(isRSM){
           const myTeam=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
           _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
