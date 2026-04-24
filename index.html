@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -425,6 +425,7 @@ body.is-mobile .hdr-refresh{ width:36px !important;padding:6px !important;justif
   /* Perf tile grids: 2 columns on phone */
   .perf-tile-row { grid-template-columns: 1fr 1fr !important; }
   [style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; }
+  [style*="1fr 1fr 2fr"] { grid-template-columns: 1fr 1fr !important; }
 }
 /* Dark mode — wchip */
 html.dark-mode .wchip-past{border-color:#3a3a3a !important;background:rgba(255,255,255,.03) !important}
@@ -935,11 +936,15 @@ const RSM_TEAM_MAP={
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
+  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'rg8855','768':'jx820u','752':'jq286d','777':'jq6635'};
   Object.entries(STORE_REPS).forEach(([store,reps])=>{
     if(!reps) return;
+    const storeRSM=RSM_BY_STORE_MAP[store]||null;
     reps.forEach(uid=>{
-      // teammates = all others in same store
-      map[uid]=reps.filter(u=>u!==uid);
+      // teammates = all others in same store + their RSM (if not themselves)
+      const peers=reps.filter(u=>u!==uid);
+      if(storeRSM&&storeRSM!==uid&&!peers.includes(storeRSM)) peers.push(storeRSM);
+      map[uid]=peers;
     });
   });
   // RSMs see all their store reps
@@ -1282,6 +1287,12 @@ function getCurrentCycleStart(){
   const c=cycles.find(c=>now>=c.start&&now<=c.end);
   return c?c.start:cycles[10].start; // fallback to i=0 cycle
 }
+// Returns the cycleStart key to use for tracker operations.
+// Uses the actual perf data cycle if loaded (most reliable),
+// otherwise falls back to calendar-computed value.
+function getTrackerCycleKey(){
+  return _perfCurrentCycleStart||fmtCycleKey(getCurrentCycleStart());
+}
 function fmtCycleKey(d){
   // YYYY-MM-DD format for sheet keys
   return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');
@@ -1299,14 +1310,16 @@ let _perfViewingCycle=null; // null=current, else cycleStart string
 let _perfHistoryLoaded=false;
 let _perfData=null;
 let _perfAllData=[]; // all reps for district dashboard
+let _perfCurrentCycleStart=''; // set when perf data loads — used for tracker cycle key
 
 // Goals
-const PERF_GOALS={autopayMin:0.28,autopayTarget:0.30,protectTarget:0.50,pppTarget:0.20};
+const PERF_GOALS={autopayMin:0.28,autopayTarget:0.30,protectTarget:0.50,pppTarget:0.20,pppMin:0.10};
 
 
 
 function perfRefresh(){
   _perfAllData=[];
+  _perfCurrentCycleStart='';
   _perfHistoryLoaded=false;
   _perfViewingCycle=null;
   _perfRepUid=null;
@@ -1356,9 +1369,13 @@ function switchToCycle(cycleStart){
       else renderPerfBody();
       return;
     }
-    // Desktop: clear rep selection when switching to current cycle to avoid stale split view
-    _perfRepUid=null; updatePerfDashBtn();
-    loadDistrictDashboard(true);
+    // Desktop: reload rep data in new cycle if one is selected
+    if(_perfRepUid&&isDesktop()){
+      loadDistrictDashboard(true);
+      loadPerfData(_perfRepUid);
+    } else {
+      loadDistrictDashboard(true);
+    }
   } else {
     _perfViewingCycle=cycleStart;
     const cycle=_perfHistoryCycles.find(c=>c.cycleStart===cycleStart);
@@ -1375,10 +1392,15 @@ function switchToCycle(cycleStart){
       if(el){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; renderDistrictDashboardMobile(); }
       else renderPerfBody();
     } else {
-      // Desktop: clear rep selection and rebuild picker so user picks rep fresh in new cycle
-      _perfRepUid=null; updatePerfDashBtn();
-      renderPerfBody();
-      renderDistrictDashboard();
+      // Desktop: if rep is selected, reload rep in new cycle; otherwise rebuild picker
+      if(_perfRepUid&&isDesktop()){
+        renderPerfBody(); // rebuild left picker (updates cycle label)
+        renderDistrictDashboard();
+        loadPerfData(_perfRepUid); // reload rep in new cycle
+      } else {
+        renderPerfBody();
+        renderDistrictDashboard();
+      }
     }
   }
 }
@@ -1400,7 +1422,8 @@ function renderCyclePicker(){
     +cycles.map(c=>{ const val=c.cycleStart===null?'current':c.cycleStart; return '<option value="'+val+'"'+(val===selVal?' selected':'')+'>'+c.label+'</option>'; }).join('')
     +'</select></div>';
 }
-function actRefresh(){ fetchActivity(); }
+function actRefresh(){
+  _actPage=0; fetchActivity(); }
 function tmRefresh(){ loadTMData && loadTMData(); }
 function repActRefresh(){ loadRepActivity && loadRepActivity(); }
 function stRefresh(){ stLoadAll && stLoadAll(); }
@@ -1448,6 +1471,8 @@ function loadDistrictDashboard(forceRefresh){
             const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
             _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           }
+          // Store the actual perf cycle start — used by tracker submits & fetches
+          if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
           renderDistrictDashboard();
           loadPerfHistory(()=>renderCyclePicker());
         } else {
@@ -1757,6 +1782,7 @@ function launchPerformance(){
   document.body.style.overflow='';
   const po=document.getElementById('perf-overlay');po.style.display='';po.classList.add('perf-open');
   document.getElementById('perf-header-name').textContent=UID_NAMES[_pendingUid]||_pendingUid;
+  if(_pendingUid==='ji2646dm') logWithIP({type:'perf_open',sessionId:_sessionId,name:UID_NAMES['ji2646dm'],uid:'ji2646dm',datetime:getDatetime(),device:getDevice()});
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   _perfRepUid=null;
@@ -1960,6 +1986,7 @@ function loadDistrictDashboardMobile(){
           const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
           _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))&&r.uid!=='ec934j'&&r.uid!=='ji2646');
         }
+        if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
         loadPerfHistory(()=>renderCyclePicker());
         renderDistrictDashboardMobile();
       } else {
@@ -1989,19 +2016,31 @@ function loadPerfDataMobile(uid){
     if(cached){
       const tok=_perfLoadToken;
       _perfData=cached;
-      _perfAccEntries=[];_perfFeeEntries=[];_perfFiberEntries=[];
       if(tok!==_perfLoadToken||!_perfRepUid) return;
-      renderMobileRepView(uid);
+      // Fetch all tracker entries for this rep — no cycleStart filter
+      // so entries stored under any key (old or new cycle) all come back
+      Promise.all([
+        fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+        fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+      ]).then(responses=>Promise.all(responses.map(r=>r.json())))
+      .then(([acc,fiber])=>{
+        if(tok!==_perfLoadToken||!_perfRepUid) return;
+        _perfAccEntries=Array.isArray(acc)?acc:[];
+        _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+        renderMobileRepView(uid);
+      }).catch(()=>{
+        if(tok!==_perfLoadToken||!_perfRepUid) return;
+        _perfAccEntries=[];_perfFiberEntries=[];
+        renderMobileRepView(uid);
+      });
       return;
     }
   }
-  const cs=fmtCycleKey(getCurrentCycleStart());
   const myToken=_perfLoadToken;
   Promise.all([
     fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
   ]).then(responses=>Promise.all(responses.map(r=>r.json())))
   .then(([perf,acc,fee,fiber])=>{
     if(myToken!==_perfLoadToken) return;
@@ -2087,6 +2126,7 @@ function toggleMobileDashboard(){
             const peers2=(STORE_PEER_MAP[uid]||[]).map(u=>u.toLowerCase());
             _perfAllData=data.filter(r=>r.uid&&(r.uid===uid||peers2.includes(r.uid.toLowerCase())));
           }
+          if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
         }
         // Temporarily override perf-dashboard to render into mobile panel
         const realDash=document.getElementById('perf-dashboard');
@@ -2192,7 +2232,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
         <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
+        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
         <div style="height:10px;border-radius:4px;background:var(--g);width:${actsBarW}%"></div>
@@ -2240,6 +2280,8 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // Compute APD + avg fees for this rep using tracker data
   const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
+  // DEBUG — remove after confirming APD works
+  console.log('[APD DEBUG] uid='+uid+' _perfAccEntries.length='+_perfAccEntries.length+' apdEntries='+_perfAccEntries.filter(e=>e.accType==='APD').length+' total=$'+_indivApdTotal+' entries='+JSON.stringify(_perfAccEntries.slice(0,3)));
   const _indivTotalOpps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
   const _indivFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
   const _indivNetFee=Math.max(0,_indivTotalOpps*25-_indivFeeDisc);
@@ -2255,11 +2297,11 @@ function renderIndividualDashboard(r,uid,_targetEl){
   // Bill Pay Conversion = OPPs / BillPay (goal 20% = 1 opp per 5 bill pays)
   const bpConv = (r.billPay||0)>0 ? totalVoiceUpg/(r.billPay||0) : 0;
   const bpConvPct = (bpConv*100).toFixed(1);
-  const bpConvCol = bpConv>=0.20?'var(--g)':'var(--err)';
+  const bpConvCol = bpConv>=0.50?'var(--g)':'var(--err)';
 
   // ── Activations vs Upgrades — separate labeled bars ──
-  const maxAU = Math.max(totalActs, r.upgrades, 1);
-  const actsBarW2 = Math.round(totalActs/maxAU*100);
+  const maxAU = Math.max(r.voiceActs||0, r.upgrades||0, 1);
+  const actsBarW2 = Math.round((r.voiceActs||0)/maxAU*100);
   const upgBarW2  = Math.round((r.upgrades||0)/maxAU*100);
   const actsVsUpg2 = `
     <div style="margin-bottom:8px">
@@ -2358,7 +2400,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     : gBar(_wtrRaw/100, 0.80);
 
   // ── Pre-compute Bill Pay Conversion HTML (gBar style) ──
-  var bpConvHtml = gBar(bpConv, 0.20);
+  var bpConvHtml = gBar(bpConv, 0.50, 0.40);
 
   // ── Pre-compute Internet HTML ──
   var _aia=r.aiaOrders||0;
@@ -2397,18 +2439,14 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
     <!-- Row 3: PPP | 60RP Mix -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('PPP Attach',gBar(r.pppRate,PERF_GOALS.pppTarget))}
+      ${sec('PPP Attach',gBar(r.pppRate,PERF_GOALS.pppTarget,PERF_GOALS.pppMin))}
       ${sec('60RP Mix',gBar(r.mix60rp,0.80))}
     </div>
 
-    <!-- Row 4: WTR | Bill Pay Conversion -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+    <!-- Row 4: WTR (1/4) | BP Conv (1/4) | Internet (1/2) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('WTR',wtrHtml)}
-      ${sec('Bill Pay Conv.',bpConvHtml)}
-    </div>
-
-    <!-- Row 5: Internet (full width) -->
-    <div style="margin-bottom:10px">
+      ${sec('Bill Pay Conversion',bpConvHtml)}
       ${sec('Internet',internetHtml)}
     </div>
 
@@ -2416,7 +2454,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
       ${smTile('Total OPPs',totalVoiceUpg,totalVoiceUpg>=10?'var(--g)':'var(--err)')}
       ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol2)}
-      ${smTile('APD Acc',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)')}
+      ${smTile('APD',_indivApdTotal>0?'$'+_indivApdTotal.toFixed(0):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)')}
       ${smTile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
     </div>
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
@@ -2442,18 +2480,32 @@ function loadPerfData(uid){
       const tok=_perfLoadToken;
       _perfData=cached;
       if(tok!==_perfLoadToken||!_perfRepUid) return;
-      renderPerfView(uid);
-      loadIndividualDashboard(uid);
+      // Fetch all tracker entries for this rep — no cycleStart filter
+      Promise.all([
+        fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+        fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+      ]).then(responses=>Promise.all(responses.map(r=>r.json())))
+      .then(([acc,fiber])=>{
+        if(tok!==_perfLoadToken||!_perfRepUid) return;
+        _perfAccEntries=Array.isArray(acc)?acc:[];
+        _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+        renderPerfView(uid);
+        loadIndividualDashboard(uid);
+      }).catch(()=>{
+        if(tok!==_perfLoadToken||!_perfRepUid) return;
+        _perfAccEntries=[];_perfFiberEntries=[];
+        renderPerfView(uid);
+        loadIndividualDashboard(uid);
+      });
       return;
     }
   }
-  const cs=fmtCycleKey(getCurrentCycleStart());
   const myToken=_perfLoadToken; // capture current token
   Promise.all([
     fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
+    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
   ])
   .then(responses=>Promise.all(responses.map(r=>r.json())))
   .then(([perf,acc,fee,fiber])=>{
@@ -2594,7 +2646,7 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
     </div>
     <!-- Row 3: PPP | Internet -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20))}
+      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20,PERF_GOALS.pppMin))}
       ${sec('Internet',(()=>{
         const hit=(r.aiaOrders||0)>=1;
         const col=hit?'var(--g)':'var(--err)';
@@ -2622,7 +2674,7 @@ function renderPerfView(uid,_targetBody){
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   const name=UID_NAMES[uid]||uid;
   const d=_perfData;
-  const cs=fmtCycleKey(getCurrentCycleStart());
+  const cs=getTrackerCycleKey();
   const cycle=getPerfCycles().find(c=>fmtCycleKey(c.start)===cs);
   const cycleLabel=cycle?(fmtCycleDate(cycle.start)+' – '+fmtCycleDate(new Date(cycle.end.getTime()-86399000))):'';
   const throughLabel=d&&d.throughDate?'Through '+d.throughDate:'No data loaded';
@@ -2665,49 +2717,60 @@ function renderPerfView(uid,_targetBody){
 
   const apGood=d.autopayRate>=0.28;
   const protGood=d.protectRate>=0.50;
-  const totalOpps=d.grossAdds+d.upgrades;
+  // Opps = voice + non-voice (grossAdds) + upgrades
+  const totalOpps = (d.voiceActs||0)+(d.nonVoice||0)+(d.upgrades||0);
+  // feeOpps = voice + non-voice (activation fee charged on activations only)
+  const feeOpps = (d.voiceActs||0)+(d.nonVoice||0);
 
   // ── Payout calc ──
-  const voicePay  = d.voiceActs*6;
-  const nvPay     = d.nonVoice*4;
-  const upgPay    = d.upgrades*3;
-  // Act fees
-  const feeOpps = d.grossAdds; // fees on voice + non-voice acts only (grossAdds = voiceActs + nonVoice)
+  const voicePay = (d.voiceActs||0)*6;
+  const nvPay    = (d.nonVoice||0)*4;
+  const upgPay   = (d.upgrades||0)*3;
+
+  // Activation Fees — avg over voice+NV acts
+  // We use ABO report data: feeOpps * $25 assumed, discounts reduce avg
   const grossFeeRevenue = feeOpps*25;
   const totalFeeDisc = _perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
   const netFeeRev = Math.max(0, grossFeeRevenue - totalFeeDisc);
-  const avgFee = feeOpps>0?netFeeRev/feeOpps:0;
-  const feePay = avgFee>=22?(totalOpps*2):avgFee>=20?(totalOpps*1):0;
-  // AutoPay — only if rate >= 28% (RSC) or always (RSM)
-  const apQty = Math.floor(d.grossAdds*(d.autopayRate||0));
-  const apPay = (repIsRSM||apGood)?apQty*1:0;
-  // Protect — gross adds + upgrades if rate >= 50%
-  const protQty = Math.floor(totalOpps*(d.protectRate||0));
-  const protPay = (repIsRSM||protGood)?protQty*1:0;
-  // AIA
-  const aiaPay = d.aiaOrders*30;
-  // Fiber
+  const avgFee = feeOpps>0 ? netFeeRev/feeOpps : 0;
+  // Fee payout paid per feeOpp (not totalOpps)
+  const feePay = avgFee>=22 ? feeOpps*2 : avgFee>=20 ? feeOpps*1 : 0;
+
+  // AutoPay — $1 per attached autopay, requires ≥28% rate for RSC
+  const apQty = Math.round(feeOpps*(d.autopayRate||0));
+  const apPay = (repIsRSM||apGood) ? apQty*1 : 0;
+
+  // Protect — $1 per attached protect, requires ≥50% rate for RSC
+  const protQty = Math.round(totalOpps*(d.protectRate||0));
+  const protPay = (repIsRSM||protGood) ? protQty*1 : 0;
+
+  // Internet (AIA + Fiber)
+  const aiaPay  = (d.aiaOrders||0)*30;
   const fiberQty = _perfFiberEntries.reduce((s,e)=>s+Number(e.qty||0),0);
   const fiberPay = fiberQty*30;
-  // Accessories from tracker
-  let apdPay=0, otherPay=0;
-  const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
-  const otherEntries=_perfAccEntries.filter(e=>e.accType==='Other');
-  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  // BYOD excluded from denominator — they don't pull avg down
-  const byodCount=Math.floor((d.grossAdds||0)*(d.byodPct||0));
-  const apdDenominator=Math.max(1,totalOpps-byodCount);
-  const apdAvg=apdTotal/apdDenominator;
-  // Payout multiplier uses full Opps (BYOD included per commission structure)
-  if(apdAvg>=40) apdPay=apdTotal*0.20;
-  else if(apdAvg>=35) apdPay=totalOpps*6;
-  else if(apdAvg>=30) apdPay=totalOpps*4;
+
+  // APD — avg = total APD $ ÷ (voice acts + upgrades, per incentive doc)
+  // Payout tier applies to ALL opps (voice+NV+upgrades)
+  const apdEntries  = _perfAccEntries.filter(e=>e.accType==='APD');
+  const otherEntries= _perfAccEntries.filter(e=>e.accType==='Other');
+  const apdTotal    = apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+  const apdDenominator = Math.max(1,(d.voiceActs||0)+(d.upgrades||0));
+  const apdAvg = apdTotal/apdDenominator;
+  let apdPay=0;
+  if(apdEntries.length>0){
+    if(apdAvg>=40)      apdPay = apdTotal*0.20;         // 20% of total APD $
+    else if(apdAvg>=35) apdPay = apdDenominator*6;      // $6 per device opp
+    else if(apdAvg>=30) apdPay = apdDenominator*4;      // $4 per device opp
+  }
+
+  // Other Accessories — per entry, tiered by entry amount
+  let otherPay=0;
   otherEntries.forEach(e=>{
     const amt=Number(e.amount||0);
-    if(amt>=150) otherPay+=amt*0.10;
+    if(amt>=150)      otherPay+=amt*0.10;  // 10% of amount
     else if(amt>=100) otherPay+=10;
-    else if(amt>=50) otherPay+=5;
-    else otherPay+=4;
+    else if(amt>=50)  otherPay+=5;
+    else              otherPay+=4;         // < $49.99 = $4
   });
   const grossPay=voicePay+nvPay+upgPay+feePay+apPay+protPay+aiaPay+fiberPay+apdPay+otherPay;
   let subtotal=grossPay;
@@ -2779,7 +2842,7 @@ function renderPerfView(uid,_targetBody){
         <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
           <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${repIsRSM?'RSM Structure':'RSC Structure'}</div>
-          ${(isDM||isRSM||uid===_pendingUid)&&!isRSCViewingTeammate&&_perfViewingCycle===null?`<button type="button" id="toggle-payout-btn" onclick="togglePayoutVisibility()" style="margin-top:2px;padding:3px 9px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-family:DM Sans;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer">${payoutVisible?'Hide Payout':'Show Payout'}</button>`:''}
+          ${(isDM||isRSM||uid===_pendingUid)&&!isRSCViewingTeammate&&`<button type="button" id="toggle-payout-btn" onclick="togglePayoutVisibility()" style="margin-top:2px;padding:3px 9px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-family:DM Sans;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer">${payoutVisible?'Hide Payout':'Show Payout'}</button>`}
         </div>
       </div>
     </div>
@@ -2801,7 +2864,7 @@ function renderPerfView(uid,_targetBody){
       ${metricRow('Voice Activations',fmtPay(voicePay))}
       ${metricRow('Non-Voice Activations',fmtPay(nvPay))}
       ${metricRow('Upgrades',fmtPay(upgPay))}
-      ${metricRow('Activation Fees',fmtPay(feePay)+` <span style="font-size:9px;color:var(--t3)">avg $${avgFee.toFixed(2)}/opp${totalFeeDisc>0?' ('+fmtPay(totalFeeDisc)+' discounts)':''}</span>`)}
+      ${metricRow('Activation Fees',fmtPay(feePay))}
       ${metricRow('AutoPay',fmtPay(apPay))}
       ${metricRow('Protect',fmtPay(protPay))}
       ${metricRow('Internet',fmtPay(aiaPay+fiberPay))}
@@ -2949,7 +3012,6 @@ function submitPerfPaste(cs,ce){
 // ══════════════════════════════════════════
 let _stTab='acc';
 let _stAccEntries=[];
-let _stFeeEntries=[];
 let _stFiberEntries=[];
 
 
@@ -2980,7 +3042,7 @@ function stTab(t){
 }
 function stLoadAll(){
   const uid=_pendingUid;
-  const cs=fmtCycleKey(getCurrentCycleStart());
+  const cs=getTrackerCycleKey();
   fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json()).then(d=>{_stAccEntries=Array.isArray(d)?d:[];renderSTAcc();}).catch(()=>renderSTAcc());
   fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
@@ -3043,7 +3105,7 @@ function stSubmitAcc(){
   const note=document.getElementById('st-acc-note').value.trim();
   if(amount<=0){showToast('Enter a valid amount');return;}
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
-  const cs=fmtCycleKey(getCurrentCycleStart());
+  const cs=getTrackerCycleKey();
   const rowId=uid+'-ACC-'+Date.now();
   const submitted=getDatetime();
   fetchWithTimeout(LOG_URL+'?type=acc_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&accType='+type+'&amount='+amount+'&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
@@ -3060,52 +3122,8 @@ function stDeleteAcc(rowId){
 }
 
 // ── FEE DISCOUNTS ──
-function renderSTFee(){
-  const pane=document.getElementById('st-pane-fee');
-  if(!pane) return;
-  const entries=_stFeeEntries;
-  const total=entries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const entryHtml=entries.length?entries.map(e=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bd)">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">-$${Number(e.amount).toFixed(2)} discount</div>
-        ${e.note?`<div style="font-size:10px;color:var(--t3)">${e.note}</div>`:''}
-      </div>
-      <button type="button" onclick="stDeleteFee('${e.rowId}')" style="padding:4px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
-    </div>`).join(''):
-    '<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px">No discounts entered</div>';
 
-  pane.innerHTML=`
-    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:10px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Fee Discounts</div>
-        <div style="font-size:10px;font-weight:700;color:var(--err);font-family:'DM Sans'">Total Discounted: $${total.toFixed(2)}</div>
-      </div>
-      ${entryHtml}
-    </div>
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Log a Discount</div>
-      <div style="font-size:9px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Discount Amount ($)</div>
-      <input type="number" id="st-fee-amount" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;box-sizing:border-box;margin-bottom:8px"/>
-      <input type="text" id="st-fee-note" placeholder="Note (optional)" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
-      <button type="button" onclick="stSubmitFee()" style="width:100%;padding:11px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">+ Log Fee Discount</button>
-    </div>`;
-}
-function stSubmitFee(){
-  const amount=parseFloat(document.getElementById('st-fee-amount').value)||0;
-  const note=document.getElementById('st-fee-note').value.trim();
-  if(amount<=0){showToast('Enter a valid amount');return;}
-  const uid=_pendingUid, name=UID_NAMES[uid]||uid;
-  const cs=fmtCycleKey(getCurrentCycleStart());
-  const rowId=uid+'-FEE-'+Date.now();
-  const submitted=getDatetime();
-  fetchWithTimeout(LOG_URL+'?type=fee_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&amount='+amount+'&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(()=>{
-      _stFeeEntries.push({rowId,uid,name,cycleStart:cs,amount,submitted,note});
-      renderSTFee();
-      showToast('Discount logged');
-    }).catch(()=>showToast('Save failed — try again'));
-}
+
 function stDeleteFee(rowId){
   fetchWithTimeout(LOG_URL+'?type=fee_delete&rowId='+encodeURIComponent(rowId),{method:'GET',mode:'cors',cache:'no-store'}).catch(()=>{});
   _stFeeEntries=_stFeeEntries.filter(e=>e.rowId!==rowId);
@@ -3145,7 +3163,7 @@ function renderSTFiber(){
 function stSubmitFiber(){
   const note=document.getElementById('st-fiber-note').value.trim();
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
-  const cs=fmtCycleKey(getCurrentCycleStart());
+  const cs=getTrackerCycleKey();
   const rowId=uid+'-FIBER-'+Date.now();
   const submitted=getDatetime();
   fetchWithTimeout(LOG_URL+'?type=fiber_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&qty=1&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
@@ -5683,6 +5701,7 @@ try {
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);">
           <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">All</button>
           <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">QTool</button>
+          <button onclick="actSetFilter('perf_open',this)" id="act-f-perf" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Performance</button>
           <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Main</button>
           <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Activity</button>
           <button onclick="actSetFilter('PriceCard',this)" id="act-f-pricecard" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Price Card</button>
@@ -5870,6 +5889,7 @@ function actRenderList(){
     'Main':     ['rgba(0,0,0,.04)','#6B7280','rgba(0,0,0,.08)'],
     'Activity': ['rgba(59,130,246,.1)','#60a5fa','rgba(59,130,246,.2)'],
     'PriceCard':['rgba(251,191,36,.1)','#fbbf24','rgba(251,191,36,.2)'],
+    'perf_open':['rgba(139,92,246,.1)','#8b5cf6','rgba(139,92,246,.2)'],
   };
 
   el.innerHTML=sessions.map(s=>{
@@ -5925,7 +5945,7 @@ function actRenderList(){
       </div>
       <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:9px;font-weight:800;padding:3px 6px;border-radius:6px;width:62px;text-align:center;flex-shrink:0;box-sizing:border-box">${badge}</div>
     </div>`;
-  }).join('');
+  }).join('')+(hasMore?`<div style="text-align:center;padding:16px"><button type="button" onclick="_actPage++;actRenderList()" style="padding:8px 24px;background:var(--g);color:#fff;border:none;border-radius:8px;font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">Load More (${sessions.length-pagedSessions.length} remaining)</button></div>`:'');
 }
 
 
@@ -6136,10 +6156,10 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Performance</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="perf-header-name" class="hdr-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button class="hdr-refresh" type="button" onclick="perfRefresh()" title="Refresh" class="perf-hdr-btn" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
+      <button class="hdr-refresh perf-hdr-btn" type="button" onclick="perfRefresh()" title="Refresh" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
       <button type="button" id="perf-dashboard-btn" onclick="perfGoToDashboard()" style="display:none;padding:7px 14px;background:#F3F4F6;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">Dashboard</button>
-      <button class="hdr-home" type="button" onclick="goHome()" class="perf-hdr-btn" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button>
-      <button class="hdr-back" type="button" onclick="closePerformance()" class="perf-hdr-btn" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
+      <button class="hdr-home perf-hdr-btn" type="button" onclick="goHome()" style="padding:8px 12px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button>
+      <button class="hdr-back perf-hdr-btn" type="button" onclick="closePerformance()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
     </div>
   </div>
   <!-- Cycle picker strip -->
@@ -6169,12 +6189,12 @@ function closeActivity(){
   <!-- Tabs -->
   <div style="background:#fff;border-bottom:1px solid var(--bd);display:flex;position:sticky;top:57px;z-index:9">
     <div id="st-tab-acc" onclick="stTab('acc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Accessories</div>
-    <div id="st-tab-fee" onclick="stTab('fee')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fee Discounts</div>
+    
     <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fiber Sales</div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:16px 14px 80px">
     <div id="st-pane-acc"></div>
-    <div id="st-pane-fee" style="display:none"></div>
+    
     <div id="st-pane-fiber" style="display:none"></div>
   </div>
 </div>
