@@ -1323,6 +1323,9 @@ function perfRefresh(){
   _perfHistoryLoaded=false;
   _perfViewingCycle=null;
   _perfRepUid=null;
+  window._districtAccEntries=[];
+  window._districtAccLoaded=false;
+  window._districtAccFetching=false;
   renderPerfBody(); // rebuilds picker + loads dashboard
 }
 
@@ -1768,10 +1771,81 @@ function renderDistrictDashboard(_targetEl){
         </div>`;
       }).join('');
     })())}
+
+    ${isDMd?sec('Tracker Coverage by Rep',(()=>{
+      const entries=window._districtAccEntries||[];
+      if(!window._districtAccLoaded){
+        if(!window._districtAccFetching){
+          window._districtAccFetching=true;
+          const cycleKey=_perfCurrentCycleStart||getTrackerCycleKey();
+          // Fetch tracker entries for every rep in the district in parallel
+          const uids=[..._dashReps].map(r=>r.uid);
+          Promise.all(uids.map(u=>
+            fetch(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(u)+'&cycleStart='+encodeURIComponent(cycleKey)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+              .then(r=>r.json()).catch(()=>[])
+          )).then(results=>{
+            window._districtAccEntries=results.flat();
+            window._districtAccLoaded=true;
+            window._districtAccFetching=false;
+            renderDistrictDashboard();
+          }).catch(()=>{
+            window._districtAccEntries=[];
+            window._districtAccLoaded=true;
+            window._districtAccFetching=false;
+          });
+        }
+        return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
+      }
+      // Group tracker entries by uid for this cycle
+      const byUid={};
+      entries.forEach(e=>{
+        const u=String(e.uid||'').toLowerCase();
+        if(!byUid[u]) byUid[u]={apd:0,other:0};
+        const amt=Number(e.amount||0);
+        if(String(e.accType||'')==='APD') byUid[u].apd+=amt;
+        else byUid[u].other+=amt;
+      });
+      const rows=[..._dashReps].sort((a,b)=>(b.accRevenue||0)-(a.accRevenue||0));
+      const hdrStyle='font-size:9px;font-weight:900;color:var(--t3);letter-spacing:.8px;padding-bottom:6px;border-bottom:1px solid var(--bd);font-family:DM Sans;text-transform:uppercase';
+      const cellStyle='font-size:11px;font-family:DM Sans;padding:7px 0;border-bottom:1px solid var(--bd)';
+      const numStyle=cellStyle+';font-weight:800;text-align:right';
+      return '<div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:0 10px">'
+        +'<div style="'+hdrStyle+'"> </div>'
+        +'<div style="'+hdrStyle+';text-align:right">Actual</div>'
+        +'<div style="'+hdrStyle+';text-align:right">Tracker (All)</div>'
+        +'<div style="'+hdrStyle+';text-align:right">Difference</div>'
+        +'<div style="'+hdrStyle+';text-align:right">Status</div>'
+        +rows.map(r=>{
+          const metric=r.accRevenue||0;
+          const t=byUid[r.uid]||{apd:0,other:0};
+          const trackerTotal=t.apd+t.other;
+          const diff=trackerTotal-metric; // negative = under-reported
+          const pct=metric>0?trackerTotal/metric:0;
+          // Status: Not Logging / Logging / Gap (≥20% difference but has entries)
+          let statusTxt, statusCol;
+          if(trackerTotal===0){
+            statusTxt='Not Logging'; statusCol='var(--err)';
+          } else if(Math.abs(diff)/Math.max(metric,1)>=0.20){
+            statusTxt='Gap'; statusCol='var(--warn)';
+          } else {
+            statusTxt='Logging'; statusCol='var(--g)';
+          }
+          const diffFmt=(diff>=0?'+':'')+diff.toFixed(0);
+          const diffCol=diff>=-metric*0.20?'var(--g)':'var(--warn)';
+          return '<div style="'+cellStyle+';font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)">'
+            +fullName(r.uid)+'</div>'
+            +'<div style="'+numStyle+';color:var(--t1)">$'+metric.toFixed(0)+'</div>'
+            +'<div style="'+numStyle+';color:var(--t1)">'+(trackerTotal>0?'$'+trackerTotal.toFixed(0):'—')+'</div>'
+            +'<div style="'+numStyle+';color:'+diffCol+'">$'+diffFmt+'</div>'
+            +'<div style="'+numStyle+';color:'+statusCol+'">'+statusTxt+'</div>';
+        }).join('')
+        +'</div>';
+    })()):''}
   `;
 }
 
 // Cycle picker — compact dropdown matching TC/TO style
+
 
 let _perfAccEntries=[];
 let _perfFeeEntries=[];
