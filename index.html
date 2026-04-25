@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html{overflow-x:hidden;max-width:100vw}
+html{overflow-x:clip;max-width:100vw}
 :root{
   --g:#00A94F;--gd:#007A38;--gl:#00D45F;
   --bg:#F8F9FA;--s1:#FFFFFF;--s2:#F3F4F6;--s3:#EAECEF;--s4:#E2E5E9;
@@ -18,7 +18,7 @@ html{overflow-x:hidden;max-width:100vw}
   --purple:#8B5CF6;--indigo:#6366F1;
   --r:12px;--r2:8px;
 }
-body{font-family:'DM Sans',sans-serif;background:#F8F9FA;color:var(--t1);min-height:100vh;font-size:13px;-webkit-text-size-adjust:100%;overflow-x:hidden;max-width:100vw}
+body{font-family:'DM Sans',sans-serif;background:#F8F9FA;color:var(--t1);min-height:100vh;font-size:13px;-webkit-text-size-adjust:100%;overflow-x:clip;max-width:100vw}
 body.is-mobile{font-size:15px;}
 /* Hard lock all mobile content — no horizontal scroll anywhere */
 body.is-mobile #app-content,
@@ -27,7 +27,7 @@ body.is-mobile #tm-overlay,
 body.is-mobile #sales-tracker-overlay,
 body.is-mobile #rep-activity-overlay,
 body.is-mobile #ra-detail-overlay,
-body.is-mobile #perf-overlay{overflow-x:hidden !important;width:100% !important;max-width:100vw !important}
+body.is-mobile #perf-overlay{ font-size:15px; }
 /* RSM chips row — scroll sideways not wrap down */
 body.is-mobile #rsm-filter-chips,
 body.is-mobile [id*="filter-chips"],
@@ -109,7 +109,7 @@ body.is-mobile .st-entry{ font-size:14px !important; padding:14px 16px !importan
   .wchip{ padding:14px 18px !important; min-width:120px !important; font-size:14px !important; }
   [id^="act-f-"]{ font-size:14px !important; padding:10px 20px !important; }
 }
-.app-content{display:none;overflow-x:hidden;max-width:100vw}
+.app-content{display:none;max-width:100vw}
 header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
 .hbug{width:32px;height:32px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;color:#000}
@@ -135,8 +135,8 @@ header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box
 }
 /* Menu button icon alignment */
 #ls-menu button svg{ display:inline-block;vertical-align:middle;flex-shrink:0; }
-.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA;overflow-x:hidden}
-.wrap > *{min-width:0;overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA;overflow-x:clip}
+.wrap > *{min-width:0}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}}
 /* Mobile: single column, summary stays at bottom (natural DOM order: #left then #summary) */
 body.is-mobile .wrap{grid-template-columns:1fr !important;padding:12px 10px 60px}
@@ -271,7 +271,7 @@ input:checked+.tslide:before{transform:translateX(14px)}
 .add-btn:disabled{opacity:.25;cursor:not-allowed;pointer-events:none}
 
 /* LINE CARD */
-.lcard{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.lcard{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden;max-width:100%}
 .lcard-head{padding:9px 12px;display:flex;align-items:center;gap:7px;background:var(--s2);border-bottom:1px solid var(--bd)}
 .lnum{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;letter-spacing:-.5px}
 .lnum.v{background:var(--g);color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
@@ -729,7 +729,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A3</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A4</div>
 </div>
 
 <script>
@@ -6459,10 +6459,10 @@ function closeActivity(){
   <div id="cycle-picker-wrap" style="display:none;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0"></div>
   <!-- Split body -->
   <div id="perf-layout" style="flex:1;overflow:hidden;display:flex;min-height:0">
-    <div id="perf-left" style="overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;width:100%;max-width:100%">
-      <div style="padding:16px 14px 100px;overflow-x:hidden;width:100%" id="perf-body"></div>
+    <div id="perf-left" style="overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%">
+      <div style="padding:16px 14px 100px;width:100%" id="perf-body"></div>
     </div>
-    <div id="perf-right" style="display:none;flex:1;overflow-y:auto;overflow-x:hidden;border-left:1.5px solid var(--bd);padding:20px 32px 80px;min-width:0"><div>
+    <div id="perf-right" style="display:none;flex:1;overflow-y:auto;border-left:1.5px solid var(--bd);padding:20px 32px 80px;min-width:0"><div>
       <div id="perf-dashboard"></div>
     </div></div>
   </div>
