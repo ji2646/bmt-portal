@@ -110,7 +110,7 @@ body.is-mobile .st-entry{ font-size:14px !important; padding:14px 16px !importan
   [id^="act-f-"]{ font-size:14px !important; padding:10px 20px !important; }
 }
 .app-content{display:none;max-width:100vw}
-header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:37px;z-index:200}
+header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
 .hlogo{display:flex;align-items:center;gap:10px}
 .hbug{width:32px;height:32px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;color:#000}
 .htitle{font-family:'Bebas Neue';font-size:20px;letter-spacing:4px}
@@ -149,7 +149,7 @@ body.is-mobile .deal-sub{font-size:14px !important;margin-top:4px !important}
 body.is-mobile .deal-tag{font-size:12px !important;margin-bottom:8px !important}
 body.is-mobile .deal-card{padding:16px 14px !important}
 body.is-mobile #deal-global-toggle span{padding:10px 18px !important;font-size:14px !important}
-body.is-mobile .hi-banner{position:static !important}
+
 /* Hi-banner text bigger on mobile */
 body.is-mobile .hi-banner [style*="font-size:8px"]{font-size:11px !important}
 body.is-mobile .hi-banner [style*="font-size:15px"]{font-size:20px !important}
@@ -349,7 +349,7 @@ select option,select optgroup{background:#fff;color:#111827}
 .apr .as{font-size:9px;color:var(--t3)}
 
 /* SUMMARY */
-.summary{position:sticky;top:97px}
+.summary{position:static}
 .scard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
 .scard-head{padding:8px 14px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
 .stitle{font-family:'Bebas Neue';font-size:10px;letter-spacing:3px;color:var(--t3);text-transform:uppercase}
@@ -392,7 +392,9 @@ body.is-mobile .tm-sub{color:rgba(255,255,255,.7) !important;font-size:13px}
 .reset-btn:hover{border-color:var(--err);color:var(--err);background:rgba(239,68,68,.04)}
 
 /* HOME INTERNET BANNER */
-.hi-banner{background:linear-gradient(90deg,#0a0a1e,#1a0a2e,#0a1e0a);border-bottom:2px solid var(--purple);position:sticky;top:0;z-index:201;display:grid;grid-template-columns:1fr 1fr}
+.hi-banner{background:linear-gradient(90deg,#0a0a1e,#1a0a2e,#0a1e0a);border-bottom:2px solid var(--purple);display:grid;grid-template-columns:1fr 1fr}
+body.is-mobile .hi-banner{position:static !important;grid-template-columns:1fr 1fr}
+body.is-desktop .hi-banner{position:sticky;top:0;z-index:201}
 /* APO TILES */
 .apo-tile{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--t3);cursor:pointer;transition:all .12s;user-select:none;border-right:1px solid var(--bd);background:var(--s3)}
 .apo-tile:last-child{border-right:none}
@@ -429,9 +431,7 @@ body.is-mobile .tm-sub{color:rgba(255,255,255,.7) !important;font-size:13px}
 .deal-card.select::before{background:var(--warn)}
 .deal-card.iphone::before{background:var(--bread)}
 @media(max-width:600px){
-  .deal-strip{grid-template-columns:1fr}
-  .deal-card{border-right:none}
-  .deal-card:nth-child(odd){border-right:none}
+  .deal-card.odd-right{border-right:1px solid var(--bd)}
   .deal-card:nth-child(5){border-bottom:1px solid var(--bd)}
   .deal-card:nth-child(6){border-bottom:none}
 }
@@ -445,7 +445,7 @@ body.is-mobile .tm-sub{color:rgba(255,255,255,.7) !important;font-size:13px}
 
 
 .deal-sub{font-size:9px;color:var(--t3);line-height:1.4}
-@media(max-width:500px){.deal-strip{grid-template-columns:1fr 1fr}}
+
 .wchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 10px;border-radius:20px;cursor:pointer;touch-action:manipulation;font-family:'DM Sans';border-width:1.5px;border-style:solid;line-height:1;min-width:130px;text-align:center;box-sizing:border-box;flex-shrink:0;white-space:normal}
 .wdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .wlbl{font-size:10px;font-weight:700;white-space:nowrap}
@@ -527,16 +527,9 @@ html.dark-mode .deal-sub{color:#AAAAAA}
   }
 }
 
-/* ── DESKTOP/TABLET PERFORMANCE SPLIT (768px+ gets split layout) ── */
-@media (min-width: 768px){
-  #perf-overlay{ display:none;flex-direction:column }
-  #perf-overlay.perf-open{ display:flex !important;flex-direction:column }
-  #perf-left{ width:300px !important;flex-shrink:0;border-right:1px solid var(--bd) }
-  #perf-right{ display:block !important }
-  .login-card{ width:400px !important;box-shadow:0 8px 40px rgba(0,0,0,.10) !important;border-radius:16px !important }
-  #ls-menu .menu-btn-grid{ display:grid;grid-template-columns:1fr 1fr;gap:8px }
-}
-@media (max-width: 767px){
+
+/* Perf split layout — controlled by picker choice (is-mobile/is-desktop class), NOT screen width */
+@media (max-width: 1023px){
   #perf-overlay.perf-open{ display:flex !important;flex-direction:column }
   #perf-right{ display:none !important }
   #perf-layout{ flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;display:block !important }
@@ -546,12 +539,14 @@ html.dark-mode .deal-sub{color:#AAAAAA}
   #perf-dashboard-btn{ display:none !important }
   .perf-hdr-btn{ padding:6px 10px !important;font-size:11px !important }
 }
-/* PWA/homescreen: body.is-mobile class mirrors matchMedia — more reliable than innerWidth in standalone mode */
+/* Mobile always: hide right panel, full width left */
 body.is-mobile #perf-right{ display:none !important }
 body.is-mobile #perf-header-name{ display:none !important }
 body.is-mobile #perf-dashboard-btn{ display:none !important }
 body.is-mobile #perf-left{ width:100% !important }
-body:not(.is-mobile) #perf-right{ display:block }
+/* Desktop only: show right panel */
+body.is-desktop #perf-right{ display:block }
+body.is-desktop #perf-left{ width:300px !important;flex-shrink:0 }
 
 /* ── MOBILE HEADER COMPACT ── */
 @media (max-width: 767px){
@@ -729,7 +724,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A4</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A7</div>
 </div>
 
 <script>
@@ -835,6 +830,7 @@ function showDevicePicker(){
 function setDeviceMode(mode){
   _deviceMode = mode;
   document.body.classList.toggle('is-mobile', mode==='mobile');
+  document.body.classList.toggle('is-desktop', mode==='desktop');
   document.getElementById('ls-device').style.display='none';
   showMenu();
 }
@@ -1438,10 +1434,13 @@ document.body.style.overflow='hidden';
 (function(){
   const mob=window.matchMedia?window.matchMedia('(max-width:767px)').matches:Math.min(screen.width||9999,window.innerWidth||9999)<768;
   if(mob) document.body.classList.add('is-mobile');
-  // Re-check on resize/orientation change
+  else document.body.classList.add('is-desktop');
   window.addEventListener('resize',function(){
     const m=window.matchMedia?window.matchMedia('(max-width:767px)').matches:window.innerWidth<768;
-    document.body.classList.toggle('is-mobile',_deviceMode==='mobile'||(_deviceMode===null&&m));
+    const forcedMode=_deviceMode;
+    const isMob=forcedMode==='mobile'||(forcedMode===null&&m);
+    document.body.classList.toggle('is-mobile',isMob);
+    document.body.classList.toggle('is-desktop',!isMob);
   });
 })();
 
@@ -5956,7 +5955,7 @@ try {
 
 
 <!-- ACTIVITY OVERLAY -->
-<div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;overflow-x:hidden;font-family:'DM Sans',sans-serif">
+<div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;font-family:'DM Sans',sans-serif">
 
   <!-- Header -->
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
@@ -6443,7 +6442,7 @@ function closeActivity(){
 <!-- ══════════════════════════════════
      PERFORMANCE OVERLAY
 ══════════════════════════════════ -->
-<div id="perf-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;flex-direction:column;overflow:hidden">
+<div id="perf-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;flex-direction:column;overflow-y:auto">
   <!-- Header -->
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:10">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Performance</div>
@@ -6480,7 +6479,7 @@ function closeActivity(){
     </div>
   </div>
   <!-- Tabs -->
-  <div style="background:#fff;border-bottom:1px solid var(--bd);display:flex;position:sticky;top:57px;z-index:9">
+  <div style="background:#fff;border-bottom:1px solid var(--bd);display:flex;position:sticky;top:56px;z-index:9">
     <div id="st-tab-acc" onclick="stTab('acc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Accessories</div>
     
     <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fiber Sales</div>
@@ -6614,7 +6613,7 @@ function closeActivity(){
 <!-- ══════════════════════════════════
      REP ACTIVITY OVERLAY
 ══════════════════════════════════ -->
-<div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto;overflow-x:hidden">
+<div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
     <div style="display:flex;align-items:center;gap:8px">
