@@ -724,7 +724,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A7</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A8</div>
 </div>
 
 <script>
@@ -1814,7 +1814,7 @@ function renderDistrictDashboard(_targetEl){
   function repBars(metric,target,label,fmt){
     const sorted2=[..._dashReps].sort((a,b)=>(b[metric]||0)-(a[metric]||0));
     const mob=isMobile();
-    const barH=mob?20:12; const nameSz=mob?16:13; const valSz=mob?16:13; const barMaxW='100%';
+    const barH=mob?20:12; const nameSz=mob?16:13; const valSz=mob?16:13; const barMaxW=mob?'65%':'100%';
     return sorted2.map(r=>{
       const val=r[metric]||0;
       const pct=Math.min(100,Math.round(val*100));
@@ -2498,7 +2498,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // Acts vs Upgrades comparison bar
   const _mob=isMobile();
-  const _barH=_mob?22:10; const _numSz=_mob?32:20; const _lblSz=_mob?14:11; const _barMaxW='100%';
+  const _barH=_mob?22:10; const _numSz=_mob?32:20; const _lblSz=_mob?14:11; const _barMaxW=_mob?'65%':'100%';
   const maxBar=Math.max(totalActs,r.upgrades,1);
   const actsBarW=Math.round(totalActs/maxBar*100);
   const upgBarW=Math.round(r.upgrades/maxBar*100);
@@ -2644,7 +2644,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
       +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
       +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
       +'</div>'
-      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px">'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px;max-width:'+(mob?'65%':'100%')+'">'
       +'<div style="position:absolute;left:0;top:0;height:'+barH+'px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
       +'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
       +minMark
@@ -4648,7 +4648,7 @@ function renderDealStrip(){
       ${devPick('a36',[{id:'a36',lbl:'Galaxy A36'},{id:'medge',lbl:'edge 2025'},{id:'mgsty',lbl:'g stylus 2025'}])}
       ${ltRow3('a36',['var(--warn)',gc,'var(--indigo)'])}
       <div class="deal-price" style="color:${ltColor(c3.lt)}">${fmt(Math.round(c3otd*100)/100)}</div>
-      <div class="deal-sub">${c3plan?c3plan.full+' · ':'Supreme UNL · '}${c3.lt==='upgrade'?'$90':'$45'} APD · Protect</div>
+      <div class="deal-sub">${c3.lt==='upgrade'?'Supreme UNL · $90':'Supreme UNL · $45'} APD · Protect</div>
       <div style="font-size:8px;margin-top:2px;opacity:0">·</div>
       ${c3pr>=149.99?pppSub(c3pr,c3.lt==='upgrade'?90:45):pppNone(c3pr)}
       ${APD_NOTE}
@@ -6457,7 +6457,7 @@ function closeActivity(){
   <!-- Cycle picker strip -->
   <div id="cycle-picker-wrap" style="display:none;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0"></div>
   <!-- Split body -->
-  <div id="perf-layout" style="flex:1;overflow:hidden;display:flex;min-height:0">
+  <div id="perf-layout" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;min-height:0">
     <div id="perf-left" style="overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%">
       <div style="padding:16px 14px 100px;width:100%" id="perf-body"></div>
     </div>
