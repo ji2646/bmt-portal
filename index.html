@@ -155,8 +155,7 @@ body.is-mobile .hi-banner [style*="font-size:15px"]{font-size:20px !important}
 body.is-mobile .hi-banner [style*="font-size:7px"]{font-size:10px !important}
 body.is-mobile .hi-banner [style*="padding:8px 14px"]{padding:12px 14px !important}
 /* Force district dashboard bars to cap width on mobile so text is readable */
-body.is-mobile #perf-body .sec-body > div > div[style*="border-radius:5px"]{max-width:68% !important}
-body.is-mobile #perf-mobile-district .sec-body > div > div[style*="border-radius:5px"]{max-width:68% !important}
+/* bars are full width on mobile — height and font size make them readable */
 /* Activity week chips bigger */
 body.is-mobile .wchip{font-size:14px !important;padding:12px 16px !important}
 /* To/TC list rows */
@@ -1767,7 +1766,7 @@ function renderDistrictDashboard(_targetEl){
   function repBars(metric,target,label,fmt){
     const sorted2=[..._dashReps].sort((a,b)=>(b[metric]||0)-(a[metric]||0));
     const mob=isMobile();
-    const barH=mob?16:12; const nameSz=mob?15:13; const valSz=mob?15:13; const barMaxW=mob?'70%':'100%';
+    const barH=mob?20:12; const nameSz=mob?16:13; const valSz=mob?16:13; const barMaxW='100%';
     return sorted2.map(r=>{
       const val=r[metric]||0;
       const pct=Math.min(100,Math.round(val*100));
@@ -2451,7 +2450,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   // Acts vs Upgrades comparison bar
   const _mob=isMobile();
-  const _barH=_mob?18:10; const _numSz=_mob?28:20; const _lblSz=_mob?13:11; const _barMaxW=_mob?'72%':'100%';
+  const _barH=_mob?22:10; const _numSz=_mob?32:20; const _lblSz=_mob?14:11; const _barMaxW='100%';
   const maxBar=Math.max(totalActs,r.upgrades,1);
   const actsBarW=Math.round(totalActs/maxBar*100);
   const upgBarW=Math.round(r.upgrades/maxBar*100);
@@ -2585,7 +2584,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
   // ── Gauge helper (inline for rate bars) ──
   function gBar(val,target,min){
     var mob=isMobile();
-    var barH=mob?16:10; var valSize=mob?32:22; var labelSize=mob?10:8;
+    var barH=mob?22:10; var valSize=mob?36:22; var labelSize=mob?12:8;
     if(val===null||val===undefined) return '<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:var(--t3)">—</div><div style="font-size:'+labelSize+'px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: '+Math.round(target*100)+'%+</div>';
     var pct=Math.min(100,Math.round((val||0)*100));
     var hit=val>=target; var partial=min&&val>=(min||0);
@@ -2597,7 +2596,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
       +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
       +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
       +'</div>'
-      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px;max-width:'+(mob?'75%':'100%')+'">'
+      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px">'
       +'<div style="position:absolute;left:0;top:0;height:'+barH+'px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
       +'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
       +minMark
@@ -2612,7 +2611,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
   // ── Small tile helper ──
   function smTile(label,val,color,sub){
     var mob=isMobile();
-    var valSize=mob?32:26; var lblSize=mob?10:8; var subSize=mob?11:9;
+    var valSize=mob?36:26; var lblSize=mob?11:8; var subSize=mob?12:9;
     var subHtml=sub?'<div style="font-size:'+subSize+'px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+sub+'</div>':'';
     return '<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:'+(mob?'16px 10px':'12px 10px')+';text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:'+(mob?'96px':'80px')+'">'
       +'<div style="font-size:'+lblSize+'px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">'+label+'</div>'
@@ -2938,9 +2937,9 @@ function renderPerfView(uid,_targetBody){
     const mob=isMobile();
     const statusDot=status==='good'?'<span style="color:var(--g);font-size:14px">●</span>':
                     status==='warn'?'<span style="color:var(--err);font-size:14px">●</span>':'';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'12px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
-      <div style="font-size:${mob?'14':'11'}px;color:var(--t3);font-family:'DM Sans'">${label}</div>
-      <div style="display:flex;align-items:center;gap:6px">${statusDot}<div style="font-size:${mob?'16':'13'}px;font-weight:800;color:var(--t1);font-family:'DM Sans'">${value}</div></div>
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'13px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
+      <div style="font-size:${mob?'15':'11'}px;color:var(--t3);font-family:'DM Sans'">${label}</div>
+      <div style="display:flex;align-items:center;gap:6px">${statusDot}<div style="font-size:${mob?'17':'13'}px;font-weight:800;color:var(--t1);font-family:'DM Sans'">${value}</div></div>
     </div>`;
   }
   function sectionHead(title){
