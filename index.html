@@ -135,7 +135,8 @@ header{background:#fff;backdrop-filter:none;border-bottom:2px solid var(--g);box
 }
 /* Menu button icon alignment */
 #ls-menu button svg{ display:inline-block;vertical-align:middle;flex-shrink:0; }
-.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;display:grid;grid-template-columns:1fr 310px;gap:14px;align-items:start;background:#F8F9FA;overflow-x:hidden}
+.wrap > *{min-width:0;overflow-x:hidden}
 @media(max-width:800px){.wrap{grid-template-columns:1fr}}
 /* Mobile: single column, summary stays at bottom (natural DOM order: #left then #summary) */
 body.is-mobile .wrap{grid-template-columns:1fr !important;padding:12px 10px 60px}
@@ -177,6 +178,36 @@ body.is-mobile .tm-sub{font-size:13px !important}
 body.is-mobile .mo-total{font-size:16px !important;padding:14px !important}
 /* Activity tabs */
 body.is-mobile [id^="act-master-"]{font-size:14px !important;padding:14px 8px !important}
+/* ── COMPREHENSIVE MOBILE SCALE — every text element ── */
+/* Perf view disclaimer/info boxes */
+body.is-mobile .note-box{font-size:14px !important;padding:12px 14px !important;line-height:1.7 !important}
+/* District dashboard section meta (15 reps, through date etc) */
+body.is-mobile .sec-meta{font-size:13px !important}
+/* District dashboard rep name + UID in bars */
+body.is-mobile .sec-body{font-size:15px !important}
+/* Quote tool line labels */
+body.is-mobile .sl{font-size:15px !important}
+body.is-mobile .lcat{font-size:12px !important}
+body.is-mobile .lnum{width:32px !important;height:32px !important;font-size:14px !important}
+body.is-mobile .lt{padding:10px 18px !important;font-size:13px !important}
+body.is-mobile .byod-chip{padding:10px 18px !important;font-size:13px !important}
+body.is-mobile .f label{font-size:13px !important}
+body.is-mobile .fnote{font-size:12px !important}
+body.is-mobile .ap-lbl{font-size:15px !important}
+body.is-mobile .ap-note{font-size:13px !important}
+body.is-mobile .apo-hint{font-size:13px !important}
+body.is-mobile .chip{padding:12px 20px !important;font-size:15px !important}
+body.is-mobile .chip-sub{font-size:13px !important}
+body.is-mobile .hso{padding:10px 16px !important;font-size:13px !important}
+body.is-mobile .qpill{font-size:12px !important;padding:5px 12px !important}
+body.is-mobile .ftype .fn{font-size:14px !important}
+body.is-mobile .ftype .fd{font-size:13px !important}
+body.is-mobile .apr .as{font-size:12px !important}
+body.is-mobile .stitle{font-size:13px !important}
+body.is-mobile .stl{font-size:12px !important}
+body.is-mobile .ppp-sub{font-size:13px !important}
+body.is-mobile .hsub{font-size:11px !important}
+body.is-mobile .hbadge{font-size:12px !important;padding:6px 12px !important}
 
 /* SECTIONS */
 .sec{background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,169,79,.06)}
@@ -388,8 +419,8 @@ body.is-mobile .tm-sub{color:rgba(255,255,255,.7) !important;font-size:13px}
 .pf-tile.on{background:var(--prog)!important;color:#fff!important;font-weight:900}
 
 /* DEAL STRIP — window pane */
-.deal-strip{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bd)}
-.deal-card{background:var(--s1);padding:10px 12px;position:relative;cursor:pointer;transition:background .15s;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);display:flex;flex-direction:column}
+.deal-strip{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bd);overflow:hidden;min-width:0;width:100%}
+.deal-card{background:var(--s1);padding:10px 12px;position:relative;cursor:pointer;transition:background .15s;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .deal-card:nth-child(even){border-right:none}
 .deal-card:nth-child(5),.deal-card:nth-child(6){border-bottom:none}
 .deal-card:hover{background:var(--s2)}
@@ -698,7 +729,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-17APR2026-Z9</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A3</div>
 </div>
 
 <script>
@@ -780,10 +811,17 @@ function doCaptureDiv(el){ doCapture(el); }
 const LOG_URL='https://script.google.com/macros/s/AKfycbzT0K1EWx-0pCcHBjnBTxLTxbpegklrRYu6k_yVoyJlTzJXcKd33pq9RwajYe_OBUue/exec';
 // ── DEVICE MODE — set manually by user on login ──
 // Avoids all unreliable detection in PWA/homescreen/browser scenarios
-let _deviceMode = null; // 'mobile' | 'desktop' — set in login flow
+let _deviceMode = null; // 'mobile' | 'desktop' — set in login flow, or auto-detected
 
-function isMobile(){ return _deviceMode === 'mobile'; }
-function isDesktop(){ return _deviceMode === 'desktop'; }
+function isMobile(){
+  // Explicit picker choice takes priority
+  if(_deviceMode==='mobile') return true;
+  if(_deviceMode==='desktop') return false;
+  // Auto-detect — works on Android browser, iOS browser, PWA, all
+  if(window.matchMedia&&window.matchMedia('(max-width:767px)').matches) return true;
+  return Math.min(screen.width||9999,window.innerWidth||9999)<768;
+}
+function isDesktop(){ return !isMobile(); }
 
 function showDevicePicker(){
   // Hide all login steps
@@ -1395,6 +1433,17 @@ function doLogin(){
 
 // Always require login on every page load
 document.body.style.overflow='hidden';
+// Auto-apply is-mobile class immediately based on screen — before device picker
+// This ensures CSS layout rules fire correctly on all browsers/devices
+(function(){
+  const mob=window.matchMedia?window.matchMedia('(max-width:767px)').matches:Math.min(screen.width||9999,window.innerWidth||9999)<768;
+  if(mob) document.body.classList.add('is-mobile');
+  // Re-check on resize/orientation change
+  window.addEventListener('resize',function(){
+    const m=window.matchMedia?window.matchMedia('(max-width:767px)').matches:window.innerWidth<768;
+    document.body.classList.toggle('is-mobile',_deviceMode==='mobile'||(_deviceMode===null&&m));
+  });
+})();
 
 // ══════════════════════════════════════════
 // PERFORMANCE + SALES TRACKER
@@ -1847,7 +1896,7 @@ function renderDistrictDashboard(_targetEl){
 
   dash.innerHTML=`
     ${rsmFilterChips}
-    <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-bottom:16px">${cycleLabel}${throughFmt?' · Through '+throughFmt:''} · ${_dashReps.length} reps${_perfDashFilter!=='all'?' · '+(UID_NAMES[_perfDashFilter]||_perfDashFilter).split(' ')[0]+' team':''}</div>
+    <div style="font-size:${isMobile()?'14':'11'}px;color:var(--t3);font-family:DM Sans;margin-bottom:16px">${cycleLabel}${throughFmt?' · Through '+throughFmt:''} · ${_dashReps.length} reps${_perfDashFilter!=='all'?' · '+(UID_NAMES[_perfDashFilter]||_perfDashFilter).split(' ')[0]+' team':''}</div>
 
     <!-- Opps Breakdown + Non-Voice -->
     ${sec('Opps Breakdown + Non-Voice Activations',
@@ -2650,7 +2699,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div>
         <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
-        <div style="font-size:11px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
+        <div style="font-size:${isMobile()?'14':'11'}px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
       </div>
 
     </div>
@@ -3043,13 +3092,13 @@ function renderPerfView(uid,_targetBody){
   const qualWarnings=qualNotes.filter(q=>!q.info);
   const qualInfos=qualNotes.filter(q=>q.info);
   const qualWarningsHtml=qualWarnings.map(q=>`
-    <div style="padding:10px 14px;font-size:10px;color:${q.red?'var(--err)':'#92400E'};font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">${q.red?'&#9888; Disqualified':'&#9888; Qualifier Reduction'}</div>
+    <div style="padding:${isMobile()?'13px 16px':'10px 14px'};font-size:${isMobile()?'14':'10'}px;color:${q.red?'var(--err)':'#92400E'};font-family:DM Sans,sans-serif;line-height:1.6">
+      <div style="font-weight:800;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">${q.red?'&#9888; Disqualified':'&#9888; Qualifier Reduction'}</div>
       ${q.msg}
     </div>`).join('');
   const qualInfosHtml=qualInfos.map(q=>`
-    <div style="padding:10px 14px;border-top:1px solid rgba(59,130,246,.12);font-size:10px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#2563eb;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">&#8505; Accuracy Note</div>
+    <div style="padding:${isMobile()?'13px 16px':'10px 14px'};border-top:1px solid rgba(59,130,246,.12);font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
+      <div style="font-weight:800;color:#2563eb;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">&#8505; Accuracy Note</div>
       ${q.msg}
     </div>`).join('');
   const qualNotesHtml=qualWarningsHtml||qualInfosHtml;
@@ -3080,12 +3129,12 @@ function renderPerfView(uid,_targetBody){
     </div>
 
     <!-- Disclaimers -->
-    <div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.18);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:10px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>
+    <div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.18);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:8px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
+      <div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>
       Data pulled from Metric Detail and may not include returns, disconnects, or adjustments. Not to be used for 100% accuracy.
     </div>
-    <div style="background:rgba(245,158,11,.03);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-size:10px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#92400E;margin-bottom:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase">&#8505; Payout Estimate</div>
+    <div style="background:rgba(245,158,11,.03);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:12px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
+      <div style="font-weight:800;color:#92400E;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Payout Estimate</div>
       Estimated based on Sales Performance data from Metric Detail. Not to be used for 100% accuracy.
     </div>
 
@@ -4465,8 +4514,8 @@ function devPick(card, opts){
 }
 function devPick4(card, opts){
   const mob=isMobile();
-  return `<div onclick="event.stopPropagation()" style="display:inline-flex;gap:0;margin-bottom:${mob?'8':'4'}px;border:1px solid var(--bd2);border-radius:6px;overflow:hidden;width:100%">
-    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;text-align:center;padding:${mob?'7px 2px':'2px 2px'};font-size:${mob?'12':'7.5'}px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#fff':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2">${o.lbl}</span>`).join('')}
+  return `<div onclick="event.stopPropagation()" style="display:flex;gap:0;margin-bottom:${mob?'8':'4'}px;border:1px solid var(--bd2);border-radius:6px;overflow:hidden;width:100%">
+    ${opts.map(o=>`<span onclick="event.stopPropagation();setDealDev('${card}','${o.id}')" style="flex:1;min-width:0;text-align:center;padding:${mob?'7px 2px':'2px 2px'};font-size:${mob?'11':'7.5'}px;font-weight:800;background:${_DL[card].dev===o.id?'var(--g)':'transparent'};color:${_DL[card].dev===o.id?'#fff':'var(--t3)'};cursor:pointer;border-right:1px solid var(--bd2);white-space:pre-line;line-height:1.2;overflow:hidden">${o.lbl}</span>`).join('')}
   </div>`;
 }
 const APD_NOTE=`<div style="flex:1"></div>`;
@@ -5907,7 +5956,7 @@ try {
 
 
 <!-- ACTIVITY OVERLAY -->
-<div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;font-family:'DM Sans',sans-serif">
+<div id="activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99998;overflow-y:auto;overflow-x:hidden;font-family:'DM Sans',sans-serif">
 
   <!-- Header -->
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
@@ -6565,7 +6614,7 @@ function closeActivity(){
 <!-- ══════════════════════════════════
      REP ACTIVITY OVERLAY
 ══════════════════════════════════ -->
-<div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto">
+<div id="rep-activity-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;overflow-y:auto;overflow-x:hidden">
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Activity</div>
     <div style="display:flex;align-items:center;gap:8px">
