@@ -149,6 +149,18 @@ body.is-mobile .deal-tag{font-size:12px !important;margin-bottom:8px !important}
 body.is-mobile .deal-card{padding:16px 14px !important}
 body.is-mobile #deal-global-toggle span{padding:10px 18px !important;font-size:14px !important}
 body.is-mobile .hi-banner{position:static !important}
+/* Hi-banner text bigger on mobile */
+body.is-mobile .hi-banner [style*="font-size:8px"]{font-size:11px !important}
+body.is-mobile .hi-banner [style*="font-size:15px"]{font-size:20px !important}
+body.is-mobile .hi-banner [style*="font-size:7px"]{font-size:10px !important}
+body.is-mobile .hi-banner [style*="padding:8px 14px"]{padding:12px 14px !important}
+/* Force district dashboard bars to cap width on mobile so text is readable */
+body.is-mobile #perf-body .sec-body > div > div[style*="border-radius:5px"]{max-width:68% !important}
+body.is-mobile #perf-mobile-district .sec-body > div > div[style*="border-radius:5px"]{max-width:68% !important}
+/* Activity week chips bigger */
+body.is-mobile .wchip{font-size:14px !important;padding:12px 16px !important}
+/* To/TC list rows */
+body.is-mobile .to-row, body.is-mobile .tc-row{font-size:14px !important;padding:14px 16px !important}
 /* Scale up quote form on mobile since it's now full width */
 body.is-mobile .lt{padding:8px 16px !important;font-size:12px !important}
 body.is-mobile .byod-chip{padding:8px 16px !important;font-size:12px !important}
@@ -2923,15 +2935,17 @@ function renderPerfView(uid,_targetBody){
   const dollar=v=>'$'+Number(v||0).toFixed(2);
 
   function metricRow(label,value,status){
+    const mob=isMobile();
     const statusDot=status==='good'?'<span style="color:var(--g);font-size:14px">●</span>':
                     status==='warn'?'<span style="color:var(--err);font-size:14px">●</span>':'';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bd)">
-      <div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">${label}</div>
-      <div style="display:flex;align-items:center;gap:6px">${statusDot}<div style="font-size:13px;font-weight:800;color:var(--t1);font-family:'DM Sans'">${value}</div></div>
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'12px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
+      <div style="font-size:${mob?'14':'11'}px;color:var(--t3);font-family:'DM Sans'">${label}</div>
+      <div style="display:flex;align-items:center;gap:6px">${statusDot}<div style="font-size:${mob?'16':'13'}px;font-weight:800;color:var(--t1);font-family:'DM Sans'">${value}</div></div>
     </div>`;
   }
   function sectionHead(title){
-    return `<div style="padding:8px 14px 4px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)"><div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${title}</div></div>`;
+    const mob=isMobile();
+    return `<div style="padding:${mob?'10px 16px 6px':'8px 14px 4px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)"><div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${title}</div></div>`;
   }
 
   const apGood=d.autopayRate>=0.28;
@@ -3094,9 +3108,9 @@ function renderPerfView(uid,_targetBody){
       ${metricRow('Gross Subtotal',fmtPay(grossPay))}
       ${metricRow('Qualifier Deduction','<span style="color:'+(deductionAmt>0?'var(--err)':'var(--t1)')+';font-weight:800">'+fmtDed(deductionAmt)+'</span>')}
       `:''}
-      <div style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,169,79,.04)">
-        <div style="font-size:12px;font-weight:900;color:var(--t1);font-family:'DM Sans'">EST. TOTAL PAYOUT</div>
-        <div style="font-family:'Bebas Neue';font-size:28px;color:var(--g);letter-spacing:.5px">${fmtPay(subtotal)}</div>
+      <div style="padding:${isMobile()?'16px':'12px 14px'};display:flex;justify-content:space-between;align-items:center;background:rgba(0,169,79,.04)">
+        <div style="font-size:${isMobile()?'15':'12'}px;font-weight:900;color:var(--t1);font-family:'DM Sans'">EST. TOTAL PAYOUT</div>
+        <div style="font-family:'Bebas Neue';font-size:${isMobile()?'38':'28'}px;color:var(--g);letter-spacing:.5px">${fmtPay(subtotal)}</div>
       </div>
     </div>
     ${qualWarningsHtml?`<div style="background:rgba(245,158,11,.04);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r);overflow:hidden;margin-bottom:8px">${qualWarningsHtml}</div>`:''}
@@ -3262,12 +3276,20 @@ function stTab(t){
 function stLoadAll(){
   const uid=_pendingUid;
   const cs=getTrackerCycleKey();
-  fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{_stAccEntries=Array.isArray(d)?d:[];renderSTAcc();}).catch(()=>renderSTAcc());
-  fetchWithTimeout(LOG_URL+'?type=fee_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{_stFeeEntries=Array.isArray(d)?d:[];renderSTFee();}).catch(()=>renderSTFee());
-  fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&cycleStart='+cs+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{_stFiberEntries=Array.isArray(d)?d:[];renderSTFiber();}).catch(()=>renderSTFiber());
+  // Fetch all entries for this uid (no cycleStart filter — Apps Script date serialization
+  // can break server-side string comparison). Filter client-side to current cycle.
+  fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+    .then(r=>r.json()).then(d=>{
+      const all=Array.isArray(d)?d:[];
+      _stAccEntries=cs?all.filter(e=>String(e.cycleStart||'')===cs):all;
+      renderSTAcc();
+    }).catch(()=>renderSTAcc());
+  fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+    .then(r=>r.json()).then(d=>{
+      const all=Array.isArray(d)?d:[];
+      _stFiberEntries=cs?all.filter(e=>String(e.cycleStart||'')===cs):all;
+      renderSTFiber();
+    }).catch(()=>renderSTFiber());
 }
 
 // ── ACC TRACKER ──
@@ -3280,42 +3302,43 @@ function renderSTAcc(){
   const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
   const otherTotal=otherEntries.reduce((s,e)=>s+Number(e.amount||0),0);
 
+  const mob=isMobile();
   const entryHtml=entries.length?entries.map(e=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bd)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'13px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
       <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${e.accType} — $${Number(e.amount).toFixed(2)}</div>
-        ${e.note?`<div style="font-size:10px;color:var(--t3)">${e.note}</div>`:''}
+        <div style="font-size:${mob?'15':'12'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${e.accType} — $${Number(e.amount).toFixed(2)}</div>
+        ${e.note?`<div style="font-size:${mob?'12':'10'}px;color:var(--t3)">${e.note}</div>`:''}
       </div>
-      <button type="button" onclick="stDeleteAcc('${e.rowId}')" style="padding:4px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
+      <button type="button" onclick="stDeleteAcc('${e.rowId}')" style="padding:${mob?'8px 16px':'4px 10px'};background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:${mob?'13':'10'}px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
     </div>`).join(''):
-    '<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px">No entries yet</div>';
+    `<div style="padding:20px;text-align:center;color:var(--t3);font-size:${mob?'14':'11'}px">No entries this cycle</div>`;
 
   pane.innerHTML=`
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:10px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Accessory Entries</div>
-        <div style="font-size:10px;font-weight:700;color:var(--t3);font-family:'DM Sans'">APD: $${apdTotal.toFixed(2)} · Other: $${otherTotal.toFixed(2)}</div>
+      <div style="padding:${mob?'12px 16px':'10px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Accessory Entries</div>
+        <div style="font-size:${mob?'13':'10'}px;font-weight:700;color:var(--t3);font-family:'DM Sans'">APD: $${apdTotal.toFixed(2)} · Other: $${otherTotal.toFixed(2)}</div>
       </div>
       ${entryHtml}
     </div>
     <!-- Add Entry Form -->
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Add Entry</div>
+    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:${mob?'18px':'16px'};margin-bottom:12px">
+      <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Add Entry</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
         <div>
-          <div style="font-size:9px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Type</div>
-          <select id="st-acc-type" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none">
+          <div style="font-size:${mob?'12':'9'}px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Type</div>
+          <select id="st-acc-type" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none">
             <option value="APD">APD</option>
             <option value="Other">Other</option>
           </select>
         </div>
         <div>
-          <div style="font-size:9px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Amount ($)</div>
-          <input type="number" id="st-acc-amount" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;box-sizing:border-box"/>
+          <div style="font-size:${mob?'12':'9'}px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Amount ($)</div>
+          <input type="number" id="st-acc-amount" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'16':'12'}px;outline:none;box-sizing:border-box"/>
         </div>
       </div>
-      <input type="text" id="st-acc-note" placeholder="Note (optional)" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
-      <button type="button" onclick="stSubmitAcc()" style="width:100%;padding:11px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">+ Add Accessory Entry</button>
+      <input type="text" id="st-acc-note" placeholder="Note (optional)" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
+      <button type="button" onclick="stSubmitAcc()" style="width:100%;padding:${mob?'15px':'11px'};background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:${mob?'15':'12'}px;font-weight:900;cursor:pointer">+ Add Accessory Entry</button>
     </div>`;
 }
 function stSubmitAcc(){
@@ -3353,30 +3376,31 @@ function stDeleteFee(rowId){
 function renderSTFiber(){
   const pane=document.getElementById('st-pane-fiber');
   if(!pane) return;
+  const mob=isMobile();
   const entries=_stFiberEntries;
   const total=entries.reduce((s,e)=>s+Number(e.qty||0),0);
   const entryHtml=entries.length?entries.map(e=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bd)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'13px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
       <div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Fiber Sale${e.qty>1?' (×'+e.qty+')':''}</div>
-        ${e.note?`<div style="font-size:10px;color:var(--t3)">${e.note}</div>`:''}
+        <div style="font-size:${mob?'15':'12'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Fiber Sale${e.qty>1?' (×'+e.qty+')':''}</div>
+        ${e.note?`<div style="font-size:${mob?'12':'10'}px;color:var(--t3)">${e.note}</div>`:''}
       </div>
-      <button type="button" onclick="stDeleteFiber('${e.rowId}')" style="padding:4px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
+      <button type="button" onclick="stDeleteFiber('${e.rowId}')" style="padding:${mob?'8px 16px':'4px 10px'};background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:${mob?'13':'10'}px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
     </div>`).join(''):
-    '<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px">No fiber sales logged</div>';
+    `<div style="padding:20px;text-align:center;color:var(--t3);font-size:${mob?'14':'11'}px">No fiber sales this cycle</div>`;
 
   pane.innerHTML=`
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:10px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Fiber Sales</div>
-        <div style="font-size:10px;font-weight:700;color:var(--g);font-family:'DM Sans'">Total: ${total} sale${total!==1?'s':''} · $${(total*30).toFixed(2)}</div>
+      <div style="padding:${mob?'12px 16px':'10px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Fiber Sales</div>
+        <div style="font-size:${mob?'13':'10'}px;font-weight:700;color:var(--g);font-family:'DM Sans'">Total: ${total} sale${total!==1?'s':''} · $${(total*30).toFixed(2)}</div>
       </div>
       ${entryHtml}
     </div>
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Log a Fiber Sale</div>
-      <input type="text" id="st-fiber-note" placeholder="Customer note (optional)" style="width:100%;padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
-      <button type="button" onclick="stSubmitFiber()" style="width:100%;padding:11px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:12px;font-weight:900;cursor:pointer">+ Log Fiber Sale ($30)</button>
+    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:${mob?'18px':'16px'};margin-bottom:12px">
+      <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Log a Fiber Sale</div>
+      <input type="text" id="st-fiber-note" placeholder="Customer note (optional)" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
+      <button type="button" onclick="stSubmitFiber()" style="width:100%;padding:${mob?'15px':'11px'};background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:${mob?'15':'12'}px;font-weight:900;cursor:pointer">+ Log Fiber Sale ($30)</button>
     </div>`;
 }
 function stSubmitFiber(){
@@ -6158,13 +6182,13 @@ function actRenderList(){
     const rowStyle='display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd);transition:background .12s'+(clickable?';cursor:pointer':'');
 
     return`<div ${rowClick} style="${rowStyle}">
-      <div style="width:34px;height:34px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:${bc[1]};flex-shrink:0">${initials}</div>
+      <div style="width:${isMobile()?'40':'34'}px;height:${isMobile()?'40':'34'}px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:${isMobile()?'13':'11'}px;font-weight:900;color:${bc[1]};flex-shrink:0">${initials}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name||'—'} <span style="font-size:10px;color:var(--t3);font-weight:400">${s.uid||''}</span></div>
-        <div style="font-size:10px;font-weight:800;color:var(--t2);margin-top:2px">${dateStr} ${timeStr}</div>
-        <div style="font-size:9px;color:var(--t3);margin-top:1px">#${sid} · ${s.device||''}</div>${quotePrev?`<div style="font-size:9px;color:var(--g);margin-top:2px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${quotePrev}</div>`:''}
+        <div style="font-size:${isMobile()?'15':'12'}px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name||'—'} <span style="font-size:${isMobile()?'12':'10'}px;color:var(--t3);font-weight:400">${s.uid||''}</span></div>
+        <div style="font-size:${isMobile()?'13':'10'}px;font-weight:800;color:var(--t2);margin-top:2px">${dateStr} ${timeStr}</div>
+        <div style="font-size:${isMobile()?'11':'9'}px;color:var(--t3);margin-top:1px">#${sid} · ${s.device||''}</div>${quotePrev?`<div style="font-size:${isMobile()?'12':'9'}px;color:var(--g);margin-top:2px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${quotePrev}</div>`:''}
       </div>
-      <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:9px;font-weight:800;padding:3px 6px;border-radius:6px;width:62px;text-align:center;flex-shrink:0;box-sizing:border-box">${badge}</div>
+      <div style="background:${bc[0]};color:${bc[1]};border:1px solid ${bc[2]};font-size:${isMobile()?'12':'9'}px;font-weight:800;padding:${isMobile()?'6px 10px':'3px 6px'};border-radius:6px;width:${isMobile()?'72':'62'}px;text-align:center;flex-shrink:0;box-sizing:border-box">${badge}</div>
     </div>`;
   }).join('')+(hasMore?`<div style="text-align:center;padding:16px"><button type="button" onclick="_actPage++;actRenderList()" style="padding:8px 24px;background:var(--g);color:#fff;border:none;border-radius:8px;font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">Load More (${sessions.length-pagedSessions.length} remaining)</button></div>`:'');
 }
@@ -7144,13 +7168,13 @@ function dmToRender(){
     const fd=parseFirstDay(r);let weekLabel='';let subNum='';
     if(fd){const sun=getWeekStart(fd);const sat=new Date(sun);sat.setDate(sun.getDate()+6);weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate()+'/'+sat.getFullYear();const wkk=sun.getTime();if(weekCounts[wkk]){const idx=weekCounts[wkk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}}
     const metaLine=weekLabel?(weekLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted)):fmtSubmitted(r.submitted);
-    return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+    return`<div onclick="showDMTimeDetail('to','${r.rowId}')" style="padding:${isMobile()?'14px 16px':'12px 14px'};border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${metaLine}</div>
+          <div style="font-size:${isMobile()?'15':'13'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:${isMobile()?'12':'10'}px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:${isMobile()?'12':'10'}px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${metaLine}</div>
         </div>
-        <div style="background:${getLateBg(r)||sb[r.status]||sb.Sent};color:${getLateColor(r)||sc[r.status]||sc.Sent};border:1px solid ${getLateBd(r)||sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
+        <div style="background:${getLateBg(r)||sb[r.status]||sb.Sent};color:${getLateColor(r)||sc[r.status]||sc.Sent};border:1px solid ${getLateBd(r)||sbd[r.status]||sbd.Sent};font-size:${isMobile()?'12':'10'}px;font-weight:800;padding:${isMobile()?'5px 10px':'3px 6px'};border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:${isMobile()?'90':'82'}px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
     </div>`;
   }).join('');
@@ -7182,13 +7206,13 @@ function dmTcRender(){
     const d=parseDate(r.date);let cycleLabel='';let subNum='';
     if(d){cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}};});}
     const tcMeta=cycleLabel?(cycleLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted||r.date)):(r.date?fmtSubmitted(r.date)+' · '+fmtSubmitted(r.submitted):fmtSubmitted(r.submitted));
-    return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:12px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
+    return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:${isMobile()?'14px 16px':'12px 14px'};border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:10px;color:var(--t3);font-weight:400">${r.uid}</span></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${tcMeta}</div>
+          <div style="font-size:${isMobile()?'15':'13'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${r.name} <span style="font-size:${isMobile()?'12':'10'}px;color:var(--t3);font-weight:400">${r.uid}</span></div>
+          <div style="font-size:${isMobile()?'12':'10'}px;color:var(--t3);margin-top:3px;font-family:'DM Sans'">${tcMeta}</div>
         </div>
-        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:10px;font-weight:800;padding:3px 6px;border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:82px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
+        <div style="background:${sb[r.status]||sb.Sent};color:${sc[r.status]||sc.Sent};border:1px solid ${sbd[r.status]||sbd.Sent};font-size:${isMobile()?'12':'10'}px;font-weight:800;padding:${isMobile()?'5px 10px':'3px 6px'};border-radius:20px;flex-shrink:0;font-family:'DM Sans';width:${isMobile()?'90':'82'}px;text-align:center;display:inline-block;box-sizing:border-box">${fmtStatus(r.status)}</div>
       </div>
     </div>`;
   }).join('');
