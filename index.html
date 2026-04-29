@@ -724,7 +724,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A25</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A26</div>
 </div>
 
 <script>
@@ -1096,7 +1096,7 @@ function isJaqUser(uid){ return (uid||_pendingUid)==='jq6635'; }  // sees all li
 function isRSMUser(uid){ const u=uid||_pendingUid; return RSM_UIDS.includes(u)&&!isDMUser(u)&&!isJaqUser(u); }
 function isRSCUser(uid){ const u=uid||_pendingUid; return !isDMUser(u)&&!isJaqUser(u)&&!isRSMUser(u); }
 function canSeeAllReps(uid){ return isDMUser(uid)||isJaqUser(uid); }
-function canSeeTO(uid){ return isDMUser(uid)||isJaqUser(uid); } // RSMs blocked
+function canSeeTO(uid){ return true; } // All roles see TO/TC — DM sees all, Jaq view-only all, RSM/RSC see own only
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
@@ -1379,10 +1379,9 @@ function launchActivity(){
   document.getElementById('activity-overlay').style.display='block';
   document.getElementById('act-header-name').textContent=name;
   document.getElementById('act-header-store').textContent=(_activityStore==='dm'||_pendingUid==='ji2646dm')?'All Stores':'Store '+_activityStore;
-  // TO/TC tabs: DM and Jaquelin only (RSMs see Quotes & Log only)
+  // TO/TC tabs: all roles see them — DM/Jaq see everyone, RSM/RSC see own only
   const _t1=document.getElementById('act-master-to');const _t2=document.getElementById('act-master-tc');
-  const _canTO=canSeeTO();
-  if(_t1)_t1.style.display=_canTO?'flex':'none';if(_t2)_t2.style.display=_canTO?'flex':'none';
+  if(_t1)_t1.style.display='flex';if(_t2)_t2.style.display='flex';
   // Log activity login
   logWithIP({type:'activity',sessionId:_sessionId+'-ACT',name,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   startSessionTracking();
@@ -5998,39 +5997,9 @@ try {
       <div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden">
         <!-- Master tabs -->
         <div style="display:flex;border-bottom:1px solid var(--bd)">
-          <div id="act-master-log" onclick="actMasterTab('log')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Quotes & Log</div>
-          <div id="act-master-to" onclick="actMasterTab('to')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Time Off</div>
+          <div id="act-master-to" onclick="actMasterTab('to')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Time Off</div>
           <div id="act-master-tc" onclick="actMasterTab('tc')" style="flex:1;padding:10px 6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Corrections</div>
         </div>
-
-        <!-- QUOTES & LOG PANE -->
-        <div id="act-pane-log">
-        <!-- Header -->
-        <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);display:flex;align-items:center;justify-content:space-between">
-          <div style="font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)">SESSIONS</div>
-          <div style="font-size:9px;color:var(--t3)" id="act-session-count"></div>
-        </div>
-        <!-- Filter tabs -->
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--s2);">
-          <button onclick="actSetFilter('all',this)" id="act-f-all" style="padding:4px 12px;border-radius:20px;border:1px solid var(--g);background:var(--g);color:#fff;font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">All</button>
-          <button onclick="actSetFilter('QTool',this)" id="act-f-qtool" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">QTool</button>
-          <button onclick="actSetFilter('perf_open',this)" id="act-f-perf" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Performance</button>
-          <button onclick="actSetFilter('Main',this)" id="act-f-main" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Main</button>
-          <button onclick="actSetFilter('Activity',this)" id="act-f-activity" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Activity</button>
-          <button onclick="actSetFilter('PriceCard',this)" id="act-f-pricecard" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Price Card</button>
-          <button onclick="actSetFilter('invalid',this)" id="act-f-invalid" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd2);background:var(--s3);color:var(--t3);font-family:'DM Sans';font-size:10px;font-weight:800;cursor:pointer;text-align:center;justify-content:center;white-space:nowrap">Invalid</button>
-        </div>
-        <!-- Search + Sort -->
-        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s2);align-items:center">
-          <input id="act-search" type="text" placeholder="Search name or UID..." oninput="actRenderList()" style="padding:8px 12px;background:#fff;border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:13px;outline:none;width:100%;box-sizing:border-box"/>
-          <select id="act-sort" onchange="actRenderList()" style="padding:8px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:12px;outline:none;cursor:pointer">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="name">Name</option>
-          </select>
-        </div>
-        <div id="act-session-list"><div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div></div>
-        </div><!-- end act-pane-log -->
 
         <!-- TIME OFF PANE -->
         <div id="act-pane-to" style="display:none">
@@ -6099,11 +6068,8 @@ try {
 
 <script>
 function actLoadData(){
-  document.getElementById('act-session-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading sessions...</div>';
-  fetch(LOG_URL+'?type=fetch&limit=500',{method:'GET',mode:'cors'})
-    .then(r=>r.json())
-    .then(data=>actProcessData(data))
-    .catch(()=>actUseDemoData());
+  // Default to Time Off tab — Quotes & Log removed
+  actMasterTab('to');
 }
 
 function actUseDemoData(){
@@ -7289,7 +7255,7 @@ function dmTcRender(){
 
 function actMasterTab(pane){
   _dmCurrentPane=pane;
-  ['log','to','tc'].forEach(p=>{
+  ['to','tc'].forEach(p=>{
     const tab=document.getElementById('act-master-'+p);
     const el=document.getElementById('act-pane-'+p);
     const isOn=p===pane;
@@ -7312,20 +7278,19 @@ function dmLoadTO(){
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
-        const _toFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
         const clean=d.filter(r=>r.rowId&&r.uid);
-        _dmToData=_toFilter?clean.filter(r=>_toFilter.includes((r.uid||'').toLowerCase())):clean;
+        // DM and Jaq see all; RSM/RSC see only their own requests
+        if(isDMUser()||isJaqUser()){
+          _dmToData=clean;
+        } else {
+          _dmToData=clean.filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase());
+        }
         dmToRender();
-      }
-      else{
-        console.warn('[dmLoadTO] unexpected response format:', d);
-        document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response from sheet. Try refreshing.</div>';
+      } else {
+        document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
       }
     })
-    .catch(err=>{
-      console.error('[dmLoadTO] fetch failed:', err);
-      setDMToDemo();
-    });
+    .catch(()=>setDMToDemo());
 }
 function setDMToDemo(){
   const rawToDemo=[
@@ -7335,8 +7300,11 @@ function setDMToDemo(){
     {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
     {rowId:'gs0426-TO-OLD-44',submitted:'04/04/2026, 2:00 PM',uid:'gs0426',name:'Gabbisette Sanchez',reason:'Personal appointment',duration:'Full Day',month:'April',days:'20',daysStatus:'',status:'Sent',note:'',edited:''},
   ];
-  const f=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
-  _dmToData=f?rawToDemo.filter(r=>f.includes((r.uid||'').toLowerCase())):rawToDemo;
+  if(isDMUser()||isJaqUser()){
+    _dmToData=rawToDemo;
+  } else {
+    _dmToData=rawToDemo.filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase());
+  }
   dmToRender();
 }
 
@@ -7346,19 +7314,19 @@ function dmLoadTC(){
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
-        const _tcFilter=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
         const clean=d.filter(r=>r.rowId&&r.uid);
-        _dmTcData=_tcFilter?clean.filter(r=>_tcFilter.includes((r.uid||'').toLowerCase())):clean;
+        // DM and Jaq see all; RSM/RSC see only their own requests
+        if(isDMUser()||isJaqUser()){
+          _dmTcData=clean;
+        } else {
+          _dmTcData=clean.filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase());
+        }
         dmTcRender();
-      }
-      else{
+      } else {
         document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
       }
     })
-    .catch(err=>{
-      console.error('[dmLoadTC] fetch failed:', err);
-      setDMTcDemo();
-    });
+    .catch(()=>setDMTcDemo());
 }
 function setDMTcDemo(){
   const rawTcDemo=[
@@ -7372,8 +7340,11 @@ function setDMTcDemo(){
     {rowId:'jq286d-TC-OLD-103',submitted:'',uid:'jq286d',name:'Josue Sosa',date:'2/15/2026',location:'Jefferson Dr (777)',reason:'Skipped shift lab by accident',shiftStart:'11:37 AM',breakStart:'2:27 PM',breakEnd:'3:11 PM',shiftEnd:'5:35 PM',status:'Corrected',note:'',edited:''},
     {rowId:'cx7250-TC-OLD-104',submitted:'',uid:'cx7250',name:'Christina Muzquiz',date:'1/28/2026',location:'Memorial Blvd (769)',reason:'Shift lab error clocking in',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'5:05 PM',status:'Corrected',note:'',edited:''},
   ];
-  const f=_activityRepFilter&&_activityRepFilter.length?_activityRepFilter.map(u=>u.toLowerCase()):null;
-  _dmTcData=f?rawTcDemo.filter(r=>f.includes((r.uid||'').toLowerCase())):rawTcDemo;
+  if(isDMUser()||isJaqUser()){
+    _dmTcData=rawTcDemo;
+  } else {
+    _dmTcData=rawTcDemo.filter(r=>(r.uid||'').toLowerCase()===_pendingUid.toLowerCase());
+  }
   dmTcRender();
 }
 
