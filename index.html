@@ -724,7 +724,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A23</div>
+  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A25</div>
 </div>
 
 <script>
@@ -1188,8 +1188,8 @@ function showMenu(){
   const btnAct=document.getElementById('btn-activity');
   const btnPerf=document.getElementById('btn-performance');
   const btnST=document.getElementById('btn-sales-tracker');
-  // Time Management: RSC only (not DM, not RSM, not Jaq)
-  if(btnTM) btnTM.style.display=isRSC?'block':'none';
+  // Time Management: RSC and RSM (not DM, not Jaq)
+  if(btnTM) btnTM.style.display=(isRSC||isRSM)?'block':'none';
   if(btnAct) btnAct.style.display='block';
   // Performance: unlocked for all
   if(btnPerf){
@@ -3344,19 +3344,14 @@ function stTab(t){
 }
 function stLoadAll(){
   const uid=_pendingUid;
-  const cs=getTrackerCycleKey();
-  // Fetch all entries for this uid (no cycleStart filter — Apps Script date serialization
-  // can break server-side string comparison). Filter client-side to current cycle.
   fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json()).then(d=>{
-      const all=Array.isArray(d)?d:[];
-      _stAccEntries=cs?all.filter(e=>String(e.cycleStart||'')===cs):all;
+      _stAccEntries=Array.isArray(d)?d:[];
       renderSTAcc();
     }).catch(()=>renderSTAcc());
   fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json()).then(d=>{
-      const all=Array.isArray(d)?d:[];
-      _stFiberEntries=cs?all.filter(e=>String(e.cycleStart||'')===cs):all;
+      _stFiberEntries=Array.isArray(d)?d:[];
       renderSTFiber();
     }).catch(()=>renderSTFiber());
 }
@@ -3422,6 +3417,9 @@ function stSubmitAcc(){
   fetchWithTimeout(LOG_URL+'?type=acc_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&accType='+type+'&amount='+amount+'&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
     .then(()=>{
       _stAccEntries.push({rowId,uid,name,cycleStart:cs,accType:type,amount,submitted,note});
+      // Clear form fields
+      document.getElementById('st-acc-amount').value='';
+      document.getElementById('st-acc-note').value='';
       renderSTAcc();
       showToast('Entry saved');
     }).catch(()=>showToast('Save failed — try again'));
@@ -3481,6 +3479,7 @@ function stSubmitFiber(){
   fetchWithTimeout(LOG_URL+'?type=fiber_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&qty=1&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
     .then(()=>{
       _stFiberEntries.push({rowId,uid,name,cycleStart:cs,qty:1,submitted,note});
+      document.getElementById('st-fiber-note').value='';
       renderSTFiber();
       showToast('Fiber sale logged');
     }).catch(()=>showToast('Save failed — try again'));
