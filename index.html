@@ -151,10 +151,9 @@ body.is-mobile .deal-card{padding:16px 14px !important}
 body.is-mobile #deal-global-toggle span{padding:10px 18px !important;font-size:14px !important}
 
 /* Hi-banner text bigger on mobile */
-body.is-mobile .hi-banner [style*="font-size:8px"]{font-size:11px !important}
-body.is-mobile .hi-banner [style*="font-size:15px"]{font-size:20px !important}
-body.is-mobile .hi-banner [style*="font-size:7px"]{font-size:10px !important}
-body.is-mobile .hi-banner [style*="padding:8px 14px"]{padding:12px 14px !important}
+body.is-mobile .hi-banner [style*="font-size:20px"]{font-size:22px !important}
+body.is-mobile .hi-banner [style*="font-size:9px"]{font-size:10px !important}
+body.is-mobile .hi-banner [style*="font-size:10px"]{font-size:11px !important}
 /* Force district dashboard bars to cap width on mobile so text is readable */
 /* bars are full width on mobile — height and font size make them readable */
 /* Activity week chips bigger */
@@ -392,7 +391,7 @@ body.is-mobile .tm-sub{color:rgba(255,255,255,.7) !important;font-size:13px}
 .reset-btn:hover{border-color:var(--err);color:var(--err);background:rgba(239,68,68,.04)}
 
 /* HOME INTERNET BANNER */
-.hi-banner{background:linear-gradient(90deg,#0a0a1e,#1a0a2e,#0a1e0a);border-bottom:2px solid var(--purple);display:grid;grid-template-columns:1fr 1fr}
+.hi-banner{background:var(--s1);border-bottom:2px solid var(--bd);display:grid;grid-template-columns:1fr 1fr}
 body.is-mobile .hi-banner{position:static !important;grid-template-columns:1fr 1fr}
 body.is-desktop .hi-banner{position:sticky;top:0;z-index:201}
 /* APO TILES */
@@ -652,10 +651,12 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       <div id="ls-menu" style="display:none">
         <div style="font-size:11px;color:var(--t3,#aaa);margin-bottom:14px;text-align:center" id="ls-menu-name"></div>
         <button type="button" id="btn-quotetool" onclick="launchQuoteTool()" style="width:100%;padding:13px;background:#00a94f;border:none;border-radius:6px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.85)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="15" height="15" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Quote Tool</span></span></button>
-        <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Performance</span></span></button>
+        <button type="button" id="btn-performance" onclick="launchPerformance()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Individual Performance</span></span></button>
         <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Sales Tracker</span></span></button>
         <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Time Management</span></span></button>
         <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Activity</span></span></button>
+        <button type="button" id="btn-store-perf" onclick="launchStoreDash()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Store Performance</span></span></button>
+        <button type="button" id="btn-dm-dash" onclick="launchDMDash()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">DM Dashboard</span></span></button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
           <button type="button" onclick="showDevicePicker()" style="padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/></svg> View</button>
           <button type="button" onclick="doLogout()" style="padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:6px;color:#374151;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.3px"><span style="display:flex;align-items:center;justify-content:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</span></button>
@@ -717,14 +718,14 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
       </div>
     </div>
   </div>
-  <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Sans',sans-serif">
+  <div style="position:absolute;bottom:calc(44px + env(safe-area-inset-bottom, 20px));left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Sans',sans-serif">
     <span style="font-size:10px;color:#9CA3AF;font-weight:600" id="theme-label">Light</span>
     <div onclick="toggleTheme()" id="theme-toggle" style="width:40px;height:22px;background:#E2E5E9;border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">
       <div id="theme-knob" style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-25APR2026-A26</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A41</div>
 </div>
 
 <script>
@@ -1219,6 +1220,11 @@ function showMenu(){
     btnQT.title=qtDisabled?'Quote Tool not available':'';
     if(qtDisabled) btnQT.onclick=null;
   }
+  // DSR Dashboard: Store Performance (all roles), DM Dashboard (DM + Jaq only)
+  const btnSP = document.getElementById('btn-store-perf');
+  if(btnSP) btnSP.style.display='block';
+  const btnDM2 = document.getElementById('btn-dm-dash');
+  if(btnDM2) btnDM2.style.display=(isDM||isJaq)?'block':'none';
 }
 
 function showActivity2FA(){
@@ -1271,7 +1277,7 @@ function launchRepActivity(){
   document.body.style.overflow='';
   document.getElementById('rep-activity-overlay').style.display='block';
   document.getElementById('rep-act-username').textContent=UID_NAMES[_pendingUid]||_pendingUid;
-  repActLoadData();
+  setTimeout(()=>{ if(typeof repActLoadData==='function') repActLoadData(); },0);
   startSessionTracking();
   setTimeout(()=>buildWeekChips('ra-to-week-chips',_raToWeekChip,null),100);
 }
@@ -1291,7 +1297,7 @@ function goHome(){
   // Hide all overlays, show login screen at menu
   document.getElementById('perf-overlay').classList.remove('perf-open');
   ['app-content','tm-overlay','rep-activity-overlay','ra-detail-overlay',
-   'perf-overlay','sales-tracker-overlay','activity-overlay'].forEach(id=>{
+   'perf-overlay','sales-tracker-overlay','activity-overlay','dsr-overlay'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -3344,15 +3350,14 @@ function stTab(t){
 function stLoadAll(){
   const uid=_pendingUid;
   fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{
-      _stAccEntries=Array.isArray(d)?d:[];
-      renderSTAcc();
-    }).catch(()=>renderSTAcc());
+    .then(r=>r.json()).then(d=>{ _stAccEntries=Array.isArray(d)?d:[]; renderSTAcc(); }).catch(()=>renderSTAcc());
   fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{
-      _stFiberEntries=Array.isArray(d)?d:[];
-      renderSTFiber();
-    }).catch(()=>renderSTFiber());
+    .then(r=>r.json()).then(d=>{ _stFiberEntries=Array.isArray(d)?d:[]; renderSTFiber(); }).catch(()=>renderSTFiber());
+  // Fee discounts — read from uploaded report (read-only)
+  const isDM=isDMUser(), isJaq=isJaqUser();
+  const feeUrl=LOG_URL+'?type=fees_report_fetch&_='+Date.now()+(isDM||isJaq?'':('&uid='+encodeURIComponent(uid)));
+  fetchWithTimeout(feeUrl,{method:'GET',mode:'cors',cache:'no-store'})
+    .then(r=>r.json()).then(d=>{ _stFeeEntries=Array.isArray(d)?d:[]; renderSTFee(); }).catch(()=>renderSTFee());
 }
 
 // ── ACC TRACKER ──
@@ -3429,13 +3434,62 @@ function stDeleteAcc(rowId){
   renderSTAcc();
 }
 
-// ── FEE DISCOUNTS ──
-
-
-function stDeleteFee(rowId){
-  fetchWithTimeout(LOG_URL+'?type=fee_delete&rowId='+encodeURIComponent(rowId),{method:'GET',mode:'cors',cache:'no-store'}).catch(()=>{});
-  _stFeeEntries=_stFeeEntries.filter(e=>e.rowId!==rowId);
-  renderSTFee();
+// ── FEE DISCOUNTS (read-only from uploaded 419fees report) ──
+function renderSTFee(){
+  const pane=document.getElementById('st-pane-fee');
+  if(!pane) return;
+  const entries=_stFeeEntries;
+  const mob=isMobile();
+  const isDM=isDMUser()||isJaqUser();
+  const total=entries.reduce((s,e)=>s+Number(e.discount||0),0);
+  const countDisc=entries.filter(e=>Number(e.discount||0)>0).length;
+  if(!entries.length){
+    pane.innerHTML=`<div style="padding:24px;text-align:center;color:var(--t3);font-size:${mob?'14':'11'}px;font-family:'DM Sans'">No act fee discounts found for this period</div>`;
+    return;
+  }
+  // Group by UID for DM view
+  const byRep={};
+  entries.forEach(e=>{
+    const k=e.uid||'unknown';
+    if(!byRep[k]) byRep[k]={name:e.salesperson,uid:e.uid,store:e.store,count:0,totalDisc:0,rows:[]};
+    byRep[k].count++;
+    byRep[k].totalDisc+=Number(e.discount||0);
+    byRep[k].rows.push(e);
+  });
+  let html=`<div style="background:var(--s1);border:1.5px solid rgba(239,68,68,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+    <div style="padding:${mob?'12px 16px':'10px 14px'};background:rgba(239,68,68,.04);border-bottom:1px solid rgba(239,68,68,.15);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--err);font-family:'DM Sans'">Act Fee Discounts</div>
+      <div style="font-size:${mob?'12':'10'}px;font-weight:700;color:var(--t3);font-family:'DM Sans'">${countDisc} discounted · -$${total.toFixed(2)} total</div>
+    </div>`;
+  if(isDM){
+    // DM sees all reps grouped
+    Object.values(byRep).sort((a,b)=>b.totalDisc-a.totalDisc).forEach(rep=>{
+      html+=`<div style="padding:${mob?'10px 16px':'8px 14px'};border-bottom:1px solid var(--bd)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:${mob?'14':'11'}px;font-weight:800;color:var(--t1);font-family:'DM Sans'">${rep.name}</div>
+            <div style="font-size:${mob?'11':'9'}px;color:var(--t3);font-family:'DM Sans'">${rep.store} · ${rep.count} txn${rep.count!==1?'s':''}</div>
+          </div>
+          <div style="font-size:${mob?'14':'11'}px;font-weight:900;color:var(--err);font-family:'DM Sans'">-$${rep.totalDisc.toFixed(2)}</div>
+        </div>
+        ${rep.rows.map(r=>`<div style="font-size:${mob?'11':'9'}px;color:var(--t3);margin-top:2px;font-family:'DM Sans'">Receipt ${r.receipt} · List $${r.listPrice} → Sold $${r.soldFor}</div>`).join('')}
+      </div>`;
+    });
+  } else {
+    // Rep sees their own
+    entries.forEach(e=>{
+      const disc=Number(e.discount||0);
+      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'12px 16px':'8px 14px'};border-bottom:1px solid var(--bd)">
+        <div>
+          <div style="font-size:${mob?'13':'11'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Activation Fee · ${e.customer||'Customer'}</div>
+          <div style="font-size:${mob?'11':'9'}px;color:var(--t3);font-family:'DM Sans'">Receipt ${e.receipt} · List $${e.listPrice} → Sold $${e.soldFor}</div>
+        </div>
+        <div style="font-size:${mob?'14':'11'}px;font-weight:900;color:${disc>0?'var(--err)':'var(--ok)'};font-family:'DM Sans'">${disc>0?'-$'+disc.toFixed(2):'Full'}</div>
+      </div>`;
+    });
+  }
+  html+=`</div><div style="font-size:${mob?'11':'9'}px;color:var(--t3);text-align:center;font-family:'DM Sans';padding:4px">From uploaded 419fees report · Read-only</div>`;
+  pane.innerHTML=html;
 }
 
 // ── FIBER SALES ──
@@ -3505,22 +3559,24 @@ if(typeof showToast==='undefined'){
 
 <div class="app-content" id="app-content" style="background:#F8F9FA;min-height:100vh">
 <div class="hi-banner">
-  <div style="padding:8px 14px;border-right:1px solid rgba(139,92,246,.3);display:flex;flex-direction:column;gap:2px">
-    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:1px">📡 AT&T Internet Air</div>
-    <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$47/mo + taxes w/ AutoPay!</div>
-    <div style="font-size:8px;color:rgba(255,255,255,.6);line-height:1.3">Any Govt ID Accepted · Only at Cricket</div>
-    <div style="font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
+  <!-- AIA -->
+  <div style="padding:10px 14px;border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:3px;background:var(--s1)">
+    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:2px;font-family:'DM Sans'">📡 AT&T Internet Air</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$47/mo + taxes w/ AutoPay!</div>
+    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">Any Govt ID · Only at Cricket</div>
+    <div style="font-size:9px;color:var(--t3);margin-top:1px;line-height:1.3">Via SaraPlus · Billing by AT&T</div>
   </div>
-  <div style="padding:8px 14px;display:flex;flex-direction:column;gap:2px;background:rgba(0,169,79,.04)">
-    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin-bottom:1px">🌐 AT&T Fiber — NEW PROMO</div>
-    <div style="font-family:'Bebas Neue';font-size:15px;color:#fff;letter-spacing:.5px;line-height:1.1">$15 OFF 300 Mbps or Higher!</div>
-    <div style="font-size:8px;color:rgba(255,255,255,.6);line-height:1.3">New customers · +taxes · Only at Cricket</div>
-    <div style="font-size:7px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.3">Ordered via SaraPlus in eligible Cricket locations. Billing handled fully by AT&T</div>
+  <!-- Fiber -->
+  <div style="padding:10px 14px;display:flex;flex-direction:column;gap:3px;background:var(--s1)">
+    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin-bottom:2px;font-family:'DM Sans'">🌐 AT&T Fiber — NEW PROMO</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$15 OFF 300 Mbps or Higher!</div>
+    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">New customers · +taxes · Only at Cricket</div>
+    <div style="font-size:9px;color:var(--t3);margin-top:1px;line-height:1.3">Via SaraPlus · Billing by AT&T</div>
   </div>
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/3/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/30/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3762,7 +3818,7 @@ const PHONES=[
   {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:79.99,  nw:199.99,  up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:0,      nw:99.99,   up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:299.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:599.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i17e_256',n:'iPhone 17e 256GB',     sw:299.99, nw:399.99,  up:599.99,  sw_o:399.99, nw_o:499.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
@@ -3778,18 +3834,18 @@ const PHONES=[
   // Samsung
   {id:'a16',    n:'Galaxy A16',            sw:0,      nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:159.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
   {id:'a17',    n:'Galaxy A17',            sw:0,      nw:19.99,   up:179.99,  sw_o:109.99, nw_o:109.99, up_o:179.99,  frp:179.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',    n:'Galaxy A37',            sw:404.99, nw:404.99,  up:404.99,  frp:404.99,  brand:'Samsung',  promoReq:'any'},
+  {id:'a37',    n:'Galaxy A37',            sw:0,      nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
   {id:'a36',    n:'Galaxy A36',            sw:39.99,  nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25fe',  n:'Galaxy S25 FE',         sw:149.99, nw:149.99,  up:649.99,  sw_o:399.99, nw_o:399.99, up_o:649.99,  frp:649.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',    n:'Galaxy S25',            sw:360,    nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
   {id:'s26',    n:'Galaxy S26',            sw:399.99, nw:499.99,  up:899.99,  sw_o:699.99, nw_o:699.99, up_o:899.99,  frp:899.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26u',   n:'Galaxy S26 Ultra',      sw:699.99, nw:899.99,  up:1099.99, sw_o:1099.99,nw_o:1099.99, up_o:1099.99, frp:1299.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'s26u',   n:'Galaxy S26 Ultra',      sw:699.99, nw:899.99,  up:1299.99, sw_o:1099.99,nw_o:1099.99, up_o:1299.99, frp:1299.99, brand:'Samsung',  promoReq:'supreme'},
   // Motorola
   {id:'mgplay', n:'moto g play 2026',      sw:0,      nw:0,       up:119.99,  sw_o:29.99,  nw_o:29.99,  up_o:119.99,  frp:119.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
   {id:'mg26',   n:'moto g 2026',           sw:0,      nw:0,       up:79.99,   sw_o:29.99,  nw_o:29.99,  up_o:79.99,   frp:149.99,  brand:'Motorola', promoReqSw:'smart', promoReqNw:'supreme', maxLinesNw:4},
   {id:'mgpwr',  n:'moto g power 2026',     sw:19.99,  nw:39.99,   up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgsty',  n:'moto g stylus 2025',    sw:29.99,  nw:29.99,   up:239.99,  sw_o:69.99,  nw_o:69.99,  up_o:239.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',  n:'motorola edge 2025',    sw:29.99,  nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'medge',  n:'motorola edge 2025',    sw:0,      nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'razr',   n:'motorola razr 2025',    sw:149.99, nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
   {id:'icon',   n:'Icon 2026',             sw:0,      nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
@@ -6432,7 +6488,7 @@ function closeActivity(){
 <div id="perf-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99994;flex-direction:column;overflow-y:auto">
   <!-- Header -->
   <div style="background:#fff;border-bottom:2px solid var(--g);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:10">
-    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Performance</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px">Individual Performance</div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="perf-header-name" class="hdr-name" style="padding:7px 14px;background:#fff;border:1.5px solid #CBD0D8;border-radius:6px;color:#111827;font-family:'DM Sans';font-size:11px;font-weight:700;display:inline-flex;align-items:center;height:32px;box-sizing:border-box;cursor:default;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
       <button class="hdr-refresh perf-hdr-btn" type="button" onclick="perfRefresh()" title="Refresh" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -6470,11 +6526,13 @@ function closeActivity(){
     <div id="st-tab-acc" onclick="stTab('acc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Accessories</div>
     
     <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fiber Sales</div>
+    <div id="st-tab-fee" onclick="stTab('fee')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fee Discounts</div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:16px 14px 80px">
     <div id="st-pane-acc"></div>
     
     <div id="st-pane-fiber" style="display:none"></div>
+    <div id="st-pane-fee" style="display:none"></div>
   </div>
 </div>
 
@@ -6641,8 +6699,45 @@ function closeActivity(){
   <div style="max-width:500px;margin:0 auto;padding:16px 14px 80px" id="ra-detail-content"></div>
 </div>
 
-
-<script>
+<!-- ══════════════════════════════════
+     DSR DASHBOARD OVERLAY
+══════════════════════════════════ -->
+<div id="dsr-overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:99993;flex-direction:column">
+  <!-- Header -->
+  <div style="background:#fff;border-bottom:2px solid var(--g);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px" id="dsr-overlay-title">STORE PERFORMANCE</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button class="hdr-refresh perf-hdr-btn" onclick="dsrRefresh()" title="Refresh" style="padding:8px 10px;cursor:pointer;font-family:'DM Sans';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
+      <button class="hdr-home perf-hdr-btn" onclick="closeDSR()" style="padding:8px 12px;cursor:pointer;font-family:'DM Sans';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18V12"/></svg><span class="hdr-home-text"> Home</span></button>
+      <button class="hdr-back perf-hdr-btn" onclick="closeDSR()" style="padding:8px 12px;cursor:pointer;touch-action:manipulation;font-family:'DM Sans';font-size:12px;font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span class="hdr-back-text"> Back</span></button>
+    </div>
+  </div>
+  <!-- Report strip -->
+  <div id="dsr-report-strip" style="background:var(--s1);border-bottom:1px solid var(--bd);padding:8px 16px;flex-shrink:0">
+    <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;color:var(--t1)" id="dsr-strip-month">—</div>
+    <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px" id="dsr-strip-dates"></div>
+  </div>
+  <!-- Layout: left panel (desktop) + right body -->
+  <div id="dsr-layout" style="flex:1;display:flex;min-height:0;overflow:hidden">
+    <!-- Left panel: store list (desktop) or store dropdown (mobile) -->
+    <div id="dsr-left" style="display:none;width:240px;flex-shrink:0;border-right:1.5px solid var(--bd);overflow-y:auto;background:var(--s1);-webkit-overflow-scrolling:touch">
+      <div style="padding:10px 14px 6px;border-bottom:1px solid var(--bd)">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Select a Store</div>
+      </div>
+      <div id="dsr-store-list-items"></div>
+    </div>
+    <!-- Right: report strip + dropdown (mobile) + body -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+      <!-- Mobile dropdown -->
+      <div id="dsr-store-sel-wrap" style="display:none;padding:8px 14px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:5px;font-family:'DM Sans'">Select a Store</div>
+        <select id="dsr-store-select" onchange="dsrSelectStore(parseInt(this.value))" style="width:100%;padding:9px 12px;background:var(--s2);border:1.5px solid var(--bd2);border-radius:var(--r2);font-family:'DM Sans';font-size:13px;font-weight:700;color:var(--t1);cursor:pointer;appearance:none;-webkit-appearance:none"></select>
+      </div>
+      <!-- Body -->
+      <div class="scroll-body" id="dsr-body" style="padding:14px 16px 80px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0"></div>
+    </div>
+  </div>
+</div>
 // ══════════════════════════════════════════
 // TIME MANAGEMENT
 // ══════════════════════════════════════════
@@ -7865,7 +7960,728 @@ function buildPartialCopyText(r){
   if(r.note) txt+='\nNote: '+r.note;
   return {txt,status};
 }
-</script>
 
+// ══════════════════════════════════════════════════════════════
+// DSR DASHBOARD — Store Performance + DM Dashboard
+// ══════════════════════════════════════════════════════════════
+
+// ── Constants ──
+const DSR_DAYS_IN_MONTH = 30; // April 2026
+const DSR_MONTH_LABEL   = 'April 2026';
+const DSR_MONTH_KEY     = 'april2026'; // sheet tab prefix
+
+// Store goals from DSR (per store row). Hardcoded from DSR Apr 28.
+// Updated when DSR is fetched successfully.
+const DSR_GOALS = {
+  777:{actsGoal:105,upgGoal:43,oppsGoal:148,actsLY:103,oppsLY:147},
+  747:{actsGoal:81, upgGoal:55,oppsGoal:136,actsLY:70, oppsLY:135},
+  775:{actsGoal:38, upgGoal:31,oppsGoal:69, actsLY:52, oppsLY:100},
+  769:{actsGoal:46, upgGoal:34,oppsGoal:80, actsLY:30, oppsLY:52},
+  752:{actsGoal:43, upgGoal:30,oppsGoal:73, actsLY:59, oppsLY:79},
+  768:{actsGoal:29, upgGoal:26,oppsGoal:55, actsLY:32, oppsLY:55},
+};
+const DSR_DIST_GOALS = {actsGoal:342,upgGoal:219,oppsGoal:561,actsLY:347,oppsLY:566};
+
+// Store config
+const DSR_STORES = [
+  {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 2'},
+  {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
+  {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
+  {id:769,name:'Memorial',    rsm:'Rolando Garcia',   tier:'Tier 1'},
+  {id:752,name:'Twin City',   rsm:'Josue Sosa',       tier:'Tier 1'},
+  {id:768,name:'W. Orange',   rsm:'Jose Manzo',       tier:'Tier 1'},
+];
+
+// ── State ── Pre-loaded with April 2026 data (overridden by live fetch)
+let _dsrView = 'store';
+let _dsrStoreId = 777;
+let _dsrDaysElapsed = 28;
+let _dsrMDDate  = '04/28/2026';
+let _dsrInetDate= '04/28/2026';
+let _dsrDSRDate = '04/28/2026'; // pre-loaded from DSR report
+
+// Pre-loaded Metric Detail data (April 2026)
+let _dsrMDData = {
+  747:{storeId:747,throughDate:'04/28/2026',voice:75,nv:0,upg:55,grossAdds:77,byod:0.3766,aal:0.2338,multi:0.5714,rpm60:0.7792,maxAct:0.2973,autopay:0.25,protect:0.578,accRev:7951.58,accPerOpp:77.20,ppp:0.1748,wtr:58.33,billPay:379,planDown:7,aiaOrders:3},
+  752:{storeId:752,throughDate:'04/28/2026',voice:26,nv:1,upg:24,grossAdds:27,byod:0.2222,aal:0.2593,multi:0.5556,rpm60:0.7778,maxAct:0.1818,autopay:0.4848,protect:0.7619,accRev:3905.23,accPerOpp:86.78,ppp:0.1778,wtr:71.43,billPay:75,planDown:8,aiaOrders:0},
+  768:{storeId:768,throughDate:'04/28/2026',voice:43,nv:2,upg:32,grossAdds:46,byod:0.3478,aal:0.1739,multi:0.5217,rpm60:0.7609,maxAct:0.1304,autopay:0.3846,protect:0.5593,accRev:4684.61,accPerOpp:75.56,ppp:0.1613,wtr:75.00,billPay:157,planDown:4,aiaOrders:1},
+  769:{storeId:769,throughDate:'04/28/2026',voice:39,nv:1,upg:29,grossAdds:37,byod:0.3250,aal:0.2500,multi:0.3500,rpm60:0.7750,maxAct:0.2222,autopay:0.3469,protect:0.6964,accRev:3977.11,accPerOpp:71.02,ppp:0.1786,wtr:86.67,billPay:131,planDown:5,aiaOrders:4},
+  775:{storeId:775,throughDate:'04/28/2026',voice:34,nv:1,upg:30,grossAdds:34,byod:0.2857,aal:0.3429,multi:0.5714,rpm60:0.7714,maxAct:0.3125,autopay:0.2195,protect:0.5882,accRev:3421.87,accPerOpp:62.22,ppp:0.1091,wtr:100.00,billPay:150,planDown:4,aiaOrders:2},
+  777:{storeId:777,throughDate:'04/28/2026',voice:96,nv:3,upg:41,grossAdds:101,byod:0.2970,aal:0.3762,multi:0.5248,rpm60:0.8119,maxAct:0.2321,autopay:0.4457,protect:0.6000,accRev:9342.44,accPerOpp:83.41,ppp:0.1518,wtr:84.62,billPay:361,planDown:3,aiaOrders:0},
+};
+
+// Pre-loaded Internet data (April 2026)
+let _dsrInetData = {
+  747:{storeId:747,throughDate:'04/28/2026',addrChecks:128,eligFiber:77,creditFiber:3,advPayFiber:1,fiberOrders:2,eligAIA:45,creditAIA:5,advPayAIA:1,aiaOrders:3},
+  752:{storeId:752,throughDate:'04/28/2026',addrChecks:32,eligFiber:11,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:7,creditAIA:0,advPayAIA:0,aiaOrders:0},
+  768:{storeId:768,throughDate:'04/28/2026',addrChecks:52,eligFiber:27,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:20,creditAIA:1,advPayAIA:1,aiaOrders:1},
+  769:{storeId:769,throughDate:'04/28/2026',addrChecks:45,eligFiber:17,creditFiber:2,advPayFiber:0,fiberOrders:0,eligAIA:18,creditAIA:7,advPayAIA:0,aiaOrders:4},
+  775:{storeId:775,throughDate:'04/28/2026',addrChecks:26,eligFiber:17,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:9,creditAIA:2,advPayAIA:0,aiaOrders:2},
+  777:{storeId:777,throughDate:'04/28/2026',addrChecks:137,eligFiber:38,creditFiber:1,advPayFiber:0,fiberOrders:1,eligAIA:41,creditAIA:1,advPayAIA:0,aiaOrders:0},
+};
+
+let _dsrDSRData  = null;
+let _dsrDistData = null;
+
+// ── Money formatter: commas + cents only if non-zero ──
+function fmtMoney(v){
+  const n=parseFloat(v)||0;
+  const hasC=Math.round(n*100)%100!==0;
+  return '$'+n.toLocaleString('en-US',{minimumFractionDigits:hasC?2:0,maximumFractionDigits:2});
+}
+
+// ── Source label helper ──
+function dsrSrc(type){
+  const cols = {smd:'var(--g)',dsr:'#8B5CF6',inet:'#3B82F6'};
+  const labels = {smd:'Metric Detail',dsr:'DSR',inet:'Internet'};
+  return `<div style="font-size:9px;font-weight:800;color:${cols[type]};margin-top:4px;font-family:'DM Sans'">● ${labels[type]}</div>`;
+}
+
+// ── Bar section ──
+function dsrBarSec(label, val, goal, minVal, color, srcType){
+  const numVal = typeof val==='string' ? parseFloat(val.replace(/[$,]/g,''))||0 : (val||0);
+  const isDollar = typeof val==='string' && val.startsWith('$');
+  const barW = goal>0 ? Math.min(100,Math.round(numVal/goal*100)) : 0;
+  const minW = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100) : null;
+  const goalDisplay = goal>0 ? (isDollar?'Goal $'+Math.round(goal).toLocaleString('en-US'):'Goal '+goal) : '—';
+  const minDisplay  = minVal!=null ? (isDollar?'Min $'+Math.round(minVal).toLocaleString('en-US')+' (85%)':'Min '+minVal+' (85%)') : null;
+  const dispVal = typeof val==='string' ? val : (Number.isInteger(val)?val:val);
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+    </div>
+    <div style="padding:10px 12px">
+      <div style="font-family:'Bebas Neue';font-size:34px;line-height:1;color:${color};margin-bottom:6px">${dispVal}</div>
+      <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
+        <div style="position:absolute;left:0;top:0;height:100%;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
+        ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:5px">
+        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>${goalDisplay}</div>
+        ${minDisplay?`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>${minDisplay}</div>`:''}
+      </div>
+      ${dsrSrc(srcType)}
+    </div>
+  </div>`;
+}
+
+// ── Rate bar ──
+function dsrRateSec(label, val, goalPct, minPct, srcType){
+  const color = val>=goalPct?'var(--ok)':val>=(minPct||goalPct*.9)?'var(--warn)':'var(--err)';
+  const max = Math.max(goalPct*1.5, val);
+  const barW = Math.min(100,Math.round(val/max*100));
+  const goalW = Math.round(goalPct/max*100);
+  const minW  = minPct!=null ? Math.round(minPct/max*100) : null;
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+    </div>
+    <div style="padding:10px 12px">
+      <div style="font-family:'Bebas Neue';font-size:34px;line-height:1;color:${color};margin-bottom:6px">${(val*100).toFixed(1)}%</div>
+      <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
+        <div style="position:absolute;left:0;top:0;height:100%;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
+        <div style="position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.3);left:${goalW}%"></div>
+        ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:5px">
+        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${(goalPct*100).toFixed(0)}%</div>
+        ${minPct!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${(minPct*100).toFixed(0)}%</div>`:''}
+      </div>
+      ${dsrSrc(srcType)}
+    </div>
+  </div>`;
+}
+
+// ── Tile ──
+function dsrTile(label, val, color, srcType, sub){
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+    <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${color||'var(--t1)'}">${val}</div>
+    ${sub?`<div style="font-size:9px;color:var(--t3);margin-top:2px">${sub}</div>`:''}
+    ${srcType?dsrSrc(srcType):''}
+  </div>`;
+}
+
+// ── Need/Day tile ──
+function dsrNeedTile(label, mtd, goal, goal85, srcType){
+  const rem = Math.max(1, DSR_DAYS_IN_MONTH - _dsrDaysElapsed);
+  const need100 = goal>0 ? Math.ceil(Math.max(0,goal-mtd)/rem*10)/10 : 0;
+  const need85  = goal85!=null&&goal85>0 ? Math.ceil(Math.max(0,goal85-mtd)/rem*10)/10 : null;
+  const c100 = need100===0?'var(--ok)':need100<=3?'var(--warn)':'var(--err)';
+  const c85  = need85!=null?(need85===0?'var(--ok)':need85<=3?'var(--warn)':'var(--err)'):'';
+  if(need85===null){
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+      <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c100}">${need100}</div>
+      ${dsrSrc(srcType)}
+    </div>`;
+  }
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:3px 0">
+      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c100}">${need100}</div><div style="font-size:8px;color:var(--t3)">to 100%</div></div>
+      <div style="width:1px;height:32px;background:var(--bd2)"></div>
+      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c85}">${need85}</div><div style="font-size:8px;color:var(--t3)">to 85%</div></div>
+    </div>
+    ${dsrSrc(srcType)}
+  </div>`;
+}
+
+// ── Color helpers ──
+function dsrGC(v,g,w){ return v>=g?'var(--ok)':v>=w?'var(--warn)':'var(--err)'; }
+function dsrProj(v){ return Math.round(v/_dsrDaysElapsed*DSR_DAYS_IN_MONTH); }
+function dsrPctSign(v){ return (v>=0?'+':'')+(v*100).toFixed(1)+'%'; }
+function dsrGrid2(a,b){ return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">${a}${b}</div>`; }
+function dsrGrid4(items){ return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">${items.join('')}</div>`; }
+function dsrGrid2Tiles(a,b){ return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">${a}${b}</div>`; }
+
+// ── Launch / Close ──
+function launchStoreDash(){
+  _dsrView='store';
+  const ls=document.getElementById('login-screen');
+  const ov=document.getElementById('dsr-overlay');
+  if(ls) ls.style.display='none';
+  document.body.style.overflow='';
+  if(ov){ ov.style.display='flex'; ov.style.flexDirection='column'; }
+  const ttl=document.getElementById('dsr-overlay-title');
+  if(ttl) ttl.textContent='STORE PERFORMANCE';
+  // Desktop: left panel + hide dropdown; Mobile: dropdown + hide left panel
+  const leftPanel=document.getElementById('dsr-left');
+  const dropWrap=document.getElementById('dsr-store-sel-wrap');
+  if(isDesktop()){
+    if(leftPanel){ leftPanel.style.display='block'; dsrBuildStoreList(); }
+    if(dropWrap) dropWrap.style.display='none';
+  } else {
+    if(leftPanel) leftPanel.style.display='none';
+    if(dropWrap) dropWrap.style.display='block';
+    dsrBuildStoreDropdown();
+  }
+  dsrUpdateStrip();
+  dsrRenderStore(_dsrStoreId);
+  dsrLoadAll('store');
+}
+
+function launchDMDash(){
+  _dsrView='dm';
+  const ls=document.getElementById('login-screen');
+  const ov=document.getElementById('dsr-overlay');
+  if(ls) ls.style.display='none';
+  document.body.style.overflow='';
+  if(ov){ ov.style.display='flex'; ov.style.flexDirection='column'; }
+  const ttl=document.getElementById('dsr-overlay-title');
+  if(ttl) ttl.textContent='DM DASHBOARD';
+  // DM view: always full width, no left panel, no store picker
+  const leftPanel=document.getElementById('dsr-left');
+  const dropWrap=document.getElementById('dsr-store-sel-wrap');
+  if(leftPanel) leftPanel.style.display='none';
+  if(dropWrap) dropWrap.style.display='none';
+  dsrUpdateStrip();
+  dsrRenderDM();
+  dsrLoadAll('dm');
+}
+
+function closeDSR(){
+  const ov=document.getElementById('dsr-overlay');
+  if(ov) ov.style.display='none';
+  const ls=document.getElementById('login-screen');
+  if(ls){ ls.style.display='flex'; }
+  document.body.style.overflow='hidden';
+  showMenu();
+}
+
+function dsrRefresh(){
+  const body = document.getElementById('dsr-body');
+  body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Refreshing…</div>';
+  dsrLoadAll(_dsrView);
+}
+
+// ── Store dropdown ──
+function dsrBuildStoreList(){
+  const el = document.getElementById('dsr-store-list-items');
+  if(!el) return;
+  el.innerHTML = DSR_STORES.map(s=>{
+    const md = _dsrMDData[s.id]||{};
+    const opps = (md.voice||0)+(md.upg||0);
+    const g = DSR_GOALS[s.id]||{};
+    const proj = g.oppsGoal>0?Math.round(opps/_dsrDaysElapsed*DSR_DAYS_IN_MONTH):0;
+    const risk = g.oppsGoal>0 && proj < Math.ceil(g.oppsGoal*0.85);
+    const active = s.id===_dsrStoreId;
+    return `<div onclick="dsrSelectStore(${s.id})" style="padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:${active?'rgba(0,169,79,.08)':'transparent'};border-left:3px solid ${active?'var(--g)':'transparent'}">
+      <div>
+        <div style="font-size:12px;font-weight:${active?'900':'700'};color:${active?'var(--g)':'var(--t1)'};font-family:'DM Sans'">${s.id} · ${s.name}</div>
+        <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${s.rsm}</div>
+      </div>
+      <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</span>
+    </div>`;
+  }).join('');
+}
+
+function dsrBuildStoreDropdown(){
+  const sel = document.getElementById('dsr-store-select');
+  if(!sel) return;
+  sel.innerHTML = DSR_STORES.map(s=>`<option value="${s.id}" ${s.id===_dsrStoreId?'selected':''}>${s.id} · ${s.name} — ${s.rsm}</option>`).join('');
+}
+
+function dsrSelectStore(id){
+  _dsrStoreId=id;
+  if(isDesktop()) dsrBuildStoreList();
+  else dsrBuildStoreDropdown();
+  dsrRenderStore(id);
+}
+
+// ── Report strip ──
+function dsrUpdateStrip(){
+  const mo = document.getElementById('dsr-strip-month');
+  const dates = document.getElementById('dsr-strip-dates');
+  if(!mo||!dates) return;
+  mo.textContent = DSR_MONTH_LABEL;
+  const srcStyle = (col,lbl,dt) => `<div style="font-size:10px;font-weight:700;color:${col};font-family:'DM Sans'">● ${lbl} ${dt||'—'}</div>`;
+  dates.innerHTML =
+    srcStyle('var(--g)','Metric Detail',_dsrMDDate) +
+    srcStyle('#8B5CF6','DSR',_dsrDSRDate||'(available later today)') +
+    srcStyle('#3B82F6','Internet Report',_dsrInetDate);
+}
+
+// ── Load data (background refresh — pre-loaded data already showing) ──
+function dsrLoadAll(view){
+  const monthKey = DSR_MONTH_KEY;
+  let mdDone=false, inetDone=false;
+
+  function tryRender(){
+    if(!mdDone||!inetDone) return;
+    dsrUpdateStrip();
+    if(view==='store') dsrRenderStore(_dsrStoreId);
+    else dsrRenderDM();
+  }
+
+  // ── Metric Detail ──
+  fetchWithTimeout(LOG_URL+'?type=metricdtl_fetch&month='+monthKey+'&_='+Date.now(),
+    {method:'GET',mode:'cors',cache:'no-store'},20000)
+    .then(r=>r.json()).then(data=>{
+      if(Array.isArray(data)&&data.length){
+        _dsrMDData={};
+        data.forEach(r=>{ _dsrMDData[r.storeId]=r; });
+        if(data[0].throughDate){ _dsrMDDate=data[0].throughDate; _dsrDaysElapsed=new Date(_dsrMDDate).getDate(); }
+      }
+      mdDone=true; tryRender();
+    }).catch(()=>{ mdDone=true; tryRender(); });
+
+  // ── Internet ──
+  fetchWithTimeout(LOG_URL+'?type=internet_fetch&month='+monthKey+'&_='+Date.now(),
+    {method:'GET',mode:'cors',cache:'no-store'},20000)
+    .then(r=>r.json()).then(data=>{
+      if(Array.isArray(data)&&data.length){
+        _dsrInetData={};
+        data.forEach(r=>{ _dsrInetData[r.storeId]=r; });
+        if(data[0].throughDate) _dsrInetDate=data[0].throughDate;
+      }
+      inetDone=true; tryRender();
+    }).catch(()=>{ inetDone=true; tryRender(); });
+
+  // ── DSR (optional — later in day) ──
+  fetchWithTimeout(LOG_URL+'?type=dsr_fetch&month='+monthKey+'&_='+Date.now(),
+    {method:'GET',mode:'cors',cache:'no-store'},20000)
+    .then(r=>r.json()).then(data=>{
+      if(data&&data.stores&&data.stores.length){
+        _dsrDSRData={};
+        data.stores.forEach(r=>{ _dsrDSRData[r.storeId]=r; });
+        _dsrDistData=data.district||null;
+        _dsrDSRDate=data.throughDate||'';
+        data.stores.forEach(r=>{
+          if(DSR_GOALS[r.storeId]){
+            DSR_GOALS[r.storeId].actsGoal=r.actsGoal||DSR_GOALS[r.storeId].actsGoal;
+            DSR_GOALS[r.storeId].upgGoal=r.upgGoal||DSR_GOALS[r.storeId].upgGoal;
+            DSR_GOALS[r.storeId].oppsGoal=r.oppsGoal||DSR_GOALS[r.storeId].oppsGoal;
+          }
+        });
+        dsrUpdateStrip();
+        if(view==='store') dsrRenderStore(_dsrStoreId);
+        else dsrRenderDM();
+      }
+    }).catch(()=>{});
+}
+
+// ── Render Store Dashboard ──
+function dsrRenderStore(storeId){
+  _dsrStoreId=storeId;
+  const body = document.getElementById('dsr-body');
+  if(!_dsrMDData){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3)">Loading…</div>'; return; }
+
+  const md   = _dsrMDData[storeId]  || {};
+  const inet = _dsrInetData?(_dsrInetData[storeId]||{}):{};
+  const goals= DSR_GOALS[storeId]   || {};
+  const storeInfo = DSR_STORES.find(s=>s.id===storeId)||{};
+
+  const voice= md.voice||0, upg=md.upg||0, opps=voice+upg;
+  const actsGoal=goals.actsGoal||0, upgGoal=goals.upgGoal||0, oppsGoal=goals.oppsGoal||0;
+  const oppsFloor=oppsGoal>0?Math.ceil(oppsGoal*0.85):0;
+  const projVoice=dsrProj(voice), projUpg=dsrProj(upg), projOpps=dsrProj(opps);
+  const penRisk=oppsGoal>0&&projOpps<oppsFloor;
+  const accGoal=35*oppsGoal;
+  const bpConv=(md.billPay||0)>0?opps/(md.billPay||1):0;
+  const apo=opps>0?(md.accRev||0)/opps:0;
+  const eligInternet=(inet.eligFiber||0)+(inet.eligAIA||0);
+  const internetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
+  const actsYoY=goals.actsLY>0?(voice-(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const oppsYoY=goals.oppsLY>0?(opps-(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const upgLY=Math.max(0,(goals.oppsLY||0)-(goals.actsLY||0));
+  const upgYoY=upgLY>0?(upg-(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+
+  let html='';
+
+  // Store header
+  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;color:var(--t1)">${storeId} · ${storeInfo.name||''}</div>
+      <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${storeInfo.rsm||''} · ${storeInfo.tier||''}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:13px;font-weight:900;color:${actsYoY>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${dsrPctSign(actsYoY)} Acts YoY</div>
+      <div style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;margin-top:3px;display:inline-block;background:${penRisk?'#FEE2E2':'#DCFCE7'};color:${penRisk?'#7F1D1D':'#14532D'}">${penRisk?'⚠ Penalty Risk':'✓ On Track'}</div>
+    </div>
+  </div>`;
+
+  // Penalty banner
+  if(oppsGoal>0){
+    html+=`<div style="border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;background:${penRisk?'#FEE2E2':'#DCFCE7'};border:1.5px solid ${penRisk?'#FECACA':'#BBF7D0'}">
+      <div style="font-size:16px;flex-shrink:0">${penRisk?'⚠️':''}</div>
+      <div>
+        <div style="font-size:12px;font-weight:900;color:${penRisk?'#7F1D1D':'#14532D'};font-family:'DM Sans'">${penRisk?'Penalty Risk — Proj '+projOpps+' Opps':'On Track — Proj '+projOpps+' Opps'}</div>
+        <div style="font-size:10px;color:${penRisk?'#991B1B':'#166534'};margin-top:2px;font-family:'DM Sans'">85% floor is ${oppsFloor} · ${penRisk?'Need '+((oppsFloor-opps)/Math.max(1,DSR_DAYS_IN_MONTH-_dsrDaysElapsed)).toFixed(1)+'/day to clear':projOpps-oppsFloor+' above floor'}</div>
+      </div>
+    </div>`;
+  }
+
+  // Acts | Upg bars
+  html+=dsrGrid2(
+    dsrBarSec('Voice Activations MTD',voice,actsGoal,null,dsrGC(voice,actsGoal*.95,actsGoal*.85),'smd'),
+    dsrBarSec('Upgrades MTD',upg,upgGoal,null,dsrGC(upg,upgGoal*.95,upgGoal*.85),'smd')
+  );
+
+  // OPPs full width
+  html+=dsrBarSec('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,oppsFloor>0?oppsFloor:null,dsrGC(opps,oppsGoal*.95,oppsGoal*.85),'smd');
+
+  // Proj tiles
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('Proj. Activations',projVoice,dsrGC(projVoice,actsGoal*.95,actsGoal*.85),'','')}
+    ${dsrTile('Proj. Upgrades',projUpg,dsrGC(projUpg,upgGoal*.95,upgGoal*.85),'','')}
+  </div>
+  <div style="margin-bottom:8px">${dsrTile('Proj. OPPs',projOpps,dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85),'','')}</div>`;
+
+  // Need/Day tiles
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrNeedTile('Activations Need/Day',voice,actsGoal,null,'smd')}
+    ${dsrNeedTile('Upgrades Need/Day',upg,upgGoal,null,'smd')}
+  </div>
+  <div style="margin-bottom:10px">${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd')}</div>`;
+
+  // Rates
+  html+=dsrGrid2(
+    dsrRateSec('AutoPay',md.autopay||0,0.30,0.28,'smd'),
+    dsrRateSec('Protect',md.protect||0,0.50,0.48,'smd')
+  );
+  html+=dsrGrid2(
+    dsrRateSec('PPP Attach Rate',md.ppp||0,0.20,0.10,'smd'),
+    dsrRateSec('60+ RP Mix',md.rpm60||0,0.80,null,'smd')
+  );
+
+  // Accessory Revenue
+  html+=dsrBarSec('Accessory Revenue',fmtMoney(md.accRev||0),accGoal>0?accGoal:null,null,
+    accGoal>0?dsrGC(md.accRev||0,accGoal*.95,accGoal*.75):'var(--warn)','smd');
+
+  // WTR | Bill Pay Conv
+  html+=dsrGrid2(
+    dsrRateSec('WTR',(md.wtr||0)/100,0.80,null,'smd'),
+    dsrRateSec('Bill Pay Conversion',bpConv,0.50,0.40,'smd')
+  );
+
+  // Internet bar
+  html+=dsrBarSec('Internet (AIA + Fiber)',internetTotal,3,null,
+    internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet');
+
+  // Tile rows — 2 per row
+  html+=dsrGrid2Tiles(
+    dsrTile('2025 Activations',goals.actsLY||'—','var(--t3)','dsr',''),
+    dsrTile('2025 Upgrades',upgLY||'—','var(--t3)','dsr','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('YoY Acts %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr',''),
+    dsrTile('YoY Upg %',dsrPctSign(upgYoY),upgYoY>=0?'var(--ok)':'var(--err)','dsr','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr',''),
+    dsrTile('Bill Pays',md.billPay||0,'var(--t1)','smd','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('Address Checks',inet.addrChecks||0,'var(--t1)','inet',''),
+    dsrTile('Internet Eligible',eligInternet,eligInternet>0?'var(--ok)':'var(--t3)','inet','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('Credit Checks',(inet.creditFiber||0)+(inet.creditAIA||0),(inet.creditFiber||0)+(inet.creditAIA||0)>0?'var(--ok)':'var(--t3)','inet',''),
+    dsrTile("Adv. Payment Req'd",(inet.advPayFiber||0)+(inet.advPayAIA||0),(inet.advPayFiber||0)+(inet.advPayAIA||0)>0?'var(--warn)':'var(--ok)','inet','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('APO (All In)',fmtMoney(apo),apo>=35?'var(--ok)':apo>=30?'var(--warn)':'var(--err)','smd',''),
+    dsrTile('NW APD',fmtMoney(md.accPerOpp||0),(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)','smd','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('Plan Down',md.planDown||0,(md.planDown||0)>5?'var(--err)':(md.planDown||0)>2?'var(--warn)':'var(--ok)','smd',''),
+    dsrTile('AAL %',((md.aal||0)*100).toFixed(1)+'%',(md.aal||0)>=0.25?'var(--ok)':'var(--warn)','smd','')
+  );
+  html+=dsrGrid2Tiles(
+    dsrTile('Multiline %',((md.multi||0)*100).toFixed(1)+'%',(md.multi||0)>=0.50?'var(--ok)':'var(--warn)','smd',''),
+    dsrTile('Max Act Rate',((md.maxAct||0)*100).toFixed(1)+'%',(md.maxAct||0)>=0.30?'var(--ok)':(md.maxAct||0)>=0.20?'var(--warn)':'var(--err)','smd','')
+  );
+
+  body.innerHTML=html;
+  body.scrollTop=0;
+}
+
+// ── Render DM Dashboard ──
+function dsrRenderDM(){
+  const body=document.getElementById('dsr-body');
+  if(!_dsrMDData){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3)">Loading…</div>'; return; }
+
+  // District totals from metric detail
+  const stores=DSR_STORES;
+  let totVoice=0,totUpg=0,totBP=0,totAcc=0,totInternet=0,totAddr=0,totElig=0,totCredit=0,totAdv=0,totPlanDown=0;
+  let wtdProt=0,wtdAP=0,wtdRPM=0,wtdPPP=0,wtdWTR=0;
+  stores.forEach(s=>{
+    const md=_dsrMDData[s.id]||{};
+    const inet=_dsrInetData?((_dsrInetData[s.id])||{}):{};
+    const opps=(md.voice||0)+(md.upg||0);
+    totVoice+=md.voice||0; totUpg+=md.upg||0;
+    totBP+=md.billPay||0; totAcc+=md.accRev||0;
+    totInternet+=(inet.aiaOrders||0)+(inet.fiberOrders||0);
+    totAddr+=inet.addrChecks||0; totElig+=(inet.eligFiber||0)+(inet.eligAIA||0);
+    totCredit+=(inet.creditFiber||0)+(inet.creditAIA||0);
+    totAdv+=(inet.advPayFiber||0)+(inet.advPayAIA||0);
+    totPlanDown+=md.planDown||0;
+    wtdProt+=(md.protect||0)*opps; wtdAP+=(md.autopay||0)*opps;
+    wtdRPM+=(md.rpm60||0)*opps; wtdPPP+=(md.ppp||0)*opps; wtdWTR+=((md.wtr||0)/100)*opps;
+  });
+  const totOpps=totVoice+totUpg;
+  const distProt=totOpps>0?wtdProt/totOpps:0;
+  const distAP=totOpps>0?wtdAP/totOpps:0;
+  const distRPM=totOpps>0?wtdRPM/totOpps:0;
+  const distPPP=totOpps>0?wtdPPP/totOpps:0;
+  const distWTR=totOpps>0?wtdWTR/totOpps:0;
+  const distBPConv=totBP>0?totOpps/totBP:0;
+  const distAPO=totOpps>0?totAcc/totOpps:0;
+
+  // Goals — from DSR district row or hardcoded
+  const dg=DSR_DIST_GOALS;
+  const actsGoal=_dsrDistData?(_dsrDistData.actsGoal||dg.actsGoal):dg.actsGoal;
+  const upgGoal=_dsrDistData?(_dsrDistData.upgGoal||dg.upgGoal):dg.upgGoal;
+  const oppsGoal=_dsrDistData?(_dsrDistData.oppsGoal||dg.oppsGoal):dg.oppsGoal;
+  const actsLY=dg.actsLY, oppsLY=dg.oppsLY;
+  const oppsFloor=Math.ceil(oppsGoal*0.95); // district target: 95% (not 85% store penalty floor)
+  const accGoal=34*oppsGoal; // DM plan: $34 APD × Opps Goal
+
+  const projActsDist=dsrProj(totVoice), projUpgDist=dsrProj(totUpg), projOppsDist=dsrProj(totOpps);
+  const penStores=stores.filter(s=>{const md=_dsrMDData[s.id]||{};const op=(md.voice||0)+(md.upg||0);const g=DSR_GOALS[s.id];return g&&dsrProj(op)<Math.ceil(g.oppsGoal*0.85);});
+  const penRisk=penStores.length>=2;
+  const actsYoY=actsLY>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const oppsYoY=oppsLY>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+
+  let html='';
+
+  // ── DM Payout Calculation ──
+  // 6 stores × $250/store = $1,500 at-risk total
+  // Buckets: Acts 30% ($450), Upg 20% ($300), Acc 20% ($300), Protect 10% ($150), AutoPay 10% ($150), Internet 10% ($150)
+  // DM acc goal = $34 × Opps Goal (NOT $35 — that's RSM)
+  // Penalty: 25% if 25%+ of doors (2+ of 6) below 85% opps goal
+  const ATR = DSR_STORES.length * 250; // $1,500
+
+  // ACTIVATIONS (30% = $450): ±5% mult per 1% above/below 100% of goal. 200% cap, 0% floor.
+  const actsPct  = actsGoal>0 ? projActsDist/actsGoal : 0;
+  const actsMult = Math.max(0, Math.min(2.0, 1.0 + (actsPct - 1.0) * 5));
+  const actsPay  = Math.round(ATR * 0.30 * actsMult);
+
+  // UPGRADES (20% = $300): ±5% mult per 1% above/below goal. 200% cap.
+  const upgPct   = upgGoal>0 ? projUpgDist/upgGoal : 0;
+  const upgMult  = Math.max(0, Math.min(2.0, 1.0 + (upgPct - 1.0) * 5));
+  const upgPay   = Math.round(ATR * 0.20 * upgMult);
+
+  // ACCESSORIES (20% = $300): Goal = $34 APD × Opps Goal (DM plan). ±10% mult per 5%. 200% cap.
+  const dmAccGoal = 34 * oppsGoal;
+  const accPct   = dmAccGoal>0 ? totAcc/dmAccGoal : 0;
+  const accMult  = Math.max(0, Math.min(2.0, 1.0 + (accPct - 1.0) * 2)); // 10% per 5% = 2× per 100%
+  const accPay   = Math.round(ATR * 0.20 * accMult);
+
+  // PROTECT (10% = $150): Goal 50%. ±10% mult per 2% above/below. 200% cap.
+  const protMult = Math.max(0, Math.min(2.0, 1.0 + (distProt - 0.50) / 0.02 * 0.10));
+  const protPay  = Math.round(ATR * 0.10 * protMult);
+
+  // AUTOPAY (10% = $150): Goal 28%. ±5% mult per 1% above/below. 200% cap.
+  const apMult   = Math.max(0, Math.min(2.0, 1.0 + (distAP - 0.28) / 0.01 * 0.05));
+  const apPay    = Math.round(ATR * 0.10 * apMult);
+
+  // INTERNET (10% = $150): Goal 2/door (=12 for 6 stores). ±25% mult per 0.5/door. 200% cap.
+  const inetGoal    = DSR_STORES.length * 2;
+  const inetPerDoor = DSR_STORES.length>0 ? totInternet/DSR_STORES.length : 0;
+  const inetPct     = inetGoal>0 ? totInternet/inetGoal : 0;
+  const inetMult    = Math.max(0, Math.min(2.0, 1.0 + (inetPerDoor - 2.0) / 0.5 * 0.25));
+  const inetPay     = Math.round(ATR * 0.10 * inetMult);
+
+  const grossPay = actsPay+upgPay+accPay+protPay+apPay+inetPay;
+  const penalty  = penRisk ? Math.round(grossPay*0.25) : 0;
+  const netPay   = grossPay - penalty;
+
+  // ── Payout hero ──
+  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center">
+    <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Net Projected Payout — ${DSR_MONTH_LABEL}</div>
+    <div style="font-family:'Bebas Neue';font-size:52px;color:var(--g);line-height:1;letter-spacing:1px">$${netPay.toLocaleString()}</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:6px;font-family:'DM Sans'">Gross $${grossPay.toLocaleString()}${penalty>0?` · 25% Penalty −$${penalty.toLocaleString()}`:''}</div>
+  </div>`;
+
+  // ── Payout breakdown ──
+  const payRows=[
+    ['Activations','#3B82F6',actsPay,actsMult,actsPct,  '±5% per 1%'],
+    ['Upgrades',   '#8B5CF6',upgPay, upgMult, upgPct,   '±5% per 1%'],
+    ['Accessories','#F97316',accPay, accMult, accPct,   '±10% per 5%'],
+    ['Protect',    '#EF4444',protPay,protMult,distProt, `Goal 50% · ${distProt>=0.50?'+':''}${((distProt-0.50)*100).toFixed(1)}% · ±10% per 2%`],
+    ['AutoPay',    '#F59E0B',apPay,  apMult,  distAP,  `Goal 28% · ${distAP>=0.28?'+':''}${((distAP-0.28)*100).toFixed(1)}% · ±5% per 1%`],
+    ['Internet',   '#10B981',inetPay,inetMult,inetPct, `Goal 2/door · ${inetPerDoor>=2?'+':''}${(inetPerDoor-2).toFixed(2)}/door · ±25% per 0.5`],
+  ];
+  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Payout Breakdown</div>
+    </div>`;
+  payRows.forEach(([lbl,col,pay,mult,pct,hint])=>{
+    const mc=mult>=1.5?'var(--ok)':mult>=1?'var(--warn)':'var(--err)';
+    const pctLbl = lbl==='Protect'||lbl==='AutoPay' ? (pct*100).toFixed(1)+'%' : (pct*100).toFixed(0)+'%';
+    html+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+      <div style="width:3px;height:28px;border-radius:2px;background:${col};flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${lbl}</div>
+        <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${hint}</div>
+      </div>
+      <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${pctLbl}</div>
+      <div style="font-size:11px;font-weight:900;color:${mc};font-family:'DM Sans';min-width:36px;text-align:right">${mult.toFixed(2)}×</div>
+      <div style="font-size:13px;font-weight:900;color:${pay>0?'var(--t1)':'var(--t3)'};font-family:'Bebas Neue';min-width:48px;text-align:right">$${pay}</div>
+    </div>`;
+  });
+  if(penalty>0){
+    html+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;background:#FEF2F2">
+      <div style="width:3px;height:28px;border-radius:2px;background:#EF4444;flex-shrink:0"></div>
+      <div style="flex:1;font-size:12px;font-weight:700;color:#991B1B;font-family:'DM Sans'">⚠ 25% Penalty (2+ stores below floor)</div>
+      <div style="font-size:13px;font-weight:900;color:#7F1D1D;font-family:'Bebas Neue'">−$${penalty.toLocaleString()}</div>
+    </div>`;
+  }
+  html+=`<div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:var(--s2)">
+    <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t2);font-family:'DM Sans'">Net Payout</div>
+    <div style="font-family:'Bebas Neue';font-size:24px;color:var(--g)">$${netPay.toLocaleString()}</div>
+  </div></div>`;
+
+  // Penalty banner
+  html+=`<div style="border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;background:${penRisk?'#FEE2E2':'#DCFCE7'};border:1.5px solid ${penRisk?'#FECACA':'#BBF7D0'}">
+    <div style="font-size:16px;flex-shrink:0">${penRisk?'⚠️':''}</div>
+    <div>
+      <div style="font-size:12px;font-weight:900;color:${penRisk?'#7F1D1D':'#14532D'};font-family:'DM Sans'">${penRisk?'25% Penalty Risk — '+penStores.length+' Stores Below Floor':'No Penalty — All Stores Above 85% Floor'}</div>
+      ${penRisk?`<div style="font-size:10px;color:#991B1B;margin-top:2px;font-family:'DM Sans'">${penStores.map(s=>s.name).join(' · ')}</div>`:''}
+    </div>
+  </div>`;
+
+  // Acts | Upg bars
+  html+=dsrGrid2(
+    dsrBarSec('Voice Activations MTD',totVoice,actsGoal,null,dsrGC(totVoice,actsGoal*.95,actsGoal*.85),'smd'),
+    dsrBarSec('Upgrades MTD',totUpg,upgGoal,null,dsrGC(totUpg,upgGoal*.95,upgGoal*.85),'smd')
+  );
+  html+=dsrBarSec('District OPPs MTD',totOpps,oppsGoal,oppsFloor,dsrGC(totOpps,oppsGoal,oppsGoal*.95),'smd');
+
+  // Proj tiles
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('Proj. Activations',projActsDist,dsrGC(projActsDist,actsGoal*.95,actsGoal*.85),'','')}
+    ${dsrTile('Proj. Upgrades',projUpgDist,dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85),'','')}
+    ${dsrTile('Proj. OPPs',projOppsDist,dsrGC(projOppsDist,oppsGoal,oppsGoal*.95),'','')}
+  </div>`;
+
+  // Need/Day
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+    ${dsrNeedTile('Acts Need/Day',totVoice,actsGoal,null,'smd')}
+    ${dsrNeedTile('Upg Need/Day',totUpg,upgGoal,null,'smd')}
+    ${dsrNeedTile('OPPs Need/Day',totOpps,oppsGoal,null,'smd')}
+  </div>`;
+
+  // Rates
+  html+=dsrGrid2(dsrRateSec('AutoPay',distAP,0.30,0.28,'smd'),dsrRateSec('Protect',distProt,0.50,0.48,'smd'));
+  html+=dsrGrid2(dsrRateSec('PPP',distPPP,0.20,0.10,'smd'),dsrRateSec('60+ RP Mix',distRPM,0.80,null,'smd'));
+  html+=dsrBarSec('Accessory Revenue',fmtMoney(totAcc),accGoal,null,dsrGC(totAcc,accGoal*.95,accGoal*.75),'smd');
+  html+=dsrGrid2(dsrRateSec('WTR',distWTR,0.80,null,'smd'),dsrRateSec('Bill Pay Conv.',distBPConv,0.50,0.40,'smd'));
+  html+=dsrBarSec('Internet (AIA + Fiber)',totInternet,12,null,totInternet>=12?'var(--ok)':totInternet>=6?'var(--warn)':'var(--err)','inet');
+
+  // District context tiles
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('Bill Pays',totBP,'var(--t1)','smd','')}
+    ${dsrTile('APO (All In)',fmtMoney(distAPO),distAPO>=35?'var(--ok)':distAPO>=30?'var(--warn)':'var(--err)','smd','')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('YoY Acts %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('Address Checks',totAddr,'var(--t1)','inet','')}
+    ${dsrTile('Internet Eligible',totElig,totElig>0?'var(--ok)':'var(--t3)','inet','')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    ${dsrTile('Credit Checks',totCredit,totCredit>0?'var(--ok)':'var(--t3)','inet','')}
+    ${dsrTile("Adv. Payment Req'd",totAdv,totAdv>0?'var(--warn)':'var(--ok)','inet','')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    ${dsrTile('Plan Down',totPlanDown,totPlanDown>10?'var(--err)':totPlanDown>5?'var(--warn)':'var(--ok)','smd','')}
+    ${dsrTile('2025 Acts',actsLY,'var(--t3)','dsr','')}
+  </div>`;
+
+  // Store snapshots
+  html+=`<div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:8px;font-family:'DM Sans'">Store Snapshot</div>`;
+  stores.forEach(s=>{
+    const md=_dsrMDData[s.id]||{};
+    const inet=_dsrInetData?(_dsrInetData[s.id]||{}):{};
+    const opps=(md.voice||0)+(md.upg||0);
+    const g=DSR_GOALS[s.id]||{};
+    const oppsProj=dsrProj(opps);
+    const floor=g.oppsGoal?Math.ceil(g.oppsGoal*0.85):0;
+    const risk=g.oppsGoal&&oppsProj<floor;
+    const yoyA=g.actsLY>0?(md.voice||0-(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+    const inetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
+    html+=`<div onclick="dsrStoreFromDM(${s.id})" style="background:var(--s1);border:1.5px solid ${risk?'rgba(239,68,68,.35)':'var(--bd)'};border-radius:var(--r);overflow:hidden;margin-bottom:8px;cursor:pointer">
+      <div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div style="font-size:13px;font-weight:900;color:var(--t1);font-family:'DM Sans'">${s.id} · ${s.name}</div><div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${s.rsm} · ${s.tier}</div></div>
+        <div style="text-align:right"><div style="font-size:11px;font-weight:900;color:${yoyA>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${dsrPctSign(yoyA)} YoY</div><div style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;margin-top:2px;display:inline-block;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</div></div>
+      </div>
+      <div style="padding:7px 12px;border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+        ${[['Acts',md.voice||0,g.actsGoal],['Upg',md.upg||0,g.upgGoal],['OPPs',opps,g.oppsGoal]].map(([lbl,v,gl])=>`<div style="text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3)">${lbl}</div><div style="font-family:'Bebas Neue';font-size:20px;color:${gl?dsrGC(v,gl*.95,gl*.85):'var(--t1)'};line-height:1.1">${v}</div><div style="font-size:9px;color:var(--t3)">${gl?((v/gl*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
+      </div>
+      <div style="padding:6px 12px;border-top:1px solid var(--bd);display:flex;justify-content:space-between">
+        <span style="font-size:10px;font-weight:700;color:${(md.protect||0)>=0.48?'#14532D':'#991B1B'};font-family:'DM Sans'">Protect ${((md.protect||0)*100).toFixed(1)}%</span>
+        <span style="font-size:10px;font-weight:700;color:${(md.autopay||0)>=0.28?'#14532D':'#991B1B'};font-family:'DM Sans'">AutoPay ${((md.autopay||0)*100).toFixed(1)}%</span>
+        <span style="font-size:10px;font-weight:700;color:var(--t3);font-family:'DM Sans'">Internet: ${inetTotal}</span>
+      </div>
+    </div>`;
+  });
+
+  body.innerHTML=html;
+  body.scrollTop=0;
+}
+
+function dsrStoreFromDM(id){
+  _dsrView='store';
+  _dsrStoreId=id;
+  const ttl=document.getElementById('dsr-overlay-title');
+  if(ttl) ttl.textContent='STORE PERFORMANCE';
+  const leftPanel=document.getElementById('dsr-left');
+  const dropWrap=document.getElementById('dsr-store-sel-wrap');
+  if(isDesktop()){
+    if(leftPanel){ leftPanel.style.display='block'; dsrBuildStoreList(); }
+    if(dropWrap) dropWrap.style.display='none';
+  } else {
+    if(leftPanel) leftPanel.style.display='none';
+    if(dropWrap) dropWrap.style.display='block';
+    dsrBuildStoreDropdown();
+  }
+  dsrRenderStore(id);
+}
+</script>
 </body>
 </html>
