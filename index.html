@@ -725,7 +725,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A41</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A48</div>
 </div>
 
 <script>
@@ -7973,14 +7973,14 @@ const DSR_MONTH_KEY     = 'april2026'; // sheet tab prefix
 // Store goals from DSR (per store row). Hardcoded from DSR Apr 28.
 // Updated when DSR is fetched successfully.
 const DSR_GOALS = {
-  777:{actsGoal:105,upgGoal:43,oppsGoal:148,actsLY:103,oppsLY:147},
-  747:{actsGoal:81, upgGoal:55,oppsGoal:136,actsLY:70, oppsLY:135},
-  775:{actsGoal:38, upgGoal:31,oppsGoal:69, actsLY:52, oppsLY:100},
-  769:{actsGoal:46, upgGoal:34,oppsGoal:80, actsLY:30, oppsLY:52},
-  752:{actsGoal:43, upgGoal:30,oppsGoal:73, actsLY:59, oppsLY:79},
-  768:{actsGoal:29, upgGoal:26,oppsGoal:55, actsLY:32, oppsLY:55},
+  777:{actsGoal:93, upgGoal:48, oppsGoal:141, actsLY:103,oppsLY:147},
+  747:{actsGoal:80, upgGoal:58, oppsGoal:138, actsLY:70, oppsLY:135},
+  775:{actsGoal:56, upgGoal:50, oppsGoal:106, actsLY:52, oppsLY:100},
+  769:{actsGoal:62, upgGoal:24, oppsGoal:86,  actsLY:30, oppsLY:52},
+  752:{actsGoal:40, upgGoal:24, oppsGoal:64,  actsLY:59, oppsLY:79},
+  768:{actsGoal:68, upgGoal:23, oppsGoal:91,  actsLY:32, oppsLY:55},
 };
-const DSR_DIST_GOALS = {actsGoal:342,upgGoal:219,oppsGoal:561,actsLY:347,oppsLY:566};
+const DSR_DIST_GOALS = {actsGoal:399,upgGoal:227,oppsGoal:626,actsLY:347,oppsLY:566};
 
 // Store config
 const DSR_STORES = [
@@ -7994,6 +7994,7 @@ const DSR_STORES = [
 
 // ── State ── Pre-loaded with April 2026 data (overridden by live fetch)
 let _dsrView = 'store';
+let _dsrPrevView = 'menu'; // 'menu' or 'dm'
 let _dsrStoreId = 777;
 let _dsrDaysElapsed = 28;
 let _dsrMDDate  = '04/28/2026';
@@ -8038,14 +8039,15 @@ function dsrSrc(type){
 }
 
 // ── Bar section ──
-function dsrBarSec(label, val, goal, minVal, color, srcType){
-  const numVal = typeof val==='string' ? parseFloat(val.replace(/[$,]/g,''))||0 : (val||0);
+function dsrBarSec(label, val, goal, minVal, color, srcType, rawVal){
+  const numVal = rawVal!==undefined ? rawVal : (typeof val==='string' ? parseFloat(val.replace(/[$,%]/g,'').split('/')[0].trim())||0 : (val||0));
   const isDollar = typeof val==='string' && val.startsWith('$');
   const barW = goal>0 ? Math.min(100,Math.round(numVal/goal*100)) : 0;
   const minW = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100) : null;
+  const minPct = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100)+'%' : '85%';
   const goalDisplay = goal>0 ? (isDollar?'Goal $'+Math.round(goal).toLocaleString('en-US'):'Goal '+goal) : '—';
-  const minDisplay  = minVal!=null ? (isDollar?'Min $'+Math.round(minVal).toLocaleString('en-US')+' (85%)':'Min '+minVal+' (85%)') : null;
-  const dispVal = typeof val==='string' ? val : (Number.isInteger(val)?val:val);
+  const minDisplay  = minVal!=null ? (isDollar?'Min $'+Math.round(minVal).toLocaleString('en-US')+' ('+minPct+')':'Min '+minVal+' ('+minPct+')') : null;
+  const dispVal = val;
   return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
     <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
       <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
@@ -8103,10 +8105,11 @@ function dsrTile(label, val, color, srcType, sub){
 }
 
 // ── Need/Day tile ──
-function dsrNeedTile(label, mtd, goal, goal85, srcType){
+function dsrNeedTile(label, mtd, goal, goal85, srcType, floorLabel){
   const rem = Math.max(1, DSR_DAYS_IN_MONTH - _dsrDaysElapsed);
   const need100 = goal>0 ? Math.ceil(Math.max(0,goal-mtd)/rem*10)/10 : 0;
   const need85  = goal85!=null&&goal85>0 ? Math.ceil(Math.max(0,goal85-mtd)/rem*10)/10 : null;
+  const flLbl   = floorLabel || (goal85!=null&&goal>0 ? 'to '+Math.round(goal85/goal*100)+'%' : 'to 85%');
   const c100 = need100===0?'var(--ok)':need100<=3?'var(--warn)':'var(--err)';
   const c85  = need85!=null?(need85===0?'var(--ok)':need85<=3?'var(--warn)':'var(--err)'):'';
   if(need85===null){
@@ -8121,7 +8124,7 @@ function dsrNeedTile(label, mtd, goal, goal85, srcType){
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:3px 0">
       <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c100}">${need100}</div><div style="font-size:8px;color:var(--t3)">to 100%</div></div>
       <div style="width:1px;height:32px;background:var(--bd2)"></div>
-      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c85}">${need85}</div><div style="font-size:8px;color:var(--t3)">to 85%</div></div>
+      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c85}">${need85}</div><div style="font-size:8px;color:var(--t3)">${flLbl}</div></div>
     </div>
     ${dsrSrc(srcType)}
   </div>`;
@@ -8137,6 +8140,7 @@ function dsrGrid2Tiles(a,b){ return `<div style="display:grid;grid-template-colu
 
 // ── Launch / Close ──
 function launchStoreDash(){
+  _dsrPrevView='menu';
   _dsrView='store';
   const ls=document.getElementById('login-screen');
   const ov=document.getElementById('dsr-overlay');
@@ -8162,6 +8166,7 @@ function launchStoreDash(){
 }
 
 function launchDMDash(){
+  _dsrPrevView='menu';
   _dsrView='dm';
   const ls=document.getElementById('login-screen');
   const ov=document.getElementById('dsr-overlay');
@@ -8181,12 +8186,26 @@ function launchDMDash(){
 }
 
 function closeDSR(){
-  const ov=document.getElementById('dsr-overlay');
-  if(ov) ov.style.display='none';
-  const ls=document.getElementById('login-screen');
-  if(ls){ ls.style.display='flex'; }
-  document.body.style.overflow='hidden';
-  showMenu();
+  if(_dsrPrevView==='dm'){
+    // Go back to DM dashboard
+    _dsrView='dm';
+    _dsrPrevView='menu';
+    const ttl=document.getElementById('dsr-overlay-title');
+    if(ttl) ttl.textContent='DM DASHBOARD';
+    const leftPanel=document.getElementById('dsr-left');
+    const dropWrap=document.getElementById('dsr-store-sel-wrap');
+    if(leftPanel) leftPanel.style.display='none';
+    if(dropWrap) dropWrap.style.display='none';
+    dsrUpdateStrip();
+    dsrRenderDM();
+  } else {
+    const ov=document.getElementById('dsr-overlay');
+    if(ov) ov.style.display='none';
+    const ls=document.getElementById('login-screen');
+    if(ls){ ls.style.display='flex'; }
+    document.body.style.overflow='hidden';
+    showMenu();
+  }
 }
 
 function dsrRefresh(){
@@ -8253,6 +8272,32 @@ function dsrLoadAll(view){
     if(view==='store') dsrRenderStore(_dsrStoreId);
     else dsrRenderDM();
   }
+
+  // ── Goals (override hardcoded with live sheet) ──
+  fetchWithTimeout(LOG_URL+'?type=goals_fetch&month='+monthKey+'&_='+Date.now(),
+    {method:'GET',mode:'cors',cache:'no-store'},20000)
+    .then(r=>r.json()).then(data=>{
+      if(data&&data.stores){
+        Object.entries(data.stores).forEach(([sid,g])=>{
+          const id=parseInt(sid);
+          if(DSR_GOALS[id]){
+            if(g.actsGoal) DSR_GOALS[id].actsGoal=g.actsGoal;
+            if(g.upgGoal)  DSR_GOALS[id].upgGoal=g.upgGoal;
+            if(g.oppsGoal) DSR_GOALS[id].oppsGoal=g.oppsGoal;
+          }
+        });
+        if(data.district){
+          if(data.district.actsGoal) DSR_DIST_GOALS.actsGoal=data.district.actsGoal;
+          if(data.district.upgGoal)  DSR_DIST_GOALS.upgGoal=data.district.upgGoal;
+          if(data.district.oppsGoal) DSR_DIST_GOALS.oppsGoal=data.district.oppsGoal;
+        }
+        // Re-render with updated goals if already displayed
+        if(mdDone&&inetDone){
+          if(view==='store') dsrRenderStore(_dsrStoreId);
+          else dsrRenderDM();
+        }
+      }
+    }).catch(()=>{});
 
   // ── Metric Detail ──
   fetchWithTimeout(LOG_URL+'?type=metricdtl_fetch&month='+monthKey+'&_='+Date.now(),
@@ -8475,7 +8520,7 @@ function dsrRenderDM(){
   const upgGoal=_dsrDistData?(_dsrDistData.upgGoal||dg.upgGoal):dg.upgGoal;
   const oppsGoal=_dsrDistData?(_dsrDistData.oppsGoal||dg.oppsGoal):dg.oppsGoal;
   const actsLY=dg.actsLY, oppsLY=dg.oppsLY;
-  const oppsFloor=Math.ceil(oppsGoal*0.95); // district target: 95% (not 85% store penalty floor)
+  const oppsFloor=Math.ceil(oppsGoal*0.90); // district target: 90% min
   const accGoal=34*oppsGoal; // DM plan: $34 APD × Opps Goal
 
   const projActsDist=dsrProj(totVoice), projUpgDist=dsrProj(totUpg), projOppsDist=dsrProj(totOpps);
@@ -8493,13 +8538,13 @@ function dsrRenderDM(){
   // Penalty: 25% if 25%+ of doors (2+ of 6) below 85% opps goal
   const ATR = DSR_STORES.length * 250; // $1,500
 
-  // ACTIVATIONS (30% = $450): ±5% mult per 1% above/below 100% of goal. 200% cap, 0% floor.
-  const actsPct  = actsGoal>0 ? projActsDist/actsGoal : 0;
+  // ACTIVATIONS (30% = $450): based on actual MTD voice acts vs goal
+  const actsPct  = actsGoal>0 ? totVoice/actsGoal : 0;
   const actsMult = Math.max(0, Math.min(2.0, 1.0 + (actsPct - 1.0) * 5));
   const actsPay  = Math.round(ATR * 0.30 * actsMult);
 
-  // UPGRADES (20% = $300): ±5% mult per 1% above/below goal. 200% cap.
-  const upgPct   = upgGoal>0 ? projUpgDist/upgGoal : 0;
+  // UPGRADES (20% = $300): based on actual MTD upgrades vs goal
+  const upgPct   = upgGoal>0 ? totUpg/upgGoal : 0;
   const upgMult  = Math.max(0, Math.min(2.0, 1.0 + (upgPct - 1.0) * 5));
   const upgPay   = Math.round(ATR * 0.20 * upgMult);
 
@@ -8530,7 +8575,7 @@ function dsrRenderDM(){
 
   // ── Payout hero ──
   html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center">
-    <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Net Projected Payout — ${DSR_MONTH_LABEL}</div>
+    <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Est. Payout MTD — ${DSR_MONTH_LABEL}</div>
     <div style="font-family:'Bebas Neue';font-size:52px;color:var(--g);line-height:1;letter-spacing:1px">$${netPay.toLocaleString()}</div>
     <div style="font-size:11px;color:var(--t3);margin-top:6px;font-family:'DM Sans'">Gross $${grossPay.toLocaleString()}${penalty>0?` · 25% Penalty −$${penalty.toLocaleString()}`:''}</div>
   </div>`;
@@ -8585,23 +8630,23 @@ function dsrRenderDM(){
 
   // Acts | Upg bars
   html+=dsrGrid2(
-    dsrBarSec('Voice Activations MTD',totVoice,actsGoal,null,dsrGC(totVoice,actsGoal*.95,actsGoal*.85),'smd'),
-    dsrBarSec('Upgrades MTD',totUpg,upgGoal,null,dsrGC(totUpg,upgGoal*.95,upgGoal*.85),'smd')
+    dsrBarSec('Voice Activations MTD',`${totVoice} / ${actsGoal>0?(totVoice/actsGoal*100).toFixed(0):'—'}%`,actsGoal,Math.ceil(actsGoal*0.80),dsrGC(totVoice,actsGoal*.95,actsGoal*.90),'smd',totVoice),
+    dsrBarSec('Upgrades MTD',`${totUpg} / ${upgGoal>0?(totUpg/upgGoal*100).toFixed(0):'—'}%`,upgGoal,Math.ceil(upgGoal*0.80),dsrGC(totUpg,upgGoal*.95,upgGoal*.85),'smd',totUpg)
   );
-  html+=dsrBarSec('District OPPs MTD',totOpps,oppsGoal,oppsFloor,dsrGC(totOpps,oppsGoal,oppsGoal*.95),'smd');
+  html+=dsrBarSec('District OPPs MTD',`${totOpps} / ${oppsGoal>0?(totOpps/oppsGoal*100).toFixed(0):'—'}%`,oppsGoal,oppsFloor,dsrGC(totOpps,oppsGoal,oppsGoal*.90),'smd',totOpps);
 
   // Proj tiles
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-    ${dsrTile('Proj. Activations',projActsDist,dsrGC(projActsDist,actsGoal*.95,actsGoal*.85),'','')}
+    ${dsrTile('Proj. Activations',projActsDist,dsrGC(projActsDist,actsGoal*.95,actsGoal*.90),'','')}
     ${dsrTile('Proj. Upgrades',projUpgDist,dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85),'','')}
-    ${dsrTile('Proj. OPPs',projOppsDist,dsrGC(projOppsDist,oppsGoal,oppsGoal*.95),'','')}
+    ${dsrTile('Proj. OPPs',projOppsDist,dsrGC(projOppsDist,oppsGoal,oppsGoal*.90),'','')}
   </div>`;
 
   // Need/Day
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-    ${dsrNeedTile('Acts Need/Day',totVoice,actsGoal,null,'smd')}
-    ${dsrNeedTile('Upg Need/Day',totUpg,upgGoal,null,'smd')}
-    ${dsrNeedTile('OPPs Need/Day',totOpps,oppsGoal,null,'smd')}
+    ${dsrNeedTile('Acts Need/Day',totVoice,actsGoal,Math.ceil(actsGoal*0.90),'smd','to 90%')}
+    ${dsrNeedTile('Upg Need/Day',totUpg,upgGoal,Math.ceil(upgGoal*0.85),'smd','to 85%')}
+    ${dsrNeedTile('OPPs Need/Day',totOpps,oppsGoal,oppsFloor,'smd')}
   </div>`;
 
   // Rates
@@ -8666,6 +8711,7 @@ function dsrRenderDM(){
 }
 
 function dsrStoreFromDM(id){
+  _dsrPrevView='dm';
   _dsrView='store';
   _dsrStoreId=id;
   const ttl=document.getElementById('dsr-overlay-title');
