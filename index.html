@@ -725,7 +725,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A48</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A63</div>
 </div>
 
 <script>
@@ -1190,7 +1190,7 @@ function showMenu(){
   const btnPerf=document.getElementById('btn-performance');
   const btnST=document.getElementById('btn-sales-tracker');
   // Time Management: RSC and RSM (not DM, not Jaq)
-  if(btnTM) btnTM.style.display=(isRSC||isRSM)?'block':'none';
+  if(btnTM) btnTM.style.display=(isRSC||isRSM||isJaq)?'block':'none';
   if(btnAct) btnAct.style.display='block';
   // Performance: unlocked for all
   if(btnPerf){
@@ -1224,7 +1224,7 @@ function showMenu(){
   const btnSP = document.getElementById('btn-store-perf');
   if(btnSP) btnSP.style.display='block';
   const btnDM2 = document.getElementById('btn-dm-dash');
-  if(btnDM2) btnDM2.style.display=(isDM||isJaq)?'block':'none';
+  if(btnDM2) btnDM2.style.display=isDM?'block':'none';
 }
 
 function showActivity2FA(){
@@ -6738,6 +6738,7 @@ function closeActivity(){
     </div>
   </div>
 </div>
+<script>
 // ══════════════════════════════════════════
 // TIME MANAGEMENT
 // ══════════════════════════════════════════
@@ -7229,6 +7230,8 @@ function editRequest(rowId){
 }
 </script>
 
+
+</script>
 
 <script>
 // ══════════════════════════════════════════
@@ -8406,19 +8409,19 @@ function dsrRenderStore(storeId){
   // OPPs full width
   html+=dsrBarSec('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,oppsFloor>0?oppsFloor:null,dsrGC(opps,oppsGoal*.95,oppsGoal*.85),'smd');
 
-  // Proj tiles
-  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+  // Proj tiles — 3-col
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
     ${dsrTile('Proj. Activations',projVoice,dsrGC(projVoice,actsGoal*.95,actsGoal*.85),'','')}
     ${dsrTile('Proj. Upgrades',projUpg,dsrGC(projUpg,upgGoal*.95,upgGoal*.85),'','')}
-  </div>
-  <div style="margin-bottom:8px">${dsrTile('Proj. OPPs',projOpps,dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85),'','')}</div>`;
+    ${dsrTile('Proj. OPPs',projOpps,dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85),'','')}
+  </div>`;
 
-  // Need/Day tiles
-  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+  // Need/Day tiles — 3-col
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrNeedTile('Activations Need/Day',voice,actsGoal,null,'smd')}
     ${dsrNeedTile('Upgrades Need/Day',upg,upgGoal,null,'smd')}
-  </div>
-  <div style="margin-bottom:10px">${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd')}</div>`;
+    ${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd')}
+  </div>`;
 
   // Rates
   html+=dsrGrid2(
@@ -8440,43 +8443,77 @@ function dsrRenderStore(storeId){
     dsrRateSec('Bill Pay Conversion',bpConv,0.50,0.40,'smd')
   );
 
-  // Internet bar
-  html+=dsrBarSec('Internet (AIA + Fiber)',internetTotal,3,null,
-    internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet');
-
-  // Tile rows — 2 per row
-  html+=dsrGrid2Tiles(
-    dsrTile('2025 Activations',goals.actsLY||'—','var(--t3)','dsr',''),
-    dsrTile('2025 Upgrades',upgLY||'—','var(--t3)','dsr','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('YoY Acts %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr',''),
-    dsrTile('YoY Upg %',dsrPctSign(upgYoY),upgYoY>=0?'var(--ok)':'var(--err)','dsr','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr',''),
-    dsrTile('Bill Pays',md.billPay||0,'var(--t1)','smd','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('Address Checks',inet.addrChecks||0,'var(--t1)','inet',''),
-    dsrTile('Internet Eligible',eligInternet,eligInternet>0?'var(--ok)':'var(--t3)','inet','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('Credit Checks',(inet.creditFiber||0)+(inet.creditAIA||0),(inet.creditFiber||0)+(inet.creditAIA||0)>0?'var(--ok)':'var(--t3)','inet',''),
-    dsrTile("Adv. Payment Req'd",(inet.advPayFiber||0)+(inet.advPayAIA||0),(inet.advPayFiber||0)+(inet.advPayAIA||0)>0?'var(--warn)':'var(--ok)','inet','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('APO (All In)',fmtMoney(apo),apo>=35?'var(--ok)':apo>=30?'var(--warn)':'var(--err)','smd',''),
-    dsrTile('NW APD',fmtMoney(md.accPerOpp||0),(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)','smd','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('Plan Down',md.planDown||0,(md.planDown||0)>5?'var(--err)':(md.planDown||0)>2?'var(--warn)':'var(--ok)','smd',''),
-    dsrTile('AAL %',((md.aal||0)*100).toFixed(1)+'%',(md.aal||0)>=0.25?'var(--ok)':'var(--warn)','smd','')
-  );
-  html+=dsrGrid2Tiles(
-    dsrTile('Multiline %',((md.multi||0)*100).toFixed(1)+'%',(md.multi||0)>=0.50?'var(--ok)':'var(--warn)','smd',''),
-    dsrTile('Max Act Rate',((md.maxAct||0)*100).toFixed(1)+'%',(md.maxAct||0)>=0.30?'var(--ok)':(md.maxAct||0)>=0.20?'var(--warn)':'var(--err)','smd','')
-  );
+  // Internet bar + Addr Checks + Inet Eligible in 3-col: bar spans 2, tiles get 1 each row
+  // Internet bar — full width
+  // Internet bar beside Address Checks + Internet Eligible
+  // Wrapper stretches bar to full height using flex
+  html+=`<div style="display:flex;gap:8px;margin-bottom:10px;align-items:stretch">
+    <div style="flex:2;min-width:0">
+      <div style="height:100%;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column">
+        <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1);flex-shrink:0">
+          <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Internet (AIA + Fiber)</div>
+        </div>
+        <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-family:'Bebas Neue';font-size:34px;line-height:1;color:${internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)'};margin-bottom:6px">${internetTotal}</div>
+          <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
+            <div style="position:absolute;left:0;top:0;height:100%;border-radius:5px;background:${internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)'};width:${Math.min(100,Math.round(internetTotal/3*100))}%;transition:width .5s"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:5px">
+            <div style="font-size:9px;color:var(--t3)">Goal 3</div>
+          </div>
+          ${dsrSrc('inet')}
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
+      <div style="flex:1;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Address Checks</div>
+        <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:var(--t1)">${inet.addrChecks||0}</div>
+        ${dsrSrc('inet')}
+      </div>
+      <div style="flex:1;background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Internet Eligible</div>
+        <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${eligInternet>0?'var(--ok)':'var(--t3)'}">${eligInternet}</div>
+        ${dsrSrc('inet')}
+      </div>
+    </div>
+  </div>`;
+  // Row 1: APO | NW APD | Plan Down
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('APO (All In)',fmtMoney(apo),apo>=35?'var(--ok)':apo>=30?'var(--warn)':'var(--err)','smd','')}
+    ${dsrTile('NW APD',fmtMoney(md.accPerOpp||0),(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)','smd','')}
+    ${dsrTile('Plan Down',md.planDown||0,(md.planDown||0)>5?'var(--err)':(md.planDown||0)>2?'var(--warn)':'var(--ok)','smd','')}
+  </div>`;
+  // Row 2: AAL | Multiline | Max Act Rate
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('AAL %',((md.aal||0)*100).toFixed(1)+'%',(md.aal||0)>=0.25?'var(--ok)':'var(--warn)','smd','')}
+    ${dsrTile('Multiline %',((md.multi||0)*100).toFixed(1)+'%',(md.multi||0)>=0.50?'var(--ok)':'var(--warn)','smd','')}
+    ${dsrTile('Max Act Rate',((md.maxAct||0)*100).toFixed(1)+'%',(md.maxAct||0)>=0.30?'var(--ok)':(md.maxAct||0)>=0.20?'var(--warn)':'var(--err)','smd','')}
+  </div>`;
+  // Row 3: 2025 Acts | 2025 Upg | 2025 OPPs
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('2025 Activations',goals.actsLY||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 Upgrades',upgLY||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 OPPs',goals.oppsLY||'—','var(--t3)','dsr','')}
+  </div>`;
+  // Row 4: YoY Acts | YoY Upg | YoY OPPs
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('YoY Activations %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY Upgrades %',dsrPctSign(upgYoY),upgYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+  </div>`;
+  // Row 5: Address Checks | Internet Eligible | Bill Pays
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('Address Checks',inet.addrChecks||0,'var(--t1)','inet','')}
+    ${dsrTile('Internet Eligible',eligInternet,eligInternet>0?'var(--ok)':'var(--t3)','inet','')}
+    ${dsrTile('Bill Pays',md.billPay||0,'var(--t1)','smd','')}
+  </div>`;
+  // Row 6: Credit Checks | Adv. Payment Req'd | Inet Orders
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+    ${dsrTile('Credit Checks',(inet.creditFiber||0)+(inet.creditAIA||0),(inet.creditFiber||0)+(inet.creditAIA||0)>0?'var(--ok)':'var(--t3)','inet','')}
+    ${dsrTile('Adv. Payment Req\'d',(inet.advPayFiber||0)+(inet.advPayAIA||0),(inet.advPayFiber||0)+(inet.advPayAIA||0)>0?'var(--ok)':'var(--t3)','inet','')}
+    ${dsrTile('Inet Orders',internetTotal,internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet','')}
+  </div>`;
 
   body.innerHTML=html;
   body.scrollTop=0;
@@ -8644,8 +8681,8 @@ function dsrRenderDM(){
 
   // Need/Day
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-    ${dsrNeedTile('Acts Need/Day',totVoice,actsGoal,Math.ceil(actsGoal*0.90),'smd','to 90%')}
-    ${dsrNeedTile('Upg Need/Day',totUpg,upgGoal,Math.ceil(upgGoal*0.85),'smd','to 85%')}
+    ${dsrNeedTile('Activations Need/Day',totVoice,actsGoal,Math.ceil(actsGoal*0.90),'smd','to 90%')}
+    ${dsrNeedTile('Upgrades Need/Day',totUpg,upgGoal,Math.ceil(upgGoal*0.85),'smd','to 85%')}
     ${dsrNeedTile('OPPs Need/Day',totOpps,oppsGoal,oppsFloor,'smd')}
   </div>`;
 
@@ -8662,7 +8699,7 @@ function dsrRenderDM(){
     ${dsrTile('APO (All In)',fmtMoney(distAPO),distAPO>=35?'var(--ok)':distAPO>=30?'var(--warn)':'var(--err)','smd','')}
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-    ${dsrTile('YoY Acts %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY Activations %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
     ${dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8675,7 +8712,7 @@ function dsrRenderDM(){
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrTile('Plan Down',totPlanDown,totPlanDown>10?'var(--err)':totPlanDown>5?'var(--warn)':'var(--ok)','smd','')}
-    ${dsrTile('2025 Acts',actsLY,'var(--t3)','dsr','')}
+    ${dsrTile('2025 Activations',actsLY,'var(--t3)','dsr','')}
   </div>`;
 
   // Store snapshots
