@@ -725,7 +725,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A64</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A82</div>
 </div>
 
 <script>
@@ -2081,7 +2081,6 @@ function renderDistrictDashboard(_targetEl){
 
 
 let _perfAccEntries=[];
-let _perfFeeEntries=[];
 let _perfFiberEntries=[];
 
 function launchPerformance(){
@@ -2096,7 +2095,6 @@ function launchPerformance(){
   _perfAllData=[];
   _perfData=null;        // clear individual rep data
   _perfAccEntries=[];    // clear tracker entries
-  _perfFeeEntries=[];
   _perfFiberEntries=[];
   _perfDashFilter='all';
   _perfCategoryFilter='all';
@@ -2346,18 +2344,17 @@ function loadPerfDataMobile(uid){
     fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
     fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
   ]).then(responses=>Promise.all(responses.map(r=>r.json())))
-  .then(([perf,acc,fee,fiber])=>{
+  .then(([perf,acc,fiber])=>{
     if(myToken!==_perfLoadToken) return;
-    if(!_perfRepUid) return; // user navigated away
+    if(!_perfRepUid) return;
     _perfData=perf;
     _perfAccEntries=Array.isArray(acc)?acc:[];
-    _perfFeeEntries=Array.isArray(fee)?fee:[];
     _perfFiberEntries=Array.isArray(fiber)?fiber:[];
     renderMobileRepView(uid);
   }).catch(()=>{
     if(myToken!==_perfLoadToken) return;
-    if(!_perfRepUid) return; // user navigated away
-    _perfData=null;_perfAccEntries=[];_perfFeeEntries=[];_perfFiberEntries=[];
+    if(!_perfRepUid) return;
+    _perfData=null;_perfAccEntries=[];_perfFiberEntries=[];
     renderMobileRepView(uid);
   });
 }
@@ -2502,6 +2499,10 @@ function renderIndividualDashboard(r,uid,_targetEl){
   const protOk=r.protectRate>=PERF_GOALS.protectTarget;
   const pppOk=r.pppRate>=PERF_GOALS.pppTarget;
 
+  // APD from tracker
+  const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
+  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+
   function gauge(label,val,target,min,secondaryLabel){
     var pctVal=Math.min(100,Math.round((val||0)*100));
     var pctExact=val?((val||0)*100).toFixed(2):'0.00';
@@ -2588,10 +2589,6 @@ function renderIndividualDashboard(r,uid,_targetEl){
   const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
   const _indivApdDenom=Math.max(1,(r.voiceActs||0)+(r.upgrades||0));
   const _indivApdAvg=_indivApdTotal>0?_indivApdTotal/_indivApdDenom:0;
-  const _indivTotalOpps=(r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
-  const _indivFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const _indivNetFee=Math.max(0,_indivTotalOpps*25-_indivFeeDisc);
-  const _indivAvgFee=_indivTotalOpps>0?_indivNetFee/_indivTotalOpps:0;
 
   // ── Calculated values ──
   const totalAllOpps = (r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
@@ -2765,7 +2762,6 @@ function renderIndividualDashboard(r,uid,_targetEl){
       ${smTile('Total OPPs',totalVoiceUpg,totalVoiceUpg>=10?'var(--g)':'var(--err)')}
       ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol2)}
       ${smTile('APD',_indivApdTotal>0?'$'+_indivApdAvg.toFixed(2):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)',_indivApdTotal>0?'Total $'+_indivApdTotal.toFixed(0):'')}
-      ${smTile('Avg Fees','$'+_indivAvgFee.toFixed(2),_indivAvgFee>=22?'var(--g)':_indivAvgFee>=20?'var(--warn)':'var(--err)')}
     </div>
     <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
       ${smTile('Bill Pay',r.billPay||0,'')}
@@ -2802,6 +2798,7 @@ function loadPerfData(uid){
       _perfAccEntries=Array.isArray(acc)?acc:[];
       _perfFiberEntries=Array.isArray(fiber)?fiber:[];
       try{ renderPerfView(uid); } catch(e){}
+      try{ loadIndividualDashboard(uid); } catch(e){}
     }).catch(()=>{});
   }
   if(cached){
@@ -2817,7 +2814,7 @@ function loadPerfData(uid){
   })
   .catch(()=>{
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    _perfData=null;_perfAccEntries=[];_perfFeeEntries=[];_perfFiberEntries=[];
+    _perfData=null;_perfAccEntries=[];_perfFiberEntries=[];
     renderPerfView(uid);
   });
 }
@@ -2830,8 +2827,8 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
   const totalOpps=totalActs+r.upgrades;
 
   // Payout data from _perfFeeEntries/_perfAccEntries
-  const totalFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const feeOpps=totalActs; // fees charged on voice + non-voice acts only, not upgrades
+  const totalFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.discount||0),0);
+  const feeOpps=totalActs; // activation fee charged on acts only
   const grossFeeRevenue=feeOpps*25;
   const netFeeRev=Math.max(0,grossFeeRevenue-totalFeeDisc);
   const avgFee=feeOpps>0?netFeeRev/feeOpps:0;
@@ -2950,12 +2947,11 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
         return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div><div style="font-family:Bebas Neue;font-size:22px;color:${col};line-height:1">${r.aiaOrders||0}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
       })())}
     </div>
-    <!-- Row 4: Bill Pay | Acc Revenue | APD | Avg Fees -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+    <!-- Row 4: Bill Pay | Acc Revenue | APD -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
       ${tile('Bill Pay',r.billPay||0,'')}
       ${tile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
       ${tile('APD',apdTotal>0?'$'+apdTotal.toFixed(0):'No Data','var(--prog)',apdTotal>0?'from tracker':'not entered yet')}
-      ${tile('Avg Fees','$'+avgFee.toFixed(2),avgFee>=22?'var(--g)':avgFee>=20?'var(--warn)':'var(--err)')}
     </div>
     <div style="font-size:10px;color:var(--t3);padding:8px 0 24px;font-family:DM Sans,sans-serif;line-height:1.6">
       Data from Metric Detail — may not include returns or adjustments.
@@ -3016,30 +3012,18 @@ function renderPerfView(uid,_targetBody){
 
   const apGood=d.autopayRate>=0.28;
   const protGood=d.protectRate>=0.50;
-  // Opps = voice + non-voice (grossAdds) + upgrades
-  const totalOpps = (d.voiceActs||0)+(d.nonVoice||0)+(d.upgrades||0);
-  // feeOpps = voice + non-voice (activation fee charged on activations only)
-  const feeOpps = (d.voiceActs||0)+(d.nonVoice||0);
+  const totalOpps = (d.voiceActs||0)+(d.upgrades||0);
 
   // ── Payout calc ──
   const voicePay = (d.voiceActs||0)*6;
   const nvPay    = (d.nonVoice||0)*4;
   const upgPay   = (d.upgrades||0)*3;
 
-  // Activation Fees — avg over voice+NV acts
-  // We use ABO report data: feeOpps * $25 assumed, discounts reduce avg
-  const grossFeeRevenue = feeOpps*25;
-  const totalFeeDisc = _perfFeeEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const netFeeRev = Math.max(0, grossFeeRevenue - totalFeeDisc);
-  const avgFee = feeOpps>0 ? netFeeRev/feeOpps : 0;
-  // Fee payout paid per feeOpp (not totalOpps)
-  const feePay = avgFee>=22 ? feeOpps*2 : avgFee>=20 ? feeOpps*1 : 0;
-
-  // AutoPay — $1 per attached autopay, requires ≥28% rate for RSC
-  const apQty = Math.round(feeOpps*(d.autopayRate||0));
+  // AutoPay — $1 per attached autopay
+  const apQty = Math.round(((d.voiceActs||0)+(d.nonVoice||0))*(d.autopayRate||0));
   const apPay = (repIsRSM||apGood) ? apQty*1 : 0;
 
-  // Protect — $1 per attached protect, requires ≥50% rate for RSC
+  // Protect — $1 per attached protect
   const protQty = Math.round(totalOpps*(d.protectRate||0));
   const protPay = (repIsRSM||protGood) ? protQty*1 : 0;
 
@@ -3071,7 +3055,7 @@ function renderPerfView(uid,_targetBody){
     else if(amt>=50)  otherPay+=5;
     else              otherPay+=4;         // < $49.99 = $4
   });
-  const grossPay=voicePay+nvPay+upgPay+feePay+apPay+protPay+aiaPay+fiberPay+apdPay+otherPay;
+  const grossPay=voicePay+nvPay+upgPay+apPay+protPay+aiaPay+fiberPay+apdPay+otherPay;
   let subtotal=grossPay;
   // RSC qualifiers — calc deduction amount
   let deductionAmt=0;
@@ -3147,9 +3131,13 @@ function renderPerfView(uid,_targetBody){
       <div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>
       Data pulled from Metric Detail and may not include returns, disconnects, or adjustments. Not to be used for 100% accuracy.
     </div>
-    <div style="background:rgba(245,158,11,.03);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:12px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
+    <div style="background:rgba(245,158,11,.03);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:8px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
       <div style="font-weight:800;color:#92400E;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Payout Estimate</div>
       Estimated based on Sales Performance data from Metric Detail. Not to be used for 100% accuracy.
+    </div>
+    <div style="background:rgba(107,114,128,.03);border:1.5px solid rgba(107,114,128,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:12px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
+      <div style="font-weight:800;color:#374151;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Accuracy Note</div>
+      Activation fees are not calculated in the est. payout at this time — will be paid by Sun Com directly.
     </div>
 
     <!-- Payout Estimate -->
@@ -3161,13 +3149,14 @@ function renderPerfView(uid,_targetBody){
         <div style="font-size:${isMobile()?'13':'10'}px;color:var(--t3);font-family:'DM Sans';margin-top:2px">You can only view your own payout estimate.</div>
       </div>
     </div>`:`
+    ${qualWarningsHtml?`<div style="background:rgba(245,158,11,.04);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r);overflow:hidden;margin-bottom:8px">${qualWarningsHtml}</div>`:''}
+    ${qualInfosHtml?`<div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">${qualInfosHtml}</div>`:''}
     <div id="perf-payout-section" style="display:${payoutVisible?'block':'none'}">
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
       ${sectionHead('Payout Estimate')}
       ${metricRow('Voice Activations',fmtPay(voicePay))}
       ${metricRow('Non-Voice Activations',fmtPay(nvPay))}
       ${metricRow('Upgrades',fmtPay(upgPay))}
-      ${metricRow('Activation Fees',fmtPay(feePay))}
       ${metricRow('AutoPay',fmtPay(apPay))}
       ${metricRow('Protect',fmtPay(protPay))}
       ${metricRow('Internet',fmtPay(aiaPay+fiberPay))}
@@ -3183,8 +3172,6 @@ function renderPerfView(uid,_targetBody){
         <div style="font-family:'Bebas Neue';font-size:${isMobile()?'38':'28'}px;color:var(--g);letter-spacing:.5px">${fmtPay(subtotal)}</div>
       </div>
     </div>
-    ${qualWarningsHtml?`<div style="background:rgba(245,158,11,.04);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r);overflow:hidden;margin-bottom:8px">${qualWarningsHtml}</div>`:''}
-    ${qualInfosHtml?`<div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">${qualInfosHtml}</div>`:''}
     </div>
     `}
   `;
@@ -3339,7 +3326,7 @@ function closeSalesTracker(){
 }
 function stTab(t){
   _stTab=t;
-  ['acc','fee','fiber'].forEach(tab=>{
+  ['acc','fiber'].forEach(tab=>{
     const el=document.getElementById('st-tab-'+tab);
     const pane=document.getElementById('st-pane-'+tab);
     const isOn=tab===t;
@@ -3353,11 +3340,6 @@ function stLoadAll(){
     .then(r=>r.json()).then(d=>{ _stAccEntries=Array.isArray(d)?d:[]; renderSTAcc(); }).catch(()=>renderSTAcc());
   fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
     .then(r=>r.json()).then(d=>{ _stFiberEntries=Array.isArray(d)?d:[]; renderSTFiber(); }).catch(()=>renderSTFiber());
-  // Fee discounts — read from uploaded report (read-only)
-  const isDM=isDMUser(), isJaq=isJaqUser();
-  const feeUrl=LOG_URL+'?type=fees_report_fetch&_='+Date.now()+(isDM||isJaq?'':('&uid='+encodeURIComponent(uid)));
-  fetchWithTimeout(feeUrl,{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{ _stFeeEntries=Array.isArray(d)?d:[]; renderSTFee(); }).catch(()=>renderSTFee());
 }
 
 // ── ACC TRACKER ──
@@ -6526,13 +6508,12 @@ function closeActivity(){
     <div id="st-tab-acc" onclick="stTab('acc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Accessories</div>
     
     <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fiber Sales</div>
-    <div id="st-tab-fee" onclick="stTab('fee')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fee Discounts</div>
+    <div id="st-pane-fiber" style="display:none"></div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:16px 14px 80px">
     <div id="st-pane-acc"></div>
     
     <div id="st-pane-fiber" style="display:none"></div>
-    <div id="st-pane-fee" style="display:none"></div>
   </div>
 </div>
 
@@ -6717,6 +6698,8 @@ function closeActivity(){
     <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;color:var(--t1)" id="dsr-strip-month">—</div>
     <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px" id="dsr-strip-dates"></div>
   </div>
+  <!-- Month picker strip -->
+  <div id="dsr-month-picker-wrap" style="display:none;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0"></div>
   <!-- Layout: left panel (desktop) + right body -->
   <div id="dsr-layout" style="flex:1;display:flex;min-height:0;overflow:hidden">
     <!-- Left panel: store list (desktop) or store dropdown (mobile) -->
@@ -7969,21 +7952,26 @@ function buildPartialCopyText(r){
 // ══════════════════════════════════════════════════════════════
 
 // ── Constants ──
-const DSR_DAYS_IN_MONTH = 30; // April 2026
-const DSR_MONTH_LABEL   = 'April 2026';
-const DSR_MONTH_KEY     = 'april2026'; // sheet tab prefix
+const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30};
+const DSR_MONTHS = [
+  {key:'may2026',   label:'May 2026'},
+  {key:'april2026', label:'April 2026'},
+];
+let _dsrActiveMonth    = 'may2026';
+let DSR_DAYS_IN_MONTH  = 31;
+let DSR_MONTH_LABEL    = 'May 2026';
+let DSR_MONTH_KEY      = 'may2026';
 
-// Store goals from DSR (per store row). Hardcoded from DSR Apr 28.
-// Updated when DSR is fetched successfully.
+// Store goals — all zeroed, populated entirely by goals_fetch from sheet
 const DSR_GOALS = {
-  777:{actsGoal:93, upgGoal:48, oppsGoal:141, actsLY:103,oppsLY:147},
-  747:{actsGoal:80, upgGoal:58, oppsGoal:138, actsLY:70, oppsLY:135},
-  775:{actsGoal:56, upgGoal:50, oppsGoal:106, actsLY:52, oppsLY:100},
-  769:{actsGoal:62, upgGoal:24, oppsGoal:86,  actsLY:30, oppsLY:52},
-  752:{actsGoal:40, upgGoal:24, oppsGoal:64,  actsLY:59, oppsLY:79},
-  768:{actsGoal:68, upgGoal:23, oppsGoal:91,  actsLY:32, oppsLY:55},
+  777:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
+  747:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
+  775:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
+  769:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
+  752:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
+  768:{actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0},
 };
-const DSR_DIST_GOALS = {actsGoal:399,upgGoal:227,oppsGoal:626,actsLY:347,oppsLY:566};
+const DSR_DIST_GOALS = {actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0};
 
 // Store config
 const DSR_STORES = [
@@ -7995,34 +7983,18 @@ const DSR_STORES = [
   {id:768,name:'W. Orange',   rsm:'Jose Manzo',       tier:'Tier 1'},
 ];
 
-// ── State ── Pre-loaded with April 2026 data (overridden by live fetch)
+// ── State ── All blank at startup — populated entirely by live fetch
 let _dsrView = 'store';
-let _dsrPrevView = 'menu'; // 'menu' or 'dm'
+let _dsrLoading = false; // true while MD+inet fetches are in flight
+let _dsrPrevView = 'menu';
 let _dsrStoreId = 777;
-let _dsrDaysElapsed = 28;
-let _dsrMDDate  = '04/28/2026';
-let _dsrInetDate= '04/28/2026';
-let _dsrDSRDate = '04/28/2026'; // pre-loaded from DSR report
+let _dsrDaysElapsed = 0;
+let _dsrMDDate  = '';
+let _dsrInetDate= '';
+let _dsrDSRDate = '';
 
-// Pre-loaded Metric Detail data (April 2026)
-let _dsrMDData = {
-  747:{storeId:747,throughDate:'04/28/2026',voice:75,nv:0,upg:55,grossAdds:77,byod:0.3766,aal:0.2338,multi:0.5714,rpm60:0.7792,maxAct:0.2973,autopay:0.25,protect:0.578,accRev:7951.58,accPerOpp:77.20,ppp:0.1748,wtr:58.33,billPay:379,planDown:7,aiaOrders:3},
-  752:{storeId:752,throughDate:'04/28/2026',voice:26,nv:1,upg:24,grossAdds:27,byod:0.2222,aal:0.2593,multi:0.5556,rpm60:0.7778,maxAct:0.1818,autopay:0.4848,protect:0.7619,accRev:3905.23,accPerOpp:86.78,ppp:0.1778,wtr:71.43,billPay:75,planDown:8,aiaOrders:0},
-  768:{storeId:768,throughDate:'04/28/2026',voice:43,nv:2,upg:32,grossAdds:46,byod:0.3478,aal:0.1739,multi:0.5217,rpm60:0.7609,maxAct:0.1304,autopay:0.3846,protect:0.5593,accRev:4684.61,accPerOpp:75.56,ppp:0.1613,wtr:75.00,billPay:157,planDown:4,aiaOrders:1},
-  769:{storeId:769,throughDate:'04/28/2026',voice:39,nv:1,upg:29,grossAdds:37,byod:0.3250,aal:0.2500,multi:0.3500,rpm60:0.7750,maxAct:0.2222,autopay:0.3469,protect:0.6964,accRev:3977.11,accPerOpp:71.02,ppp:0.1786,wtr:86.67,billPay:131,planDown:5,aiaOrders:4},
-  775:{storeId:775,throughDate:'04/28/2026',voice:34,nv:1,upg:30,grossAdds:34,byod:0.2857,aal:0.3429,multi:0.5714,rpm60:0.7714,maxAct:0.3125,autopay:0.2195,protect:0.5882,accRev:3421.87,accPerOpp:62.22,ppp:0.1091,wtr:100.00,billPay:150,planDown:4,aiaOrders:2},
-  777:{storeId:777,throughDate:'04/28/2026',voice:96,nv:3,upg:41,grossAdds:101,byod:0.2970,aal:0.3762,multi:0.5248,rpm60:0.8119,maxAct:0.2321,autopay:0.4457,protect:0.6000,accRev:9342.44,accPerOpp:83.41,ppp:0.1518,wtr:84.62,billPay:361,planDown:3,aiaOrders:0},
-};
-
-// Pre-loaded Internet data (April 2026)
-let _dsrInetData = {
-  747:{storeId:747,throughDate:'04/28/2026',addrChecks:128,eligFiber:77,creditFiber:3,advPayFiber:1,fiberOrders:2,eligAIA:45,creditAIA:5,advPayAIA:1,aiaOrders:3},
-  752:{storeId:752,throughDate:'04/28/2026',addrChecks:32,eligFiber:11,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:7,creditAIA:0,advPayAIA:0,aiaOrders:0},
-  768:{storeId:768,throughDate:'04/28/2026',addrChecks:52,eligFiber:27,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:20,creditAIA:1,advPayAIA:1,aiaOrders:1},
-  769:{storeId:769,throughDate:'04/28/2026',addrChecks:45,eligFiber:17,creditFiber:2,advPayFiber:0,fiberOrders:0,eligAIA:18,creditAIA:7,advPayAIA:0,aiaOrders:4},
-  775:{storeId:775,throughDate:'04/28/2026',addrChecks:26,eligFiber:17,creditFiber:0,advPayFiber:0,fiberOrders:0,eligAIA:9,creditAIA:2,advPayAIA:0,aiaOrders:2},
-  777:{storeId:777,throughDate:'04/28/2026',addrChecks:137,eligFiber:38,creditFiber:1,advPayFiber:0,fiberOrders:1,eligAIA:41,creditAIA:1,advPayAIA:0,aiaOrders:0},
-};
+let _dsrMDData   = {};  // populated by metricdtl_fetch
+let _dsrInetData = {};  // populated by internet_fetch
 
 let _dsrDSRData  = null;
 let _dsrDistData = null;
@@ -8038,7 +8010,7 @@ function fmtMoney(v){
 function dsrSrc(type){
   const cols = {smd:'var(--g)',dsr:'#8B5CF6',inet:'#3B82F6'};
   const labels = {smd:'Metric Detail',dsr:'DSR',inet:'Internet'};
-  return `<div style="font-size:9px;font-weight:800;color:${cols[type]};margin-top:4px;font-family:'DM Sans'">● ${labels[type]}</div>`;
+  return `<div style="font-size:11px;font-weight:800;color:${cols[type]};margin-top:4px;font-family:'DM Sans'">● ${labels[type]}</div>`;
 }
 
 // ── Bar section ──
@@ -8053,17 +8025,17 @@ function dsrBarSec(label, val, goal, minVal, color, srcType, rawVal){
   const dispVal = val;
   return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
     <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
     </div>
     <div style="padding:10px 12px">
-      <div style="font-family:'Bebas Neue';font-size:34px;line-height:1;color:${color};margin-bottom:6px">${dispVal}</div>
+      <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color};margin-bottom:6px">${dispVal}</div>
       <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
         <div style="position:absolute;left:0;top:0;height:100%;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
         ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
       </div>
       <div style="display:flex;gap:10px;margin-top:5px">
-        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>${goalDisplay}</div>
-        ${minDisplay?`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>${minDisplay}</div>`:''}
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>${goalDisplay}</div>
+        ${minDisplay?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>${minDisplay}</div>`:''}
       </div>
       ${dsrSrc(srcType)}
     </div>
@@ -8079,18 +8051,18 @@ function dsrRateSec(label, val, goalPct, minPct, srcType){
   const minW  = minPct!=null ? Math.round(minPct/max*100) : null;
   return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
     <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
     </div>
     <div style="padding:10px 12px">
-      <div style="font-family:'Bebas Neue';font-size:34px;line-height:1;color:${color};margin-bottom:6px">${(val*100).toFixed(1)}%</div>
+      <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color};margin-bottom:6px">${(val*100).toFixed(1)}%</div>
       <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
         <div style="position:absolute;left:0;top:0;height:100%;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
         <div style="position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.3);left:${goalW}%"></div>
         ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
       </div>
       <div style="display:flex;gap:10px;margin-top:5px">
-        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${(goalPct*100).toFixed(0)}%</div>
-        ${minPct!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${(minPct*100).toFixed(0)}%</div>`:''}
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${(goalPct*100).toFixed(0)}%</div>
+        ${minPct!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${(minPct*100).toFixed(0)}%</div>`:''}
       </div>
       ${dsrSrc(srcType)}
     </div>
@@ -8100,9 +8072,9 @@ function dsrRateSec(label, val, goalPct, minPct, srcType){
 // ── Tile ──
 function dsrTile(label, val, color, srcType, sub){
   return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
-    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
-    <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${color||'var(--t1)'}">${val}</div>
-    ${sub?`<div style="font-size:9px;color:var(--t3);margin-top:2px">${sub}</div>`:''}
+    <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+    <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${color||'var(--t1)'}">${val}</div>
+    ${sub?`<div style="font-size:11px;color:var(--t3);margin-top:2px">${sub}</div>`:''}
     ${srcType?dsrSrc(srcType):''}
   </div>`;
 }
@@ -8117,17 +8089,17 @@ function dsrNeedTile(label, mtd, goal, goal85, srcType, floorLabel){
   const c85  = need85!=null?(need85===0?'var(--ok)':need85<=3?'var(--warn)':'var(--err)'):'';
   if(need85===null){
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
-      <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
-      <div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c100}">${need100}</div>
+      <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+      <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100}">${need100}</div>
       ${dsrSrc(srcType)}
     </div>`;
   }
   return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
-    <div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
+    <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:3px 0">
-      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c100}">${need100}</div><div style="font-size:8px;color:var(--t3)">to 100%</div></div>
+      <div><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100}">${need100}</div><div style="font-size:11px;color:var(--t3)">to 100%</div></div>
       <div style="width:1px;height:32px;background:var(--bd2)"></div>
-      <div><div style="font-family:'Bebas Neue';font-size:26px;line-height:1;color:${c85}">${need85}</div><div style="font-size:8px;color:var(--t3)">${flLbl}</div></div>
+      <div><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c85}">${need85}</div><div style="font-size:11px;color:var(--t3)">${flLbl}</div></div>
     </div>
     ${dsrSrc(srcType)}
   </div>`;
@@ -8135,7 +8107,7 @@ function dsrNeedTile(label, mtd, goal, goal85, srcType, floorLabel){
 
 // ── Color helpers ──
 function dsrGC(v,g,w){ return v>=g?'var(--ok)':v>=w?'var(--warn)':'var(--err)'; }
-function dsrProj(v){ return Math.round(v/_dsrDaysElapsed*DSR_DAYS_IN_MONTH); }
+function dsrProj(v){ return _dsrDaysElapsed>0?Math.round(v/_dsrDaysElapsed*DSR_DAYS_IN_MONTH):0; }
 function dsrPctSign(v){ return (v>=0?'+':'')+(v*100).toFixed(1)+'%'; }
 function dsrGrid2(a,b){ return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">${a}${b}</div>`; }
 function dsrGrid4(items){ return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">${items.join('')}</div>`; }
@@ -8164,6 +8136,8 @@ function launchStoreDash(){
     dsrBuildStoreDropdown();
   }
   dsrUpdateStrip();
+  dsrBuildMonthPicker();
+  _dsrLoading=true;
   dsrRenderStore(_dsrStoreId);
   dsrLoadAll('store');
 }
@@ -8184,6 +8158,8 @@ function launchDMDash(){
   if(leftPanel) leftPanel.style.display='none';
   if(dropWrap) dropWrap.style.display='none';
   dsrUpdateStrip();
+  dsrBuildMonthPicker();
+  _dsrLoading=true;
   dsrRenderDM();
   dsrLoadAll('dm');
 }
@@ -8213,6 +8189,7 @@ function closeDSR(){
 
 function dsrRefresh(){
   const body = document.getElementById('dsr-body');
+  _dsrLoading=true;
   body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Refreshing…</div>';
   dsrLoadAll(_dsrView);
 }
@@ -8251,6 +8228,49 @@ function dsrSelectStore(id){
   dsrRenderStore(id);
 }
 
+// Normalize any date string to "Mon DD, YYYY" format for consistent display
+function dsrFmtDate(raw){
+  if(!raw||raw==='—') return '—';
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // MM/DD/YYYY
+  const m1=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m1) return months[parseInt(m1[1])-1]+' '+parseInt(m1[2])+', '+m1[3];
+  // Already "Mon DD, YYYY" or "Mon DD YYYY"
+  const m2=raw.match(/^([A-Za-z]{3})\s+(\d{1,2}),?\s+(\d{4})$/);
+  if(m2) return m2[1]+' '+parseInt(m2[2])+', '+m2[3];
+  return raw;
+}
+function dsrBuildMonthPicker(){
+  const wrap = document.getElementById('dsr-month-picker-wrap');
+  if(!wrap) return;
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:7px 16px;background:var(--s1)">'
+    + '<div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:\'DM Sans\';white-space:nowrap">Month</div>'
+    + '<select id="dsr-month-select" onchange="onDsrMonthSelect(this)" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:\'DM Sans\';font-size:11px;font-weight:700;outline:none;cursor:pointer;max-width:260px">'
+    + DSR_MONTHS.map(m=>'<option value="'+m.key+'"'+(m.key===_dsrActiveMonth?' selected':'')+'>'+m.label+'</option>').join('')
+    + '</select></div>';
+}
+function onDsrMonthSelect(sel){
+  const key = sel.value;
+  const mo = DSR_MONTHS.find(m=>m.key===key);
+  if(!mo || key===_dsrActiveMonth) return;
+  _dsrActiveMonth   = key;
+  DSR_MONTH_KEY     = key;
+  DSR_MONTH_LABEL   = mo.label;
+  DSR_DAYS_IN_MONTH = DSR_DAYS_IN_MONTH_MAP[key] || 30;
+  // Always blank on month switch — live fetch fills everything in
+  _dsrMDData={}; _dsrInetData={}; _dsrDSRData=null; _dsrDistData=null;
+  _dsrMDDate=''; _dsrInetDate=''; _dsrDSRDate='';
+  _dsrDaysElapsed=0;
+  // Clear all goals — goals_fetch will repopulate from the correct month's tab
+  Object.values(DSR_GOALS).forEach(g=>{ g.actsGoal=0; g.upgGoal=0; g.oppsGoal=0; g.actsLY=0; g.oppsLY=0; });
+  DSR_DIST_GOALS.actsGoal=0; DSR_DIST_GOALS.upgGoal=0; DSR_DIST_GOALS.oppsGoal=0; DSR_DIST_GOALS.actsLY=0; DSR_DIST_GOALS.oppsLY=0;
+  dsrUpdateStrip();
+  const body=document.getElementById('dsr-body');
+  if(body) body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Loading '+mo.label+'…</div>';
+  dsrLoadAll(_dsrView);
+}
+
 // ── Report strip ──
 function dsrUpdateStrip(){
   const mo = document.getElementById('dsr-strip-month');
@@ -8259,19 +8279,22 @@ function dsrUpdateStrip(){
   mo.textContent = DSR_MONTH_LABEL;
   const srcStyle = (col,lbl,dt) => `<div style="font-size:10px;font-weight:700;color:${col};font-family:'DM Sans'">● ${lbl} ${dt||'—'}</div>`;
   dates.innerHTML =
-    srcStyle('var(--g)','Metric Detail',_dsrMDDate) +
-    srcStyle('#8B5CF6','DSR',_dsrDSRDate||'(available later today)') +
-    srcStyle('#3B82F6','Internet Report',_dsrInetDate);
+    srcStyle('var(--g)','Metric Detail',dsrFmtDate(_dsrMDDate)||'—') +
+    srcStyle('#8B5CF6','DSR',dsrFmtDate(_dsrDSRDate)||'—') +
+    srcStyle('#3B82F6','Internet Report',dsrFmtDate(_dsrInetDate)||'—');
 }
 
-// ── Load data (background refresh — pre-loaded data already showing) ──
+// ── Load data ──
 function dsrLoadAll(view){
   const monthKey = DSR_MONTH_KEY;
   let mdDone=false, inetDone=false;
+  _dsrLoading=true;
 
   function tryRender(){
     if(!mdDone||!inetDone) return;
+    _dsrLoading=false;
     dsrUpdateStrip();
+    if(isDesktop()&&view==='store') dsrBuildStoreList();
     if(view==='store') dsrRenderStore(_dsrStoreId);
     else dsrRenderDM();
   }
@@ -8287,12 +8310,16 @@ function dsrLoadAll(view){
             if(g.actsGoal) DSR_GOALS[id].actsGoal=g.actsGoal;
             if(g.upgGoal)  DSR_GOALS[id].upgGoal=g.upgGoal;
             if(g.oppsGoal) DSR_GOALS[id].oppsGoal=g.oppsGoal;
+            if(g.actsLY!=null) DSR_GOALS[id].actsLY=g.actsLY;
+            if(g.oppsLY!=null) DSR_GOALS[id].oppsLY=g.oppsLY;
           }
         });
         if(data.district){
           if(data.district.actsGoal) DSR_DIST_GOALS.actsGoal=data.district.actsGoal;
           if(data.district.upgGoal)  DSR_DIST_GOALS.upgGoal=data.district.upgGoal;
           if(data.district.oppsGoal) DSR_DIST_GOALS.oppsGoal=data.district.oppsGoal;
+          if(data.district.actsLY!=null) DSR_DIST_GOALS.actsLY=data.district.actsLY;
+          if(data.district.oppsLY!=null) DSR_DIST_GOALS.oppsLY=data.district.oppsLY;
         }
         // Re-render with updated goals if already displayed
         if(mdDone&&inetDone){
@@ -8343,6 +8370,7 @@ function dsrLoadAll(view){
           }
         });
         dsrUpdateStrip();
+        if(isDesktop()&&view==='store') dsrBuildStoreList();
         if(view==='store') dsrRenderStore(_dsrStoreId);
         else dsrRenderDM();
       }
@@ -8353,7 +8381,7 @@ function dsrLoadAll(view){
 function dsrRenderStore(storeId){
   _dsrStoreId=storeId;
   const body = document.getElementById('dsr-body');
-  if(!_dsrMDData){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3)">Loading…</div>'; return; }
+  if(_dsrLoading){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Loading…</div>'; return; }
 
   const md   = _dsrMDData[storeId]  || {};
   const inet = _dsrInetData?(_dsrInetData[storeId]||{}):{};
@@ -8370,10 +8398,12 @@ function dsrRenderStore(storeId){
   const apo=opps>0?(md.accRev||0)/opps:0;
   const eligInternet=(inet.eligFiber||0)+(inet.eligAIA||0);
   const internetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
-  const actsYoY=goals.actsLY>0?(voice-(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
-  const oppsYoY=goals.oppsLY>0?(opps-(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const actsYoY=goals.actsLY>0&&_dsrDaysElapsed>0?(voice-(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const oppsYoY=goals.oppsLY>0&&_dsrDaysElapsed>0?(opps-(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
   const upgLY=Math.max(0,(goals.oppsLY||0)-(goals.actsLY||0));
-  const upgYoY=upgLY>0?(upg-(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const upgYoY=upgLY>0&&_dsrDaysElapsed>0?(upg-(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const dsrStore=_dsrDSRData?(_dsrDSRData[storeId]||{}):{}; // DSR-only fields
+  const avgActFee=dsrStore.avgActFee||0;
 
   let html='';
 
@@ -8400,14 +8430,49 @@ function dsrRenderStore(storeId){
     </div>`;
   }
 
-  // Acts | Upg bars
-  html+=dsrGrid2(
-    dsrBarSec('Voice Activations MTD',voice,actsGoal,null,dsrGC(voice,actsGoal*.95,actsGoal*.85),'smd'),
-    dsrBarSec('Upgrades MTD',upg,upgGoal,null,dsrGC(upg,upgGoal*.95,upgGoal*.85),'smd')
-  );
+  // Acts | Upg | OPPs bars — bar scales to 200% of goal, +5/+10 stretch target marker
+  function dsrStretchBar(label, mtd, goal, stretchTarget, minVal, srcType){
+    if(!goal) return dsrBarSec(label,mtd,goal,minVal,dsrGC(mtd,goal*.95,goal*.85),srcType);
+    const maxScale = goal*2; // bar represents 200% of goal
+    const color = dsrGC(mtd, goal+stretchTarget, goal);
+    const barW  = Math.min(100, Math.round(mtd/maxScale*100));
+    const goalW = Math.round(goal/maxScale*100);          // 50% position
+    const strW  = Math.round((goal+stretchTarget)/maxScale*100);
+    const minW  = minVal!=null ? Math.round(minVal/maxScale*100) : null;
+    const pctOfGoal = goal>0?(mtd/goal*100).toFixed(0):'—';
+    const chipBg = color==='var(--ok)'?'rgba(0,169,79,.15)':color==='var(--warn)'?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+      <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+      </div>
+      <div style="padding:10px 12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color}">${mtd}</div>
+          <div style="background:${chipBg};border-radius:6px;padding:4px 10px;display:flex;align-items:center;justify-content:center">
+            <span style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color}">${pctOfGoal}%</span>
+          </div>
+        </div>
+        <div style="position:relative;background:var(--s3);border-radius:5px;height:12px">
+          <div style="position:absolute;left:0;top:0;height:12px;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
+          <div style="position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.35);left:${goalW}%"></div>
+          <div style="position:absolute;top:-3px;height:18px;width:2px;background:#F59E0B;border-radius:1px;left:${strW}%"></div>
+          ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:5px">
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${goal}</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#F59E0B;font-weight:800"><div style="width:7px;height:7px;border-radius:2px;background:#F59E0B"></div>${goal+stretchTarget} (+${stretchTarget} Target)</div>
+          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${minVal}</div>`:''}
+        </div>
+        ${dsrSrc(srcType)}
+      </div>
+    </div>`;
+  }
 
-  // OPPs full width
-  html+=dsrBarSec('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,oppsFloor>0?oppsFloor:null,dsrGC(opps,oppsGoal*.95,oppsGoal*.85),'smd');
+  html+=dsrGrid2(
+    dsrStretchBar('Voice Activations MTD',voice,actsGoal,5,null,'smd'),
+    dsrStretchBar('Upgrades MTD',upg,upgGoal,5,null,'smd')
+  );
+  html+=dsrStretchBar('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,10,oppsFloor>0?oppsFloor:null,'smd');
 
   // Proj tiles — 3-col
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8447,17 +8512,25 @@ function dsrRenderStore(storeId){
   // Internet bar — full width
   // Internet bar — full width (same style as Accessory Revenue)
   html+=dsrBarSec('Internet (AIA + Fiber)',internetTotal,3,null,internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet');
+  // Derive 2025 pace from DSR YoY% — LY = MTD / (1 + YoY%)
+  const _dsrActsYoY = dsrStore.actsYoY||0;
+  const _dsrOppsYoY = dsrStore.oppsYoY||0;
+  const _lyActs = _dsrActsYoY>-1&&voice>0 ? Math.round(voice/(1+_dsrActsYoY)) : (goals.actsLY||0);
+  const _lyOpps = _dsrOppsYoY>-1&&opps>0  ? Math.round(opps/(1+_dsrOppsYoY))  : (goals.oppsLY||0);
+  const _lyUpg  = Math.max(0,_lyOpps-_lyActs);
+  const _yoyActs = _dsrActsYoY||actsYoY;
+  const _yoyOpps = _dsrOppsYoY||oppsYoY;
   // Row 1: 2025 Activations | 2025 Upgrades | 2025 OPPs
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
-    ${dsrTile('2025 Activations',goals.actsLY||'—','var(--t3)','dsr','')}
-    ${dsrTile('2025 Upgrades',upgLY||'—','var(--t3)','dsr','')}
-    ${dsrTile('2025 OPPs',goals.oppsLY||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 Activations',_lyActs||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 Upgrades',_lyUpg||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 OPPs',_lyOpps||'—','var(--t3)','dsr','')}
   </div>`;
   // Row 2: YoY Activations | YoY Upgrades | YoY OPPs
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
-    ${dsrTile('YoY Activations %',dsrPctSign(actsYoY),actsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY Activations %',dsrPctSign(_yoyActs),_yoyActs>=0?'var(--ok)':'var(--err)','dsr','')}
     ${dsrTile('YoY Upgrades %',dsrPctSign(upgYoY),upgYoY>=0?'var(--ok)':'var(--err)','dsr','')}
-    ${dsrTile('YoY OPPs %',dsrPctSign(oppsYoY),oppsYoY>=0?'var(--ok)':'var(--err)','dsr','')}
+    ${dsrTile('YoY OPPs %',dsrPctSign(_yoyOpps),_yoyOpps>=0?'var(--ok)':'var(--err)','dsr','')}
   </div>`;
   // Row 3: Bill Pays | Address Checks | Internet Eligible
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
@@ -8481,7 +8554,7 @@ function dsrRenderStore(storeId){
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
     ${dsrTile('Multiline %',((md.multi||0)*100).toFixed(1)+'%',(md.multi||0)>=0.50?'var(--ok)':'var(--warn)','smd','')}
     ${dsrTile('Max Act Rate',((md.maxAct||0)*100).toFixed(1)+'%',(md.maxAct||0)>=0.30?'var(--ok)':(md.maxAct||0)>=0.20?'var(--warn)':'var(--err)','smd','')}
-    <div></div>
+    ${dsrTile('Avg Act Fee',avgActFee>0?fmtMoney(avgActFee):'—',avgActFee>=22?'var(--ok)':avgActFee>=20?'var(--warn)':avgActFee>0?'var(--err)':'var(--t3)','dsr','')}
   </div>`;
 
   body.innerHTML=html;
@@ -8491,7 +8564,7 @@ function dsrRenderStore(storeId){
 // ── Render DM Dashboard ──
 function dsrRenderDM(){
   const body=document.getElementById('dsr-body');
-  if(!_dsrMDData){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3)">Loading…</div>'; return; }
+  if(_dsrLoading){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Loading…</div>'; return; }
 
   // District totals from metric detail
   const stores=DSR_STORES;
@@ -8532,8 +8605,8 @@ function dsrRenderDM(){
   const projActsDist=dsrProj(totVoice), projUpgDist=dsrProj(totUpg), projOppsDist=dsrProj(totOpps);
   const penStores=stores.filter(s=>{const md=_dsrMDData[s.id]||{};const op=(md.voice||0)+(md.upg||0);const g=DSR_GOALS[s.id];return g&&dsrProj(op)<Math.ceil(g.oppsGoal*0.85);});
   const penRisk=penStores.length>=2;
-  const actsYoY=actsLY>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
-  const oppsYoY=oppsLY>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const actsYoY=actsLY>0&&_dsrDaysElapsed>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+  const oppsYoY=oppsLY>0&&_dsrDaysElapsed>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
 
   let html='';
 
@@ -8581,9 +8654,9 @@ function dsrRenderDM(){
 
   // ── Payout hero ──
   html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center">
-    <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Est. Payout MTD — ${DSR_MONTH_LABEL}</div>
-    <div style="font-family:'Bebas Neue';font-size:52px;color:var(--g);line-height:1;letter-spacing:1px">$${netPay.toLocaleString()}</div>
-    <div style="font-size:11px;color:var(--t3);margin-top:6px;font-family:'DM Sans'">Gross $${grossPay.toLocaleString()}${penalty>0?` · 25% Penalty −$${penalty.toLocaleString()}`:''}</div>
+    <div style="font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Est. Payout MTD — ${DSR_MONTH_LABEL}</div>
+    <div style="font-family:'Bebas Neue';font-size:64px;color:var(--g);line-height:1;letter-spacing:1px">$${netPay.toLocaleString()}</div>
+    <div style="font-size:13px;color:var(--t3);margin-top:6px;font-family:'DM Sans'">Gross $${grossPay.toLocaleString()}${penalty>0?` · 25% Penalty −$${penalty.toLocaleString()}`:''}</div>
   </div>`;
 
   // ── Payout breakdown ──
@@ -8597,20 +8670,20 @@ function dsrRenderDM(){
   ];
   html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
     <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
-      <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Payout Breakdown</div>
+      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Payout Breakdown</div>
     </div>`;
   payRows.forEach(([lbl,col,pay,mult,pct,hint])=>{
     const mc=mult>=1.5?'var(--ok)':mult>=1?'var(--warn)':'var(--err)';
     const pctLbl = lbl==='Protect'||lbl==='AutoPay' ? (pct*100).toFixed(1)+'%' : (pct*100).toFixed(0)+'%';
     html+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
-      <div style="width:3px;height:28px;border-radius:2px;background:${col};flex-shrink:0"></div>
+      <div style="width:3px;height:32px;border-radius:2px;background:${col};flex-shrink:0"></div>
       <div style="flex:1">
-        <div style="font-size:12px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${lbl}</div>
-        <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${hint}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${lbl}</div>
+        <div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">${hint}</div>
       </div>
-      <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${pctLbl}</div>
-      <div style="font-size:11px;font-weight:900;color:${mc};font-family:'DM Sans';min-width:36px;text-align:right">${mult.toFixed(2)}×</div>
-      <div style="font-size:13px;font-weight:900;color:${pay>0?'var(--t1)':'var(--t3)'};font-family:'Bebas Neue';min-width:48px;text-align:right">$${pay}</div>
+      <div style="font-size:13px;color:var(--t3);font-family:'DM Sans'">${pctLbl}</div>
+      <div style="font-size:13px;font-weight:900;color:${mc};font-family:'DM Sans';min-width:40px;text-align:right">${mult.toFixed(2)}×</div>
+      <div style="font-size:16px;font-weight:900;color:${pay>0?'var(--t1)':'var(--t3)'};font-family:'Bebas Neue';min-width:54px;text-align:right">$${pay}</div>
     </div>`;
   });
   if(penalty>0){
@@ -8621,8 +8694,8 @@ function dsrRenderDM(){
     </div>`;
   }
   html+=`<div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:var(--s2)">
-    <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t2);font-family:'DM Sans'">Net Payout</div>
-    <div style="font-family:'Bebas Neue';font-size:24px;color:var(--g)">$${netPay.toLocaleString()}</div>
+    <div style="font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t2);font-family:'DM Sans'">Net Payout</div>
+    <div style="font-family:'Bebas Neue';font-size:32px;color:var(--g)">$${netPay.toLocaleString()}</div>
   </div></div>`;
 
   // Penalty banner
@@ -8634,12 +8707,45 @@ function dsrRenderDM(){
     </div>
   </div>`;
 
-  // Acts | Upg bars
+  // Acts | Upg bars — chip style
+  function dmStretchBar(label, mtd, goal, minVal, srcType){
+    if(!goal) return dsrBarSec(label,mtd,goal,minVal,dsrGC(mtd,goal*.95,goal*.85),srcType);
+    const maxScale = goal*2;
+    const color = dsrGC(mtd,goal*.95,goal*.90);
+    const chipBg = color==='var(--ok)'?'rgba(0,169,79,.15)':color==='var(--warn)'?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
+    const barW  = Math.min(100,Math.round(mtd/maxScale*100));
+    const goalW = Math.round(goal/maxScale*100);
+    const minW  = minVal!=null?Math.round(minVal/maxScale*100):null;
+    const pct   = goal>0?(mtd/goal*100).toFixed(0):'—';
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+      <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+        <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+      </div>
+      <div style="padding:10px 12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color}">${mtd}</div>
+          <div style="background:${chipBg};border-radius:6px;padding:4px 10px">
+            <span style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${color}">${pct}%</span>
+          </div>
+        </div>
+        <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;height:12px;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
+          <div style="position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.35);left:${goalW}%"></div>
+          ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:5px">
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${goal}</div>
+          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${minVal}</div>`:''}
+        </div>
+        ${dsrSrc(srcType)}
+      </div>
+    </div>`;
+  }
   html+=dsrGrid2(
-    dsrBarSec('Voice Activations MTD',`${totVoice} / ${actsGoal>0?(totVoice/actsGoal*100).toFixed(0):'—'}%`,actsGoal,Math.ceil(actsGoal*0.80),dsrGC(totVoice,actsGoal*.95,actsGoal*.90),'smd',totVoice),
-    dsrBarSec('Upgrades MTD',`${totUpg} / ${upgGoal>0?(totUpg/upgGoal*100).toFixed(0):'—'}%`,upgGoal,Math.ceil(upgGoal*0.80),dsrGC(totUpg,upgGoal*.95,upgGoal*.85),'smd',totUpg)
+    dmStretchBar('Voice Activations MTD',totVoice,actsGoal,Math.ceil(actsGoal*0.80),'smd'),
+    dmStretchBar('Upgrades MTD',totUpg,upgGoal,Math.ceil(upgGoal*0.80),'smd')
   );
-  html+=dsrBarSec('District OPPs MTD',`${totOpps} / ${oppsGoal>0?(totOpps/oppsGoal*100).toFixed(0):'—'}%`,oppsGoal,oppsFloor,dsrGC(totOpps,oppsGoal,oppsGoal*.90),'smd',totOpps);
+  html+=dmStretchBar('District OPPs MTD',totOpps,oppsGoal,oppsFloor,'smd');
 
   // Proj tiles
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8660,7 +8766,29 @@ function dsrRenderDM(){
   html+=dsrGrid2(dsrRateSec('PPP',distPPP,0.20,0.10,'smd'),dsrRateSec('60+ RP Mix',distRPM,0.80,null,'smd'));
   html+=dsrBarSec('Accessory Revenue',fmtMoney(totAcc),accGoal,null,dsrGC(totAcc,accGoal*.95,accGoal*.75),'smd');
   html+=dsrGrid2(dsrRateSec('WTR',distWTR,0.80,null,'smd'),dsrRateSec('Bill Pay Conv.',distBPConv,0.50,0.40,'smd'));
-  html+=dsrBarSec('Internet (AIA + Fiber)',totInternet,12,null,totInternet>=12?'var(--ok)':totInternet>=6?'var(--warn)':'var(--err)','inet');
+  const inetChipColor = inetPerDoor>=2?'var(--ok)':inetPerDoor>=1?'var(--warn)':'var(--err)';
+  const inetChipBg    = inetPerDoor>=2?'rgba(0,169,79,.15)':inetPerDoor>=1?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
+  const inetBarW      = Math.min(100,Math.round(totInternet/12*100));
+  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Internet (AIA + Fiber)</div>
+    </div>
+    <div style="padding:10px 12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${inetChipColor}">${totInternet}</div>
+        <div style="background:${inetChipBg};border-radius:6px;padding:4px 10px;display:flex;align-items:center;justify-content:center">
+          <span style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${inetChipColor}">${inetPerDoor.toFixed(2)}/door</span>
+        </div>
+      </div>
+      <div style="position:relative;background:var(--s3);border-radius:5px;height:12px;overflow:hidden">
+        <div style="position:absolute;left:0;top:0;height:12px;border-radius:5px;background:${inetChipColor};width:${inetBarW}%;transition:width .5s"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:5px">
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal 12 · 2/door</div>
+      </div>
+      ${dsrSrc('inet')}
+    </div>
+  </div>`;
 
   // District context tiles
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8694,7 +8822,7 @@ function dsrRenderDM(){
     const oppsProj=dsrProj(opps);
     const floor=g.oppsGoal?Math.ceil(g.oppsGoal*0.85):0;
     const risk=g.oppsGoal&&oppsProj<floor;
-    const yoyA=g.actsLY>0?(md.voice||0-(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+    const yoyA=g.actsLY>0&&_dsrDaysElapsed>0?(md.voice||0-(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
     const inetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
     html+=`<div onclick="dsrStoreFromDM(${s.id})" style="background:var(--s1);border:1.5px solid ${risk?'rgba(239,68,68,.35)':'var(--bd)'};border-radius:var(--r);overflow:hidden;margin-bottom:8px;cursor:pointer">
       <div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:flex-start">
