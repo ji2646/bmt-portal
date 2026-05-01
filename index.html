@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -725,7 +728,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A82</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A86</div>
 </div>
 
 <script>
@@ -2750,6 +2753,12 @@ function renderIndividualDashboard(r,uid,_targetEl){
       ${sec('60RP Mix',gBar(r.mix60rp,0.80))}
     </div>
 
+    <!-- Row 3b: Upgrade Plus | ILD -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('Upgrade Plus',gBar(r.upgPlusRate||0,0.08))}
+      ${sec('Intl. Long Distance',gBar(r.ildRate||0,0.02))}
+    </div>
+
     <!-- Row 4: WTR (1/4) | BP Conv (1/4) | Internet (1/2) -->
     <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('WTR',wtrHtml)}
@@ -2946,6 +2955,11 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
         const barW=Math.min(100,Math.round((r.aiaOrders||0)/3*100));
         return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div><div style="font-family:Bebas Neue;font-size:22px;color:${col};line-height:1">${r.aiaOrders||0}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
       })())}
+    </div>
+    <!-- Row 3b: Upgrade Plus | ILD -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('Upgrade Plus',gauge('Upgrade Plus Rate',r.upgPlusRate||0,0.08,null))}
+      ${sec('Intl. Long Distance',gauge('ILD Rate',r.ildRate||0,0.02,null))}
     </div>
     <!-- Row 4: Bill Pay | Acc Revenue | APD -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
@@ -8071,9 +8085,9 @@ function dsrRateSec(label, val, goalPct, minPct, srcType){
 
 // ── Tile ──
 function dsrTile(label, val, color, srcType, sub){
-  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center">
     <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
-    <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${color||'var(--t1)'}">${val}</div>
+    <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${color||'var(--t1)'};flex:1;display:flex;align-items:center">${val}</div>
     ${sub?`<div style="font-size:11px;color:var(--t3);margin-top:2px">${sub}</div>`:''}
     ${srcType?dsrSrc(srcType):''}
   </div>`;
@@ -8088,18 +8102,24 @@ function dsrNeedTile(label, mtd, goal, goal85, srcType, floorLabel){
   const c100 = need100===0?'var(--ok)':need100<=3?'var(--warn)':'var(--err)';
   const c85  = need85!=null?(need85===0?'var(--ok)':need85<=3?'var(--warn)':'var(--err)'):'';
   if(need85===null){
-    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center">
       <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
-      <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100}">${need100}</div>
+      <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100};flex:1;display:flex;align-items:center">${need100}</div>
       ${dsrSrc(srcType)}
     </div>`;
   }
-  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center">
+  return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center">
     <div style="font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">${label}</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:3px 0">
-      <div><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100}">${need100}</div><div style="font-size:11px;color:var(--t3)">to 100%</div></div>
-      <div style="width:1px;height:32px;background:var(--bd2)"></div>
-      <div><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c85}">${need85}</div><div style="font-size:11px;color:var(--t3)">${flLbl}</div></div>
+    <div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c100}">${need100}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">to 100%</div>
+      </div>
+      <div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div>
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${c85}">${need85}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">${flLbl}</div>
+      </div>
     </div>
     ${dsrSrc(srcType)}
   </div>`;
@@ -8497,29 +8517,33 @@ function dsrRenderStore(storeId){
     dsrRateSec('PPP Attach Rate',md.ppp||0,0.20,0.10,'smd'),
     dsrRateSec('60+ RP Mix',md.rpm60||0,0.80,null,'smd')
   );
+  html+=dsrGrid2(
+    dsrRateSec('Upgrade Plus',md.upgPlusRate||0,0.08,null,'smd'),
+    dsrRateSec('Intl. Long Distance',md.ildRate||0,0.02,null,'smd')
+  );
 
-  // Accessory Revenue
-  html+=dsrBarSec('Accessory Revenue',fmtMoney(md.accRev||0),accGoal>0?accGoal:null,null,
-    accGoal>0?dsrGC(md.accRev||0,accGoal*.95,accGoal*.75):'var(--warn)','smd');
+  // Accessory Revenue + Internet side by side
+  html+=dsrGrid2(
+    dsrBarSec('Accessory Revenue',fmtMoney(md.accRev||0),accGoal>0?accGoal:null,null,
+      accGoal>0?dsrGC(md.accRev||0,accGoal*.95,accGoal*.75):'var(--warn)','smd'),
+    dsrBarSec('Internet (AIA + Fiber)',internetTotal,3,null,internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet')
+  );
 
   // WTR | Bill Pay Conv
   html+=dsrGrid2(
     dsrRateSec('WTR',(md.wtr||0)/100,0.80,null,'smd'),
     dsrRateSec('Bill Pay Conversion',bpConv,0.50,0.40,'smd')
   );
-
-  // Internet bar + Addr Checks + Inet Eligible in 3-col: bar spans 2, tiles get 1 each row
-  // Internet bar — full width
-  // Internet bar — full width (same style as Accessory Revenue)
-  html+=dsrBarSec('Internet (AIA + Fiber)',internetTotal,3,null,internetTotal>=3?'var(--ok)':internetTotal>=1?'var(--warn)':'var(--err)','inet');
   // Derive 2025 pace from DSR YoY% — LY = MTD / (1 + YoY%)
-  const _dsrActsYoY = dsrStore.actsYoY||0;
-  const _dsrOppsYoY = dsrStore.oppsYoY||0;
-  const _lyActs = _dsrActsYoY>-1&&voice>0 ? Math.round(voice/(1+_dsrActsYoY)) : (goals.actsLY||0);
-  const _lyOpps = _dsrOppsYoY>-1&&opps>0  ? Math.round(opps/(1+_dsrOppsYoY))  : (goals.oppsLY||0);
+  // Only use DSR values when DSR data is actually loaded (not null/zero from missing data)
+  const _hasDSR = _dsrDSRData && _dsrDSRData[storeId];
+  const _dsrActsYoY = _hasDSR ? (dsrStore.actsYoY||0) : null;
+  const _dsrOppsYoY = _hasDSR ? (dsrStore.oppsYoY||0) : null;
+  const _lyActs = _dsrActsYoY!=null&&_dsrActsYoY>-1&&voice>0 ? Math.round(voice/(1+_dsrActsYoY)) : 0;
+  const _lyOpps = _dsrOppsYoY!=null&&_dsrOppsYoY>-1&&opps>0  ? Math.round(opps/(1+_dsrOppsYoY))  : 0;
   const _lyUpg  = Math.max(0,_lyOpps-_lyActs);
-  const _yoyActs = _dsrActsYoY||actsYoY;
-  const _yoyOpps = _dsrOppsYoY||oppsYoY;
+  const _yoyActs = _dsrActsYoY!=null ? _dsrActsYoY : actsYoY;
+  const _yoyOpps = _dsrOppsYoY!=null ? _dsrOppsYoY : oppsYoY;
   // Row 1: 2025 Activations | 2025 Upgrades | 2025 OPPs
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
     ${dsrTile('2025 Activations',_lyActs||'—','var(--t3)','dsr','')}
@@ -8569,7 +8593,7 @@ function dsrRenderDM(){
   // District totals from metric detail
   const stores=DSR_STORES;
   let totVoice=0,totUpg=0,totBP=0,totAcc=0,totInternet=0,totAddr=0,totElig=0,totCredit=0,totAdv=0,totPlanDown=0;
-  let wtdProt=0,wtdAP=0,wtdRPM=0,wtdPPP=0,wtdWTR=0;
+  let wtdProt=0,wtdAP=0,wtdRPM=0,wtdPPP=0,wtdWTR=0,wtdUpgPlus=0,wtdILD=0;
   stores.forEach(s=>{
     const md=_dsrMDData[s.id]||{};
     const inet=_dsrInetData?((_dsrInetData[s.id])||{}):{};
@@ -8583,6 +8607,7 @@ function dsrRenderDM(){
     totPlanDown+=md.planDown||0;
     wtdProt+=(md.protect||0)*opps; wtdAP+=(md.autopay||0)*opps;
     wtdRPM+=(md.rpm60||0)*opps; wtdPPP+=(md.ppp||0)*opps; wtdWTR+=((md.wtr||0)/100)*opps;
+    wtdUpgPlus+=(md.upgPlusRate||0)*opps; wtdILD+=(md.ildRate||0)*opps;
   });
   const totOpps=totVoice+totUpg;
   const distProt=totOpps>0?wtdProt/totOpps:0;
@@ -8590,6 +8615,8 @@ function dsrRenderDM(){
   const distRPM=totOpps>0?wtdRPM/totOpps:0;
   const distPPP=totOpps>0?wtdPPP/totOpps:0;
   const distWTR=totOpps>0?wtdWTR/totOpps:0;
+  const distUpgPlus=totOpps>0?wtdUpgPlus/totOpps:0;
+  const distILD=totOpps>0?wtdILD/totOpps:0;
   const distBPConv=totBP>0?totOpps/totBP:0;
   const distAPO=totOpps>0?totAcc/totOpps:0;
 
@@ -8599,14 +8626,21 @@ function dsrRenderDM(){
   const upgGoal=_dsrDistData?(_dsrDistData.upgGoal||dg.upgGoal):dg.upgGoal;
   const oppsGoal=_dsrDistData?(_dsrDistData.oppsGoal||dg.oppsGoal):dg.oppsGoal;
   const actsLY=dg.actsLY, oppsLY=dg.oppsLY;
-  const oppsFloor=Math.ceil(oppsGoal*0.90); // district target: 90% min
-  const accGoal=34*oppsGoal; // DM plan: $34 APD × Opps Goal
+  const oppsFloor=Math.ceil(oppsGoal*0.90);
+  const accGoal=34*oppsGoal;
 
   const projActsDist=dsrProj(totVoice), projUpgDist=dsrProj(totUpg), projOppsDist=dsrProj(totOpps);
   const penStores=stores.filter(s=>{const md=_dsrMDData[s.id]||{};const op=(md.voice||0)+(md.upg||0);const g=DSR_GOALS[s.id];return g&&dsrProj(op)<Math.ceil(g.oppsGoal*0.85);});
   const penRisk=penStores.length>=2;
-  const actsYoY=actsLY>0&&_dsrDaysElapsed>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
-  const oppsYoY=oppsLY>0&&_dsrDaysElapsed>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+
+  // YoY — use DSR district values if loaded (most accurate), else compute from LY
+  const _hasDSRDist = _dsrDistData && (_dsrDistData.actsYoY!=null||_dsrDistData.oppsYoY!=null);
+  const actsYoY = _hasDSRDist ? (_dsrDistData.actsYoY||0) :
+    (actsLY>0&&_dsrDaysElapsed>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0);
+  const oppsYoY = _hasDSRDist ? (_dsrDistData.oppsYoY||0) :
+    (oppsLY>0&&_dsrDaysElapsed>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0);
+  // Derive 2025 district pace from YoY%
+  const _dmLYActs = _hasDSRDist&&actsYoY>-1&&totVoice>0 ? Math.round(totVoice/(1+actsYoY)) : (actsLY||0);
 
   let html='';
 
@@ -8764,19 +8798,20 @@ function dsrRenderDM(){
   // Rates
   html+=dsrGrid2(dsrRateSec('AutoPay',distAP,0.30,0.28,'smd'),dsrRateSec('Protect',distProt,0.50,0.48,'smd'));
   html+=dsrGrid2(dsrRateSec('PPP',distPPP,0.20,0.10,'smd'),dsrRateSec('60+ RP Mix',distRPM,0.80,null,'smd'));
-  html+=dsrBarSec('Accessory Revenue',fmtMoney(totAcc),accGoal,null,dsrGC(totAcc,accGoal*.95,accGoal*.75),'smd');
-  html+=dsrGrid2(dsrRateSec('WTR',distWTR,0.80,null,'smd'),dsrRateSec('Bill Pay Conv.',distBPConv,0.50,0.40,'smd'));
+  html+=dsrGrid2(dsrRateSec('Upgrade Plus',distUpgPlus,0.08,null,'smd'),dsrRateSec('Intl. Long Distance',distILD,0.02,null,'smd'));
+
+  // Accessory Revenue + Internet side by side
   const inetChipColor = inetPerDoor>=2?'var(--ok)':inetPerDoor>=1?'var(--warn)':'var(--err)';
   const inetChipBg    = inetPerDoor>=2?'rgba(0,169,79,.15)':inetPerDoor>=1?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
   const inetBarW      = Math.min(100,Math.round(totInternet/12*100));
-  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+  const inetHtml=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden">
     <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
       <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Internet (AIA + Fiber)</div>
     </div>
     <div style="padding:10px 12px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <div style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${inetChipColor}">${totInternet}</div>
-        <div style="background:${inetChipBg};border-radius:6px;padding:4px 10px;display:flex;align-items:center;justify-content:center">
+        <div style="background:${inetChipBg};border-radius:6px;padding:4px 10px">
           <span style="font-family:'Bebas Neue';font-size:38px;line-height:1;color:${inetChipColor}">${inetPerDoor.toFixed(2)}/door</span>
         </div>
       </div>
@@ -8789,6 +8824,12 @@ function dsrRenderDM(){
       ${dsrSrc('inet')}
     </div>
   </div>`;
+  html+=dsrGrid2(
+    dsrBarSec('Accessory Revenue',fmtMoney(totAcc),accGoal,null,dsrGC(totAcc,accGoal*.95,accGoal*.75),'smd'),
+    inetHtml
+  );
+
+  html+=dsrGrid2(dsrRateSec('WTR',distWTR,0.80,null,'smd'),dsrRateSec('Bill Pay Conv.',distBPConv,0.50,0.40,'smd'));
 
   // District context tiles
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8809,7 +8850,7 @@ function dsrRenderDM(){
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrTile('Plan Down',totPlanDown,totPlanDown>10?'var(--err)':totPlanDown>5?'var(--warn)':'var(--ok)','smd','')}
-    ${dsrTile('2025 Activations',actsLY,'var(--t3)','dsr','')}
+    ${dsrTile('2025 Activations',_dmLYActs||'—','var(--t3)','dsr','')}
   </div>`;
 
   // Store snapshots
