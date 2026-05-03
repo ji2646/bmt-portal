@@ -728,7 +728,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A86</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A93</div>
 </div>
 
 <script>
@@ -7989,7 +7989,7 @@ const DSR_DIST_GOALS = {actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0};
 
 // Store config
 const DSR_STORES = [
-  {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 2'},
+  {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 3'},
   {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
   {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
   {id:769,name:'Memorial',    rsm:'Rolando Garcia',   tier:'Tier 1'},
@@ -8228,9 +8228,9 @@ function dsrBuildStoreList(){
     return `<div onclick="dsrSelectStore(${s.id})" style="padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:${active?'rgba(0,169,79,.08)':'transparent'};border-left:3px solid ${active?'var(--g)':'transparent'}">
       <div>
         <div style="font-size:12px;font-weight:${active?'900':'700'};color:${active?'var(--g)':'var(--t1)'};font-family:'DM Sans'">${s.id} · ${s.name}</div>
-        <div style="font-size:10px;color:var(--t3);font-family:'DM Sans'">${s.rsm}</div>
+        <div style="font-size:13px;color:var(--t3);font-family:'DM Sans'">${s.rsm}</div>
       </div>
-      <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</span>
+      <span style="font-size:12px;font-weight:800;padding:2px 7px;border-radius:4px;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</span>
     </div>`;
   }).join('');
 }
@@ -8265,7 +8265,7 @@ function dsrBuildMonthPicker(){
   if(!wrap) return;
   wrap.style.display = 'flex';
   wrap.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:7px 16px;background:var(--s1)">'
-    + '<div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:\'DM Sans\';white-space:nowrap">Month</div>'
+    + '<div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:\'DM Sans\';white-space:nowrap">Month</div>'
     + '<select id="dsr-month-select" onchange="onDsrMonthSelect(this)" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:\'DM Sans\';font-size:11px;font-weight:700;outline:none;cursor:pointer;max-width:260px">'
     + DSR_MONTHS.map(m=>'<option value="'+m.key+'"'+(m.key===_dsrActiveMonth?' selected':'')+'>'+m.label+'</option>').join('')
     + '</select></div>';
@@ -8297,7 +8297,7 @@ function dsrUpdateStrip(){
   const dates = document.getElementById('dsr-strip-dates');
   if(!mo||!dates) return;
   mo.textContent = DSR_MONTH_LABEL;
-  const srcStyle = (col,lbl,dt) => `<div style="font-size:10px;font-weight:700;color:${col};font-family:'DM Sans'">● ${lbl} ${dt||'—'}</div>`;
+  const srcStyle = (col,lbl,dt) => `<div style="font-size:13px;font-weight:700;color:${col};font-family:'DM Sans'">● ${lbl} ${dt||'—'}</div>`;
   dates.innerHTML =
     srcStyle('var(--g)','Metric Detail',dsrFmtDate(_dsrMDDate)||'—') +
     srcStyle('#8B5CF6','DSR',dsrFmtDate(_dsrDSRDate)||'—') +
@@ -8426,26 +8426,26 @@ function dsrRenderStore(storeId){
   const avgActFee=dsrStore.avgActFee||0;
 
   let html='';
+  let _rsmCardHtml = '';
 
   // Store header
   html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
     <div>
-      <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;color:var(--t1)">${storeId} · ${storeInfo.name||''}</div>
-      <div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${storeInfo.rsm||''} · ${storeInfo.tier||''}</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${storeId} · ${storeInfo.name||''}</div>
+      <div style="font-size:13px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${storeInfo.rsm||''} · ${storeInfo.tier||''}</div>
     </div>
     <div style="text-align:right">
       <div style="font-size:13px;font-weight:900;color:${actsYoY>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${dsrPctSign(actsYoY)} Acts YoY</div>
-      <div style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;margin-top:3px;display:inline-block;background:${penRisk?'#FEE2E2':'#DCFCE7'};color:${penRisk?'#7F1D1D':'#14532D'}">${penRisk?'⚠ Penalty Risk':'✓ On Track'}</div>
+      <div style="font-size:12px;font-weight:800;padding:2px 8px;border-radius:4px;margin-top:3px;display:inline-block;background:${penRisk?'#FEE2E2':'#DCFCE7'};color:${penRisk?'#7F1D1D':'#14532D'}">${penRisk?'⚠ Penalty Risk':'✓ On Track'}</div>
     </div>
-  </div>`;
-
+  </div><!--RSM_PAY-->`;
   // Penalty banner
   if(oppsGoal>0){
     html+=`<div style="border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;background:${penRisk?'#FEE2E2':'#DCFCE7'};border:1.5px solid ${penRisk?'#FECACA':'#BBF7D0'}">
       <div style="font-size:16px;flex-shrink:0">${penRisk?'⚠️':''}</div>
       <div>
         <div style="font-size:12px;font-weight:900;color:${penRisk?'#7F1D1D':'#14532D'};font-family:'DM Sans'">${penRisk?'Penalty Risk — Proj '+projOpps+' Opps':'On Track — Proj '+projOpps+' Opps'}</div>
-        <div style="font-size:10px;color:${penRisk?'#991B1B':'#166534'};margin-top:2px;font-family:'DM Sans'">85% floor is ${oppsFloor} · ${penRisk?'Need '+((oppsFloor-opps)/Math.max(1,DSR_DAYS_IN_MONTH-_dsrDaysElapsed)).toFixed(1)+'/day to clear':projOpps-oppsFloor+' above floor'}</div>
+        <div style="font-size:13px;color:${penRisk?'#991B1B':'#166534'};margin-top:2px;font-family:'DM Sans'">85% floor is ${oppsFloor} · ${penRisk?'Need '+((oppsFloor-opps)/Math.max(1,DSR_DAYS_IN_MONTH-_dsrDaysElapsed)).toFixed(1)+'/day to clear':projOpps-oppsFloor+' above floor'}</div>
       </div>
     </div>`;
   }
@@ -8463,7 +8463,7 @@ function dsrRenderStore(storeId){
     const chipBg = color==='var(--ok)'?'rgba(0,169,79,.15)':color==='var(--warn)'?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
       <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
-        <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
+        <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">${label}</div>
       </div>
       <div style="padding:10px 12px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -8539,9 +8539,12 @@ function dsrRenderStore(storeId){
   const _hasDSR = _dsrDSRData && _dsrDSRData[storeId];
   const _dsrActsYoY = _hasDSR ? (dsrStore.actsYoY||0) : null;
   const _dsrOppsYoY = _hasDSR ? (dsrStore.oppsYoY||0) : null;
-  const _lyActs = _dsrActsYoY!=null&&_dsrActsYoY>-1&&voice>0 ? Math.round(voice/(1+_dsrActsYoY)) : 0;
-  const _lyOpps = _dsrOppsYoY!=null&&_dsrOppsYoY>-1&&opps>0  ? Math.round(opps/(1+_dsrOppsYoY))  : 0;
-  const _lyUpg  = Math.max(0,_lyOpps-_lyActs);
+  // Prefer direct LY counts from DSR (cols 103/104); fall back to YoY% back-calc
+  const _lyActs = _hasDSR && dsrStore.actsLY>0 ? dsrStore.actsLY :
+                  (_dsrActsYoY!=null&&_dsrActsYoY>-1&&voice>0 ? Math.round(voice/(1+_dsrActsYoY)) : 0);
+  const _lyOpps = _hasDSR && dsrStore.oppsLY>0 ? dsrStore.oppsLY :
+                  (_dsrOppsYoY!=null&&_dsrOppsYoY>-1&&opps>0  ? Math.round(opps/(1+_dsrOppsYoY))  : 0);
+  const _lyUpg  = Math.max(0, _lyOpps - _lyActs);
   const _yoyActs = _dsrActsYoY!=null ? _dsrActsYoY : actsYoY;
   const _yoyOpps = _dsrOppsYoY!=null ? _dsrOppsYoY : oppsYoY;
   // Row 1: 2025 Activations | 2025 Upgrades | 2025 OPPs
@@ -8581,11 +8584,150 @@ function dsrRenderStore(storeId){
     ${dsrTile('Avg Act Fee',avgActFee>0?fmtMoney(avgActFee):'—',avgActFee>=22?'var(--ok)':avgActFee>=20?'var(--warn)':avgActFee>0?'var(--err)':'var(--t3)','dsr','')}
   </div>`;
 
+  // ── RSM Payout Estimate ── right after store header, RSM/DM/Jaq only
+  try {
+  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'rg8855',752:'jq286d',768:'jx820u'};
+  const _storeRsmUid = _RSM_STORE_UID[storeId];
+  const _canSeeRsmPay = isDMUser()||isJaqUser()||(_pendingUid===_storeRsmUid);
+  if(_canSeeRsmPay){
+    const _RSM_TIER = {
+      1:{base:150,step:25}, 2:{base:200,step:50},
+      3:{base:300,step:75}, 4:{base:400,step:100}, 5:{base:750,step:150}
+    };
+    const _tierNum = storeInfo.tier==='Tier 2'?2:storeInfo.tier==='Tier 3'?3:storeInfo.tier==='Tier 4'?4:storeInfo.tier==='Tier 5'?5:1;
+    const _tc = _RSM_TIER[_tierNum];
+    const _oppsPct  = oppsGoal>0 ? opps/oppsGoal : 0;
+    const _accGoal  = 35*oppsGoal;
+    const _accPct   = _accGoal>0?(md.accRev||0)/_accGoal:0;
+
+    // Qualifiers
+    const _qAP   = (md.autopay||0)>=0.28;
+    const _qProt = (md.protect||0)>=0.48;
+    const _qInet = (internetTotal)>=3;
+    const _misses   = [_qAP,_qProt,_qInet].filter(q=>!q).length;
+    const _qualMult = Math.max(0, 1 - _misses*0.10);
+
+    // Opps payout
+    const _oppsBelowFloor = oppsGoal>0&&_oppsPct<0.85;
+    const _oppsBuckets    = Math.round((_oppsPct - 1.0) / 0.05);
+    const _rsmOppsFull    = oppsGoal>0 ? Math.min(_tc.base*2, Math.max(0, _tc.base + _oppsBuckets*_tc.step)) : 0;
+    const _rsmOppsRaw     = _oppsBelowFloor ? 0 : _rsmOppsFull;
+    const _rsmOppsAdj     = Math.round(_rsmOppsRaw * _qualMult);
+    // What they'd get at 100% with no qualifier misses
+    const _rsmOppsPotential = _tc.base;
+
+    // Acc payout
+    const _accBelowFloor = _accPct<0.75;
+    const _rsmAccRaw     = _accBelowFloor ? 0 : Math.round((md.accRev||0)*0.05);
+    const _rsmAccAdj     = Math.round(_rsmAccRaw * _qualMult);
+    const _rsmAccPotential = Math.round(_accGoal*0.05);
+
+    // Lost money calculations
+    const _lostOppsFloor  = _oppsBelowFloor ? _rsmOppsFull : 0;  // lost because below 85%
+    const _lostQualifiers = Math.round((_rsmOppsRaw + _rsmAccRaw) * (1 - _qualMult)); // lost to qualifier misses
+    const _lostAccFloor   = _accBelowFloor ? Math.round((md.accRev||0)*0.05) : 0;
+    const _totalLost      = _lostOppsFloor + _lostQualifiers + _lostAccFloor;
+
+    const _rsmGross = _rsmOppsAdj + _rsmAccAdj;
+
+    // Row helpers
+    const _payRow = (label, hint, amount, color) => `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${label}</div><div style="font-size:11px;color:var(--t3);font-family:'DM Sans';margin-top:1px">${hint}</div></div>
+      <div style="font-family:'Bebas Neue';font-size:18px;color:${color};min-width:64px;text-align:right">$${amount.toLocaleString()}</div>
+    </div>`;
+
+    const _lostRow = (label, hint, amount) => amount>0?`<div style="padding:9px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;background:#FEF2F2">
+      <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#991B1B;font-family:'DM Sans'">✗ ${label}</div><div style="font-size:11px;color:#B91C1C;font-family:'DM Sans';margin-top:1px">${hint}</div></div>
+      <div style="font-family:'Bebas Neue';font-size:18px;color:#EF4444;min-width:64px;text-align:right">−$${amount.toLocaleString()}</div>
+    </div>`:'';
+
+    const _qRow = (label, ok, miss) => `<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center${ok?'':';background:#FEF9F9'}">
+      <div style="font-size:13px;color:${ok?'var(--t2)':'#991B1B'};font-family:'DM Sans'">${label}</div>
+      <div style="font-size:12px;font-weight:900;color:${ok?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${ok?'✓ Met':'✗ −10%'}</div>
+    </div>`;
+
+    const _rsmPayHtml = `
+      <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
+        <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Store Opps · Tier ${_tierNum} (${oppsGoal>0?_oppsPct>=0.85?(((_oppsPct)*100).toFixed(0)+'% of goal'):'⚠ Below 85% floor':'No goal'})</div>
+      </div>
+      ${_oppsBelowFloor
+        ? `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);background:#FEF2F2">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:14px;font-weight:700;color:#991B1B;font-family:'DM Sans'">Opps Payout</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-family:'Bebas Neue';font-size:20px;color:var(--t3);text-decoration:line-through;opacity:.6">$${_rsmOppsFull}</span>
+                <span style="font-size:11px;font-weight:900;color:#EF4444;background:#FEE2E2;border:1px solid #FECACA;border-radius:4px;padding:2px 6px">FORFEITED</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#B91C1C;font-family:'DM Sans'">Below 85% floor · need ${oppsFloor-opps} more opps to unlock · ${opps}/${oppsGoal} (${((opps/oppsGoal)*100).toFixed(0)}% of goal)</div>
+          </div>`
+        : _payRow(
+            'Opps Payout',
+            `$${_tc.base} base ${_oppsBuckets>=0?'+':'−'}$${Math.abs(_oppsBuckets*_tc.step)} (${_oppsBuckets>=0?'+':''}${_oppsBuckets} buckets × ±$${_tc.step}/5%)`,
+            _rsmOppsRaw,
+            _rsmOppsRaw>_rsmOppsPotential?'var(--g)':_rsmOppsRaw===_rsmOppsPotential?'var(--ok)':'var(--warn)'
+          )
+      }
+      <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
+        <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Store Accessories (${_accPct>=0.75?((_accPct*100).toFixed(0)+'% of goal'):'⚠ Below 75% floor'})</div>
+      </div>
+      ${_payRow(
+        'Accessories Payout',
+        _accBelowFloor
+          ? `Floor: acc revenue must reach $${Math.round(_accGoal*0.75).toLocaleString()} (75% of $${Math.round(_accGoal).toLocaleString()} goal) · currently $${Math.round(md.accRev||0).toLocaleString()}`
+          : `5% of $${Math.round(md.accRev||0).toLocaleString()} acc revenue`,
+        _rsmAccRaw,
+        _accBelowFloor?'var(--t3)':'var(--ok)'
+      )}
+      <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
+        <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Monthly Qualifiers (each miss = −10% of total)</div>
+      </div>
+      ${_qRow(`AutoPay ${((md.autopay||0)*100).toFixed(1)}% · need ≥28%`,_qAP)}
+      ${_qRow(`Protect ${((md.protect||0)*100).toFixed(1)}% · need ≥48%`,_qProt)}
+      ${_qRow(`Internet ${internetTotal} · need ≥3`,_qInet)}
+      ${_lostRow('Lost to Opps Floor',
+        `Need ${oppsFloor} opps (85%) to unlock · ${opps} OPPs right now · ${oppsGoal-opps} needed for 100%`,
+        _lostOppsFloor
+      )}
+      ${_lostRow('Lost to Qualifier Misses',
+        `${_misses} qualifier${_misses!==1?'s':''} missed · ${_misses*10}% deducted from gross`,
+        _lostQualifiers
+      )}
+      ${_lostRow('Lost to Acc Floor',
+        `Acc revenue $${Math.round(md.accRev||0).toLocaleString()} below 75% floor ($${Math.round(_accGoal*0.75).toLocaleString()})`,
+        _lostAccFloor
+      )}
+      <div style="padding:10px 12px;background:var(--s2)">
+        ${_totalLost>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--bd)">
+          <div style="font-size:12px;color:#991B1B;font-family:'DM Sans'">Total Left on the Table</div>
+          <div style="font-family:'Bebas Neue';font-size:22px;color:#EF4444">−$${_totalLost.toLocaleString()}</div>
+        </div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:14px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t1);font-family:'DM Sans'">Net Est. Payout</div>
+          <div style="font-family:'Bebas Neue';font-size:36px;color:var(--g)">$${_rsmGross.toLocaleString()}</div>
+        </div>
+        <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:4px">Monthly store incentive only. Excludes bi-weekly personal sales. Cap: $${(_tc.base*2).toLocaleString()}. Does not account for disconnects, returns, or adjustments — not for 100% payout accuracy.</div>
+      </div>`;
+
+    _rsmCardHtml=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+      <div onclick="(function(){var b=document.getElementById('rsm-pay-body-${storeId}');var a=document.getElementById('rsm-pay-arr-${storeId}');b.style.display=b.style.display==='none'?'block':'none';a.textContent=b.style.display==='none'?'▾':'▴';})()" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+        <div>
+          <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">RSM Payout Estimate</div>
+          ${_totalLost>0?`<div style="font-size:11px;color:#991B1B;font-family:'DM Sans';margin-top:1px">⚠ $${_totalLost.toLocaleString()} left on the table</div>`:`<div style="font-size:11px;color:var(--ok);font-family:'DM Sans';margin-top:1px">Est. $${_rsmGross.toLocaleString()} · no losses</div>`}
+        </div>
+        <div id="rsm-pay-arr-${storeId}" style="font-size:13px;color:var(--t3)">▾</div>
+      </div>
+      <div id="rsm-pay-body-${storeId}" style="display:none">${_rsmPayHtml}</div>
+    </div>`;
+  } // end if(_canSeeRsmPay)
+  } catch(e){ console.warn("RSM pay err:",e); }
+
+  // Inject RSM card right after store header
+  html = html.replace('<!--RSM_PAY-->', _rsmCardHtml);
   body.innerHTML=html;
   body.scrollTop=0;
 }
 
-// ── Render DM Dashboard ──
 function dsrRenderDM(){
   const body=document.getElementById('dsr-body');
   if(_dsrLoading){ body.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-size:13px;font-family:\'DM Sans\'">Loading…</div>'; return; }
@@ -8634,13 +8776,16 @@ function dsrRenderDM(){
   const penRisk=penStores.length>=2;
 
   // YoY — use DSR district values if loaded (most accurate), else compute from LY
-  const _hasDSRDist = _dsrDistData && (_dsrDistData.actsYoY!=null||_dsrDistData.oppsYoY!=null);
+  const _hasDSRDist = _dsrDistData && (_dsrDistData.actsYoY!=null||_dsrDistData.actsLY>0);
   const actsYoY = _hasDSRDist ? (_dsrDistData.actsYoY||0) :
     (actsLY>0&&_dsrDaysElapsed>0?(totVoice-(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0);
   const oppsYoY = _hasDSRDist ? (_dsrDistData.oppsYoY||0) :
     (oppsLY>0&&_dsrDaysElapsed>0?(totOpps-(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0);
-  // Derive 2025 district pace from YoY%
-  const _dmLYActs = _hasDSRDist&&actsYoY>-1&&totVoice>0 ? Math.round(totVoice/(1+actsYoY)) : (actsLY||0);
+  // Direct LY counts from DSR (cols 103/104), fall back to back-calc
+  const _dmLYActs = _hasDSRDist&&_dsrDistData.actsLY>0 ? _dsrDistData.actsLY :
+                    (_hasDSRDist&&actsYoY>-1&&totVoice>0 ? Math.round(totVoice/(1+actsYoY)) : (actsLY||0));
+  const _dmLYOpps = _hasDSRDist&&_dsrDistData.oppsLY>0 ? _dsrDistData.oppsLY : 0;
+  const _dmLYUpg  = Math.max(0, _dmLYOpps - _dmLYActs);
 
   let html='';
 
@@ -8686,58 +8831,72 @@ function dsrRenderDM(){
   const penalty  = penRisk ? Math.round(grossPay*0.25) : 0;
   const netPay   = grossPay - penalty;
 
-  // ── Payout hero ──
-  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center">
-    <div style="font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans';margin-bottom:4px">Est. Payout MTD — ${DSR_MONTH_LABEL}</div>
-    <div style="font-family:'Bebas Neue';font-size:64px;color:var(--g);line-height:1;letter-spacing:1px">$${netPay.toLocaleString()}</div>
-    <div style="font-size:13px;color:var(--t3);margin-top:6px;font-family:'DM Sans'">Gross $${grossPay.toLocaleString()}${penalty>0?` · 25% Penalty −$${penalty.toLocaleString()}`:''}</div>
-  </div>`;
+  // ── Payout card ──
+  function payBreakdownRows(payRowsData, idPrefix){
+    let r='';
+    payRowsData.forEach(([lbl,col,pay,mult,pct,hint])=>{
+      const mc=mult>=1.5?'var(--ok)':mult>=1?'var(--warn)':'var(--err)';
+      const pctLbl=lbl==='Protect'||lbl==='AutoPay'?(pct*100).toFixed(1)+'%':(pct*100).toFixed(0)+'%';
+      r+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+        <div style="width:3px;height:32px;border-radius:2px;background:${col};flex-shrink:0"></div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${lbl}</div><div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">${hint}</div></div>
+        <div style="font-size:13px;color:var(--t3);font-family:'DM Sans'">${pctLbl}</div>
+        <div style="font-size:13px;font-weight:900;color:${mc};font-family:'DM Sans';min-width:40px;text-align:right">${mult.toFixed(2)}×</div>
+        <div style="font-size:16px;font-weight:900;color:${pay>0?'var(--t1)':'var(--t3)'};font-family:'Bebas Neue';min-width:54px;text-align:right">$${pay}</div>
+      </div>`;
+    });
+    return r;
+  }
 
-  // ── Payout breakdown ──
-  const payRows=[
-    ['Activations','#3B82F6',actsPay,actsMult,actsPct,  '±5% per 1%'],
-    ['Upgrades',   '#8B5CF6',upgPay, upgMult, upgPct,   '±5% per 1%'],
-    ['Accessories','#F97316',accPay, accMult, accPct,   '±10% per 5%'],
-    ['Protect',    '#EF4444',protPay,protMult,distProt, `Goal 50% · ${distProt>=0.50?'+':''}${((distProt-0.50)*100).toFixed(1)}% · ±10% per 2%`],
-    ['AutoPay',    '#F59E0B',apPay,  apMult,  distAP,  `Goal 28% · ${distAP>=0.28?'+':''}${((distAP-0.28)*100).toFixed(1)}% · ±5% per 1%`],
-    ['Internet',   '#10B981',inetPay,inetMult,inetPct, `Goal 2/door · ${inetPerDoor>=2?'+':''}${(inetPerDoor-2).toFixed(2)}/door · ±25% per 0.5`],
+  const mtdRows=[
+    ['Activations','#3B82F6',actsPay,actsMult,actsPct,'±5% per 1%'],
+    ['Upgrades','#8B5CF6',upgPay,upgMult,upgPct,'±5% per 1%'],
+    ['Accessories','#F97316',accPay,accMult,accPct,'±10% per 5%'],
+    ['Protect','#EF4444',protPay,protMult,distProt,`Goal 50% · ${distProt>=0.50?'+':''}${((distProt-0.50)*100).toFixed(1)}% · ±10% per 2%`],
+    ['AutoPay','#F59E0B',apPay,apMult,distAP,`Goal 28% · ${distAP>=0.28?'+':''}${((distAP-0.28)*100).toFixed(1)}% · ±5% per 1%`],
+    ['Internet','#10B981',inetPay,inetMult,inetPct,`Goal 2/door · ${inetPerDoor>=2?'+':''}${(inetPerDoor-2).toFixed(2)}/door · ±25% per 0.5`],
   ];
-  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
-    <div style="padding:8px 12px 4px;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
-      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Payout Breakdown</div>
-    </div>`;
-  payRows.forEach(([lbl,col,pay,mult,pct,hint])=>{
-    const mc=mult>=1.5?'var(--ok)':mult>=1?'var(--warn)':'var(--err)';
-    const pctLbl = lbl==='Protect'||lbl==='AutoPay' ? (pct*100).toFixed(1)+'%' : (pct*100).toFixed(0)+'%';
-    html+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
-      <div style="width:3px;height:32px;border-radius:2px;background:${col};flex-shrink:0"></div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${lbl}</div>
-        <div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">${hint}</div>
-      </div>
-      <div style="font-size:13px;color:var(--t3);font-family:'DM Sans'">${pctLbl}</div>
-      <div style="font-size:13px;font-weight:900;color:${mc};font-family:'DM Sans';min-width:40px;text-align:right">${mult.toFixed(2)}×</div>
-      <div style="font-size:16px;font-weight:900;color:${pay>0?'var(--t1)':'var(--t3)'};font-family:'Bebas Neue';min-width:54px;text-align:right">$${pay}</div>
-    </div>`;
-  });
-  if(penalty>0){
-    html+=`<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;background:#FEF2F2">
+
+  function penaltyRow(pen){
+    if(!pen) return '';
+    return `<div style="padding:8px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;background:#FEF2F2">
       <div style="width:3px;height:28px;border-radius:2px;background:#EF4444;flex-shrink:0"></div>
-      <div style="flex:1;font-size:12px;font-weight:700;color:#991B1B;font-family:'DM Sans'">⚠ 25% Penalty (2+ stores below floor)</div>
-      <div style="font-size:13px;font-weight:900;color:#7F1D1D;font-family:'Bebas Neue'">−$${penalty.toLocaleString()}</div>
+      <div style="flex:1;font-size:12px;font-weight:700;color:#991B1B;font-family:'DM Sans'">⚠ 25% Penalty</div>
+      <div style="font-size:13px;font-weight:900;color:#7F1D1D;font-family:'Bebas Neue'">−$${pen.toLocaleString()}</div>
     </div>`;
   }
-  html+=`<div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:var(--s2)">
-    <div style="font-size:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t2);font-family:'DM Sans'">Net Payout</div>
-    <div style="font-family:'Bebas Neue';font-size:32px;color:var(--g)">$${netPay.toLocaleString()}</div>
-  </div></div>`;
 
+
+  html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+    <div onclick="(function(){var el=document.getElementById('dm-pay-body');var arr=document.getElementById('dm-pay-arr');el.style.display=el.style.display==='none'?'block':'none';arr.textContent=el.style.display==='none'?'▾':'▴';})()" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgba(0,169,79,.03);border-bottom:1px solid rgba(0,169,79,.1)">
+      <div style="font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Payout Breakdown</div>
+      <div id="dm-pay-arr" style="font-size:13px;color:var(--t3)">▾</div>
+    </div>
+    <div id="dm-pay-body" style="display:none">
+      ${payBreakdownRows(mtdRows,'mtd')}
+      ${penaltyRow(penalty)}
+      <div style="padding:10px 12px;background:var(--s2)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:12px;color:var(--t3);font-family:'DM Sans'">Gross Est. Payout</div>
+          <div style="font-family:'Bebas Neue';font-size:22px;color:var(--t2)">$${grossPay.toLocaleString()}</div>
+        </div>
+        ${penalty>0?`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:12px;color:#991B1B;font-family:'DM Sans'">⚠ 25% Deduction</div>
+          <div style="font-family:'Bebas Neue';font-size:22px;color:#EF4444">−$${penalty.toLocaleString()}</div>
+        </div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:6px;border-top:1.5px solid var(--bd)">
+          <div style="font-size:14px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t1);font-family:'DM Sans'">Net Est. Payout</div>
+          <div style="font-family:'Bebas Neue';font-size:36px;color:var(--g)">$${netPay.toLocaleString()}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
   // Penalty banner
   html+=`<div style="border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;background:${penRisk?'#FEE2E2':'#DCFCE7'};border:1.5px solid ${penRisk?'#FECACA':'#BBF7D0'}">
     <div style="font-size:16px;flex-shrink:0">${penRisk?'⚠️':''}</div>
     <div>
       <div style="font-size:12px;font-weight:900;color:${penRisk?'#7F1D1D':'#14532D'};font-family:'DM Sans'">${penRisk?'25% Penalty Risk — '+penStores.length+' Stores Below Floor':'No Penalty — All Stores Above 85% Floor'}</div>
-      ${penRisk?`<div style="font-size:10px;color:#991B1B;margin-top:2px;font-family:'DM Sans'">${penStores.map(s=>s.name).join(' · ')}</div>`:''}
+      ${penRisk?`<div style="font-size:13px;color:#991B1B;margin-top:2px;font-family:'DM Sans'">${penStores.map(s=>s.name).join(' · ')}</div>`:''}
     </div>
   </div>`;
 
@@ -8851,32 +9010,45 @@ function dsrRenderDM(){
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrTile('Plan Down',totPlanDown,totPlanDown>10?'var(--err)':totPlanDown>5?'var(--warn)':'var(--ok)','smd','')}
     ${dsrTile('2025 Activations',_dmLYActs||'—','var(--t3)','dsr','')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    ${dsrTile('2025 Upgrades',_dmLYUpg||'—','var(--t3)','dsr','')}
+    ${dsrTile('2025 OPPs',_dmLYOpps||'—','var(--t3)','dsr','')}
   </div>`;
 
   // Store snapshots
-  html+=`<div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:8px;font-family:'DM Sans'">Store Snapshot</div>`;
+  html+=`<div style="font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:8px;font-family:'DM Sans'">Store Snapshot</div>`;
   stores.forEach(s=>{
     const md=_dsrMDData[s.id]||{};
     const inet=_dsrInetData?(_dsrInetData[s.id]||{}):{};
+    const dsrS=_dsrDSRData?(_dsrDSRData[s.id]||{}):{}; 
     const opps=(md.voice||0)+(md.upg||0);
     const g=DSR_GOALS[s.id]||{};
     const oppsProj=dsrProj(opps);
     const floor=g.oppsGoal?Math.ceil(g.oppsGoal*0.85):0;
     const risk=g.oppsGoal&&oppsProj<floor;
-    const yoyA=g.actsLY>0&&_dsrDaysElapsed>0?(md.voice||0-(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(g.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):0;
+    const hasDSRS=_dsrDSRData&&_dsrDSRData[s.id];
+    const yoyA=hasDSRS&&dsrS.actsYoY!=null?dsrS.actsYoY:0;
     const inetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
+    const apo=opps>0?(md.accRev||0)/opps:0;
+    const stat=(lbl,v,col)=>`<div style="text-align:center"><div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">${lbl}</div><div style="font-family:'Bebas Neue';font-size:24px;color:${col};line-height:1.1">${v}</div></div>`;
     html+=`<div onclick="dsrStoreFromDM(${s.id})" style="background:var(--s1);border:1.5px solid ${risk?'rgba(239,68,68,.35)':'var(--bd)'};border-radius:var(--r);overflow:hidden;margin-bottom:8px;cursor:pointer">
       <div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:flex-start">
-        <div><div style="font-size:13px;font-weight:900;color:var(--t1);font-family:'DM Sans'">${s.id} · ${s.name}</div><div style="font-size:10px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${s.rsm} · ${s.tier}</div></div>
-        <div style="text-align:right"><div style="font-size:11px;font-weight:900;color:${yoyA>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${dsrPctSign(yoyA)} YoY</div><div style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;margin-top:2px;display:inline-block;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</div></div>
+        <div><div style="font-size:13px;font-weight:900;color:var(--t1);font-family:'DM Sans'">${s.id} · ${s.name}</div><div style="font-size:13px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${s.rsm} · ${s.tier}</div></div>
+        <div style="text-align:right"><div style="font-size:11px;font-weight:900;color:${yoyA>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${hasDSRS?dsrPctSign(yoyA)+' YoY':'+0.0% YoY'}</div><div style="font-size:12px;font-weight:800;padding:2px 7px;border-radius:4px;margin-top:2px;display:inline-block;background:${risk?'#FEE2E2':'#DCFCE7'};color:${risk?'#7F1D1D':'#14532D'}">${risk?'⚠ Risk':'✓ OK'}</div></div>
       </div>
-      <div style="padding:7px 12px;border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
-        ${[['Acts',md.voice||0,g.actsGoal],['Upg',md.upg||0,g.upgGoal],['OPPs',opps,g.oppsGoal]].map(([lbl,v,gl])=>`<div style="text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3)">${lbl}</div><div style="font-family:'Bebas Neue';font-size:20px;color:${gl?dsrGC(v,gl*.95,gl*.85):'var(--t1)'};line-height:1.1">${v}</div><div style="font-size:9px;color:var(--t3)">${gl?((v/gl*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
+      <div style="padding:6px 12px;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+        ${[['Acts',md.voice||0,g.actsGoal],['Upg',md.upg||0,g.upgGoal],['OPPs',opps,g.oppsGoal]].map(([lbl,v,gl])=>`<div style="text-align:center"><div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">${lbl}</div><div style="font-family:'Bebas Neue';font-size:24px;color:${gl?dsrGC(v,gl*.95,gl*.85):'var(--t1)'};line-height:1.1">${v}</div><div style="font-size:13px;color:var(--t3)">${gl?((v/gl*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
       </div>
-      <div style="padding:6px 12px;border-top:1px solid var(--bd);display:flex;justify-content:space-between">
-        <span style="font-size:10px;font-weight:700;color:${(md.protect||0)>=0.48?'#14532D':'#991B1B'};font-family:'DM Sans'">Protect ${((md.protect||0)*100).toFixed(1)}%</span>
-        <span style="font-size:10px;font-weight:700;color:${(md.autopay||0)>=0.28?'#14532D':'#991B1B'};font-family:'DM Sans'">AutoPay ${((md.autopay||0)*100).toFixed(1)}%</span>
-        <span style="font-size:10px;font-weight:700;color:var(--t3);font-family:'DM Sans'">Internet: ${inetTotal}</span>
+      <div style="padding:6px 12px;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+        ${stat('Protect',((md.protect||0)*100).toFixed(1)+'%',(md.protect||0)>=0.50?'var(--ok)':(md.protect||0)>=0.48?'var(--warn)':'var(--err)')}
+        ${stat('AutoPay',((md.autopay||0)*100).toFixed(1)+'%',(md.autopay||0)>=0.28?'var(--ok)':(md.autopay||0)>=0.25?'var(--warn)':'var(--err)')}
+        ${stat('PPP',((md.ppp||0)*100).toFixed(1)+'%',(md.ppp||0)>=0.20?'var(--ok)':(md.ppp||0)>=0.10?'var(--warn)':'var(--err)')}
+      </div>
+      <div style="padding:6px 12px;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(3,1fr);gap:4px">
+        ${stat('APO',fmtMoney(apo),apo>=35?'var(--ok)':apo>=30?'var(--warn)':'var(--err)')}
+        ${stat('NW APD',fmtMoney(md.accPerOpp||0),(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)')}
+        ${stat('Internet',inetTotal,inetTotal>=3?'var(--ok)':inetTotal>=1?'var(--warn)':'var(--err)')}
       </div>
     </div>`;
   });
