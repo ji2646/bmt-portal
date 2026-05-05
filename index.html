@@ -2019,7 +2019,7 @@ function renderDistrictDashboard(_targetEl){
           // No cycleStart filter — return all entries, compare by matching _perfAllData accRevenue
           fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},10000)
             .then(r=>r.json()).then(d=>{
-              window._districtAccEntries=Array.isArray(d)?d:[];
+              window._districtAccEntries=_filterAccToCycle(Array.isArray(d)?d:[]);
               window._districtAccLoaded=true;
               window._districtAccFetching=false;
               renderDistrictDashboard();
@@ -2086,6 +2086,18 @@ function renderDistrictDashboard(_targetEl){
 
 let _perfAccEntries=[];
 let _perfFiberEntries=[];
+function _filterAccToCycle(entries){
+  if(!entries||!entries.length) return [];
+  const cs=_perfCurrentCycleStart||'';
+  if(!cs) return entries; // cycle not yet known — show all
+  return entries.filter(e=>(e.cycleStart||'')===cs);
+}
+function _filterFiberToCycle(entries){
+  if(!entries||!entries.length) return [];
+  const cs=_perfCurrentCycleStart||'';
+  if(!cs) return entries;
+  return entries.filter(e=>(e.cycleStart||'')===cs);
+}
 
 function launchPerformance(){
   document.getElementById('login-screen').style.display='none';
@@ -2326,17 +2338,15 @@ function loadPerfDataMobile(uid){
       // Fetch all tracker entries for this rep — no cycleStart filter
       // so entries stored under any key (old or new cycle) all come back
       Promise.all([
-        fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
         fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
       ]).then(responses=>Promise.all(responses.map(r=>r.json())))
-      .then(([acc,fiber])=>{
+      .then(([fiber])=>{
         if(tok!==_perfLoadToken||!_perfRepUid) return;
-        _perfAccEntries=Array.isArray(acc)?acc:[];
-        _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+        _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
         renderMobileRepView(uid);
       }).catch(()=>{
         if(tok!==_perfLoadToken||!_perfRepUid) return;
-        _perfAccEntries=[];_perfFiberEntries=[];
+        _perfFiberEntries=[];
         renderMobileRepView(uid);
       });
       return;
@@ -2345,20 +2355,18 @@ function loadPerfDataMobile(uid){
   const myToken=_perfLoadToken;
   Promise.all([
     fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
     fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
   ]).then(responses=>Promise.all(responses.map(r=>r.json())))
-  .then(([perf,acc,fiber])=>{
+  .then(([perf,fiber])=>{
     if(myToken!==_perfLoadToken) return;
     if(!_perfRepUid) return;
     _perfData=perf;
-    _perfAccEntries=Array.isArray(acc)?acc:[];
-    _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+    _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
     renderMobileRepView(uid);
   }).catch(()=>{
     if(myToken!==_perfLoadToken) return;
     if(!_perfRepUid) return;
-    _perfData=null;_perfAccEntries=[];_perfFiberEntries=[];
+    _perfData=null;_perfFiberEntries=[];
     renderMobileRepView(uid);
   });
 }
@@ -2714,7 +2722,8 @@ function renderIndividualDashboard(r,uid,_targetEl){
   var bpConvHtml = gBar(bpConv, 0.50, 0.40);
 
   // ── Pre-compute Internet HTML ──
-  var _aia=r.aiaOrders||0;
+  var _repActive=(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0)>0;
+  var _aia=_repActive?(r.aiaOrders||0):0;
   var _aiahit=_aia>=1; var _aiacol=_aiahit?'var(--g)':'var(--err)';
   var _aiaBarW=Math.min(100,Math.round(_aia/3*100));
   var internetHtml='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
@@ -2798,15 +2807,13 @@ function loadPerfData(uid){
     // Render immediately — never block on tracker
     try{ renderPerfView(uid); } catch(e){ console.error('renderPerfView error:',e); }
     try{ loadIndividualDashboard(uid); } catch(e){ console.error('loadIndividualDashboard error:',e); }
-    // Fetch tracker in background, silently update payout when done
+    // Fetch fiber tracker in background, silently update when done
     Promise.all([
-      fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},8000),
       fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},8000)
     ]).then(rs=>Promise.all(rs.map(r=>r.json())))
-    .then(([acc,fiber])=>{
+    .then(([fiber])=>{
       if(tok!==_perfLoadToken||!_perfRepUid) return;
-      _perfAccEntries=Array.isArray(acc)?acc:[];
-      _perfFiberEntries=Array.isArray(fiber)?fiber:[];
+      _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
       try{ renderPerfView(uid); } catch(e){}
       try{ loadIndividualDashboard(uid); } catch(e){}
     }).catch(()=>{});
@@ -2824,7 +2831,7 @@ function loadPerfData(uid){
   })
   .catch(()=>{
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    _perfData=null;_perfAccEntries=[];_perfFiberEntries=[];
+    _perfData=null;_perfFiberEntries=[];
     renderPerfView(uid);
   });
 }
@@ -2951,9 +2958,10 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
       ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20,PERF_GOALS.pppMin))}
       ${sec('Internet',(()=>{
-        const hit=(r.aiaOrders||0)>=1;
+        const _mActive=(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0)>0;
+        const hit=_mActive&&(r.aiaOrders||0)>=1;
         const col=hit?'var(--g)':'var(--err)';
-        const barW=Math.min(100,Math.round((r.aiaOrders||0)/3*100));
+        const barW=Math.min(100,Math.round((_mActive?(r.aiaOrders||0):0)/3*100));
         return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div><div style="font-family:Bebas Neue;font-size:22px;color:${col};line-height:1">${r.aiaOrders||0}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
       })())}
     </div>
@@ -3043,9 +3051,13 @@ function renderPerfView(uid,_targetBody){
   const protPay = (repIsRSM||protGood) ? protQty*1 : 0;
 
   // Internet (AIA + Fiber)
-  const aiaPay  = (d.aiaOrders||0)*30;
+  // Only credit aiaOrders from metricdtl if rep has actual sales activity this cycle
+  const _repHasActivity = (d.voiceActs||0)+(d.upgrades||0)+(d.nonVoice||0) > 0;
+  const aiaOrders = _repHasActivity ? (d.aiaOrders||0) : 0;
+  const aiaPay  = aiaOrders*30;
   const fiberQty = _perfFiberEntries.reduce((s,e)=>s+Number(e.qty||0),0);
   const fiberPay = fiberQty*30;
+  const totalInternet = aiaOrders + fiberQty;
 
   // APD — avg = total APD $ ÷ (voice acts + upgrades, per incentive doc)
   // Payout tier applies to ALL opps (voice+NV+upgrades)
@@ -3085,7 +3097,7 @@ function renderPerfView(uid,_targetBody){
       const missed=[];
       if(!apGood) missed.push('AutoPay <28%');
       if(!protGood) missed.push('Protect <50%');
-      if((d.aiaOrders+fiberQty)<1) missed.push('Internet <1');
+      if(totalInternet<1) missed.push('Internet <1');
       if(missed.length){
         reduction=Math.pow(0.9,missed.length);
         deductionAmt=grossPay*(1-reduction);
@@ -3124,7 +3136,6 @@ function renderPerfView(uid,_targetBody){
 
   // Payout visibility: RSC can only see their own payout. RSM sees their team. DM/Jaq see all.
   const isRSCViewingTeammate=(isRSC&&uid!==_pendingUid);
-  const payoutVisible=isRSCViewingTeammate?false:(document.getElementById('perf-payout-section')?document.getElementById('perf-payout-section').style.display!=='none':true);
   body.innerHTML=backBtn+`
     <!-- Header card -->
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
@@ -3136,7 +3147,7 @@ function renderPerfView(uid,_targetBody){
         <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
           <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${repIsRSM?'RSM Structure':'RSC Structure'}</div>
-          ${!isRSCViewingTeammate?`<button type="button" id="toggle-payout-btn" onclick="togglePayoutVisibility()" style="margin-top:2px;padding:3px 9px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;font-family:DM Sans;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer">${payoutVisible?'Hide Payout':'Show Payout'}</button>`:''}
+
         </div>
       </div>
     </div>
@@ -3146,67 +3157,18 @@ function renderPerfView(uid,_targetBody){
       <div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>
       Data pulled from Metric Detail and may not include returns, disconnects, or adjustments. Not to be used for 100% accuracy.
     </div>
-    <div style="background:rgba(245,158,11,.03);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:8px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#92400E;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Payout Estimate</div>
-      Estimated based on Sales Performance data from Metric Detail. Not to be used for 100% accuracy.
-    </div>
-    <div style="background:rgba(107,114,128,.03);border:1.5px solid rgba(107,114,128,.25);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:12px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#374151;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Accuracy Note</div>
-      Activation fees are not calculated in the est. payout at this time — will be paid by Sun Com directly.
-    </div>
 
-    <!-- Payout Estimate -->
-    ${isRSCViewingTeammate?`
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:${isMobile()?'16px':'12px 14px'};margin-bottom:8px;display:flex;align-items:center;gap:10px">
-      <div style="font-size:20px;opacity:.4">🔒</div>
-      <div>
-        <div style="font-size:${isMobile()?'14':'11'}px;font-weight:900;color:var(--t2);font-family:'DM Sans'">Est. Payout Blocked</div>
-        <div style="font-size:${isMobile()?'13':'10'}px;color:var(--t3);font-family:'DM Sans';margin-top:2px">You can only view your own payout estimate.</div>
-      </div>
-    </div>`:`
-    ${qualWarningsHtml?`<div style="background:rgba(245,158,11,.04);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r);overflow:hidden;margin-bottom:8px">${qualWarningsHtml}</div>`:''}
-    ${qualInfosHtml?`<div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.2);border-radius:var(--r);overflow:hidden;margin-bottom:12px">${qualInfosHtml}</div>`:''}
-    <div id="perf-payout-section" style="display:${payoutVisible?'block':'none'}">
-    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
-      ${sectionHead('Payout Estimate')}
-      ${metricRow('Voice Activations',fmtPay(voicePay))}
-      ${metricRow('Non-Voice Activations',fmtPay(nvPay))}
-      ${metricRow('Upgrades',fmtPay(upgPay))}
-      ${metricRow('AutoPay',fmtPay(apPay))}
-      ${metricRow('Protect',fmtPay(protPay))}
-      ${metricRow('Internet',fmtPay(aiaPay+fiberPay))}
-      ${metricRow('APD Accessories',fmtPay(apdPay))}
-      ${metricRow('Other Accessories',fmtPay(otherPay))}
-      ${!repIsRSM?`
-      <div style="height:1px;background:var(--bd);margin:0 14px"></div>
-      ${metricRow('Gross Subtotal',fmtPay(grossPay))}
-      ${metricRow('Qualifier Deduction','<span style="color:'+(deductionAmt>0?'var(--err)':'var(--t1)')+';font-weight:800">'+fmtDed(deductionAmt)+'</span>')}
-      `:''}
-      <div style="padding:${isMobile()?'16px':'12px 14px'};display:flex;justify-content:space-between;align-items:center;background:rgba(0,169,79,.04)">
-        <div style="font-size:${isMobile()?'15':'12'}px;font-weight:900;color:var(--t1);font-family:'DM Sans'">EST. TOTAL PAYOUT</div>
-        <div style="font-family:'Bebas Neue';font-size:${isMobile()?'38':'28'}px;color:var(--g);letter-spacing:.5px">${fmtPay(subtotal)}</div>
-      </div>
-    </div>
-    </div>
-    `}
+
+
   `;
-  // Restore payout visibility state across re-renders
-  const ps=document.getElementById('perf-payout-section');
-  if(ps) ps.style.display=payoutVisible?'block':'none';
+
   } catch(err){
     if(body) body.innerHTML=`<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Render error: ${String(err)}</div>`;
     console.error('renderPerfView error:',err);
   }
 }
 
-function togglePayoutVisibility(){
-  const ps=document.getElementById('perf-payout-section');
-  const btn=document.getElementById('toggle-payout-btn');
-  if(!ps||!btn) return;
-  const isHidden=ps.style.display==='none';
-  ps.style.display=isHidden?'block':'none';
-  btn.textContent=isHidden?'Hide Payout':'Show Payout';
-}
+
 
 // ── DM PASTE MODAL ──
 function showPerfPasteModal(){
@@ -3341,7 +3303,7 @@ function closeSalesTracker(){
 }
 function stTab(t){
   _stTab=t;
-  ['acc','fiber'].forEach(tab=>{
+  ['fiber'].forEach(tab=>{
     const el=document.getElementById('st-tab-'+tab);
     const pane=document.getElementById('st-pane-'+tab);
     const isOn=tab===t;
@@ -3351,84 +3313,8 @@ function stTab(t){
 }
 function stLoadAll(){
   const uid=_pendingUid;
-  fetchWithTimeout(LOG_URL+'?type=acc_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{ _stAccEntries=Array.isArray(d)?d:[]; renderSTAcc(); }).catch(()=>renderSTAcc());
   fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{ _stFiberEntries=Array.isArray(d)?d:[]; renderSTFiber(); }).catch(()=>renderSTFiber());
-}
-
-// ── ACC TRACKER ──
-function renderSTAcc(){
-  const pane=document.getElementById('st-pane-acc');
-  if(!pane) return;
-  const entries=_stAccEntries;
-  const apdEntries=entries.filter(e=>e.accType==='APD');
-  const otherEntries=entries.filter(e=>e.accType==='Other');
-  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const otherTotal=otherEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-
-  const mob=isMobile();
-  const entryHtml=entries.length?entries.map(e=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'13px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
-      <div>
-        <div style="font-size:${mob?'15':'12'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">${e.accType} — $${Number(e.amount).toFixed(2)}</div>
-        ${e.note?`<div style="font-size:${mob?'12':'10'}px;color:var(--t3)">${e.note}</div>`:''}
-      </div>
-      <button type="button" onclick="stDeleteAcc('${e.rowId}')" style="padding:${mob?'8px 16px':'4px 10px'};background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:${mob?'13':'10'}px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
-    </div>`).join(''):
-    `<div style="padding:20px;text-align:center;color:var(--t3);font-size:${mob?'14':'11'}px">No entries this cycle</div>`;
-
-  pane.innerHTML=`
-    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:${mob?'12px 16px':'10px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Accessory Entries</div>
-        <div style="font-size:${mob?'13':'10'}px;font-weight:700;color:var(--t3);font-family:'DM Sans'">APD: $${apdTotal.toFixed(2)} · Other: $${otherTotal.toFixed(2)}</div>
-      </div>
-      ${entryHtml}
-    </div>
-    <!-- Add Entry Form -->
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:${mob?'18px':'16px'};margin-bottom:12px">
-      <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Add Entry</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:${mob?'12':'9'}px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Type</div>
-          <select id="st-acc-type" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none">
-            <option value="APD">APD</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div>
-          <div style="font-size:${mob?'12':'9'}px;font-weight:700;color:var(--t3);margin-bottom:4px;font-family:'DM Sans'">Amount ($)</div>
-          <input type="number" id="st-acc-amount" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'16':'12'}px;outline:none;box-sizing:border-box"/>
-        </div>
-      </div>
-      <input type="text" id="st-acc-note" placeholder="Note (optional)" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
-      <button type="button" onclick="stSubmitAcc()" style="width:100%;padding:${mob?'15px':'11px'};background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:${mob?'15':'12'}px;font-weight:900;cursor:pointer">+ Add Accessory Entry</button>
-    </div>`;
-}
-function stSubmitAcc(){
-  const type=document.getElementById('st-acc-type').value;
-  const amount=parseFloat(document.getElementById('st-acc-amount').value)||0;
-  const note=document.getElementById('st-acc-note').value.trim();
-  if(amount<=0){showToast('Enter a valid amount');return;}
-  const uid=_pendingUid, name=UID_NAMES[uid]||uid;
-  const cs=getTrackerCycleKey();
-  const rowId=uid+'-ACC-'+Date.now();
-  const submitted=getDatetime();
-  fetchWithTimeout(LOG_URL+'?type=acc_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&accType='+type+'&amount='+amount+'&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(()=>{
-      _stAccEntries.push({rowId,uid,name,cycleStart:cs,accType:type,amount,submitted,note});
-      // Clear form fields
-      document.getElementById('st-acc-amount').value='';
-      document.getElementById('st-acc-note').value='';
-      renderSTAcc();
-      showToast('Entry saved');
-    }).catch(()=>showToast('Save failed — try again'));
-}
-function stDeleteAcc(rowId){
-  fetchWithTimeout(LOG_URL+'?type=acc_delete&rowId='+encodeURIComponent(rowId),{method:'GET',mode:'cors',cache:'no-store'}).catch(()=>{});
-  _stAccEntries=_stAccEntries.filter(e=>e.rowId!==rowId);
-  renderSTAcc();
+    .then(r=>r.json()).then(d=>{ _stFiberEntries=_filterFiberToCycle(Array.isArray(d)?d:[]); renderSTFiber(); }).catch(()=>renderSTFiber());
 }
 
 // ── FEE DISCOUNTS (read-only from uploaded 419fees report) ──
@@ -6520,14 +6406,10 @@ function closeActivity(){
   </div>
   <!-- Tabs -->
   <div style="background:#fff;border-bottom:1px solid var(--bd);display:flex;position:sticky;top:56px;z-index:9">
-    <div id="st-tab-acc" onclick="stTab('acc')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Accessories</div>
-    
-    <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-family:'DM Sans'">Fiber Sales</div>
+    <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Fiber Sales</div>
     <div id="st-pane-fiber" style="display:none"></div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:16px 14px 80px">
-    <div id="st-pane-acc"></div>
-    
     <div id="st-pane-fiber" style="display:none"></div>
   </div>
 </div>
@@ -8759,7 +8641,7 @@ function dsrRenderStore(storeId){
   } catch(e){ console.warn("RSM pay err:",e); }
 
   // Inject RSM card right after store header
-  html = html.replace('<!--RSM_PAY-->', _rsmCardHtml);
+  html = html.replace('<!--RSM_PAY-->', ''); // Payout card removed
   body.innerHTML=html;
   body.scrollTop=0;
 }
