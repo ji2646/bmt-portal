@@ -234,7 +234,8 @@ body.is-mobile .hbadge{font-size:12px !important;padding:6px 12px !important}
 .plan-btn.active{background:var(--g);color:#fff}
 .plan-btn .pn{font-weight:800;font-size:10px;display:block;margin-bottom:2px;line-height:1.2;letter-spacing:.3px}
 .plan-btn .pp{font-family:'Bebas Neue';font-size:20px;color:var(--g);letter-spacing:.5px;display:block}
-.plan-btn.active .pp{color:var(--g)}
+.plan-btn.active .pp{color:#fff}
+.plan-btn.active .ps{color:rgba(255,255,255,.75)}
 .plan-btn .ps{font-size:9px;color:var(--t3);display:block;margin-top:1px}
 .plan-btn.active .ps{color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.2)}
 .plan-btn.active .pn{color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.25)}
@@ -274,7 +275,7 @@ input:checked+.tslide:before{transform:translateX(14px)}
 
 /* LINE CARD */
 .lcard{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden;max-width:100%}
-.lcard-head{padding:9px 12px;display:flex;align-items:center;gap:7px;background:var(--s2);border-bottom:1px solid var(--bd)}
+.lcard-head{padding:9px 12px;display:flex;align-items:center;gap:7px;background:var(--s2);border-bottom:1px solid var(--bd);flex-wrap:wrap}
 .lnum{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;letter-spacing:-.5px}
 .lnum.v{background:var(--g);color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.2)}
 .lnum.w{background:var(--indigo);color:#fff}
@@ -3572,7 +3573,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 4/30/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 5/4/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3814,7 +3815,7 @@ const PHONES=[
   {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:0,      nw:99.99,   up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:79.99,  nw:199.99,  up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:299.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:599.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i17e_256',n:'iPhone 17e 256GB',     sw:299.99, nw:399.99,  up:599.99,  sw_o:399.99, nw_o:499.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
@@ -3830,7 +3831,7 @@ const PHONES=[
   // Samsung
   {id:'a16',    n:'Galaxy A16',            sw:0,      nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:159.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
   {id:'a17',    n:'Galaxy A17',            sw:0,      nw:19.99,   up:179.99,  sw_o:109.99, nw_o:109.99, up_o:179.99,  frp:179.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',    n:'Galaxy A37',            sw:0,      nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
+  {id:'a37',    n:'Galaxy A37',            sw:99.99,  nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
   {id:'a36',    n:'Galaxy A36',            sw:39.99,  nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25fe',  n:'Galaxy S25 FE',         sw:149.99, nw:149.99,  up:649.99,  sw_o:399.99, nw_o:399.99, up_o:649.99,  frp:649.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',    n:'Galaxy S25',            sw:360,    nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
@@ -3841,7 +3842,7 @@ const PHONES=[
   {id:'mg26',   n:'moto g 2026',           sw:0,      nw:0,       up:79.99,   sw_o:29.99,  nw_o:29.99,  up_o:79.99,   frp:149.99,  brand:'Motorola', promoReqSw:'smart', promoReqNw:'supreme', maxLinesNw:4},
   {id:'mgpwr',  n:'moto g power 2026',     sw:19.99,  nw:39.99,   up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgsty',  n:'moto g stylus 2025',    sw:29.99,  nw:29.99,   up:239.99,  sw_o:69.99,  nw_o:69.99,  up_o:239.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',  n:'motorola edge 2025',    sw:0,      nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'medge',  n:'motorola edge 2025',    sw:29.99,  nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'razr',   n:'motorola razr 2025',    sw:149.99, nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
   {id:'icon',   n:'Icon 2026',             sw:0,      nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
@@ -4307,7 +4308,7 @@ function featTile(label,sub,on,onclick,color){
   const shadow=on?';box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)':'';
   return `<div class="apo-tile${on?' active':''}" onclick="${onclick}" style="border-right:1px solid var(--bd);background:${bg}${shadow}">
     <div style="font-weight:800;color:${fg}">${label}</div>
-    ${sub?`<div style="font-size:9px;font-weight:400;color:${on?'rgba(0,0,0,.6)':'var(--t3)'};margin-top:1px">${sub}</div>`:''}
+    ${sub?`<div style="font-size:9px;font-weight:400;color:${on?'rgba(255,255,255,.75)':'var(--t3)'};margin-top:1px">${sub}</div>`:''}
   </div>`;
 }
 
@@ -8223,7 +8224,7 @@ function dsrBuildStoreList(){
     const opps = (md.voice||0)+(md.upg||0);
     const g = DSR_GOALS[s.id]||{};
     const proj = g.oppsGoal>0?Math.round(opps/_dsrDaysElapsed*DSR_DAYS_IN_MONTH):0;
-    const risk = g.oppsGoal>0 && proj < Math.ceil(g.oppsGoal*0.85);
+    const risk = g.oppsGoal>0 && proj < Math.ceil(g.oppsGoal*0.90); // RSM: 90% floor
     const active = s.id===_dsrStoreId;
     return `<div onclick="dsrSelectStore(${s.id})" style="padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:${active?'rgba(0,169,79,.08)':'transparent'};border-left:3px solid ${active?'var(--g)':'transparent'}">
       <div>
@@ -8410,7 +8411,7 @@ function dsrRenderStore(storeId){
 
   const voice= md.voice||0, upg=md.upg||0, opps=voice+upg;
   const actsGoal=goals.actsGoal||0, upgGoal=goals.upgGoal||0, oppsGoal=goals.oppsGoal||0;
-  const oppsFloor=oppsGoal>0?Math.ceil(oppsGoal*0.85):0;
+  const oppsFloor=oppsGoal>0?Math.ceil(oppsGoal*0.90):0; // RSM: 90% floor to get any opps payout
   const projVoice=dsrProj(voice), projUpg=dsrProj(upg), projOpps=dsrProj(opps);
   const penRisk=oppsGoal>0&&projOpps<oppsFloor;
   const accGoal=35*oppsGoal;
@@ -8456,7 +8457,7 @@ function dsrRenderStore(storeId){
   }
 
   // Acts | Upg | OPPs bars — bar scales to 200% of goal, +5/+10 stretch target marker
-  function dsrStretchBar(label, mtd, goal, stretchTarget, minVal, srcType){
+  function dsrStretchBar(label, mtd, goal, stretchTarget, minVal, srcType, minVal2, minVal2Label){
     if(!goal) return dsrBarSec(label,mtd,goal,minVal,dsrGC(mtd,goal*.95,goal*.85),srcType);
     const maxScale = goal*2; // bar represents 200% of goal
     const color = dsrGC(mtd, goal+stretchTarget, goal);
@@ -8464,6 +8465,7 @@ function dsrRenderStore(storeId){
     const goalW = Math.round(goal/maxScale*100);          // 50% position
     const strW  = Math.round((goal+stretchTarget)/maxScale*100);
     const minW  = minVal!=null ? Math.round(minVal/maxScale*100) : null;
+    const minW2 = minVal2!=null ? Math.round(minVal2/maxScale*100) : null;
     const pctOfGoal = goal>0?(mtd/goal*100).toFixed(0):'—';
     const chipBg = color==='var(--ok)'?'rgba(0,169,79,.15)':color==='var(--warn)'?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
@@ -8481,12 +8483,14 @@ function dsrRenderStore(storeId){
           <div style="position:absolute;left:0;top:0;height:12px;border-radius:5px;background:${color};width:${barW}%;transition:width .5s"></div>
           <div style="position:absolute;top:0;height:100%;width:2px;background:rgba(0,0,0,.35);left:${goalW}%"></div>
           <div style="position:absolute;top:-3px;height:18px;width:2px;background:#F59E0B;border-radius:1px;left:${strW}%"></div>
-          ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.5);left:${minW}%"></div>`:''}
+          ${minW!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(239,68,68,.7);left:${minW}%"></div>`:''}
+          ${minW2!=null?`<div style="position:absolute;top:0;height:100%;width:2px;background:rgba(245,158,11,.8);left:${minW2}%"></div>`:''}
         </div>
-        <div style="display:flex;gap:10px;margin-top:5px">
+        <div style="display:flex;gap:10px;margin-top:5px;flex-wrap:wrap">
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${goal}</div>
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#F59E0B;font-weight:800"><div style="width:7px;height:7px;border-radius:2px;background:#F59E0B"></div>${goal+stretchTarget} (+${stretchTarget} Target)</div>
-          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.4)"></div>Min ${minVal}</div>`:''}
+          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--err);font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.7)"></div>RSM Min ${minVal} (90%)</div>`:''}
+          ${minVal2!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#B45309;font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(245,158,11,.8)"></div>${minVal2Label||'DM Penalty'} ${minVal2} (85%)</div>`:''}
         </div>
         ${dsrSrc(srcType)}
       </div>
@@ -8497,7 +8501,8 @@ function dsrRenderStore(storeId){
     dsrStretchBar('Voice Activations MTD',voice,actsGoal,5,null,'smd'),
     dsrStretchBar('Upgrades MTD',upg,upgGoal,5,null,'smd')
   );
-  html+=dsrStretchBar('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,10,oppsFloor>0?oppsFloor:null,'smd');
+  html+=dsrStretchBar('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,10,oppsFloor>0?oppsFloor:null,'smd',
+    isDMUser()&&oppsGoal>0?Math.ceil(oppsGoal*0.85):null,'DM Penalty');
 
   // Proj tiles — 3-col
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8510,7 +8515,7 @@ function dsrRenderStore(storeId){
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrNeedTile('Activations Need/Day',voice,actsGoal,null,'smd')}
     ${dsrNeedTile('Upgrades Need/Day',upg,upgGoal,null,'smd')}
-    ${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd')}
+    ${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd',isDMUser()?'to 90% (RSM min)':'to 90%')}
   </div>`;
 
   // Rates
@@ -8616,8 +8621,9 @@ function dsrRenderStore(storeId){
     const _misses   = [_qAP,_qProt,_qInet].filter(q=>!q).length;
     const _qualMult = Math.max(0, 1 - _misses*0.10);
 
-    // Opps payout
-    const _oppsBelowFloor = oppsGoal>0&&_oppsPct<0.85;
+    // Opps payout — RSM floor is 90%
+    const _oppsBelowFloor = oppsGoal>0&&_oppsPct<0.90;
+    const _oppsAtFloor    = Math.ceil(oppsGoal*0.90);
     const _oppsBuckets    = Math.round((_oppsPct - 1.0) / 0.05);
     const _rsmOppsFull    = oppsGoal>0 ? Math.min(_tc.base*2, Math.max(0, _tc.base + _oppsBuckets*_tc.step)) : 0;
     const _rsmOppsRaw     = _oppsBelowFloor ? 0 : _rsmOppsFull;
@@ -8657,7 +8663,7 @@ function dsrRenderStore(storeId){
 
     const _rsmPayHtml = `
       <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
-        <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Store Opps · Tier ${_tierNum} (${oppsGoal>0?_oppsPct>=0.85?(((_oppsPct)*100).toFixed(0)+'% of goal'):'⚠ Below 85% floor':'No goal'})</div>
+        <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Store Opps · Tier ${_tierNum} (${oppsGoal>0?_oppsPct>=0.90?(((_oppsPct)*100).toFixed(0)+'% of goal'):'⚠ Below 90% floor':'No goal'})</div>
       </div>
       ${_oppsBelowFloor
         ? `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);background:#FEF2F2">
@@ -8668,12 +8674,12 @@ function dsrRenderStore(storeId){
                 <span style="font-size:11px;font-weight:900;color:#EF4444;background:#FEE2E2;border:1px solid #FECACA;border-radius:4px;padding:2px 6px">FORFEITED</span>
               </div>
             </div>
-            <div style="font-size:11px;color:#B91C1C;font-family:'DM Sans';margin-bottom:6px">Below 85% floor · need ${oppsFloor-opps} more opps to unlock · ${opps}/${oppsGoal} (${((opps/oppsGoal)*100).toFixed(0)}% of goal)</div>
+            <div style="font-size:11px;color:#B91C1C;font-family:'DM Sans';margin-bottom:6px">Below 90% floor · need ${_oppsAtFloor-opps} more opps to unlock · ${opps}/${oppsGoal} (${((opps/oppsGoal)*100).toFixed(0)}% of goal)</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px">
               <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:6px 8px;text-align:center">
-                <div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#991B1B;font-family:'DM Sans'">85% Floor Pays</div>
-                <div style="font-family:'Bebas Neue';font-size:20px;color:#B91C1C">$${_tc.base}</div>
-                <div style="font-size:9px;color:#991B1B;font-family:'DM Sans'">${oppsFloor} opps needed</div>
+                <div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#991B1B;font-family:'DM Sans'">90% Floor Pays</div>
+                <div style="font-family:'Bebas Neue';font-size:20px;color:#B91C1C">$${Math.min(_tc.base*2,Math.max(0,_tc.base+Math.round((_oppsAtFloor/oppsGoal-1.0)/0.05)*_tc.step))}</div>
+                <div style="font-size:9px;color:#991B1B;font-family:'DM Sans'">${_oppsAtFloor} opps needed</div>
               </div>
               <div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:6px;padding:6px 8px;text-align:center">
                 <div style="font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#14532D;font-family:'DM Sans'">100% Goal Pays</div>
@@ -8682,24 +8688,36 @@ function dsrRenderStore(storeId){
               </div>
             </div>
           </div>`
-        : _payRow(
-            'Opps Payout',
-            `$${_tc.base} base ${_oppsBuckets>=0?'+':'−'}$${Math.abs(_oppsBuckets*_tc.step)} (${_oppsBuckets>=0?'+':''}${_oppsBuckets} buckets × ±$${_tc.step}/5%)`,
-            _rsmOppsRaw,
-            _rsmOppsRaw>_rsmOppsPotential?'var(--g)':_rsmOppsRaw===_rsmOppsPotential?'var(--ok)':'var(--warn)'
-          )
+        : `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);background:${_rsmOppsRaw>_rsmOppsPotential?'rgba(0,169,79,.04)':'rgba(0,169,79,.02)'}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Opps Payout</div>
+              <div style="font-family:'Bebas Neue';font-size:28px;color:${_rsmOppsRaw>_rsmOppsPotential?'var(--g)':_rsmOppsRaw===_rsmOppsPotential?'var(--ok)':'var(--warn)'};line-height:1">$${_rsmOppsRaw.toLocaleString()}</div>
+            </div>
+            <div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">$${_tc.base} base ${_oppsBuckets>=0?'+':'−'}$${Math.abs(_oppsBuckets*_tc.step)} · ${_oppsBuckets>=0?'+':''}${_oppsBuckets} buckets × ±$${_tc.step}/5% · ${((_oppsPct)*100).toFixed(0)}% of goal</div>
+          </div>`
       }
       <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
         <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Store Accessories (${_accPct>=0.75?((_accPct*100).toFixed(0)+'% of goal'):'⚠ Below 75% floor'})</div>
       </div>
-      ${_payRow(
-        'Accessories Payout',
-        _accBelowFloor
-          ? `Floor: acc revenue must reach $${Math.round(_accGoal*0.75).toLocaleString()} (75% of $${Math.round(_accGoal).toLocaleString()} goal) · currently $${Math.round(md.accRev||0).toLocaleString()}`
-          : `5% of $${Math.round(md.accRev||0).toLocaleString()} acc revenue`,
-        _rsmAccRaw,
-        _accBelowFloor?'var(--t3)':'var(--ok)'
-      )}
+      ${_accBelowFloor
+        ? `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);background:#FEF2F2">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:14px;font-weight:700;color:#991B1B;font-family:'DM Sans'">Accessories Payout</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-family:'Bebas Neue';font-size:20px;color:var(--t3);text-decoration:line-through;opacity:.6">$${Math.round((md.accRev||0)*0.05)}</span>
+                <span style="font-size:11px;font-weight:900;color:#EF4444;background:#FEE2E2;border:1px solid #FECACA;border-radius:4px;padding:2px 6px">FORFEITED</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#B91C1C;font-family:'DM Sans'">Below 75% floor · acc revenue $${Math.round(md.accRev||0).toLocaleString()} · need $${Math.round(_accGoal*0.75).toLocaleString()} (75% of $${Math.round(_accGoal).toLocaleString()} goal)</div>
+          </div>`
+        : `<div style="padding:9px 12px;border-bottom:1px solid var(--bd);background:rgba(0,169,79,.02)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:14px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Accessories Payout</div>
+              <div style="font-family:'Bebas Neue';font-size:28px;color:var(--ok);line-height:1">$${_rsmAccRaw.toLocaleString()}</div>
+            </div>
+            <div style="font-size:11px;color:var(--t3);font-family:'DM Sans'">5% of $${Math.round(md.accRev||0).toLocaleString()} acc revenue · ${((_accPct)*100).toFixed(0)}% of $${Math.round(_accGoal).toLocaleString()} goal</div>
+          </div>`
+      }
       <div style="padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--bd)">
         <div style="font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'DM Sans'">Monthly Qualifiers (each miss = −10% of total)</div>
       </div>
@@ -8707,7 +8725,7 @@ function dsrRenderStore(storeId){
       ${_qRow(`Protect ${((md.protect||0)*100).toFixed(1)}% · need ≥48%`,_qProt)}
       ${_qRow(`Internet ${internetTotal} · need ≥3`,_qInet)}
       ${_lostRow('Lost to Opps Floor',
-        `Need ${oppsFloor} opps (85%) to unlock · ${opps} OPPs right now · ${oppsGoal-opps} needed for 100%`,
+        `Need ${_oppsAtFloor} opps (90%) to unlock · ${opps} OPPs right now · ${oppsGoal-opps} needed for 100%`,
         _lostOppsFloor
       )}
       ${_lostRow('Lost to Qualifier Misses',
@@ -8786,7 +8804,7 @@ function dsrRenderDM(){
   const upgGoal=_dsrDistData?(_dsrDistData.upgGoal||dg.upgGoal):dg.upgGoal;
   const oppsGoal=_dsrDistData?(_dsrDistData.oppsGoal||dg.oppsGoal):dg.oppsGoal;
   const actsLY=dg.actsLY, oppsLY=dg.oppsLY;
-  const oppsFloor=Math.ceil(oppsGoal*0.90);
+  const oppsFloor=Math.ceil(oppsGoal*0.85); // DM: 85% penalty threshold
   const accGoal=34*oppsGoal;
 
   const projActsDist=dsrProj(totVoice), projUpgDist=dsrProj(totUpg), projOppsDist=dsrProj(totOpps);
@@ -8970,7 +8988,7 @@ function dsrRenderDM(){
 
   // Need/Day
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-    ${dsrNeedTile('Activations Need/Day',totVoice,actsGoal,Math.ceil(actsGoal*0.90),'smd','to 90%')}
+    ${dsrNeedTile('Activations Need/Day',totVoice,actsGoal,Math.ceil(actsGoal*0.85),'smd','to 85%')}
     ${dsrNeedTile('Upgrades Need/Day',totUpg,upgGoal,Math.ceil(upgGoal*0.85),'smd','to 85%')}
     ${dsrNeedTile('OPPs Need/Day',totOpps,oppsGoal,oppsFloor,'smd')}
   </div>`;
@@ -9057,7 +9075,7 @@ function dsrRenderDM(){
     const opps=(md.voice||0)+(md.upg||0);
     const g=DSR_GOALS[s.id]||{};
     const oppsProj=dsrProj(opps);
-    const floor=g.oppsGoal?Math.ceil(g.oppsGoal*0.85):0;
+    const floor=g.oppsGoal?Math.ceil(g.oppsGoal*0.90):0; // RSM: 90% floor
     const risk=g.oppsGoal&&oppsProj<floor;
     const hasDSRS=_dsrDSRData&&_dsrDSRData[s.id];
     const yoyA=hasDSRS&&dsrS.actsYoY!=null?dsrS.actsYoY:null;
