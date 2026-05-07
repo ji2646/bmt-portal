@@ -757,57 +757,62 @@ function fullName(uid){ return UID_NAMES[uid]||uid; }
 // ── SECTION SCREENSHOT ──
 function doCapture(el){
   if(!el) return;
-  // Hide PNG buttons during capture
-  const btns=el.querySelectorAll('.png-hide');
-  btns.forEach(b=>b.style.visibility='hidden');
   function run(){
     // Wrap element in padded container so corners and spacing are visible
     const wrapper=document.createElement('div');
-    wrapper.style.cssText='position:fixed;left:-9999px;top:-9999px;padding:24px 32px;background:#f8f9fa;border-radius:0;display:block;width:900px;box-sizing:border-box';
+    wrapper.style.cssText='position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding:24px 32px;background:#f8f9fa;display:block;width:900px;box-sizing:border-box';
     const clone=el.cloneNode(true);
     // Remove png-hide buttons and no-capture sections from clone
     clone.querySelectorAll('.png-hide').forEach(b=>b.remove());
     clone.querySelectorAll('.no-capture').forEach(b=>b.remove());
+    // Build timestamp header
+    const now=new Date();
+    const ts=(now.getMonth()+1)+'/'+(now.getDate())+'/'+now.getFullYear()+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const reps=_perfAllData||[];
+    const cycleStart=reps.length?reps[0].cycleStart:'';
+    const cycleEnd=reps.length?reps[0].cycleEnd:'';
+    const throughDate=reps.length?reps[0].throughDate:'';
+    function fmtD(s){if(!s)return'';const p=s.split('-');return p.length===3?parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]:s;}
+    const cycleLabel=cycleStart&&cycleEnd?fmtD(cycleStart)+' – '+fmtD(cycleEnd):'';
+    const throughLabel=throughDate?'Through '+fmtD(throughDate):'';
+    const hdr=document.createElement('div');
+    hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-end;padding:0 0 12px;border-bottom:2px solid #00a94f;margin-bottom:14px;font-family:DM Sans,sans-serif';
+    hdr.innerHTML=`<div><div style="font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:1.5px;color:#111;line-height:1">SunCom Mobile · District Performance</div>${cycleLabel?`<div style="font-size:11px;color:#666;margin-top:3px">${cycleLabel}${throughLabel?' · '+throughLabel:''}</div>`:''}</div><div style="text-align:right;font-size:10px;color:#999">${ts}</div>`;
+    wrapper.insertBefore(hdr, clone);
     wrapper.appendChild(clone);
     document.body.appendChild(wrapper);
     const wasDark=document.documentElement.classList.contains('dark-mode');
     if(wasDark) document.documentElement.classList.remove('dark-mode');
     html2canvas(wrapper,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false,onclone:(doc)=>{doc.documentElement.classList.remove('dark-mode');}}).then(canvas=>{
-    if(wasDark) document.documentElement.classList.add('dark-mode');
+      if(wasDark) document.documentElement.classList.add('dark-mode');
       document.body.removeChild(wrapper);
-      btns.forEach(b=>b.style.visibility='');
-      // Add rounded corners to canvas output
-      const out=document.createElement('canvas');
-      const r=16; // border radius px (at scale 1 — html2canvas doubles it)
-      out.width=canvas.width;
-      out.height=canvas.height;
-      const ctx=out.getContext('2d');
-      ctx.fillStyle='#f8f9fa';
-      ctx.beginPath();
-      ctx.roundRect(0,0,out.width,out.height,r*2);
-      ctx.fill();
-      ctx.drawImage(canvas,0,0);
-      const link=document.createElement('a');
-      const dataUrl=out.toDataURL('image/png');
-      const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if(isMobile){
-        // Mobile: show image in overlay so user can long-press to save
+      const isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if(isMob){
+        const dataUrl=canvas.toDataURL('image/png');
         const ov=document.createElement('div');
         ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px';
         ov.innerHTML=`<div style="font-family:'DM Sans';font-size:12px;font-weight:700;color:rgba(255,255,255,.6)">Long-press the image to save</div><img src="${dataUrl}" style="max-width:100%;max-height:75vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"/><button onclick="this.parentNode.remove()" style="padding:10px 28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer">Close</button>`;
         document.body.appendChild(ov);
       } else {
-        link.download='dashboard-'+Date.now()+'.png';
-        link.href=dataUrl;
-        link.click();
+        const filename='bmt-dashboard-'+Date.now()+'.png';
+        canvas.toBlob(function(blob){
+          if(!blob){alert('PNG generation failed.');return;}
+          const url=URL.createObjectURL(blob);
+          const a=document.createElement('a');
+          a.href=url; a.download=filename;
+          a.style.position='fixed'; a.style.left='-9999px';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },3000);
+        },'image/png');
       }
-    }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); btns.forEach(b=>b.style.visibility=''); alert('Screenshot failed: '+e); });
+    }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); alert('Screenshot failed: '+e.message||e); });
   }
   if(window.html2canvas){ run(); return; }
   const s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   s.onload=run;
-  s.onerror=()=>{ btns.forEach(b=>b.style.visibility=''); alert('Could not load screenshot library.'); };
+  s.onerror=()=>{ alert('Could not load screenshot library.'); };
   document.head.appendChild(s);
 }
 function doCaptureDiv(el){ doCapture(el); }
@@ -1500,6 +1505,15 @@ function fmtCycleKey(d){
 
 // ── LAUNCH / CLOSE ──
 let _perfRepUid=null;
+// District dashboard collapse state — persists across re-renders
+window._dashCollapseState={};
+function dashSecToggle(id){
+  window._dashCollapseState[id]=!window._dashCollapseState[id];
+  const body=document.getElementById('dsec-body-'+id);
+  const arrow=document.getElementById('dsec-arrow-'+id);
+  if(body) body.style.display=window._dashCollapseState[id]?'none':'block';
+  if(arrow) arrow.textContent=window._dashCollapseState[id]?'▶':'▼';
+}
 let _perfLoadToken=0; // increments on each rep click — stale responses are ignored
 let _perfAbortCtrl=null; // abort controller for in-flight requests
 let _perfFilter='all';
@@ -1562,23 +1576,19 @@ function loadPerfHistory(cb){
     }).catch(()=>{ _perfHistoryCycles=[]; _perfHistoryLoaded=true; if(cb) cb(); });
 }
 function switchToCycle(cycleStart){
-  _perfLoadToken++; // cancel any in-flight rep fetch when cycle changes
+  _perfLoadToken++;
+  const hadRep=!!_perfRepUid;
+
   if(cycleStart===null){
     _perfViewingCycle=null;
     _perfAllData=[];
     if(isMobile()){
-      const el2=document.getElementById('perf-mobile-district');
-      if(el2){ el2.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; loadDistrictDashboardMobile(); }
-      else renderPerfBody();
+      if(hadRep){ loadPerfDataMobile(_perfRepUid); }
+      else { const el=document.getElementById('perf-mobile-district'); if(el){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; loadDistrictDashboardMobile(); } else renderPerfBody(); }
       return;
     }
-    // Desktop: reload rep data in new cycle if one is selected
-    if(_perfRepUid&&isDesktop()){
-      loadDistrictDashboard(true);
-      loadPerfData(_perfRepUid);
-    } else {
-      loadDistrictDashboard(true);
-    }
+    loadDistrictDashboard(true);
+    if(hadRep) loadPerfData(_perfRepUid);
   } else {
     _perfViewingCycle=cycleStart;
     const cycle=_perfHistoryCycles.find(c=>c.cycleStart===cycleStart);
@@ -1590,19 +1600,17 @@ function switchToCycle(cycleStart){
     else { const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))); }
     _perfAllData=reps;
     if(isMobile()){
-      const el=document.getElementById('perf-mobile-district');
-      if(el){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; renderDistrictDashboardMobile(); }
-      else renderPerfBody();
+      if(hadRep){ loadPerfDataMobile(_perfRepUid); }
+      else { const el=document.getElementById('perf-mobile-district'); if(el){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:12px">Loading...</div>'; renderDistrictDashboardMobile(); } else renderPerfBody(); }
+      return;
+    }
+    // Desktop — keep rep view if one is selected, just reload their data for new cycle
+    if(hadRep){
+      loadPerfData(_perfRepUid);
+      if(!_perfRepUid) renderDistrictDashboard(); // in case rep cleared
     } else {
-      // Desktop: if rep is selected, reload rep in new cycle; otherwise rebuild picker
-      if(_perfRepUid&&isDesktop()){
-        renderPerfBody(); // rebuild left picker (updates cycle label)
-        renderDistrictDashboard();
-        loadPerfData(_perfRepUid); // reload rep in new cycle
-      } else {
-        renderPerfBody();
-        renderDistrictDashboard();
-      }
+      renderPerfBody();
+      renderDistrictDashboard();
     }
   }
 }
@@ -1674,7 +1682,7 @@ function loadDistrictDashboard(forceRefresh){
           }
           // Store the actual perf cycle start — used by tracker submits & fetches
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
-          renderDistrictDashboard();
+          if(!_perfRepUid) renderDistrictDashboard();
           loadPerfHistory(()=>renderCyclePicker());
         } else {
           if(dash2) dash2.innerHTML=`<div style='padding:24px;font-family:DM Sans;font-size:11px;color:var(--t1)'>
@@ -1705,7 +1713,7 @@ function loadDistrictDashboard(forceRefresh){
             .then(r=>r.json()).catch(()=>null)
         )).then(results=>{
           _perfAllData=results.filter(r=>r&&r.uid&&r.uid!=='ec934j'&&r.uid!=='ji2646');
-          renderDistrictDashboard();
+          if(!_perfRepUid) renderDistrictDashboard();
                 }).catch(()=>{ 
           if(dash2) dash2.innerHTML=`<div style='padding:24px;font-family:DM Sans;font-size:11px;color:var(--err);text-align:center'>Could not load dashboard. Check connection and try again.<br><button onclick="loadDistrictDashboard(true)" style="margin-top:8px;padding:6px 16px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:DM Sans;font-size:11px;font-weight:800;cursor:pointer">↻ Retry</button></div>`;
         });
@@ -1899,17 +1907,23 @@ function renderDistrictDashboard(_targetEl){
   }
 
   const canSnap=['ji2646dm','jq6635'].includes(_pendingUid);
-  const sec=(title,content,extra='')=>`
-    <div class="dash-section" style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:8px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:${isMobile()?'13':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+  const sec=(title,content,extra='')=>{
+    const id=title.replace(/[^a-z0-9]/gi,'_').toLowerCase();
+    const collapsed=!!window._dashCollapseState[id];
+    return `<div class="dash-section" style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+      <div style="padding:8px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="dashSecToggle('${id}')">
         <div style="display:flex;align-items:center;gap:8px">
+          <span id="dsec-arrow-${id}" style="font-size:9px;color:var(--g)">${collapsed?'▶':'▼'}</span>
+          <div style="font-size:${isMobile()?'13':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px" onclick="event.stopPropagation()">
           ${extra}
-          ${canSnap?`<button class="png-hide" onclick="doCapture(this.closest('.dash-section'))" style="padding:3px 8px;background:transparent;border:1px solid var(--bd2);border-radius:4px;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer;font-family:DM Sans" title="Save as PNG">PNG</button>`:''}
+          ${canSnap?`<button class="png-hide" onclick="event.stopPropagation();doCapture(this.closest('.dash-section'))" style="padding:3px 8px;background:var(--g);border:none;border-radius:4px;font-size:9px;font-weight:800;color:#fff;cursor:pointer;font-family:DM Sans">PNG</button>`:''}
         </div>
       </div>
-      <div style="padding:12px 14px">${content}</div>
+      <div id="dsec-body-${id}" style="padding:12px 14px;display:${collapsed?'none':'block'}">${content}</div>
     </div>`;
+  };
 
   // Build filter chips for DM only
   const rsmFilterChips=canSeeAlld?`
@@ -1925,7 +1939,9 @@ function renderDistrictDashboard(_targetEl){
   // We shadow reps inside template via IIFE in each section
   // Always refresh cycle picker (it lives outside dash.innerHTML so it survives re-renders)
 
-  renderCyclePicker();
+  const existingSel=document.getElementById('cycle-select');
+  const currentSelVal=_perfViewingCycle===null?'current':(_perfViewingCycle||'current');
+  if(!existingSel||existingSel.value!==currentSelVal) renderCyclePicker();
 
   const snapBtn=`<button class="png-hide" onclick="doCapture(document.getElementById('perf-dashboard')||document.getElementById('perf-mobile-district'))" style="width:100%;padding:${isMobile()?'13':'10'}px;background:var(--s3);border:1px solid var(--bd2);border-radius:var(--r2);font-family:DM Sans;font-size:${isMobile()?'14':'11'}px;font-weight:800;cursor:pointer;color:var(--t2);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Save PNG</button>`;
 
@@ -1945,21 +1961,75 @@ function renderDistrictDashboard(_targetEl){
 
     <!-- Per-rep metrics bars -->
     ${sec('AutoPay Rate by Rep',repBars('autopayRate',0.30,'AutoPay Rate','%'))}
-    ${sec('Protect Rate by Rep',repBars('protectRate',0.50,'Protect Rate','%'))}
     ${sec('PPP Attach Rate by Rep',repBars('pppRate',0.20,'PPP Attach Rate','%'))}
     ${sec('Internet by Rep',(()=>{
-      const sorted7=[..._dashReps].sort((a,b)=>(b.aiaOrders||0)-(a.aiaOrders||0));
-      const maxI=Math.max(..._dashReps.map(r=>r.aiaOrders||0),1);
+      const mob=isMobile();
+      const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
+      const sorted7=[..._dashReps].sort((a,b)=>((b.fibOrders||0)+(b.aiaOrders||0))-((a.fibOrders||0)+(a.aiaOrders||0)));
+      const maxAddr=Math.max(..._dashReps.map(r=>r.addrChecks||0),1);
+      const labelW=mob?'160px':'130px';
       return sorted7.map(r=>{
-        const hit=(r.aiaOrders||0)>=1;
-        return `<div style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <div style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${fullName(r.uid)}<span style="font-weight:400;color:var(--t3);font-size:9px;margin-left:4px">${r.uid}</span></div>
-            <div style="font-size:13px;font-weight:900;color:${hit?'var(--g)':'var(--err)'};font-family:DM Sans">${r.aiaOrders||0}</div>
+        const totalOrders=(r.fibOrders||0)+(r.aiaOrders||0);
+        const addrChecks=r.addrChecks||0;
+        const billPay=r.billPay||0;
+        const opps=(r.voiceActs||0)+(r.upgrades||0);
+        const bpConv=billPay>0?addrChecks/billPay:0;
+        const bpPct=Math.round(bpConv*100);
+        const bpBarW=Math.min(100,bpPct);
+        const bpCol=bpConv>=1?'var(--g)':bpConv>=0.75?'var(--warn)':'var(--err)';
+        const addrBarW=Math.round(addrChecks/maxAddr*100)||0;
+        const ordersCol=totalOrders>=1?'var(--g)':'var(--err)';
+        const metricRow=(label,barW,barCol,val1,val2,val2Col)=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:5}px">
+            <div style="font-size:${labelSz}px;color:var(--t3);font-family:DM Sans;width:${labelW};flex-shrink:0;white-space:nowrap">${label}</div>
+            <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
+              <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;min-width:${mob?'90px':'72px'}">
+              <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
+              <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
+            </div>
+          </div>`;
+        return `<div style="margin-bottom:${mob?24:16}px;cursor:pointer;padding-bottom:${mob?16:10}px;border-bottom:1px solid var(--bd)" onclick="selectPerfRep('${r.uid}')">
+          <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;margin-bottom:${mob?10:6}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${mob?12:9}px">${r.uid}</span></div>
+          ${metricRow('Bill Pay Ratio',bpBarW,bpCol,bpPct+'%',billPay+' Bill Pays',bpCol)}
+          ${metricRow('Address Checks',addrBarW,'#3b82f6',addrChecks+' Checks',totalOrders+' Orders',ordersCol)}
+        </div>`;
+      }).join('');
+    })())}
+    ${sec('Feature Revenue by Rep',(()=>{
+      const sorted9=[..._dashReps].sort((a,b)=>((b.ildAdds||0)+(b.upgPlusAdds||0)+((b.protectRate||0)*100))-((a.ildAdds||0)+(a.upgPlusAdds||0)+((a.protectRate||0)*100)));
+      const mob=isMobile();
+      const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
+      const labelW=mob?'160px':'130px';
+      const fRow=(label,barW,barCol,val1,val2,val2Col)=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:5}px">
+          <div style="font-size:${labelSz}px;color:var(--t3);font-family:DM Sans;width:${labelW};flex-shrink:0;white-space:nowrap">${label}</div>
+          <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
+            <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
           </div>
-          <div style="background:var(--s3);border-radius:5px;height:12px">
-            <div style="background:${hit?'var(--g)':'rgba(239,68,68,.2)'};height:12px;border-radius:5px;width:${Math.round((r.aiaOrders||0)/maxI*100)||4}%"></div>
+          <div style="text-align:right;flex-shrink:0;min-width:${mob?'90px':'72px'}">
+            <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
+            <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
           </div>
+        </div>`;
+      return sorted9.map(r=>{
+        const ild=r.ildAdds||0;
+        const upgP=r.upgPlusAdds||0;
+        const prot=Math.round((r.protectRate||0)*100);
+        const ildRate=Math.round((r.ildRate||0)*100);
+        const upgPlusRate=Math.round((r.upgPlusRate||0)*100);
+        const ildCol=ildRate>=2?'var(--g)':ildRate>=1?'var(--warn)':'var(--err)';
+        const upgCol=upgPlusRate>=8?'var(--g)':upgPlusRate>=4?'var(--warn)':'var(--err)';
+        const protCol=prot>=50?'var(--g)':prot>=40?'var(--warn)':'var(--err)';
+        const ildBarW=Math.min(100,Math.round(ildRate/2*100));
+        const upgBarW=Math.min(100,Math.round(upgPlusRate/8*100));
+        const protBarW=Math.min(100,prot);
+        return `<div style="margin-bottom:${mob?24:16}px;cursor:pointer;padding-bottom:${mob?16:10}px;border-bottom:1px solid var(--bd)" onclick="selectPerfRep('${r.uid}')">
+          <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;margin-bottom:${mob?10:6}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${mob?12:9}px">${r.uid}</span></div>
+          ${fRow('ILD',ildBarW,ildCol,ildRate+'%','Goal: 2%','var(--t3)')}
+          ${fRow('Upgrade Plus',upgBarW,upgCol,upgPlusRate+'%','Goal: 8%','var(--t3)')}
+          ${fRow('Protect',protBarW,protCol,prot+'%','Goal: 50%','var(--t3)')}
         </div>`;
       }).join('');
     })())}
@@ -2010,74 +2080,6 @@ function renderDistrictDashboard(_targetEl){
       }).join('');
     })())}
 
-    <div class="no-capture">
-    ${isDMd?sec('Tracker Coverage by Rep'+(window._districtAccLoaded?' ('+((window._districtAccEntries||[]).length)+' entries)':''), (()=>{
-      const entries=window._districtAccEntries||[];
-      if(!window._districtAccLoaded){
-        if(!window._districtAccFetching){
-          window._districtAccFetching=true;
-          // No cycleStart filter — return all entries, compare by matching _perfAllData accRevenue
-          fetchWithTimeout(LOG_URL+'?type=acc_fetch_all&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},10000)
-            .then(r=>r.json()).then(d=>{
-              window._districtAccEntries=_filterAccToCycle(Array.isArray(d)?d:[]);
-              window._districtAccLoaded=true;
-              window._districtAccFetching=false;
-              renderDistrictDashboard();
-            }).catch(()=>{
-              window._districtAccEntries=[];
-              window._districtAccLoaded=true;
-              window._districtAccFetching=false;
-              renderDistrictDashboard();
-            });
-        }
-        return '<div style="text-align:center;padding:20px;color:var(--t3);font-size:11px;font-family:DM Sans">Loading tracker data…</div>';
-      }
-      // Group tracker entries by uid for this cycle
-      const byUid={};
-      entries.forEach(e=>{
-        const u=String(e.uid||'').toLowerCase();
-        if(!byUid[u]) byUid[u]={apd:0,other:0};
-        const amt=Number(e.amount||0);
-        if(String(e.accType||'')==='APD') byUid[u].apd+=amt;
-        else byUid[u].other+=amt;
-      });
-      const rows=[..._dashReps].sort((a,b)=>(b.accRevenue||0)-(a.accRevenue||0));
-      const hdrStyle='font-size:9px;font-weight:900;color:var(--t3);letter-spacing:.8px;padding-bottom:6px;border-bottom:1px solid var(--bd);font-family:DM Sans;text-transform:uppercase';
-      const cellStyle='font-size:11px;font-family:DM Sans;padding:7px 0;border-bottom:1px solid var(--bd)';
-      const numStyle=cellStyle+';font-weight:800;text-align:right';
-      return '<div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:0 10px">'
-        +'<div style="'+hdrStyle+'"> </div>'
-        +'<div style="'+hdrStyle+';text-align:right">Actual</div>'
-        +'<div style="'+hdrStyle+';text-align:right">Tracker (All)</div>'
-        +'<div style="'+hdrStyle+';text-align:right">Difference</div>'
-        +'<div style="'+hdrStyle+';text-align:right">Status</div>'
-        +rows.map(r=>{
-          const metric=r.accRevenue||0;
-          const t=byUid[r.uid]||{apd:0,other:0};
-          const trackerTotal=t.apd+t.other;
-          const diff=trackerTotal-metric; // negative = under-reported
-          const pct=metric>0?trackerTotal/metric:0;
-          // Status: Not Logging / Logging / Gap (≥20% difference but has entries)
-          let statusTxt, statusCol;
-          if(trackerTotal===0){
-            statusTxt='Not Logging'; statusCol='var(--err)';
-          } else if(Math.abs(diff)/Math.max(metric,1)>=0.20){
-            statusTxt='Gap'; statusCol='var(--warn)';
-          } else {
-            statusTxt='Logging'; statusCol='var(--g)';
-          }
-          const diffFmt=(diff>=0?'+':'')+diff.toFixed(0);
-          const diffCol=diff>=-metric*0.20?'var(--g)':'var(--warn)';
-          return '<div style="'+cellStyle+';font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)">'
-            +fullName(r.uid)+'</div>'
-            +'<div style="'+numStyle+';color:var(--t1)">$'+metric.toFixed(0)+'</div>'
-            +'<div style="'+numStyle+';color:var(--t1)">'+(trackerTotal>0?'$'+trackerTotal.toFixed(0):'—')+'</div>'
-            +'<div style="'+numStyle+';color:'+diffCol+'">$'+diffFmt+'</div>'
-            +'<div style="'+numStyle+';color:'+statusCol+'">'+statusTxt+'</div>';
-        }).join('')
-        +'</div>';
-    })()):''}
-    </div>
   `;
 }
 
@@ -2085,17 +2087,10 @@ function renderDistrictDashboard(_targetEl){
 
 
 let _perfAccEntries=[];
-let _perfFiberEntries=[];
 function _filterAccToCycle(entries){
   if(!entries||!entries.length) return [];
   const cs=_perfCurrentCycleStart||'';
   if(!cs) return entries; // cycle not yet known — show all
-  return entries.filter(e=>(e.cycleStart||'')===cs);
-}
-function _filterFiberToCycle(entries){
-  if(!entries||!entries.length) return [];
-  const cs=_perfCurrentCycleStart||'';
-  if(!cs) return entries;
   return entries.filter(e=>(e.cycleStart||'')===cs);
 }
 
@@ -2111,7 +2106,7 @@ function launchPerformance(){
   _perfAllData=[];
   _perfData=null;        // clear individual rep data
   _perfAccEntries=[];    // clear tracker entries
-  _perfFiberEntries=[];
+  
   _perfDashFilter='all';
   _perfCategoryFilter='all';
   _perfFilter='all';
@@ -2335,38 +2330,22 @@ function loadPerfDataMobile(uid){
       const tok=_perfLoadToken;
       _perfData=cached;
       if(tok!==_perfLoadToken||!_perfRepUid) return;
-      // Fetch all tracker entries for this rep — no cycleStart filter
-      // so entries stored under any key (old or new cycle) all come back
-      Promise.all([
-        fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-      ]).then(responses=>Promise.all(responses.map(r=>r.json())))
-      .then(([fiber])=>{
-        if(tok!==_perfLoadToken||!_perfRepUid) return;
-        _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
-        renderMobileRepView(uid);
-      }).catch(()=>{
-        if(tok!==_perfLoadToken||!_perfRepUid) return;
-        _perfFiberEntries=[];
-        renderMobileRepView(uid);
-      });
+      renderMobileRepView(uid);
       return;
     }
   }
   const myToken=_perfLoadToken;
-  Promise.all([
-    fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'}),
-    fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-  ]).then(responses=>Promise.all(responses.map(r=>r.json())))
-  .then(([perf,fiber])=>{
+  fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+  .then(r=>r.json())
+  .then(perf=>{
     if(myToken!==_perfLoadToken) return;
     if(!_perfRepUid) return;
     _perfData=perf;
-    _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
     renderMobileRepView(uid);
   }).catch(()=>{
     if(myToken!==_perfLoadToken) return;
     if(!_perfRepUid) return;
-    _perfData=null;_perfFiberEntries=[];
+    _perfData=null;
     renderMobileRepView(uid);
   });
 }
@@ -2481,18 +2460,8 @@ function toggleMobileDashboard(){
 function loadIndividualDashboard(uid){
   const dash=document.getElementById('perf-dashboard');
   if(!dash) return;
-  // Find rep in _perfAllData
-  let rep=_perfAllData.find(r=>r.uid===uid);
-  if(!rep){
-    // Fetch individual
-    fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-      .then(r=>r.json()).then(data=>{
-        if(data&&data.uid) _perfAllData.push(data);
-        renderIndividualDashboard(data,uid);
-      }).catch(()=>renderIndividualDashboard(null,uid));
-    return;
-  }
-  renderIndividualDashboard(rep,uid);
+  // Use already-fetched _perfData — no second network call needed
+  renderIndividualDashboard(_perfData,uid);
 }
 
 function renderIndividualDashboard(r,uid,_targetEl){
@@ -2503,335 +2472,153 @@ function renderIndividualDashboard(r,uid,_targetEl){
     dash.innerHTML=`<div style="text-align:center;padding:40px;color:var(--t3);font-size:12px;font-family:DM Sans">No data for ${name} this cycle.</div>`;
     return;
   }
-  const pct=v=>v===null||v===undefined?'—':Math.round((v||0)*100)+'%';
-  const totalActs=r.voiceActs+r.nonVoice;
-  const totalOpps=totalActs+r.upgrades;
-  const apOk=r.autopayRate>=PERF_GOALS.autopayMin;
-  const apTarget=r.autopayRate>=PERF_GOALS.autopayTarget;
-  const protOk=r.protectRate>=PERF_GOALS.protectTarget;
-  const pppOk=r.pppRate>=PERF_GOALS.pppTarget;
+  const mob=isMobile();
+  const totalActs=(r.voiceActs||0)+(r.nonVoice||0);
+  const totalOpps=totalActs+(r.upgrades||0);
+  const apo=totalOpps>0?(r.accRevenue||0)/totalOpps:0;
+  const _repActive=totalOpps>0;
+  const aiaOrders=_repActive?(r.aiaOrders||0):0;
+  const fiberOrders=_repActive?(r.fibOrders||0):0;
+  const totalInternet=aiaOrders+fiberOrders;
+  const _elig=r.eligFibOrAIA||0;
+  const _cred=(r.credFib||0)+(r.credAIA||0);
+  const _adv=(r.advFib||0)+(r.advAIA||0);
+  const cycleLabel=fmtRawDate(r.cycleStart||'')+' – '+fmtRawDate(r.cycleEnd||'');
+  const throughLabel='Through '+fmtRawDate(r.throughDate||'');
 
-  // APD from tracker
-  const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
-  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+  const srcBadge=(lbl,col)=>`<span style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:${col};background:${col}18;border:1px solid ${col}30;border-radius:3px;padding:1px 5px;font-family:DM Sans">${lbl}</span>`;
+  const MD=srcBadge('Metric Detail','#6366f1');
 
-  function gauge(label,val,target,min,secondaryLabel){
-    var pctVal=Math.min(100,Math.round((val||0)*100));
-    var pctExact=val?((val||0)*100).toFixed(2):'0.00';
-    var targetPct=Math.round(target*100);
-    var hit=val>=target;
-    var partial=min&&val>=(min||0);
-    var col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
-    var minBar=min?'<div style="position:absolute;left:'+Math.round((min||0)*100)+'%;top:-4px;height:18px;width:2px;background:rgba(255,80,80,.5);border-radius:1px"></div>':'';
-    var secLabel=secondaryLabel?'<div style="font-size:8px;color:var(--t3);font-family:DM Sans">'+secondaryLabel+'</div>':'';
-    return '<div style="margin-bottom:14px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
-      +'<div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">'+label+'</div>'
-      +'<div style="font-family:Bebas Neue;font-size:22px;color:'+col+';line-height:1">'+pctExact+'%</div>'
-      +'</div>'
-      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
-      +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+col+';width:'+pctVal+'%;transition:width .5s"></div>'
-      +'<div style="position:absolute;left:'+targetPct+'%;top:-4px;height:18px;width:2px;background:var(--g);border-radius:1px"></div>'
-      +minBar
-      +'</div>'
-      +'<div style="display:flex;gap:10px;margin-top:4px">'
-      +'<div style="font-size:8px;color:var(--g);font-family:DM Sans">Goal: '+targetPct+'%</div>'
-      +secLabel
-      +'</div>'
-      +'</div>';
+  function sec(title,content,badge){
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
+      <div style="padding:${mob?'9px 16px':'7px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:${mob?'12':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+        ${badge||''}</div>
+      <div style="padding:${mob?'16px':'12px 14px'}">${content}</div>
+    </div>`;
   }
-
-  // Acts vs Upgrades comparison bar
-  const _mob=isMobile();
-  const _barH=_mob?26:10; const _numSz=_mob?38:20; const _lblSz=_mob?15:11; const _barMaxW=_mob?'65%':'100%';
-  const maxBar=Math.max(totalActs,r.upgrades,1);
-  const actsBarW=Math.round(totalActs/maxBar*100);
-  const upgBarW=Math.round(r.upgrades/maxBar*100);
-  const actsVsUpg=`
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div>
-        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;margin-bottom:10px;max-width:${_barMaxW}">
-        <div style="height:${_barH}px;border-radius:4px;background:var(--g);width:${actsBarW}%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
-        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--purple);line-height:1">${r.upgrades}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;max-width:${_barMaxW}">
-        <div style="height:${_barH}px;border-radius:4px;background:var(--purple);width:${upgBarW}%"></div>
-      </div>
+  function gauge(val,target,min){
+    const barH=mob?26:10; const valSz=mob?40:22; const lblSz=mob?13:8;
+    if(val===null||val===undefined) return `<div style="font-family:Bebas Neue;font-size:${valSz}px;color:var(--t3)">—</div><div style="font-size:${lblSz}px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: ${Math.round(target*100)}%</div>`;
+    const pct=Math.min(100,Math.round(val*100));
+    const hit=val>=target; const partial=min&&val>=min;
+    const col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
+    const tPct=Math.round(target*100);
+    const minMark=min?`<div style="position:absolute;top:-4px;height:${barH+8}px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:${Math.round(min*100)}%;transform:translateX(-50%)"></div>`:'';
+    const minLabel=min?`<div style="font-size:${lblSz}px;color:var(--err);opacity:.7;font-family:DM Sans">Min: ${Math.round(min*100)}%</div>`:'';
+    return `<div style="display:flex;align-items:baseline;margin-bottom:5px"><div style="font-family:Bebas Neue;font-size:${valSz}px;color:${col};line-height:1">${((val||0)*100).toFixed(2)}%</div></div>
+    <div style="position:relative;background:var(--s3);border-radius:6px;height:${barH}px;max-width:${mob?'65%':'100%'}">
+      <div style="position:absolute;left:0;top:0;height:${barH}px;border-radius:6px;background:${col};width:${pct}%;transition:width .5s"></div>
+      <div style="position:absolute;top:-4px;height:${barH+8}px;width:2px;background:var(--g);border-radius:1px;left:${tPct}%;transform:translateX(-50%)"></div>
+      ${minMark}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <div style="font-size:${lblSz}px;color:var(--g);font-family:DM Sans">Goal: ${tPct}%</div>
+      ${minLabel}
     </div>`;
-
-  // Voice vs Non-Voice — bar style matching Acts vs Upgrades
-  const maxVNV=Math.max(r.voiceActs,r.nonVoice,1);
-  const voiceVNVBarW=Math.round(r.voiceActs/maxVNV*100);
-  const nvVNVBarW=Math.round(r.nonVoice/maxVNV*100);
-  const voiceBreakdown=`
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:${_lblSz}px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:var(--g);line-height:1">${r.voiceActs}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;margin-bottom:10px;max-width:${_barMaxW}">
-        <div style="height:${_barH}px;border-radius:4px;background:var(--g);width:${voiceVNVBarW}%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:${_lblSz}px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:${_numSz}px;color:#60a5fa;line-height:1">${r.nonVoice}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:${_barH}px;max-width:${_barMaxW}">
-        <div style="height:${_barH}px;border-radius:4px;background:#60a5fa;width:${nvVNVBarW}%"></div>
-      </div>
-    </div>`;
-
-  const sec=(title,content)=>`
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
-      <div style="padding:${_mob?'9px 16px':'7px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
-        <div style="font-size:${_mob?'12px':'10px'};font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
-      </div>
-      <div style="padding:${_mob?'16px':'12px 14px'}">${content}</div>
-    </div>`;
-
-  // Helper for stat tile
-
-  // Compute APD + avg fees for this rep using tracker data
-  const _indivApdTotal=_perfAccEntries.filter(e=>e.accType==='APD').reduce((s,e)=>s+Number(e.amount||0),0);
-  const _indivApdDenom=Math.max(1,(r.voiceActs||0)+(r.upgrades||0));
-  const _indivApdAvg=_indivApdTotal>0?_indivApdTotal/_indivApdDenom:0;
-
-  // ── Calculated values ──
-  const totalAllOpps = (r.voiceActs||0)+(r.nonVoice||0)+(r.upgrades||0);
-  const apo = totalAllOpps>0 ? (r.accRevenue||0)/totalAllOpps : 0;
-  const apoCol2 = apo>=45?'var(--g)':'var(--err)';
-  const totalVoiceUpg = (r.voiceActs||0)+(r.upgrades||0);
-  const maxActRate = totalAllOpps>0?(r.voiceActs||0)/totalAllOpps:0;
-  const maxActRatePct = (maxActRate*100).toFixed(0);
-  // Bill Pay Conversion = all opps (voice + NV + upgrades) ÷ bill pays
-  const bpConv = (r.billPay||0)>0 ? totalAllOpps/(r.billPay||0) : 0;
-  const bpConvPct = (bpConv*100).toFixed(1);
-  const bpConvCol = bpConv>=0.50?'var(--g)':bpConv>=0.40?'var(--warn)':'var(--err)';
-
-  // ── Activations vs Upgrades — separate labeled bars ──
-  const maxAU = Math.max(r.voiceActs||0, r.upgrades||0, 1);
-  const actsBarW2 = Math.round((r.voiceActs||0)/maxAU*100);
-  const upgBarW2  = Math.round((r.upgrades||0)/maxAU*100);
-  const actsVsUpg2 = `
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice Activations</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${totalActs}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
-        <div style="height:10px;border-radius:4px;background:var(--g);width:${actsBarW2}%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades||0}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px">
-        <div style="height:10px;border-radius:4px;background:var(--purple);width:${upgBarW2}%"></div>
-      </div>
-    </div>`;
-
-  // ── Voice vs Non-Voice bars ──
-  const maxVNV3 = Math.max(r.voiceActs||0, r.nonVoice||0, 1);
-  const vBarW3  = Math.round((r.voiceActs||0)/maxVNV3*100);
-  const nvBarW3 = Math.round((r.nonVoice||0)/maxVNV3*100);
-  const vnvBars = `
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:var(--g);line-height:1">${r.voiceActs||0}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px;margin-bottom:8px">
-        <div style="height:10px;border-radius:4px;background:var(--g);width:${vBarW3}%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-        <div style="font-size:11px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div>
-        <div style="font-family:'Bebas Neue';font-size:20px;color:#60a5fa;line-height:1">${r.nonVoice||0}</div>
-      </div>
-      <div style="background:var(--s3);border-radius:4px;height:10px">
-        <div style="height:10px;border-radius:4px;background:#60a5fa;width:${nvBarW3}%"></div>
-      </div>
-    </div>`;
-
-  // ── Line-style metric row helper ──
-  function lineRow(label,display,status,target){
-    var dot=status==='good'?'<span style="color:var(--g);font-size:13px;margin-right:4px">●</span>'
-            :status==='warn'?'<span style="color:var(--warn);font-size:13px;margin-right:4px">●</span>'
-            :status==='bad'?'<span style="color:var(--err);font-size:13px;margin-right:4px">●</span>':'';
-    var sub=target?'<span style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-left:6px">Goal: '+target+'</span>':'';
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd)">'
-      +'<div style="font-size:12px;color:var(--t3);font-family:DM Sans">'+label+'</div>'
-      +'<div style="display:flex;align-items:center">'+dot+'<span style="font-size:13px;font-weight:800;color:var(--t1);font-family:DM Sans">'+display+'</span>'+sub+'</div>'
-      +'</div>';
   }
-
-  // ── Gauge helper (inline for rate bars) ──
-  function gBar(val,target,min){
-    var mob=isMobile();
-    var barH=mob?26:10; var valSize=mob?40:22; var labelSize=mob?13:8;
-    if(val===null||val===undefined) return '<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:var(--t3)">—</div><div style="font-size:'+labelSize+'px;color:var(--t3);font-family:DM Sans;margin-top:4px">Goal: '+Math.round(target*100)+'%+</div>';
-    var pct=Math.min(100,Math.round((val||0)*100));
-    var hit=val>=target; var partial=min&&val>=(min||0);
-    var col=hit?'var(--g)':partial?'var(--warn)':'var(--err)';
-    var tPct=Math.round(target*100);
-    var minMark=min?'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:'+Math.round(min*100)+'%;transform:translateX(-50%)"></div>':'';
-    var minLabel=min?'<div style="font-size:'+labelSize+'px;color:var(--err);opacity:.7;font-family:DM Sans">Min: '+Math.round(min*100)+'%</div>':'';
-    return '<div style="margin-bottom:14px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
-      +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+col+';line-height:1">'+((val||0)*100).toFixed(2)+'%</div>'
-      +'</div>'
-      +'<div style="position:relative;background:var(--s3);border-radius:6px;height:'+barH+'px;max-width:'+(mob?'65%':'100%')+'">'
-      +'<div style="position:absolute;left:0;top:0;height:'+barH+'px;border-radius:6px;background:'+col+';width:'+pct+'%;transition:width .5s"></div>'
-      +'<div style="position:absolute;top:-4px;height:'+(barH+8)+'px;width:2px;background:var(--g);border-radius:1px;left:'+tPct+'%;transform:translateX(-50%)"></div>'
-      +minMark
-      +'</div>'
-      +'<div style="display:flex;gap:10px;margin-top:4px">'
-      +'<div style="font-size:'+labelSize+'px;color:var(--g);font-family:DM Sans">Goal: '+tPct+'%</div>'
-      +minLabel
-      +'</div>'
-      +'</div>';
+  function smtile(label,val,color,sub){
+    return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:${mob?'14px 10px':'11px 10px'};text-align:center;min-height:${mob?96:80}px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="font-size:${mob?11:8}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:3px">${label}</div>
+      <div style="font-family:Bebas Neue;font-size:${mob?34:24}px;color:${color||'var(--t1)'};line-height:1">${val}</div>
+      ${sub?`<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:3px">${sub}</div>`:''}</div>`;
   }
-
-  // ── Small tile helper ──
-  function smTile(label,val,color,sub){
-    var mob=isMobile();
-    var valSize=mob?36:26; var lblSize=mob?11:8; var subSize=mob?12:9;
-    var subHtml=sub?'<div style="font-size:'+subSize+'px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+sub+'</div>':'';
-    return '<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:'+(mob?'16px 10px':'12px 10px')+';text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:'+(mob?'96px':'80px')+'">'
-      +'<div style="font-size:'+lblSize+'px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">'+label+'</div>'
-      +'<div style="font-family:Bebas Neue;font-size:'+valSize+'px;color:'+(color||'var(--t1)')+';line-height:1">'+val+'</div>'
-      +subHtml
-      +'</div>';
-  }
-
-  // ── APO color ──
-
-  // ── Pre-compute WTR HTML — bar style like AutoPay/Protect ──
-  var _wtrRaw=r.wtr!==null&&r.wtr!==undefined?r.wtr:null;
-  // WTR comes as 0-100, convert to 0-1 for gBar (target 0.80)
-  var wtrHtml=_wtrRaw===null
-    ? gBar(null,0.80)
-    : gBar(_wtrRaw/100, 0.80);
-
-  // ── Pre-compute Bill Pay Conversion HTML (gBar style) ──
-  var bpConvHtml = gBar(bpConv, 0.50, 0.40);
-
-  // ── Pre-compute Internet HTML ──
-  var _repActive=(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0)>0;
-  var _aia=_repActive?(r.aiaOrders||0):0;
-  var _aiahit=_aia>=1; var _aiacol=_aiahit?'var(--g)':'var(--err)';
-  var _aiaBarW=Math.min(100,Math.round(_aia/3*100));
-  var internetHtml='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
-    +'<div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div>'
-    +'<div style="font-family:Bebas Neue;font-size:22px;color:'+_aiacol+';line-height:1">'+_aia+'</div></div>'
-    +'<div style="position:relative;background:var(--s3);border-radius:6px;height:10px">'
-    +'<div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:'+_aiacol+';width:'+_aiaBarW+'%;transition:width .5s"></div>'
-    +'</div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>';
-
-  // ── Pre-compute PNG button ──
+  const maxAU=Math.max(totalActs,r.upgrades||0,1);
+  const actsVsUpg=`<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Activations</div><div style="font-family:Bebas Neue;font-size:${mob?38:20}px;color:var(--g);line-height:1">${totalActs}</div></div>
+    <div style="background:var(--s3);border-radius:4px;height:${mob?26:9}px;margin-bottom:${mob?12:8}px"><div style="height:${mob?26:9}px;border-radius:4px;background:var(--g);width:${Math.round(totalActs/maxAU*100)}%"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div><div style="font-family:Bebas Neue;font-size:${mob?38:20}px;color:var(--purple);line-height:1">${r.upgrades||0}</div></div>
+    <div style="background:var(--s3);border-radius:4px;height:${mob?26:9}px"><div style="height:${mob?26:9}px;border-radius:4px;background:var(--purple);width:${Math.round((r.upgrades||0)/maxAU*100)}%"></div></div>
+  </div>`;
+  const maxVNV=Math.max(r.voiceActs||0,r.nonVoice||0,1);
+  const voiceBreakdown=`<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:var(--g);font-family:DM Sans">Voice</div><div style="font-family:Bebas Neue;font-size:${mob?38:20}px;color:var(--g);line-height:1">${r.voiceActs||0}</div></div>
+    <div style="background:var(--s3);border-radius:4px;height:${mob?26:9}px;margin-bottom:${mob?12:8}px"><div style="height:${mob?26:9}px;border-radius:4px;background:var(--g);width:${Math.round((r.voiceActs||0)/maxVNV*100)}%"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:#60a5fa;font-family:DM Sans">Non-Voice</div><div style="font-family:Bebas Neue;font-size:${mob?38:20}px;color:#60a5fa;line-height:1">${r.nonVoice||0}</div></div>
+    <div style="background:var(--s3);border-radius:4px;height:${mob?26:9}px"><div style="height:${mob?26:9}px;border-radius:4px;background:#60a5fa;width:${Math.round((r.nonVoice||0)/maxVNV*100)}%"></div></div>
+  </div>`;
+  const inetCol=totalInternet>=1?'var(--g)':'var(--err)';
+  const inetContent=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px">
+      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Address Checks</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:var(--t1);line-height:1">${r.addrChecks||0}</div></div>
+      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Internet Eligible</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_elig>0?'var(--ok)':'var(--t3)'};line-height:1">${_elig}</div></div>
+      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Credit Checks</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_cred>0?'var(--ok)':'var(--t3)'};line-height:1">${_cred}</div></div>
+      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Adv. Payment Req'd</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_adv>0?'var(--warn)':'var(--ok)'};line-height:1">${_adv}</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:var(--t1);font-family:DM Sans">Total Internet</div><div style="font-family:Bebas Neue;font-size:${mob?40:22}px;color:${inetCol};line-height:1">${totalInternet}</div></div>
+    <div style="position:relative;background:var(--s3);border-radius:6px;height:${mob?26:10}px;max-width:${mob?'65%':'100%'}">
+      <div style="position:absolute;left:0;top:0;height:${mob?26:10}px;border-radius:6px;background:${inetCol};width:${Math.min(100,Math.round(totalInternet/3*100))}%;transition:width .5s"></div>
+    </div>
+    <div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
 
   dash.innerHTML=`
-    <!-- Rep header -->
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
-      <div>
-        <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${name}</div>
-        <div style="font-size:${isMobile()?'14':'11'}px;color:var(--t3);font-family:DM Sans;margin-top:2px">${fmtRawDate(r.cycleStart||'')} – ${fmtRawDate(r.cycleEnd||'')} · Through ${fmtRawDate(r.throughDate||'')}</div>
+    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+      <div style="padding:${mob?'14px 16px':'11px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div style="font-family:Bebas Neue;font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div><div style="font-size:10px;color:var(--t3);font-family:DM Sans;margin-top:2px">${cycleLabel}</div></div>
+        <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+          <div style="font-size:9px;font-weight:700;color:var(--g);font-family:DM Sans">● Metric Detail ${r.throughDate||'—'}</div>
+          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:DM Sans">● Internet Report ${r.cycleEnd||'—'}</div>
+        </div>
       </div>
-
     </div>
-
-    <!-- Row 1: Activations vs Upgrades | Voice vs Non-Voice -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Activations vs Upgrades',actsVsUpg2)}
-      ${sec('Voice vs Non-Voice',vnvBars)}
+      ${sec('Activations vs Upgrades',actsVsUpg,MD)}
+      ${sec('Voice vs Non-Voice',voiceBreakdown,MD)}
     </div>
-
-    <!-- Row 2: AutoPay | Protect -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('AutoPay',gBar(r.autopayRate,PERF_GOALS.autopayTarget,PERF_GOALS.autopayMin))}
-      ${sec('Protect',gBar(r.protectRate,PERF_GOALS.protectTarget,PERF_GOALS.protectTarget))}
+      ${sec('AutoPay',gauge(r.autopayRate,0.30,0.28),MD)}
+      ${sec('Protect',gauge(r.protectRate,0.50,0.50),MD)}
     </div>
-
-    <!-- Row 3: PPP | 60RP Mix -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('PPP Attach',gBar(r.pppRate,PERF_GOALS.pppTarget,PERF_GOALS.pppMin))}
-      ${sec('60RP Mix',gBar(r.mix60rp,0.80))}
+      ${sec('PPP Attach',gauge(r.pppRate,0.20,PERF_GOALS.pppMin),MD)}
+      ${sec('60RP Mix',gauge(r.mix60rp,0.80),MD)}
     </div>
-
-    <!-- Row 3b: Upgrade Plus | ILD -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Upgrade Plus',gBar(r.upgPlusRate||0,0.08))}
-      ${sec('Intl. Long Distance',gBar(r.ildRate||0,0.02))}
+      ${sec('Upgrade Plus',gauge(r.upgPlusRate||0,0.08),MD)}
+      ${sec('Intl. Long Distance',gauge(r.ildRate||0,0.02),MD)}
     </div>
-
-    <!-- Row 4: WTR (1/4) | BP Conv (1/4) | Internet (1/2) -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('WTR',wtrHtml)}
-      ${sec('Bill Pay Conversion',bpConvHtml)}
-      ${sec('Internet',internetHtml)}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
+      ${sec('WTR',gauge(r.wtr!=null?r.wtr/100:null,0.80),MD)}
+      ${sec('Internet',inetContent,'<span style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:#059669;background:#05966918;border:1px solid #05966930;border-radius:3px;padding:1px 5px;font-family:DM Sans">Internet Report</span>')}
     </div>
-
-    <!-- Tile grid rows -->
-    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
-      ${smTile('Total OPPs',totalVoiceUpg,totalVoiceUpg>=10?'var(--g)':'var(--err)')}
-      ${smTile('APO (All In)','$'+apo.toFixed(2),apoCol2)}
-      ${smTile('APD',_indivApdTotal>0?'$'+_indivApdAvg.toFixed(2):'—',_indivApdTotal>0?'var(--warn)':'var(--t3)',_indivApdTotal>0?'Total $'+_indivApdTotal.toFixed(0):'')}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+      ${smtile('Bill Pays',r.billPay||0,'')}
+      ${smtile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)')}
+      ${smtile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','')}
     </div>
-    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
-      ${smTile('Bill Pay',r.billPay||0,'')}
-      ${smTile('Total Accessories','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
-      ${smTile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)')}
-      ${smTile('ILD Adds',r.ildAdds||0,'')}
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      ${smtile('Upg Plus',r.upgPlusAdds||0,'')}
+      ${smtile('ILD Adds',r.ildAdds||0,'')}
+      ${smtile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','')}
+      ${smtile('Max Act Rate',((r.voiceActs||0)/Math.max(1,(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0))*100).toFixed(0)+'%','')}
     </div>
-    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-      ${smTile('Upgrade Plus',r.upgPlusAdds||0,'')}
-      ${smTile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','')}
-      ${smTile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','')}
-      ${smTile('Max Act Rate',maxActRatePct+'%',maxActRate>=0.80?'var(--g)':'var(--err)')}
+    <div style="font-size:10px;color:var(--t3);padding:4px 0 24px;font-family:DM Sans;line-height:1.6">
     </div>
-
   `;
 }
 function loadPerfData(uid){
-  // Always try cached _perfAllData first — avoids extra network round trips
   const cached=_perfAllData.find(r=>r.uid===uid);
   const tok=_perfLoadToken;
-  function fetchTrackerAndRender(perfData){
+  function doRender(perfData){
     _perfData=perfData;
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    // Render immediately — never block on tracker
     try{ renderPerfView(uid); } catch(e){ console.error('renderPerfView error:',e); }
-    try{ loadIndividualDashboard(uid); } catch(e){ console.error('loadIndividualDashboard error:',e); }
-    // Fetch fiber tracker in background, silently update when done
-    Promise.all([
-      fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},8000)
-    ]).then(rs=>Promise.all(rs.map(r=>r.json())))
-    .then(([fiber])=>{
-      if(tok!==_perfLoadToken||!_perfRepUid) return;
-      _perfFiberEntries=_filterFiberToCycle(Array.isArray(fiber)?fiber:[]);
-      try{ renderPerfView(uid); } catch(e){}
-      try{ loadIndividualDashboard(uid); } catch(e){}
-    }).catch(()=>{});
   }
-  if(cached){
-    fetchTrackerAndRender(cached);
-    return;
-  }
-  // Not cached — fetch perf data then tracker entries
-  fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
+  if(cached){ doRender(cached); return; }
+  // Not in cache — fetch fresh
+  fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},20000)
   .then(r=>r.json())
   .then(perf=>{
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    fetchTrackerAndRender(perf);
+    if(perf&&perf.uid){
+      const idx=_perfAllData.findIndex(r=>r.uid===perf.uid);
+      if(idx>=0) _perfAllData[idx]=perf; else _perfAllData.push(perf);
+    }
+    doRender(perf);
   })
   .catch(()=>{
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    _perfData=null;_perfFiberEntries=[];
+    _perfData=null;
     renderPerfView(uid);
   });
 }
@@ -2843,14 +2630,8 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
   const totalActs=r.voiceActs+r.nonVoice;
   const totalOpps=totalActs+r.upgrades;
 
-  // Payout data from _perfFeeEntries/_perfAccEntries
-  const totalFeeDisc=_perfFeeEntries.reduce((s,e)=>s+Number(e.discount||0),0);
-  const feeOpps=totalActs; // activation fee charged on acts only
-  const grossFeeRevenue=feeOpps*25;
-  const netFeeRev=Math.max(0,grossFeeRevenue-totalFeeDisc);
-  const avgFee=feeOpps>0?netFeeRev/feeOpps:0;
-  const apdEntries=_perfAccEntries.filter(e=>e.accType==='APD');
-  const apdTotal=apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
+  // Acc tracker removed — these are zeroed
+  const apdTotal=0; const avgFee=0;
 
   function gauge(label,val,target,min){
     const pctVal=Math.min(100,Math.round((val||0)*100));
@@ -2873,14 +2654,16 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
       </div>
     </div>`;
   }
-  function sec(title,content){
+  function sec(title,content,badge){
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
-      <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
+      <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:${isMobile()?'13':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+        ${badge?`<span style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:${badge[1]};background:${badge[1]}18;border:1px solid ${badge[1]}30;border-radius:3px;padding:1px 5px;font-family:DM Sans">${badge[0]}</span>`:''}
       </div>
       <div style="padding:12px 14px">${content}</div>
     </div>`;
   }
+  const MD=['Metric Detail','#6366f1'];
   function tile(label,val,color,sub){
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90px">
       <div style="font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);font-family:DM Sans;margin-bottom:4px">${label}</div>
@@ -2938,46 +2721,67 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
           <div style="font-family:Bebas Neue;font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div>
           <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${cycleLabel}</div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
+        <div style="text-align:right;display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+          <div style="font-size:9px;font-weight:700;color:var(--g);font-family:'DM Sans'">● Metric Detail ${r.throughDate?r.throughDate:'—'}</div>
+          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:'DM Sans'">● Internet Report ${r.cycleEnd||'—'}</div>
         </div>
       </div>
     </div>
 
     <!-- Row 1: Acts vs Upgrades | Voice vs Non-Voice -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Activations vs Upgrades',actsVsUpg)}
-      ${sec('Voice vs Non-Voice',voiceBreakdown)}
+      ${sec('Activations vs Upgrades',actsVsUpg,MD)}
+      ${sec('Voice vs Non-Voice',voiceBreakdown,MD)}
     </div>
     <!-- Row 2: AutoPay | Protect -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('AutoPay',gauge('AutoPay Rate',r.autopayRate,0.30,0.28))}
-      ${sec('Protect',gauge('Protect Rate',r.protectRate,0.50,0.50))}
+      ${sec('AutoPay',gauge('AutoPay Rate',r.autopayRate,0.30,0.28),MD)}
+      ${sec('Protect',gauge('Protect Rate',r.protectRate,0.50,0.50),MD)}
     </div>
     <!-- Row 3: PPP | Internet -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20,PERF_GOALS.pppMin))}
+      ${sec('PPP Attach',gauge('PPP Attach Rate',r.pppRate,0.20,PERF_GOALS.pppMin),MD)}
       ${sec('Internet',(()=>{
-        const _mActive=(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0)>0;
-        const hit=_mActive&&(r.aiaOrders||0)>=1;
-        const col=hit?'var(--g)':'var(--err)';
-        const barW=Math.min(100,Math.round((_mActive?(r.aiaOrders||0):0)/3*100));
-        return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Internet (AIA+Fiber)</div><div style="font-family:Bebas Neue;font-size:22px;color:${col};line-height:1">${r.aiaOrders||0}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
-      })())}
+        const _active=(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0)>0;
+        const _fibOrd=_active?(r.fibOrders||0):0;
+        const _aiaOrd=_active?(r.aiaOrders||0):0;
+        const _tot=_fibOrd+_aiaOrd;
+        const col=_tot>=1?'var(--g)':'var(--err)';
+        const barW=Math.min(100,Math.round(_tot/3*100));
+        return `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Total Internet</div><div style="font-family:Bebas Neue;font-size:22px;color:${col};line-height:1">${_tot}</div></div><div style="position:relative;background:var(--s3);border-radius:6px;height:10px"><div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${col};width:${barW}%;transition:width .5s"></div></div><div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
+      })(),['Internet Report','#059669'])}
     </div>
     <!-- Row 3b: Upgrade Plus | ILD -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Upgrade Plus',gauge('Upgrade Plus Rate',r.upgPlusRate||0,0.08,null))}
-      ${sec('Intl. Long Distance',gauge('ILD Rate',r.ildRate||0,0.02,null))}
+      ${sec('Upgrade Plus',gauge('Upgrade Plus Rate',r.upgPlusRate||0,0.08,null),MD)}
+      ${sec('Intl. Long Distance',gauge('ILD Rate',r.ildRate||0,0.02,null),MD)}
     </div>
-    <!-- Row 4: Bill Pay | Acc Revenue | APD -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+    <!-- Row 4: Bill Pay | Acc Revenue -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
       ${tile('Bill Pay',r.billPay||0,'')}
       ${tile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)')}
-      ${tile('APD',apdTotal>0?'$'+apdTotal.toFixed(0):'No Data','var(--prog)',apdTotal>0?'from tracker':'not entered yet')}
+    </div>
+    <!-- Stat tiles — original set -->
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${tile('Total OPPs',(r.voiceActs||0)+(r.upgrades||0),(r.voiceActs||0)+(r.upgrades||0)>=10?'var(--g)':'var(--err)','Metric Detail')}
+      ${tile('APO (All In)','$'+(totalOpps>0?(r.accRevenue||0)/totalOpps:0).toFixed(2),(totalOpps>0?(r.accRevenue||0)/totalOpps:0)>=35?'var(--g)':(totalOpps>0?(r.accRevenue||0)/totalOpps:0)>=30?'var(--warn)':'var(--err)','Metric Detail')}
+      ${tile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)','Metric Detail')}
+      ${tile('ILD Adds',r.ildAdds||0,'','Metric Detail')}
+    </div>
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${tile('Upgrade Plus',r.upgPlusAdds||0,'','Metric Detail')}
+      ${tile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','','Metric Detail')}
+      ${tile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','','Metric Detail')}
+      ${tile('Max Act Rate',((totalOpps>0?(r.voiceActs||0)/totalOpps:0)*100).toFixed(0)+'%',(totalOpps>0?(r.voiceActs||0)/totalOpps:0)>=0.80?'var(--g)':'var(--err)','Metric Detail')}
+    </div>
+    <!-- Internet detail tiles -->
+    <div class="perf-tile-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      ${tile('Address Checks',r.addrChecks||0,'','Internet Report')}
+      ${tile('Internet Eligible',r.eligFibOrAIA||0,(r.eligFibOrAIA||0)>0?'var(--ok)':'var(--t3)','Internet Report')}
+      ${tile('Credit Checks',(r.credFib||0)+(r.credAIA||0),(r.credFib||0)+(r.credAIA||0)>0?'var(--ok)':'var(--t3)','Internet Report')}
+      ${tile("Adv. Payment Req'd",(r.advFib||0)+(r.advAIA||0),(r.advFib||0)+(r.advAIA||0)>0?'var(--warn)':'var(--t3)','Internet Report')}
     </div>
     <div style="font-size:10px;color:var(--t3);padding:8px 0 24px;font-family:DM Sans,sans-serif;line-height:1.6">
-      Data from Metric Detail — may not include returns or adjustments.
     </div>
   `;
 }
@@ -3055,33 +2859,13 @@ function renderPerfView(uid,_targetBody){
   const _repHasActivity = (d.voiceActs||0)+(d.upgrades||0)+(d.nonVoice||0) > 0;
   const aiaOrders = _repHasActivity ? (d.aiaOrders||0) : 0;
   const aiaPay  = aiaOrders*30;
-  const fiberQty = _perfFiberEntries.reduce((s,e)=>s+Number(e.qty||0),0);
-  const fiberPay = fiberQty*30;
-  const totalInternet = aiaOrders + fiberQty;
+  const fiberQty = 0; const fiberPay = 0;
+  const totalInternet = aiaOrders;
 
   // APD — avg = total APD $ ÷ (voice acts + upgrades, per incentive doc)
   // Payout tier applies to ALL opps (voice+NV+upgrades)
-  const apdEntries  = _perfAccEntries.filter(e=>e.accType==='APD');
-  const otherEntries= _perfAccEntries.filter(e=>e.accType==='Other');
-  const apdTotal    = apdEntries.reduce((s,e)=>s+Number(e.amount||0),0);
-  const apdDenominator = Math.max(1,(d.voiceActs||0)+(d.upgrades||0));
-  const apdAvg = apdTotal/apdDenominator;
-  let apdPay=0;
-  if(apdEntries.length>0){
-    if(apdAvg>=40)      apdPay = apdTotal*0.20;         // 20% of total APD $
-    else if(apdAvg>=35) apdPay = apdDenominator*6;      // $6 per device opp
-    else if(apdAvg>=30) apdPay = apdDenominator*4;      // $4 per device opp
-  }
-
-  // Other Accessories — per entry, tiered by entry amount
-  let otherPay=0;
-  otherEntries.forEach(e=>{
-    const amt=Number(e.amount||0);
-    if(amt>=150)      otherPay+=amt*0.10;  // 10% of amount
-    else if(amt>=100) otherPay+=10;
-    else if(amt>=50)  otherPay+=5;
-    else              otherPay+=4;         // < $49.99 = $4
-  });
+  // Acc tracker removed — zeroed
+  const apdPay=0; const otherPay=0;
   const grossPay=voicePay+nvPay+upgPay+apPay+protPay+aiaPay+fiberPay+apdPay+otherPay;
   let subtotal=grossPay;
   // RSC qualifiers — calc deduction amount
@@ -3107,12 +2891,7 @@ function renderPerfView(uid,_targetBody){
     }
   }
   // Tracker reminders
-  if(_perfAccEntries.filter(e=>e.accType==='APD').length===0)
-    qualNotes.push({msg:'Submit APD accessory sales in Sales Tracker for more accurate payout',red:false,info:true});
-  if(otherEntries.length===0)
-    qualNotes.push({msg:'Submit Other accessory sales in Sales Tracker for more accurate payout',red:false,info:true});
-  if(_perfFiberEntries.length===0)
-    qualNotes.push({msg:'Submit Fiber sales in Sales Tracker for more accurate payout',red:false,info:true});
+
 
   const fmtPay=v=>'$'+Math.max(0,v).toFixed(2);
   const fmtDed=v=>v===0?'$0.00':'-$'+Math.abs(v).toFixed(2);
@@ -3136,31 +2915,27 @@ function renderPerfView(uid,_targetBody){
 
   // Payout visibility: RSC can only see their own payout. RSM sees their team. DM/Jaq see all.
   const isRSCViewingTeammate=(isRSC&&uid!==_pendingUid);
-  body.innerHTML=backBtn+`
-    <!-- Header card -->
-    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:14px 16px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <div style="font-family:Bebas Neue;font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div>
-          <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${cycleLabel}</div>
-        </div>
-        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${throughLabel}</div>
-          <div style="font-size:9px;color:var(--t3);font-family:'DM Sans'">${repIsRSM?'RSM Structure':'RSC Structure'}</div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- Disclaimers -->
-    <div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.18);border-radius:var(--r);padding:${isMobile()?'13px 16px':'10px 14px'};margin-bottom:8px;font-size:${isMobile()?'14':'10'}px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">
-      <div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:${isMobile()?'12':'9'}px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>
-      Data pulled from Metric Detail and may not include returns, disconnects, or adjustments. Not to be used for 100% accuracy.
-    </div>
-
-
-
-  `;
+  // ── Desktop: render rep card into right panel, minimal left panel ──
+  if(isDesktop()){
+    const dash=document.getElementById('perf-dashboard');
+    if(dash&&d){
+      const cycleL=cycle?(fmtCycleDate(cycle.start)+' – '+fmtCycleDate(new Date(cycle.end.getTime()-86399000))):'';
+      const throughL=d.throughDate?'Through '+d.throughDate:'No data loaded';
+      try{ renderRepCardView(dash,d,uid,cycleL,throughL,''); } catch(e){ console.error('renderRepCardView error:',e); }
+    }
+    body.innerHTML=backBtn
+      +'<div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">'
+      +'<div style="padding:14px 16px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">'
+      +'<div style="font-family:Bebas Neue;font-size:22px;letter-spacing:1px;color:var(--t1)">'+name+'</div>'
+      +'<div style="font-size:10px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+cycleLabel+'</div>'
+      +'<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+throughLabel+'</div>'
+      +'<div style="font-size:9px;color:var(--t3);font-family:DM Sans;margin-top:2px">'+(repIsRSM?'RSM Structure':'RSC Structure')+'</div>'
+      +'</div></div>'
+      +'<div style="background:rgba(59,130,246,.03);border:1.5px solid rgba(59,130,246,.18);border-radius:var(--r);padding:10px 14px;font-size:10px;color:#374151;font-family:DM Sans,sans-serif;line-height:1.6">'
+      +'<div style="font-weight:800;color:#2563eb;margin-bottom:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase">&#8505; Sales Performance</div>'
++'</div>';
+    return;
+  }
 
   } catch(err){
     if(body) body.innerHTML=`<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Render error: ${String(err)}</div>`;
@@ -3311,11 +3086,7 @@ function stTab(t){
     if(pane) pane.style.display=isOn?'block':'none';
   });
 }
-function stLoadAll(){
-  const uid=_pendingUid;
-  fetchWithTimeout(LOG_URL+'?type=fiber_fetch&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(r=>r.json()).then(d=>{ _stFiberEntries=_filterFiberToCycle(Array.isArray(d)?d:[]); renderSTFiber(); }).catch(()=>renderSTFiber());
-}
+function stLoadAll(){ /* Sales Tracker removed */ }
 
 // ── FEE DISCOUNTS (read-only from uploaded 419fees report) ──
 function renderSTFee(){
@@ -3373,57 +3144,6 @@ function renderSTFee(){
   }
   html+=`</div><div style="font-size:${mob?'11':'9'}px;color:var(--t3);text-align:center;font-family:'DM Sans';padding:4px">From uploaded 419fees report · Read-only</div>`;
   pane.innerHTML=html;
-}
-
-// ── FIBER SALES ──
-function renderSTFiber(){
-  const pane=document.getElementById('st-pane-fiber');
-  if(!pane) return;
-  const mob=isMobile();
-  const entries=_stFiberEntries;
-  const total=entries.reduce((s,e)=>s+Number(e.qty||0),0);
-  const entryHtml=entries.length?entries.map(e=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:${mob?'13px 16px':'9px 14px'};border-bottom:1px solid var(--bd)">
-      <div>
-        <div style="font-size:${mob?'15':'12'}px;font-weight:700;color:var(--t1);font-family:'DM Sans'">Fiber Sale${e.qty>1?' (×'+e.qty+')':''}</div>
-        ${e.note?`<div style="font-size:${mob?'12':'10'}px;color:var(--t3)">${e.note}</div>`:''}
-      </div>
-      <button type="button" onclick="stDeleteFiber('${e.rowId}')" style="padding:${mob?'8px 16px':'4px 10px'};background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:${mob?'13':'10'}px;font-weight:800;cursor:pointer;color:var(--err);font-family:'DM Sans'">✕</button>
-    </div>`).join(''):
-    `<div style="padding:20px;text-align:center;color:var(--t3);font-size:${mob?'14':'11'}px">No fiber sales this cycle</div>`;
-
-  pane.innerHTML=`
-    <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
-      <div style="padding:${mob?'12px 16px':'10px 14px'};background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Fiber Sales</div>
-        <div style="font-size:${mob?'13':'10'}px;font-weight:700;color:var(--g);font-family:'DM Sans'">Total: ${total} sale${total!==1?'s':''} · $${(total*30).toFixed(2)}</div>
-      </div>
-      ${entryHtml}
-    </div>
-    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:${mob?'18px':'16px'};margin-bottom:12px">
-      <div style="font-size:${mob?'12':'9'}px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;font-family:'DM Sans'">Log a Fiber Sale</div>
-      <input type="text" id="st-fiber-note" placeholder="Customer note (optional)" style="width:100%;padding:${mob?'12px':'8px 10px'};background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:'DM Sans';font-size:${mob?'15':'12'}px;outline:none;box-sizing:border-box;margin-bottom:10px"/>
-      <button type="button" onclick="stSubmitFiber()" style="width:100%;padding:${mob?'15px':'11px'};background:var(--g);border:none;border-radius:6px;color:#fff;font-family:'DM Sans';font-size:${mob?'15':'12'}px;font-weight:900;cursor:pointer">+ Log Fiber Sale ($30)</button>
-    </div>`;
-}
-function stSubmitFiber(){
-  const note=document.getElementById('st-fiber-note').value.trim();
-  const uid=_pendingUid, name=UID_NAMES[uid]||uid;
-  const cs=getTrackerCycleKey();
-  const rowId=uid+'-FIBER-'+Date.now();
-  const submitted=getDatetime();
-  fetchWithTimeout(LOG_URL+'?type=fiber_submit&rowId='+encodeURIComponent(rowId)+'&uid='+encodeURIComponent(uid)+'&name='+encodeURIComponent(name)+'&cycleStart='+cs+'&qty=1&submitted='+encodeURIComponent(submitted)+'&note='+encodeURIComponent(note),{method:'GET',mode:'cors',cache:'no-store'})
-    .then(()=>{
-      _stFiberEntries.push({rowId,uid,name,cycleStart:cs,qty:1,submitted,note});
-      document.getElementById('st-fiber-note').value='';
-      renderSTFiber();
-      showToast('Fiber sale logged');
-    }).catch(()=>showToast('Save failed — try again'));
-}
-function stDeleteFiber(rowId){
-  fetchWithTimeout(LOG_URL+'?type=fiber_delete&rowId='+encodeURIComponent(rowId),{method:'GET',mode:'cors',cache:'no-store'}).catch(()=>{});
-  _stFiberEntries=_stFiberEntries.filter(e=>e.rowId!==rowId);
-  renderSTFiber();
 }
 
 // ── TOAST HELPER (if not already defined) ──
@@ -5656,7 +5376,7 @@ function saveDMCard(){
   btn.textContent='Saving...';
   const card=$('dm-cards-container');
   // Load html2canvas dynamically if not loaded
-  function doCapture(){
+  function runDMSave(){
     html2canvas(card,{
       backgroundColor:null,
       scale:3,
@@ -5684,11 +5404,11 @@ function saveDMCard(){
     });
   }
   if(window.html2canvas){
-    doCapture();
+    runDMSave();
   } else {
     const s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=doCapture;
+    s.onload=runDMSave;
     s.onerror=()=>{btn.textContent='Not available';setTimeout(()=>btn.textContent='Save Image',2000);};
     document.head.appendChild(s);
   }
@@ -5752,7 +5472,7 @@ function saveDMPng(){
   btn.disabled=true;
   const card=$('dm-cards-container');
 
-  function doCapture(){
+  function runDMPng(){
     html2canvas(card,{
       backgroundColor:'#0d0d0d',
       scale:3,
@@ -5780,11 +5500,11 @@ function saveDMPng(){
   }
 
   if(window.html2canvas){
-    doCapture();
+    runDMPng();
   } else {
     const s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload=doCapture;
+    s.onload=runDMPng;
     document.head.appendChild(s);
   }
 }
@@ -6406,11 +6126,8 @@ function closeActivity(){
   </div>
   <!-- Tabs -->
   <div style="background:#fff;border-bottom:1px solid var(--bd);display:flex;position:sticky;top:56px;z-index:9">
-    <div id="st-tab-fiber" onclick="stTab('fiber')" style="flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:800;cursor:pointer;color:var(--g);border-bottom:2px solid var(--g);font-family:'DM Sans'">Fiber Sales</div>
-    <div id="st-pane-fiber" style="display:none"></div>
   </div>
   <div style="max-width:560px;margin:0 auto;padding:16px 14px 80px">
-    <div id="st-pane-fiber" style="display:none"></div>
   </div>
 </div>
 
@@ -7916,7 +7633,7 @@ function dsrBarSec(label, val, goal, minVal, color, srcType, rawVal){
   const isDollar = typeof val==='string' && val.startsWith('$');
   const barW = goal>0 ? Math.min(100,Math.round(numVal/goal*100)) : 0;
   const minW = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100) : null;
-  const minPct = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100)+'%' : '85%';
+  const minPct = (minVal!=null&&goal>0) ? Math.round(minVal/goal*100)+'%' : '90%';
   const goalDisplay = goal>0 ? (isDollar?'Goal $'+Math.round(goal).toLocaleString('en-US'):'Goal '+goal) : '—';
   const minDisplay  = minVal!=null ? (isDollar?'Min $'+Math.round(minVal).toLocaleString('en-US')+' ('+minPct+')':'Min '+minVal+' ('+minPct+')') : null;
   const dispVal = val;
@@ -7981,7 +7698,7 @@ function dsrNeedTile(label, mtd, goal, goal85, srcType, floorLabel){
   const rem = Math.max(1, DSR_DAYS_IN_MONTH - _dsrDaysElapsed);
   const need100 = goal>0 ? Math.ceil(Math.max(0,goal-mtd)/rem*10)/10 : 0;
   const need85  = goal85!=null&&goal85>0 ? Math.ceil(Math.max(0,goal85-mtd)/rem*10)/10 : null;
-  const flLbl   = floorLabel || (goal85!=null&&goal>0 ? 'to '+Math.round(goal85/goal*100)+'%' : 'to 85%');
+  const flLbl   = floorLabel || (goal85!=null&&goal>0 ? 'to '+Math.round(goal85/goal*100)+'%' : 'to 90%');
   const c100 = need100===0?'var(--ok)':need100<=3?'var(--warn)':'var(--err)';
   const c85  = need85!=null?(need85===0?'var(--ok)':need85<=3?'var(--warn)':'var(--err)'):'';
   if(need85===null){
@@ -8333,7 +8050,7 @@ function dsrRenderStore(storeId){
       <div style="font-size:16px;flex-shrink:0">${penRisk?'⚠️':''}</div>
       <div>
         <div style="font-size:12px;font-weight:900;color:${penRisk?'#7F1D1D':'#14532D'};font-family:'DM Sans'">${penRisk?'Penalty Risk — Proj '+projOpps+' Opps':'On Track — Proj '+projOpps+' Opps'}</div>
-        <div style="font-size:13px;color:${penRisk?'#991B1B':'#166534'};margin-top:2px;font-family:'DM Sans'">85% floor is ${oppsFloor} · ${penRisk?'Need '+((oppsFloor-opps)/Math.max(1,DSR_DAYS_IN_MONTH-_dsrDaysElapsed)).toFixed(1)+'/day to clear':projOpps-oppsFloor+' above floor'}</div>
+        <div style="font-size:13px;color:${penRisk?'#991B1B':'#166534'};margin-top:2px;font-family:'DM Sans'">90% floor is ${oppsFloor} · ${penRisk?'Need '+((oppsFloor-opps)/Math.max(1,DSR_DAYS_IN_MONTH-_dsrDaysElapsed)).toFixed(1)+'/day to clear':projOpps-oppsFloor+' above floor'}</div>
       </div>
     </div>`;
   }
@@ -8371,8 +8088,8 @@ function dsrRenderStore(storeId){
         <div style="display:flex;gap:10px;margin-top:5px;flex-wrap:wrap">
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${goal}</div>
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#F59E0B;font-weight:800"><div style="width:7px;height:7px;border-radius:2px;background:#F59E0B"></div>${goal+stretchTarget} (+${stretchTarget} Target)</div>
-          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--err);font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.7)"></div>RSM Min ${minVal} (90%)</div>`:''}
-          ${minVal2!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#B45309;font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(245,158,11,.8)"></div>${minVal2Label||'DM Penalty'} ${minVal2} (85%)</div>`:''}
+          ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--err);font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.7)"></div>Min ${minVal} (90%)</div>`:''}
+          ${minVal2!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#B45309;font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(245,158,11,.8)"></div>${minVal2Label||'My Floor'} ${minVal2} (85%)</div>`:''}
         </div>
         ${dsrSrc(srcType)}
       </div>
@@ -8384,7 +8101,7 @@ function dsrRenderStore(storeId){
     dsrStretchBar('Upgrades MTD',upg,upgGoal,5,null,'smd')
   );
   html+=dsrStretchBar('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,10,oppsFloor>0?oppsFloor:null,'smd',
-    isDMUser()&&oppsGoal>0?Math.ceil(oppsGoal*0.85):null,'DM Penalty');
+    isDMUser()&&oppsGoal>0?Math.ceil(oppsGoal*0.85):null,'My Floor');
 
   // Proj tiles — 3-col
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8397,7 +8114,7 @@ function dsrRenderStore(storeId){
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
     ${dsrNeedTile('Activations Need/Day',voice,actsGoal,null,'smd')}
     ${dsrNeedTile('Upgrades Need/Day',upg,upgGoal,null,'smd')}
-    ${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd',isDMUser()?'to 90% (RSM min)':'to 90%')}
+    ${dsrNeedTile('OPPs Need/Day',opps,oppsGoal,oppsFloor>0?oppsFloor:null,'smd','to 90%')}
   </div>`;
 
   // Rates
