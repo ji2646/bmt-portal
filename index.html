@@ -760,11 +760,13 @@ function doCapture(el){
   function run(){
     // Wrap element in padded container so corners and spacing are visible
     const wrapper=document.createElement('div');
-    wrapper.style.cssText='position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding:24px 32px;background:#f8f9fa;display:block;width:900px;box-sizing:border-box';
+    wrapper.style.cssText='position:absolute;left:0;top:'+( document.documentElement.scrollHeight+2000)+'px;padding:24px 32px;background:#f8f9fa;display:block;width:900px;box-sizing:border-box;z-index:-1';
     const clone=el.cloneNode(true);
     // Remove png-hide buttons and no-capture sections from clone
     clone.querySelectorAll('.png-hide').forEach(b=>b.remove());
     clone.querySelectorAll('.no-capture').forEach(b=>b.remove());
+    // Force any collapsed sections visible in the clone
+    clone.querySelectorAll('[id^="dsec-body-"]').forEach(b=>b.style.display='block');
     // Build timestamp header
     const now=new Date();
     const ts=(now.getMonth()+1)+'/'+(now.getDate())+'/'+now.getFullYear()+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
@@ -778,8 +780,8 @@ function doCapture(el){
     const hdr=document.createElement('div');
     hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-end;padding:0 0 12px;border-bottom:2px solid #00a94f;margin-bottom:14px;font-family:DM Sans,sans-serif';
     hdr.innerHTML=`<div><div style="font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:1.5px;color:#111;line-height:1">SunCom Mobile · District Performance</div>${cycleLabel?`<div style="font-size:11px;color:#666;margin-top:3px">${cycleLabel}${throughLabel?' · '+throughLabel:''}</div>`:''}</div><div style="text-align:right;font-size:10px;color:#999">${ts}</div>`;
-    wrapper.insertBefore(hdr, clone);
     wrapper.appendChild(clone);
+    wrapper.insertBefore(hdr, clone);
     document.body.appendChild(wrapper);
     const wasDark=document.documentElement.classList.contains('dark-mode');
     if(wasDark) document.documentElement.classList.remove('dark-mode');
@@ -1964,53 +1966,56 @@ function renderDistrictDashboard(_targetEl){
     ${sec('PPP Attach Rate by Rep',repBars('pppRate',0.20,'PPP Attach Rate','%'))}
     ${sec('Internet by Rep',(()=>{
       const mob=isMobile();
-      const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
+      const nameSz=mob?17:14; const rowSz=mob?13:12; const barH=mob?22:13;
       const sorted7=[..._dashReps].sort((a,b)=>((b.fibOrders||0)+(b.aiaOrders||0))-((a.fibOrders||0)+(a.aiaOrders||0)));
       const maxAddr=Math.max(..._dashReps.map(r=>r.addrChecks||0),1);
-      const labelW=mob?'120px':'110px';
+      const maxElig=Math.max(..._dashReps.map(r=>r.eligFibOrAIA||0),1);
+      const labelW=mob?'130px':'120px';
       return sorted7.map(r=>{
         const totalOrders=(r.fibOrders||0)+(r.aiaOrders||0);
         const addrChecks=r.addrChecks||0;
+        const elig=r.eligFibOrAIA||0;
         const billPay=r.billPay||0;
-        const opps=(r.voiceActs||0)+(r.upgrades||0);
         const bpConv=billPay>0?addrChecks/billPay:0;
         const bpPct=Math.round(bpConv*100);
         const bpBarW=Math.min(100,bpPct);
         const bpCol=bpConv>=1?'var(--g)':bpConv>=0.75?'var(--warn)':'var(--err)';
         const addrBarW=Math.round(addrChecks/maxAddr*100)||0;
+        const eligBarW=Math.round(elig/maxElig*100)||0;
         const ordersCol=totalOrders>=1?'var(--g)':'var(--err)';
-        const metricRow=(label,barW,barCol,val1,val2,val2Col)=>`
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:5}px">
-            <div style="font-size:${labelSz}px;color:var(--t3);font-family:DM Sans;width:${labelW};flex-shrink:0;white-space:nowrap">${label}</div>
+        const row=(label,barW,barCol,rightTop,rightBot,rightBotCol)=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:6}px">
+            <div style="font-size:${rowSz}px;font-weight:700;color:var(--t2);font-family:DM Sans;width:${labelW};flex-shrink:0">${label}</div>
             <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
               <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
             </div>
-            <div style="text-align:right;flex-shrink:0;min-width:${mob?'75px':'65px'}">
-              <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
-              <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
+            <div style="text-align:right;flex-shrink:0;min-width:${mob?'85px':'80px'}">
+              <div style="font-size:${rowSz}px;font-weight:800;color:${barCol};font-family:DM Sans;line-height:1.3">${rightTop}</div>
+              ${rightBot?`<div style="font-size:${rowSz}px;font-weight:700;color:${rightBotCol};font-family:DM Sans;line-height:1.3">${rightBot}</div>`:''}
             </div>
           </div>`;
-        return `<div style="margin-bottom:${mob?24:16}px;cursor:pointer;padding-bottom:${mob?16:10}px;border-bottom:1px solid var(--bd)" onclick="selectPerfRep('${r.uid}')">
-          <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;margin-bottom:${mob?10:6}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${mob?12:9}px">${r.uid}</span></div>
-          ${metricRow('Bill Pay Ratio',bpBarW,bpCol,bpPct+'%',billPay+' Bill Pays',bpCol)}
-          ${metricRow('Address Checks',addrBarW,'#3b82f6',addrChecks+' Checks',totalOrders+' Orders',ordersCol)}
+        return `<div style="margin-bottom:${mob?24:18}px;cursor:pointer;padding-bottom:${mob?16:12}px;border-bottom:1px solid var(--bd)" onclick="selectPerfRep('${r.uid}')">
+          <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;margin-bottom:${mob?10:8}px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${mob?12:10}px">${r.uid}</span></div>
+          ${row('Bill Pay Ratio',bpBarW,bpCol,bpPct+'%',billPay+' Bill Pays',bpCol)}
+          ${row('Address Checks',addrBarW,'#3b82f6',addrChecks+' Checks',totalOrders+' Orders',ordersCol)}
+          ${row('Internet Eligible',eligBarW,'#10b981',elig+' Eligible','','')}
         </div>`;
       }).join('');
     })())}
     ${sec('Feature Revenue by Rep',(()=>{
       const sorted9=[..._dashReps].sort((a,b)=>((b.ildAdds||0)+(b.upgPlusAdds||0)+((b.protectRate||0)*100))-((a.ildAdds||0)+(a.upgPlusAdds||0)+((a.protectRate||0)*100)));
       const mob=isMobile();
-      const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
-      const labelW=mob?'120px':'110px';
+      const nameSz=mob?17:14; const rowSz=mob?13:12; const barH=mob?22:13;
+      const labelW=mob?'120px':'115px';
       const fRow=(label,barW,barCol,val1,val2,val2Col)=>`
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:5}px">
-          <div style="font-size:${labelSz}px;color:var(--t3);font-family:DM Sans;width:${labelW};flex-shrink:0;white-space:nowrap">${label}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:6}px">
+          <div style="font-size:${rowSz}px;font-weight:700;color:var(--t2);font-family:DM Sans;width:${labelW};flex-shrink:0">${label}</div>
           <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
             <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
           </div>
-          <div style="text-align:right;flex-shrink:0;min-width:${mob?'75px':'65px'}">
-            <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
-            <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
+          <div style="text-align:right;flex-shrink:0;min-width:${mob?'80px':'75px'}">
+            <div style="font-size:${rowSz}px;font-weight:800;color:${barCol};font-family:DM Sans;line-height:1.3">${val1}</div>
+            <div style="font-size:${rowSz}px;font-weight:400;color:${val2Col};font-family:DM Sans;line-height:1.3">${val2}</div>
           </div>
         </div>`;
       return sorted9.map(r=>{
