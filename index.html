@@ -1851,7 +1851,7 @@ function renderDistrictDashboard(_targetEl){
   function repBars(metric,target,label,fmt){
     const sorted2=[..._dashReps].sort((a,b)=>(b[metric]||0)-(a[metric]||0));
     const mob=isMobile();
-    const barH=mob?26:12; const nameSz=mob?17:13; const valSz=mob?19:13; const uidSz=mob?12:10; const barMaxW=mob?'65%':'100%';
+    const barH=mob?26:12; const nameSz=mob?17:13; const valSz=mob?19:13; const uidSz=mob?12:10;
     return sorted2.map(r=>{
       const val=r[metric]||0;
       const pct=Math.min(100,Math.round(val*100));
@@ -1862,7 +1862,7 @@ function renderDistrictDashboard(_targetEl){
           <div style="font-size:${nameSz}px;font-weight:800;color:var(--t1);font-family:DM Sans;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;margin-right:12px">${fullName(r.uid)} <span style="font-weight:400;color:var(--t3);font-size:${uidSz}px">${r.uid}</span></div>
           <div style="font-size:${valSz}px;font-weight:900;color:${col};font-family:DM Sans;flex-shrink:0">${((val||0)*100).toFixed(2)}%</div>
         </div>
-        <div style="position:relative;background:var(--s3);border-radius:6px;height:${barH}px;max-width:${barMaxW}">
+        <div style="position:relative;background:var(--s3);border-radius:6px;height:${barH}px">
           <div style="position:absolute;left:0;top:0;height:${barH}px;border-radius:6px;background:${col};width:${pct}%;transition:width .4s"></div>
           <div style="position:absolute;top:-3px;height:${barH+6}px;width:2px;background:rgba(0,0,0,.2);left:${Math.round(target*100)}%;transform:translateX(-50%)"></div>
         </div>
@@ -1967,7 +1967,7 @@ function renderDistrictDashboard(_targetEl){
       const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
       const sorted7=[..._dashReps].sort((a,b)=>((b.fibOrders||0)+(b.aiaOrders||0))-((a.fibOrders||0)+(a.aiaOrders||0)));
       const maxAddr=Math.max(..._dashReps.map(r=>r.addrChecks||0),1);
-      const labelW=mob?'160px':'130px';
+      const labelW=mob?'120px':'110px';
       return sorted7.map(r=>{
         const totalOrders=(r.fibOrders||0)+(r.aiaOrders||0);
         const addrChecks=r.addrChecks||0;
@@ -1985,7 +1985,7 @@ function renderDistrictDashboard(_targetEl){
             <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
               <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
             </div>
-            <div style="text-align:right;flex-shrink:0;min-width:${mob?'90px':'72px'}">
+            <div style="text-align:right;flex-shrink:0;min-width:${mob?'75px':'65px'}">
               <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
               <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
             </div>
@@ -2001,14 +2001,14 @@ function renderDistrictDashboard(_targetEl){
       const sorted9=[..._dashReps].sort((a,b)=>((b.ildAdds||0)+(b.upgPlusAdds||0)+((b.protectRate||0)*100))-((a.ildAdds||0)+(a.upgPlusAdds||0)+((a.protectRate||0)*100)));
       const mob=isMobile();
       const nameSz=mob?17:13; const labelSz=mob?13:10; const barH=mob?22:10; const valSz=mob?13:10;
-      const labelW=mob?'160px':'130px';
+      const labelW=mob?'120px':'110px';
       const fRow=(label,barW,barCol,val1,val2,val2Col)=>`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:${mob?10:5}px">
           <div style="font-size:${labelSz}px;color:var(--t3);font-family:DM Sans;width:${labelW};flex-shrink:0;white-space:nowrap">${label}</div>
           <div style="flex:1;background:var(--s3);border-radius:4px;height:${barH}px;min-width:0">
             <div style="background:${barCol};height:${barH}px;border-radius:4px;width:${barW}%;transition:width .4s"></div>
           </div>
-          <div style="text-align:right;flex-shrink:0;min-width:${mob?'90px':'72px'}">
+          <div style="text-align:right;flex-shrink:0;min-width:${mob?'75px':'65px'}">
             <div style="font-size:${valSz}px;font-weight:900;color:${barCol};font-family:DM Sans">${val1}</div>
             <div style="font-size:${mob?11:9}px;color:${val2Col};font-family:DM Sans">${val2}</div>
           </div>
@@ -2507,7 +2507,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     const minMark=min?`<div style="position:absolute;top:-4px;height:${barH+8}px;width:2px;background:var(--err);opacity:.5;border-radius:1px;left:${Math.round(min*100)}%;transform:translateX(-50%)"></div>`:'';
     const minLabel=min?`<div style="font-size:${lblSz}px;color:var(--err);opacity:.7;font-family:DM Sans">Min: ${Math.round(min*100)}%</div>`:'';
     return `<div style="display:flex;align-items:baseline;margin-bottom:5px"><div style="font-family:Bebas Neue;font-size:${valSz}px;color:${col};line-height:1">${((val||0)*100).toFixed(2)}%</div></div>
-    <div style="position:relative;background:var(--s3);border-radius:6px;height:${barH}px;max-width:${mob?'65%':'100%'}">
+    <div style="position:relative;background:var(--s3);border-radius:6px;height:${barH}px">
       <div style="position:absolute;left:0;top:0;height:${barH}px;border-radius:6px;background:${col};width:${pct}%;transition:width .5s"></div>
       <div style="position:absolute;top:-4px;height:${barH+8}px;width:2px;background:var(--g);border-radius:1px;left:${tPct}%;transform:translateX(-50%)"></div>
       ${minMark}
@@ -2539,15 +2539,9 @@ function renderIndividualDashboard(r,uid,_targetEl){
   </div>`;
   const inetCol=totalInternet>=1?'var(--g)':'var(--err)';
   const inetContent=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px">
-      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Address Checks</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:var(--t1);line-height:1">${r.addrChecks||0}</div></div>
-      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Internet Eligible</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_elig>0?'var(--ok)':'var(--t3)'};line-height:1">${_elig}</div></div>
-      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Credit Checks</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_cred>0?'var(--ok)':'var(--t3)'};line-height:1">${_cred}</div></div>
-      <div style="background:var(--s2);border-radius:5px;padding:5px 6px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">Adv. Payment Req'd</div><div style="font-family:Bebas Neue;font-size:${mob?26:18}px;color:${_adv>0?'var(--warn)':'var(--ok)'};line-height:1">${_adv}</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><div style="font-size:11px;font-weight:800;color:var(--t1);font-family:DM Sans">Total Internet</div><div style="font-family:Bebas Neue;font-size:${mob?40:22}px;color:${inetCol};line-height:1">${totalInternet}</div></div>
-    <div style="position:relative;background:var(--s3);border-radius:6px;height:${mob?26:10}px;max-width:${mob?'65%':'100%'}">
-      <div style="position:absolute;left:0;top:0;height:${mob?26:10}px;border-radius:6px;background:${inetCol};width:${Math.min(100,Math.round(totalInternet/3*100))}%;transition:width .5s"></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px"><div style="font-size:12px;font-weight:800;color:var(--t1);font-family:DM Sans">Total Internet</div><div style="font-family:Bebas Neue;font-size:22px;color:${inetCol};line-height:1">${totalInternet}</div></div>
+    <div style="position:relative;background:var(--s3);border-radius:6px;height:10px">
+      <div style="position:absolute;left:0;top:0;height:10px;border-radius:6px;background:${inetCol};width:${Math.min(100,Math.round(totalInternet/3*100))}%;transition:width .5s"></div>
     </div>
     <div style="font-size:8px;color:var(--g);font-family:DM Sans;margin-top:4px">Goal: 1+</div>`;
 
@@ -2581,19 +2575,33 @@ function renderIndividualDashboard(r,uid,_targetEl){
       ${sec('WTR',gauge(r.wtr!=null?r.wtr/100:null,0.80),MD)}
       ${sec('Internet',inetContent,'<span style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:#059669;background:#05966918;border:1px solid #05966930;border-radius:3px;padding:1px 5px;font-family:DM Sans">Internet Report</span>')}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
-      ${smtile('Bill Pays',r.billPay||0,'')}
-      ${smtile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)')}
-      ${smtile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','')}
+    <!-- Row: Bill Pay | Acc Revenue -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      ${smtile('Bill Pay',r.billPay||0,'')}
+      ${smtile('Acc Revenue','$'+(r.accRevenue||0).toFixed(0),'var(--warn)','Metric Detail')}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-      ${smtile('Upg Plus',r.upgPlusAdds||0,'')}
-      ${smtile('ILD Adds',r.ildAdds||0,'')}
-      ${smtile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','')}
-      ${smtile('Max Act Rate',((r.voiceActs||0)/Math.max(1,(r.voiceActs||0)+(r.upgrades||0)+(r.nonVoice||0))*100).toFixed(0)+'%','')}
+    <!-- Row: Total OPPs | APO | Plan Down | ILD Adds -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${smtile('Total OPPs',(r.voiceActs||0)+(r.upgrades||0),(r.voiceActs||0)+(r.upgrades||0)>=10?'var(--g)':'var(--err)','Metric Detail')}
+      ${smtile('APO (All In)','$'+(((r.voiceActs||0)+(r.upgrades||0))>0?(r.accRevenue||0)/((r.voiceActs||0)+(r.upgrades||0)):0).toFixed(2),(((r.voiceActs||0)+(r.upgrades||0))>0?(r.accRevenue||0)/((r.voiceActs||0)+(r.upgrades||0)):0)>=35?'var(--g)':(((r.voiceActs||0)+(r.upgrades||0))>0?(r.accRevenue||0)/((r.voiceActs||0)+(r.upgrades||0)):0)>=30?'var(--warn)':'var(--err)','Metric Detail')}
+      ${smtile('Plan Down',r.downgrades||0,r.downgrades>0?'var(--err)':'var(--t1)','Metric Detail')}
+      ${smtile('ILD Adds',r.ildAdds||0,'','Metric Detail')}
     </div>
-    <div style="font-size:10px;color:var(--t3);padding:4px 0 24px;font-family:DM Sans;line-height:1.6">
+    <!-- Row: Upgrade Plus | AAL% | Multiline% | Max Act Rate -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${smtile('Upgrade Plus',r.upgPlusAdds||0,'','Metric Detail')}
+      ${smtile('AAL %',r.aalPct!=null?((r.aalPct||0)*100).toFixed(0)+'%':'—','','Metric Detail')}
+      ${smtile('Multiline %',r.multilinePct!=null?((r.multilinePct||0)*100).toFixed(0)+'%':'—','','Metric Detail')}
+      ${smtile('Max Act Rate',((r.voiceActs||0)/Math.max(1,(r.voiceActs||0)+(r.upgrades||0))*100).toFixed(0)+'%','','Metric Detail')}
     </div>
+    <!-- Row: Internet tiles -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+      ${smtile('Address Checks',r.addrChecks||0,'','Internet Report')}
+      ${smtile('Internet Eligible',r.eligFibOrAIA||0,(r.eligFibOrAIA||0)>0?'var(--ok)':'var(--t3)','Internet Report')}
+      ${smtile('Credit Checks',(r.credFib||0)+(r.credAIA||0),(r.credFib||0)+(r.credAIA||0)>0?'var(--ok)':'var(--t3)','Internet Report')}
+      ${smtile("Adv. Payment Req'd",(r.advFib||0)+(r.advAIA||0),(r.advFib||0)+(r.advAIA||0)>0?'var(--warn)':'var(--t3)','Internet Report')}
+    </div>
+    <div style="padding-bottom:24px"></div>
   `;
 }
 function loadPerfData(uid){
