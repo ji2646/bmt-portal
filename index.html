@@ -711,12 +711,12 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
           <button type="button" id="device-btn-mobile" onclick="setDeviceMode('mobile')" style="padding:18px 8px;background:#F3F4F6;border:2px solid #E2E5E9;border-radius:10px;cursor:pointer;font-family:'DM Sans';display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
             <div style="font-size:26px">📱</div>
             <div style="font-size:12px;font-weight:900;color:#111827">Mobile</div>
-            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Phone or tablet<br>Single column</div>
+            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Phones</div>
           </button>
           <button type="button" id="device-btn-desktop" onclick="setDeviceMode('desktop')" style="padding:18px 8px;background:#F3F4F6;border:2px solid #E2E5E9;border-radius:10px;cursor:pointer;font-family:'DM Sans';display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
             <div style="font-size:26px">💻</div>
-            <div style="font-size:12px;font-weight:900;color:#111827">Desktop</div>
-            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Computer or laptop<br>Split view</div>
+            <div style="font-size:12px;font-weight:900;color:#111827">Larger Screen</div>
+            <div style="font-size:9px;color:#9CA3AF;line-height:1.4;text-align:center">Laptop, Desktop, Tablets</div>
           </button>
         </div>
       </div>
@@ -767,19 +767,31 @@ function doCapture(el){
     clone.querySelectorAll('.no-capture').forEach(b=>b.remove());
     // Force any collapsed sections visible in the clone
     clone.querySelectorAll('[id^="dsec-body-"]').forEach(b=>b.style.display='block');
-    // Build timestamp header
+    // Build timestamp header — detect context from the element being captured
     const now=new Date();
     const ts=(now.getMonth()+1)+'/'+(now.getDate())+'/'+now.getFullYear()+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    const reps=_perfAllData||[];
-    const cycleStart=reps.length?reps[0].cycleStart:'';
-    const cycleEnd=reps.length?reps[0].cycleEnd:'';
-    const throughDate=reps.length?reps[0].throughDate:'';
     function fmtD(s){if(!s)return'';const p=s.split('-');return p.length===3?parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]:s;}
-    const cycleLabel=cycleStart&&cycleEnd?fmtD(cycleStart)+' – '+fmtD(cycleEnd):'';
-    const throughLabel=throughDate?'Through '+fmtD(throughDate):'';
+    let cycleLabel='', throughLabel='';
+    const DSR_EL_IDS=['dsr-body','dm-snap-all'];
+    const inDSRView=el&&(DSR_EL_IDS.includes(el.id)||!!(el.closest&&(el.closest('#dsr-body')||el.closest('#dm-snap-all'))));
+    if(inDSRView){
+      const monthLbl=(typeof DSR_MONTH_LABEL!=='undefined'&&DSR_MONTH_LABEL)?DSR_MONTH_LABEL:((typeof _dsrActiveMonth!=='undefined'&&_dsrActiveMonth)?_dsrActiveMonth:'Monthly');
+      cycleLabel=monthLbl+' MTD';
+      const md=(typeof _dsrMDDate!=='undefined'&&_dsrMDDate)?_dsrMDDate:'—';
+      const dsr=(typeof _dsrDSRDate!=='undefined'&&_dsrDSRDate)?_dsrDSRDate:'—';
+      const inet=(typeof _dsrInetDate!=='undefined'&&_dsrInetDate)?_dsrInetDate:'—';
+      throughLabel='● Metric Detail '+md+'  ● DSR '+dsr+'  ● Internet Report '+inet;
+    } else {
+      const reps=_perfAllData||[];
+      const cycleStart=reps.length?reps[0].cycleStart:'';
+      const cycleEnd=reps.length?reps[0].cycleEnd:'';
+      const throughDate=reps.length?reps[0].throughDate:'';
+      cycleLabel=cycleStart&&cycleEnd?fmtD(cycleStart)+' – '+fmtD(cycleEnd):'';
+      throughLabel=throughDate?'Through '+fmtD(throughDate):'';
+    }
     const hdr=document.createElement('div');
     hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-end;padding:0 0 12px;border-bottom:2px solid #00a94f;margin-bottom:14px;font-family:DM Sans,sans-serif';
-    hdr.innerHTML=`<div><div style="font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:1.5px;color:#111;line-height:1">SunCom Mobile · District Performance</div>${cycleLabel?`<div style="font-size:11px;color:#666;margin-top:3px">${cycleLabel}${throughLabel?' · '+throughLabel:''}</div>`:''}</div><div style="text-align:right;font-size:10px;color:#999">${ts}</div>`;
+    hdr.innerHTML=`<div><div style="font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:1.5px;color:#111;line-height:1">SunCom Mobile · District Performance</div>${cycleLabel?`<div style="font-size:11px;color:#666;margin-top:3px;font-weight:700">${cycleLabel}</div>`:''}${throughLabel?`<div style="font-size:10px;color:#555;margin-top:3px">${throughLabel}</div>`:''}</div><div style="text-align:right;font-size:10px;color:#999">${ts}</div>`;
     wrapper.appendChild(clone);
     wrapper.insertBefore(hdr, clone);
     document.body.appendChild(wrapper);
@@ -789,11 +801,11 @@ function doCapture(el){
       if(wasDark) document.documentElement.classList.add('dark-mode');
       document.body.removeChild(wrapper);
       const isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const dataUrl=canvas.toDataURL('image/png');
       if(isMob){
-        const dataUrl=canvas.toDataURL('image/png');
         const ov=document.createElement('div');
         ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px';
-        ov.innerHTML=`<div style="font-family:'DM Sans';font-size:12px;font-weight:700;color:rgba(255,255,255,.6)">Long-press the image to save</div><img src="${dataUrl}" style="max-width:100%;max-height:75vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"/><button onclick="this.parentNode.remove()" style="padding:10px 28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer">Close</button>`;
+        ov.innerHTML=`<div style="font-family:'DM Sans';font-size:12px;font-weight:700;color:rgba(255,255,255,.6);text-align:center">Hold the image to save to your photos</div><img src="${dataUrl}" style="max-width:100%;max-height:72vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"/><button onclick="this.parentNode.remove()" style="padding:10px 28px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-family:'DM Sans';font-size:13px;font-weight:800;cursor:pointer">Close</button>`;
         document.body.appendChild(ov);
       } else {
         const filename='bmt-dashboard-'+Date.now()+'.png';
@@ -808,7 +820,7 @@ function doCapture(el){
           setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },3000);
         },'image/png');
       }
-    }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); alert('Screenshot failed: '+e.message||e); });
+    }).catch(e=>{ if(document.body.contains(wrapper)) document.body.removeChild(wrapper); alert('Screenshot failed: '+(e.message||e)); });
   }
   if(window.html2canvas){ run(); return; }
   const s=document.createElement('script');
@@ -1685,7 +1697,8 @@ function loadDistrictDashboard(forceRefresh){
           // Store the actual perf cycle start — used by tracker submits & fetches
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
           if(!_perfRepUid) renderDistrictDashboard();
-          loadPerfHistory(()=>renderCyclePicker());
+          renderCyclePicker(); // show current cycle immediately
+          loadPerfHistory(()=>renderCyclePicker()); // then add past cycles when ready
         } else {
           if(dash2) dash2.innerHTML=`<div style='padding:24px;font-family:DM Sans;font-size:11px;color:var(--t1)'>
             <div style='font-weight:800;color:var(--t2);margin-bottom:8px'>Script returned: ${JSON.stringify(data).slice(0,200)}</div>
@@ -2615,7 +2628,11 @@ function loadPerfData(uid){
   function doRender(perfData){
     _perfData=perfData;
     if(tok!==_perfLoadToken||!_perfRepUid) return;
-    try{ renderPerfView(uid); } catch(e){ console.error('renderPerfView error:',e); }
+    try{ renderPerfView(uid); } catch(e){
+      console.error('renderPerfView error:',e);
+      const dash=document.getElementById('perf-dashboard');
+      if(dash) dash.innerHTML=`<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Render error: ${String(e)}<br><button onclick="loadPerfData('${uid}')" style="margin-top:10px;padding:6px 14px;background:var(--g);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:DM Sans">↻ Retry</button></div>`;
+    }
   }
   if(cached){ doRender(cached); return; }
   // Not in cache — fetch fresh
@@ -2629,15 +2646,20 @@ function loadPerfData(uid){
     }
     doRender(perf);
   })
-  .catch(()=>{
+  .catch((err)=>{
     if(tok!==_perfLoadToken||!_perfRepUid) return;
+    // Show retry instead of stuck loading
+    const dash=document.getElementById('perf-dashboard');
+    const errMsg=err&&err.message?err.message:'Timeout';
+    if(dash) dash.innerHTML=`<div style="padding:20px;text-align:center;font-family:DM Sans"><div style="font-size:12px;color:var(--t3);margin-bottom:12px">${errMsg}</div><button onclick="loadPerfData('${uid}')" style="padding:7px 18px;background:var(--g);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:DM Sans">↻ Retry</button></div>`;
     _perfData=null;
     renderPerfView(uid);
   });
 }
 
 // ── REP CARD VIEW (RSC own view + DM/RSM right panel visual) ──
-function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
+function renderRepCardView(body, r, uid, cycleLabel, throughLabel, _payHtml){
+  if(!r||!body) return;
   const name=UID_NAMES[uid]||uid;
   const pct=v=>v===null||v===undefined?'—':((v||0)*100).toFixed(2)+'%';
   const totalActs=r.voiceActs+r.nonVoice;
@@ -2697,7 +2719,7 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
         <div style="height:9px;border-radius:4px;background:var(--g);width:${Math.round(totalActs/maxBar*100)}%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-family:Bebas Neue;font-size:22px;color:var(--purple);line-height:1">Upg ${r.upgrades}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--purple);font-family:DM Sans">Upgrades</div>
         <div style="font-family:'Bebas Neue';font-size:20px;color:var(--purple);line-height:1">${r.upgrades}</div>
       </div>
       <div style="background:var(--s3);border-radius:4px;height:9px">
@@ -2726,7 +2748,7 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
       </div>
     </div>`;
 
-  body.innerHTML=mobileBtn+`
+  body.innerHTML=`
     <!-- Header -->
     <div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">
       <div style="padding:14px 16px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:flex-start">
@@ -2794,8 +2816,9 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, mobileBtn){
       ${tile('Credit Checks',(r.credFib||0)+(r.credAIA||0),(r.credFib||0)+(r.credAIA||0)>0?'var(--ok)':'var(--t3)','Internet Report')}
       ${tile("Adv. Payment Req'd",(r.advFib||0)+(r.advAIA||0),(r.advFib||0)+(r.advAIA||0)>0?'var(--warn)':'var(--t3)','Internet Report')}
     </div>
-    <div style="font-size:10px;color:var(--t3);padding:8px 0 24px;font-family:DM Sans,sans-serif;line-height:1.6">
-    </div>
+    <!-- Payout card -->
+    ${_payHtml||''}
+    <div style="padding-bottom:24px"></div>
   `;
 }
 
@@ -2928,13 +2951,34 @@ function renderPerfView(uid,_targetBody){
 
   // Payout visibility: RSC can only see their own payout. RSM sees their team. DM/Jaq see all.
   const isRSCViewingTeammate=(isRSC&&uid!==_pendingUid);
+  const showPayout=!isRSCViewingTeammate;
+  const mob2=isMobile();
+  const _payHtml=showPayout?`
+    <div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-top:4px">
+      <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15)">
+        <div style="font-size:${mob2?'13':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">Payout Estimate</div>
+      </div>
+      <div style="padding:12px 14px">
+        <div style="display:grid;grid-template-columns:repeat(${mob2?2:4},1fr);gap:8px;margin-bottom:${qualNotesHtml?10:0}px">
+          ${[['Voice',fmtPay(voicePay)],['Non-Voice',fmtPay(nvPay)],['Upgrades',fmtPay(upgPay)],['AutoPay',fmtPay(apPay)],['Protect',fmtPay(protPay)],['Internet',fmtPay(aiaPay)]].map(([l,v])=>`<div style="background:var(--s2);border-radius:var(--r2);padding:8px;text-align:center"><div style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:DM Sans">${l}</div><div style="font-family:Bebas Neue;font-size:22px;color:var(--t1)">${v}</div></div>`).join('')}
+        </div>
+        ${qualNotesHtml?`<div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--r2);margin-bottom:8px">${qualNotesHtml}</div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1.5px solid var(--bd)">
+          <div style="font-size:${mob2?'14':'11'}px;font-weight:900;color:var(--t1);font-family:DM Sans">Total Estimate</div>
+          <div style="font-family:Bebas Neue;font-size:${mob2?34:28}px;color:${subtotal>0?'var(--g)':'var(--err)'}">${fmtPay(subtotal)}</div>
+        </div>
+      </div>
+    </div>`:'';
   // ── Desktop: render rep card into right panel, minimal left panel ──
   if(isDesktop()){
     const dash=document.getElementById('perf-dashboard');
     if(dash&&d){
       const cycleL=cycle?(fmtCycleDate(cycle.start)+' – '+fmtCycleDate(new Date(cycle.end.getTime()-86399000))):'';
       const throughL=d.throughDate?'Through '+d.throughDate:'No data loaded';
-      try{ renderRepCardView(dash,d,uid,cycleL,throughL,''); } catch(e){ console.error('renderRepCardView error:',e); }
+      try{ renderRepCardView(dash,d,uid,cycleL,throughL,_payHtml); } catch(e){
+        console.error('renderRepCardView error:',e);
+        dash.innerHTML=`<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Dashboard error: ${String(e)}<br><button onclick="loadPerfData('${uid}')" style="margin-top:10px;padding:6px 14px;background:var(--g);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:DM Sans">↻ Retry</button></div>`;
+      }
     }
     body.innerHTML=backBtn
       +'<div style="background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);overflow:hidden;margin-bottom:12px">'
@@ -7873,6 +7917,15 @@ function dsrFmtDate(raw){
   if(m2) return m2[1]+' '+parseInt(m2[2])+', '+m2[3];
   return raw;
 }
+let _dsrDMMode = true; // true = show DM floor (85%), false = All view (hide DM floor)
+
+function dsrToggleDMMode(){
+  _dsrDMMode=!_dsrDMMode;
+  const btn=document.getElementById('dsr-dm-toggle');
+  if(btn){ btn.textContent=_dsrDMMode?'DM View':'All View'; btn.style.background=_dsrDMMode?'var(--g)':'#8b5cf6'; }
+  if(_dsrStoreId) dsrRenderStore(_dsrStoreId);
+}
+
 function dsrBuildMonthPicker(){
   const wrap = document.getElementById('dsr-month-picker-wrap');
   if(!wrap) return;
@@ -7881,7 +7934,9 @@ function dsrBuildMonthPicker(){
     + '<div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:\'DM Sans\';white-space:nowrap">Month</div>'
     + '<select id="dsr-month-select" onchange="onDsrMonthSelect(this)" style="padding:5px 10px;background:var(--s3);border:1px solid var(--bd2);border-radius:6px;color:var(--t1);font-family:\'DM Sans\';font-size:11px;font-weight:700;outline:none;cursor:pointer;max-width:260px">'
     + DSR_MONTHS.map(m=>'<option value="'+m.key+'"'+(m.key===_dsrActiveMonth?' selected':'')+'>'+m.label+'</option>').join('')
-    + '</select></div>';
+    + '</select>'
+    + (_pendingUid==='ji2646dm'?'<button id="dsr-dm-toggle" onclick="dsrToggleDMMode()" style="padding:5px 12px;background:var(--g);border:none;border-radius:6px;color:#fff;font-family:\'DM Sans\';font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap">DM View</button>':'')
+    + '</div>';
 }
 function onDsrMonthSelect(sel){
   const key = sel.value;
@@ -8102,7 +8157,7 @@ function dsrRenderStore(storeId){
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)"><div style="width:7px;height:7px;border-radius:2px;background:rgba(0,0,0,.25)"></div>Goal ${goal}</div>
           <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#F59E0B;font-weight:800"><div style="width:7px;height:7px;border-radius:2px;background:#F59E0B"></div>${goal+stretchTarget} (+${stretchTarget} Target)</div>
           ${minVal!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--err);font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(239,68,68,.7)"></div>Min ${minVal} (90%)</div>`:''}
-          ${minVal2!=null?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#B45309;font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(245,158,11,.8)"></div>${minVal2Label||'My Floor'} ${minVal2} (85%)</div>`:''}
+          ${minVal2!=null&&_dsrDMMode&&_pendingUid==='ji2646dm'?`<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:#B45309;font-weight:700"><div style="width:7px;height:7px;border-radius:2px;background:rgba(245,158,11,.8)"></div>${minVal2Label||'My Floor'} ${minVal2} (85%)</div>`:''}
         </div>
         ${dsrSrc(srcType)}
       </div>
@@ -8114,7 +8169,7 @@ function dsrRenderStore(storeId){
     dsrStretchBar('Upgrades MTD',upg,upgGoal,5,null,'smd')
   );
   html+=dsrStretchBar('OPPs MTD (Voice + Upgrades)',opps,oppsGoal,10,oppsFloor>0?oppsFloor:null,'smd',
-    isDMUser()&&oppsGoal>0?Math.ceil(oppsGoal*0.85):null,'My Floor');
+    _pendingUid==='ji2646dm'&&oppsGoal>0&&_dsrDMMode?Math.ceil(oppsGoal*0.85):null,'My Floor');
 
   // Proj tiles — 3-col
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
@@ -8371,7 +8426,7 @@ function dsrRenderStore(storeId){
   } catch(e){ console.warn("RSM pay err:",e); }
 
   // Inject RSM card right after store header
-  html = html.replace('<!--RSM_PAY-->', ''); // Payout card removed
+  html = html.replace('<!--RSM_PAY-->', _rsmCardHtml||'');
   body.innerHTML=html;
   body.scrollTop=0;
 }
@@ -8670,8 +8725,12 @@ function dsrRenderDM(){
   // Store snapshots
   // ── Store Snapshot screenshot buttons ──
   const _daysRem = DSR_DAYS_IN_MONTH - _dsrDaysElapsed;
+  const _monthElapsed=DSR_DAYS_IN_MONTH>0?Math.round(_dsrDaysElapsed/DSR_DAYS_IN_MONTH*100):0;
   html+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <div style="font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Store Snapshot</div>
+    <div>
+      <div style="font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--g);font-family:'DM Sans'">Store Snapshot</div>
+      <div style="font-size:10px;font-weight:700;color:var(--t3);font-family:'DM Sans';margin-top:2px">${_monthElapsed}% Month Elapsed</div>
+    </div>
     <div style="display:flex;gap:6px">
       <button class="png-hide" onclick="doCapture(document.getElementById('dm-snap-all'))" style="padding:4px 10px;background:transparent;border:1px solid var(--bd2);border-radius:4px;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer;font-family:'DM Sans'">PNG All 6</button>
       <button class="png-hide" onclick="dmSnapPair(0)" style="padding:4px 10px;background:transparent;border:1px solid var(--bd2);border-radius:4px;font-size:9px;font-weight:800;color:var(--t3);cursor:pointer;font-family:'DM Sans'">PNG 1-2</button>
