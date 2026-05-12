@@ -733,6 +733,8 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 </div>
 
 <script>
+function fmtRawDate(s){ if(!s) return ''; const p=String(s).split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
+
 const ALLOWED_UIDS=[
   'gs0426','ap485d','dg8674','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
@@ -741,7 +743,7 @@ const ALLOWED_UIDS=[
 ];
 
 const DISABLED_UIDS=[];
-const QTOOL_DISABLED_UIDS=['et7967']; // grayed out Quote Tool
+const QTOOL_DISABLED_UIDS=[]; // all users have Quote Tool access
 
 const UID_NAMES={
   'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
@@ -2569,7 +2571,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
         <div><div style="font-family:Bebas Neue;font-size:22px;letter-spacing:1px;color:var(--t1)">${name}</div><div style="font-size:10px;color:var(--t3);font-family:DM Sans;margin-top:2px">${cycleLabel}</div></div>
         <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
           <div style="font-size:9px;font-weight:700;color:var(--g);font-family:DM Sans">● Metric Detail ${r.throughDate||'—'}</div>
-          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:DM Sans">● Internet Report ${r.cycleEnd||'—'}</div>
+          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:DM Sans">● Internet Report ${r.throughDate?fmtRawDate(r.throughDate):'—'}</div>
         </div>
       </div>
     </div>
@@ -2757,8 +2759,8 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, _payHtml){
           <div style="font-size:10px;color:var(--t3);font-family:'DM Sans';margin-top:2px">${cycleLabel}</div>
         </div>
         <div style="text-align:right;display:flex;flex-direction:column;gap:3px;align-items:flex-end">
-          <div style="font-size:9px;font-weight:700;color:var(--g);font-family:'DM Sans'">● Metric Detail ${r.throughDate?r.throughDate:'—'}</div>
-          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:'DM Sans'">● Internet Report ${r.cycleEnd||'—'}</div>
+          <div style="font-size:9px;font-weight:700;color:var(--g);font-family:'DM Sans'">● Metric Detail ${r.throughDate?fmtRawDate(r.throughDate):'—'}</div>
+          <div style="font-size:9px;font-weight:700;color:#3B82F6;font-family:'DM Sans'">● Internet Report ${r.throughDate?fmtRawDate(r.throughDate):'—'}</div>
         </div>
       </div>
     </div>
@@ -2833,7 +2835,7 @@ function renderPerfView(uid,_targetBody){
   const cs=getTrackerCycleKey();
   const cycle=getPerfCycles().find(c=>fmtCycleKey(c.start)===cs);
   const cycleLabel=cycle?(fmtCycleDate(cycle.start)+' – '+fmtCycleDate(new Date(cycle.end.getTime()-86399000))):'';
-  const throughLabel=d&&d.throughDate?'Through '+d.throughDate:'No data loaded';
+  const throughLabel=d&&d.throughDate?'Through '+fmtRawDate(d.throughDate):'No data loaded';
   const isRSMRep=RSM_UIDS.includes(uid)&&uid!=='ji2646dm'; // viewing an RSM's own metrics
   const repIsRSM=isRSMRep; // affects payout structure
 
@@ -2974,7 +2976,7 @@ function renderPerfView(uid,_targetBody){
     const dash=document.getElementById('perf-dashboard');
     if(dash&&d){
       const cycleL=cycle?(fmtCycleDate(cycle.start)+' – '+fmtCycleDate(new Date(cycle.end.getTime()-86399000))):'';
-      const throughL=d.throughDate?'Through '+d.throughDate:'No data loaded';
+      const throughL=d.throughDate?'Through '+fmtRawDate(d.throughDate):'No data loaded';
       try{ renderRepCardView(dash,d,uid,cycleL,throughL,_payHtml); } catch(e){
         console.error('renderRepCardView error:',e);
         dash.innerHTML=`<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Dashboard error: ${String(e)}<br><button onclick="loadPerfData('${uid}')" style="margin-top:10px;padding:6px 14px;background:var(--g);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:DM Sans">↻ Retry</button></div>`;
@@ -7681,7 +7683,7 @@ function fmtMoney(v){
 function dsrSrc(type){
   const cols = {smd:'var(--g)',dsr:'#8B5CF6',inet:'#3B82F6'};
   const labels = {smd:'Metric Detail',dsr:'DSR',inet:'Internet'};
-  return `<div style="font-size:11px;font-weight:800;color:${cols[type]};margin-top:4px;font-family:'DM Sans'">● ${labels[type]}</div>`;
+  return `<div style="font-size:10px;font-weight:800;color:${cols[type]};margin-top:4px;font-family:'DM Sans'">● ${labels[type]}</div>`;
 }
 
 // ── Bar section ──
@@ -7981,10 +7983,16 @@ function dsrLoadAll(view){
   function tryRender(){
     if(!mdDone||!inetDone) return;
     _dsrLoading=false;
-    dsrUpdateStrip();
-    if(isDesktop()&&view==='store') dsrBuildStoreList();
-    if(view==='store') dsrRenderStore(_dsrStoreId);
-    else dsrRenderDM();
+    try{
+      dsrUpdateStrip();
+      if(isDesktop()&&view==='store') dsrBuildStoreList();
+      if(view==='store') dsrRenderStore(_dsrStoreId);
+      else dsrRenderDM();
+    } catch(e){
+      console.error('DSR render error:',e);
+      const b=document.getElementById('dsr-body');
+      if(b) b.innerHTML='<div style="padding:20px;color:var(--err);font-size:12px;font-family:DM Sans;font-weight:700">Render error: '+String(e)+'<br><button onclick="dsrLoadAll(\'' + view + '\')" style="margin-top:10px;padding:6px 14px;background:var(--g);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:DM Sans">↻ Retry</button></div>';
+    }
   }
 
   // ── Goals (override hardcoded with live sheet) ──
@@ -8011,8 +8019,7 @@ function dsrLoadAll(view){
         }
         // Re-render with updated goals if already displayed
         if(mdDone&&inetDone){
-          if(view==='store') dsrRenderStore(_dsrStoreId);
-          else dsrRenderDM();
+          try{ if(view==='store') dsrRenderStore(_dsrStoreId); else dsrRenderDM(); } catch(e){ console.error('goals re-render:',e); }
         }
       }
     }).catch(()=>{});
@@ -8024,7 +8031,7 @@ function dsrLoadAll(view){
       if(Array.isArray(data)&&data.length){
         _dsrMDData={};
         data.forEach(r=>{ _dsrMDData[r.storeId]=r; });
-        if(data[0].throughDate){ _dsrMDDate=data[0].throughDate; _dsrDaysElapsed=new Date(_dsrMDDate).getDate(); }
+        if(data[0].throughDate){ _dsrMDDate=data[0].throughDate; const _dp=_dsrMDDate.split('/'); _dsrDaysElapsed=_dp.length>=2?parseInt(_dp[1])||0:0; }
       }
       mdDone=true; tryRender();
     }).catch(()=>{ mdDone=true; tryRender(); });
@@ -8057,10 +8064,7 @@ function dsrLoadAll(view){
             DSR_GOALS[r.storeId].oppsGoal=r.oppsGoal||DSR_GOALS[r.storeId].oppsGoal;
           }
         });
-        dsrUpdateStrip();
-        if(isDesktop()&&view==='store') dsrBuildStoreList();
-        if(view==='store') dsrRenderStore(_dsrStoreId);
-        else dsrRenderDM();
+        try{ dsrUpdateStrip(); if(isDesktop()&&view==='store') dsrBuildStoreList(); if(view==='store') dsrRenderStore(_dsrStoreId); else dsrRenderDM(); } catch(e){ console.error('DSR re-render error:',e); }
       }
     }).catch(()=>{});
 }
@@ -8086,11 +8090,11 @@ function dsrRenderStore(storeId){
   const apo=opps>0?(md.accRev||0)/opps:0;
   const eligInternet=(inet.eligFiber||0)+(inet.eligAIA||0);
   const internetTotal=(inet.aiaOrders||0)+(inet.fiberOrders||0);
+  const dsrStore=_dsrDSRData?(_dsrDSRData[storeId]||{}):{}; // DSR-only fields
   const actsYoY=goals.actsLY>0&&_dsrDaysElapsed>0?(voice-(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.actsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):null;
   const oppsYoY=goals.oppsLY>0&&_dsrDaysElapsed>0?(opps-(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(goals.oppsLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):null;
-  const upgLY=Math.max(0,(goals.oppsLY||0)-(goals.actsLY||0));
+  const upgLY=dsrStore.upgLY||(Math.max(0,(dsrStore.oppsLY||goals.oppsLY||0)-(dsrStore.actsLY||goals.actsLY||0)));
   const upgYoY=upgLY>0&&_dsrDaysElapsed>0?(upg-(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH))/(upgLY*_dsrDaysElapsed/DSR_DAYS_IN_MONTH):null;
-  const dsrStore=_dsrDSRData?(_dsrDSRData[storeId]||{}):{}; // DSR-only fields
   const avgActFee=dsrStore.avgActFee||0;
   // Prefer DSR YoY (direct from report) over back-calc; null = no data
   const _hasDSR_yoy = _dsrDSRData && _dsrDSRData[storeId] && dsrStore.actsYoY!=null;
@@ -8105,7 +8109,7 @@ function dsrRenderStore(storeId){
   html+=`<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
     <div>
       <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;color:var(--t1)">${storeId} · ${storeInfo.name||''}</div>
-      <div style="font-size:13px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${storeInfo.rsm||''} · ${storeInfo.tier||''}</div>
+      <div style="font-size:13px;color:var(--t3);margin-top:1px;font-family:'DM Sans'">${storeInfo.rsm||''} · ${storeInfo.tier||''} · ${Math.round(_dsrDaysElapsed/DSR_DAYS_IN_MONTH*100)}% Month Elapsed</div>
     </div>
     <div style="text-align:right">
       <div style="font-size:13px;font-weight:900;color:${_actsYoYFinal===null?'var(--t3)':_actsYoYFinal>=0?'var(--ok)':'var(--err)'};font-family:'DM Sans'">${_actsYoYFinal===null?'— YoY':dsrPctSign(_actsYoYFinal)+' Acts YoY'}</div>
@@ -8173,9 +8177,10 @@ function dsrRenderStore(storeId){
 
   // Proj tiles — 3-col
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-    ${dsrTile('Proj. Activations',projVoice,dsrGC(projVoice,actsGoal*.95,actsGoal*.85),'','')}
-    ${dsrTile('Proj. Upgrades',projUpg,dsrGC(projUpg,upgGoal*.95,upgGoal*.85),'','')}
-    ${dsrTile('Proj. OPPs',projOpps,dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85),'','')}
+    ${dsrTile('Proj. Activations',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projVoice,actsGoal*.95,actsGoal*.85)}">${projVoice}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projVoice,actsGoal*.95,actsGoal*.85)}">${actsGoal>0?Math.round(projVoice/actsGoal*100):0}%</div></div></div>`,dsrGC(projVoice,actsGoal*.95,actsGoal*.85),'','')}
+    ${dsrTile('Proj. Upgrades',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projUpg,upgGoal*.95,upgGoal*.85)}">${projUpg}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projUpg,upgGoal*.95,upgGoal*.85)}">${upgGoal>0?Math.round(projUpg/upgGoal*100):0}%</div></div></div>`,dsrGC(projUpg,upgGoal*.95,upgGoal*.85),'','')}
+    ${dsrTile('Proj. OPPs',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85)}">${projOpps}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85)}">${oppsGoal>0?Math.round(projOpps/oppsGoal*100):0}%</div></div></div>`,dsrGC(projOpps,oppsGoal*.95,oppsGoal*.85),'','')}
+
   </div>`;
 
   // Need/Day tiles — 3-col
@@ -8225,7 +8230,7 @@ function dsrRenderStore(storeId){
   // null = no data at all; prefer DSR direct, fall back to back-calc, null if neither available
   const _yoyActs = _dsrActsYoY!=null ? _dsrActsYoY : actsYoY;  // actsYoY now null when no LY data
   const _yoyOpps = _dsrOppsYoY!=null ? _dsrOppsYoY : oppsYoY;
-  const _yoyUpg  = _dsrActsYoY!=null ? null : upgYoY; // DSR has no separate upg YoY; use back-calc or null
+  const _yoyUpg  = upgYoY; // back-calculated from upgLY (oppsLY - actsLY)
   const _yoyFmt  = v => v===null?'—':dsrPctSign(v);
   const _yoyCol  = v => v===null?'var(--t3)':v>=0?'var(--ok)':'var(--err)';
   // Row 1: 2025 Activations | 2025 Upgrades | 2025 OPPs
@@ -8254,7 +8259,7 @@ function dsrRenderStore(storeId){
   </div>`;
   // Row 5: NW APD | Plan Down | AAL %
   html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
-    ${dsrTile('NW APD',fmtMoney(md.accPerOpp||0),(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)','smd','')}
+    ${dsrTile('NW APD',dsrStore.nwApd?fmtMoney(dsrStore.nwApd):'—',dsrStore.nwApd?(dsrStore.nwApd>=35?'var(--ok)':dsrStore.nwApd>=30?'var(--warn)':'var(--err)'):'var(--t3)','dsr','')}
     ${dsrTile('Plan Down',md.planDown||0,(md.planDown||0)>5?'var(--err)':(md.planDown||0)>2?'var(--warn)':'var(--ok)','smd','')}
     ${dsrTile('AAL %',((md.aal||0)*100).toFixed(1)+'%',(md.aal||0)>=0.25?'var(--ok)':'var(--warn)','smd','')}
   </div>`;
@@ -8648,9 +8653,10 @@ function dsrRenderDM(){
 
   // Proj tiles
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-    ${dsrTile('Proj. Activations',projActsDist,dsrGC(projActsDist,actsGoal*.95,actsGoal*.90),'','')}
-    ${dsrTile('Proj. Upgrades',projUpgDist,dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85),'','')}
-    ${dsrTile('Proj. OPPs',projOppsDist,dsrGC(projOppsDist,oppsGoal,oppsGoal*.90),'','')}
+    ${dsrTile('Proj. Activations',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projActsDist,actsGoal*.95,actsGoal*.90)}">${projActsDist}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projActsDist,actsGoal*.95,actsGoal*.90)}">${actsGoal>0?Math.round(projActsDist/actsGoal*100):0}%</div></div></div>`,dsrGC(projActsDist,actsGoal*.95,actsGoal*.90),'','')}
+    ${dsrTile('Proj. Upgrades',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85)}">${projUpgDist}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85)}">${upgGoal>0?Math.round(projUpgDist/upgGoal*100):0}%</div></div></div>`,dsrGC(projUpgDist,upgGoal*.95,upgGoal*.85),'','')}
+    ${dsrTile('Proj. OPPs',`<div style="display:flex;align-items:flex-start;justify-content:center;gap:8px;flex:1"><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projOppsDist,oppsGoal,oppsGoal*.90)}">${projOppsDist}</div></div><div style="width:1px;height:36px;background:var(--bd2);margin-top:2px"></div><div style="display:flex;flex-direction:column;align-items:center"><div style="font-family:'Bebas Neue';font-size:30px;line-height:1;color:${dsrGC(projOppsDist,oppsGoal,oppsGoal*.90)}">${oppsGoal>0?Math.round(projOppsDist/oppsGoal*100):0}%</div></div></div>`,dsrGC(projOppsDist,oppsGoal,oppsGoal*.90),'','')}
+
   </div>`;
 
   // Need/Day
@@ -8786,7 +8792,7 @@ function dsrRenderDM(){
       <div style="padding:9px 12px;background:${risk?'rgba(239,68,68,.04)':'rgba(0,169,79,.03)'};display:flex;justify-content:space-between;align-items:center">
         <div>
           <div style="font-size:15px;font-weight:900;color:var(--t1);font-family:'DM Sans'">${s.id} · ${s.name}</div>
-          <div style="font-size:12px;color:var(--t3);font-family:'DM Sans';margin-top:1px">${s.rsm} · ${s.tier}</div>
+          <div style="font-size:12px;color:var(--t3);font-family:'DM Sans';margin-top:1px">${s.rsm} · ${s.tier} · ${Math.round(_dsrDaysElapsed/DSR_DAYS_IN_MONTH*100)}% Month Elapsed</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:11px;font-weight:900;color:${yoyACol};font-family:'DM Sans'">${yoyAFmt} YoY</div>
@@ -8846,7 +8852,7 @@ function dsrRenderDM(){
       <!-- APO / NW APD / Acc Rev / Addr Checks -->
       <div style="padding:0 10px 8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
         ${tile('APO',fmtMoney(apo),'Goal ≥$35',apo>=35?'var(--ok)':apo>=30?'var(--warn)':'var(--err)')}
-        ${tile('NW APD',fmtMoney(md.accPerOpp||0),'Goal ≥$35',(md.accPerOpp||0)>=35?'var(--ok)':(md.accPerOpp||0)>=30?'var(--warn)':'var(--err)')}
+        ${tile('NW APD',dsrS.nwApd?fmtMoney(dsrS.nwApd):'—','Goal ≥$35',dsrS.nwApd?(dsrS.nwApd>=35?'var(--ok)':dsrS.nwApd>=30?'var(--warn)':'var(--err)'):'var(--t3)')}
         ${tile('Acc Rev MTD',fmtMoney(_accRev),_accGoal>0?'Goal '+fmtMoney(_accGoal):'','var(--t1)')}
         ${tile('Addr Checks',inet.addrChecks||0,'MTD','var(--t1)')}
       </div>
