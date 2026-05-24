@@ -736,21 +736,22 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 function fmtRawDate(s){ if(!s) return ''; const p=String(s).split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
 
 const ALLOWED_UIDS=[
-  'gs0426','ap485d','dg8674','mg221k','tg4507',
+  'gs0426','ap485d','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'bb8326','jx820u','rg8855','ji2646dm','sc417e','nc3647','ju512j',
+  'bb8326','jx820u','ji2646dm','sc417e','nc3647','ju512j','ec651n',
   'et7967'
 ];
 
 const DISABLED_UIDS=[];
-const QTOOL_DISABLED_UIDS=[]; // all users have Quote Tool access
+const QTOOL_DISABLED_UIDS=[];
+const ADMIN_DISABLED_UIDS=['dg8674','rg8855','ec934j']; // account disabled by admin
 
 const UID_NAMES={
   'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
-  'jx820u':'Jose Manzo','rg8855':'Rolando Garcia','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez',
+  'jx820u':'Jose Manzo','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ec651n':'Erica Culbert',
   'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez',
   'tbd752':'Store 752 (TBD)',
 };
@@ -1082,7 +1083,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','rg8855','jx820u','jq286d','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','jx820u','jq286d','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -1094,9 +1095,9 @@ const ACTIVITY_CREDS={
 // Activity store -> rep UIDs
 const STORE_REPS={
   '777':null, // Jaquelin sees all
-  '747':['gs0426','ap485d','dg8674'],       // Gabbi + Dara + Alfredo
-  '775':['mg221k','tg4507'],                // Matthew + Thalia
-  '769':['rg8855','bb8326','et7967'],       // Rolando + Bryan + Evelyn
+  '747':['gs0426','ap485d','dg8674','tg4507'], // Gabbi + Dara + Alfredo + Thalia
+  '775':['mg221k','ec651n'],                // Matthew + Erica
+  '769':['sc417e','bb8326'],                // TBD + Sergio + Bryan
   '752':['jq286d','cx7250'],                // Josue Sosa + Christina
   '768':['jx820u','nc3647','ju512j'],       // Jose Manzo + Nancy + Jonatan
   'dm':null,
@@ -1107,10 +1108,9 @@ const STORE_REPS={
 
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
-  'jq6635':['jq6635','jv6394','sc417e'],         // Jaquelin — store 777: Joseph Cisneros, Sergio Cardenas
-  'gs0426':['gs0426','ap485d','dg8674'],
-  'mg221k':['mg221k','tg4507'],
-  'rg8855':['rg8855','bb8326','et7967'],
+  'jq6635':['jq6635','jv6394','sc417e','et7967'], // Jaquelin — store 777: Joseph, Sergio, Evelyn
+  'gs0426':['gs0426','ap485d','dg8674','tg4507'],
+  'mg221k':['mg221k','ec651n'],
   'jq286d':['jq286d','cx7250'],                // Josue Sosa RSM + Christina
   'jx820u':['jx820u','nc3647','ju512j'],
   // tbd752 placeholder removed — jq286d is now RSM for store 752
@@ -1126,7 +1126,7 @@ function canSeeTO(uid){ return true; } // All roles see TO/TC — DM sees all, J
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
-  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'rg8855','768':'jx820u','752':'jq286d','777':'jq6635'};
+  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'','768':'jx820u','752':'jq286d','777':'jq6635'};
   Object.entries(STORE_REPS).forEach(([store,reps])=>{
     if(!reps) return;
     const storeRSM=RSM_BY_STORE_MAP[store]||null;
@@ -1140,7 +1140,6 @@ const STORE_PEER_MAP=(()=>{
   // RSMs see all their store reps
   map['gs0426']=(STORE_REPS['747']||[]).filter(u=>u!=='gs0426');
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
-  map['rg8855']=(STORE_REPS['769']||[]).filter(u=>u!=='rg8855'); // Bryan + Evelyn
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
   map['jq286d']=['cx7250'];
   map['cx7250']=['jq286d'];
@@ -1148,8 +1147,9 @@ const STORE_PEER_MAP=(()=>{
   map['jv6394']=['sc417e','jq6635'];
   map['sc417e']=['jv6394','jq6635'];
   // Store 769 — Bryan and Evelyn see each other + Rolando
-  map['bb8326']=['et7967','rg8855'];
-  map['et7967']=['bb8326','rg8855'];
+  map['bb8326']=['sc417e'];
+  map['sc417e']=['bb8326'];
+  map['et7967']=['jv6394','sc417e'];
   return map;
 })();
 let _pendingUid=null;
@@ -1188,7 +1188,6 @@ function verifyPin(){
     uid==='jq6635'?'777':
     uid==='gs0426'?'747':
     uid==='mg221k'?'775':
-    uid==='rg8855'?'769':
     uid==='jq286d'?'752':
     uid==='jx820u'?'768':null;
   const validPin=storeKey?ACTIVITY_CREDS[storeKey]:null;
@@ -1226,14 +1225,8 @@ function showMenu(){
     btnPerf.style.color='#111827';
     btnPerf.title='';
   }
-  // Sales Tracker: RSC and RSM only (not DM, not Jaq)
-  if(btnST){
-    btnST.style.display=(isDM||isJaq)?'none':'block';
-    btnST.style.opacity='1';
-    btnST.disabled=false;
-    btnST.style.cursor='pointer';
-    btnST.style.color='#111827';
-  }
+  // Sales Tracker: removed — hidden for all users
+  if(btnST) btnST.style.display='none';
   // Quote Tool: gray out for QTOOL_DISABLED_UIDS
   const btnQT=document.getElementById('btn-quotetool');
   if(btnQT){
@@ -1287,7 +1280,6 @@ function handleActivityClick(){
       _pendingUid==='jq6635'?'777':
       _pendingUid==='gs0426'?'747':
       _pendingUid==='mg221k'?'775':
-      _pendingUid==='rg8855'?'769':
       _pendingUid==='jq286d'?'752':
       _pendingUid==='jx820u'?'768':
       'dm');
@@ -1451,9 +1443,16 @@ function toggleVisibility(id, btn){
   }
 }
 function doLogin(){
-  const uid=document.getElementById('login-uid').value.trim().toLowerCase();
+  const raw=document.getElementById('login-uid').value;
+  const uid=(raw||'').trim().toLowerCase();
   const err=document.getElementById('login-error');
-  if(DISABLED_UIDS.includes(uid)){
+  if(ADMIN_DISABLED_UIDS&&ADMIN_DISABLED_UIDS.includes(uid)){
+    const ls=document.getElementById('login-screen')||document.body;
+    ls.style.cssText='position:fixed;inset:0;background:#7f0000;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center';
+    ls.innerHTML='<div style="font-size:60px;margin-bottom:20px">🚫</div><div style="font-family:Bebas Neue,sans-serif;font-size:36px;color:#fff;letter-spacing:2px;margin-bottom:12px">ACCOUNT DISABLED</div><div style="font-size:16px;color:rgba(255,255,255,.9);font-family:DM Sans,sans-serif;font-weight:700;line-height:1.5">Admin has been notified.</div>';
+    try{logWithIP({type:'main',sessionId:'FAIL-'+Date.now(),name:UID_NAMES[uid]||uid,uid:uid,datetime:getDatetime(),device:getDevice(),status:'ADMIN DISABLED'});}catch(e){}
+    return;
+  } else if(DISABLED_UIDS.includes(uid)){
     // Main log: disabled
     logWithIP({type:'main',sessionId:'FAIL-'+Date.now(),name:UID_NAMES[uid]||'Unknown',uid:uid,datetime:getDatetime(),device:getDevice(),status:'DISABLED UID'});
     showLoginError(uid,'Disabled');
@@ -1501,7 +1500,7 @@ document.body.style.overflow='hidden';
 // ══════════════════════════════════════════
 
 // Cycle helpers — anchor same as pay cycles
-function getPerfCycles(){return getPayCycles();}
+// getPerfCycles defined below with perf-specific anchor
 function getCurrentCycleStart(){
   const cycles=getPerfCycles();
   const now=new Date();
@@ -1777,7 +1776,7 @@ function renderDistrictDashboard(_targetEl){
   }
   // Team filter (from district dashboard RSM chips)
   if(_perfDashFilter!=='all'){
-    const teamUids=(RSM_TEAM_MAP[_perfDashFilter]||[]).map(u=>u.toLowerCase());
+    const teamUids=(RSM_TEAM_MAP[_perfDashFilter]||STORE_REPS[_perfDashFilter]||[]).map(u=>u.toLowerCase());
     _dashReps=_dashReps.filter(r=>teamUids.includes(r.uid.toLowerCase()));
   }
 
@@ -1950,6 +1949,7 @@ function renderDistrictDashboard(_targetEl){
         const label=(UID_NAMES[u]||u)+' · '+u;
         return `<button onclick="_perfDashFilter='${u}';refreshDashboard()" style="padding:${isMobile()?'9px 16px':'5px 12px'};border-radius:20px;border:1.5px solid ${_perfDashFilter===u?'var(--g)':'var(--bd)'};background:${_perfDashFilter===u?'var(--g)':'var(--s1)'};color:${_perfDashFilter===u?'#fff':'var(--t2)'};font-family:DM Sans;font-size:${isMobile()?'13px':'10px'};font-weight:800;cursor:pointer;white-space:nowrap">${label}</button>`;
       }).join('')}
+      <button onclick="_perfDashFilter='769';refreshDashboard()" style="padding:${isMobile()?'9px 16px':'5px 12px'};border-radius:20px;border:1.5px solid ${_perfDashFilter==='769'?'var(--g)':'var(--bd)'};background:${_perfDashFilter==='769'?'var(--g)':'var(--s1)'};color:${_perfDashFilter==='769'?'#fff':'var(--t2)'};font-family:DM Sans;font-size:${isMobile()?'13px':'10px'};font-weight:800;cursor:pointer;white-space:nowrap">Memorial (769)</button>
     </div>`:'';
 
   // Use filteredReps for all renders below (reps already declared above)
@@ -3231,8 +3231,8 @@ if(typeof showToast==='undefined'){
   <!-- Fiber -->
   <div style="padding:10px 14px;display:flex;flex-direction:column;gap:3px;background:var(--s1)">
     <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);margin-bottom:2px;font-family:'DM Sans'">🌐 AT&T Fiber — NEW PROMO</div>
-    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$15 OFF 300 Mbps or Higher!</div>
-    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">New customers · +taxes · Only at Cricket</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$32 OFF 1 GIG or Higher!</div>
+    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">New customers · 12 mos · +taxes · Only at Cricket</div>
     <div style="font-size:9px;color:var(--t3);margin-top:1px;line-height:1.3">Via SaraPlus · Billing by AT&T</div>
   </div>
 </div>
@@ -5586,7 +5586,7 @@ const RSM_UID_MAP={
   '775':'mg221k',
   '768':'jx820u',
   '777':'jq6635',
-  '769':'rg8855',
+  '769':'',
   'dm':'ji2646dm'
 };
 
@@ -5597,7 +5597,7 @@ const RSM_INFO={
   '775':{name:'Matthew Gomez',title:'Store Manager'},
   '768':{name:'Jose Manzo',title:'Store Manager'},
   '777':{name:'Jaquelin Sauceda',title:'Store Manager'},
-  '769':{name:'Rolando Garcia',title:'Store Manager'},
+  '769':{name:'RSM - TBD',title:'Store Manager'},
   'dm':{name:'Josue Garcia',title:'District Manager'}
 };
 let _rsmUser=null;
@@ -6509,7 +6509,11 @@ function submitTC(){
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
   const submitted=getDatetime();
   const rowId=uid+'-TC-'+Date.now();
+  const submitBtn=document.querySelector('#tc-form button[onclick*="submitTC"]')||document.activeElement;
+  if(submitBtn&&submitBtn.disabled) return;
+  if(submitBtn) submitBtn.disabled=true;
   sendLog({type:'tc_submit',rowId,uid,name,submitted,location:loc,date,reason,shiftStart:fmtT(start),shiftEnd:fmtT(end),breakStart:_tcBreak?brkS:'None',breakEnd:_tcBreak?brkE:'None',status:'Sent',note:''});
+  setTimeout(()=>{if(submitBtn) submitBtn.disabled=false;},3000);
   const _tcLateWarn=isTCLate()?'<div style="margin-top:10px;padding:8px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;font-size:10px;color:#f87171;font-weight:700;text-align:left;line-height:1.5">&#9888; This correction was submitted after the pay period deadline. Payout may be delayed to the next pay cycle.</div>':'';
   resetTC();
   tmConfirm('Time correction submitted.','Sent',false,'',_tcLateWarn);
@@ -6605,6 +6609,10 @@ function submitTO(){
   const uid=_pendingUid, name=UID_NAMES[uid]||uid;
   const submitted=getDatetime();
   const rowId=uid+'-TO-'+Date.now();
+  const toSubmitBtn=document.activeElement;
+  if(toSubmitBtn&&toSubmitBtn.disabled) return;
+  if(toSubmitBtn) toSubmitBtn.disabled=true;
+  setTimeout(()=>{if(toSubmitBtn) toSubmitBtn.disabled=false;},3000);
   // Parse first requested day to get week start
   const _toFirstDay=parseFirstDay({days,month});
   let toStatus='Sent', toNote='', toShowNotify=false;
@@ -6931,7 +6939,7 @@ function dmToRender(){
   const wk=(document.getElementById('dm-to-week')||{value:'all'}).value||'all';
   const srt=(document.getElementById('dm-to-sort')||{value:'newest'}).value||'newest';
   populateTOWeeks();
-  let items=[..._dmToData];
+  let items=[..._dmToData].filter(r=>!(r.note&&r.note.includes('Employee deleted request')));
   if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return db-da;});
   else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.submitted)||new Date(0);const db=parseDate(b.submitted)||new Date(0);return da-db;});
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -6976,7 +6984,7 @@ function dmTcRender(){
   const cyc=(document.getElementById('dm-tc-cycle')||{value:'all'}).value||'all';
   const srt=(document.getElementById('dm-tc-sort')||{value:'newest'}).value||'newest';
   populateTCCycles();
-  let items=[..._dmTcData];
+  let items=[..._dmTcData].filter(r=>!(r.note&&r.note.includes('Employee deleted request')));
   if(srt==='newest') items.sort((a,b)=>{const da=parseDate(a.date)||parseDate(a.submitted)||new Date(0);const db=parseDate(b.date)||parseDate(b.submitted)||new Date(0);return db-da;});
   else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||parseDate(a.submitted)||new Date(0);const db=parseDate(b.date)||parseDate(b.submitted)||new Date(0);return da-db;});
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -7032,7 +7040,12 @@ function dmLoadTO(){
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
-        const clean=d.filter(r=>r.rowId&&r.uid);
+        const clean=d.filter(r=>r.rowId&&r.uid).map(r=>{
+          if(r.daysStatus&&r.daysStatus.startsWith('hours:')){
+            r.approvedHours=r.daysStatus.replace('hours:','').trim();
+          }
+          return r;
+        });
         // DM and Jaq see all; RSM/RSC see only their own requests
         if(isDMUser()||isJaqUser()){
           _dmToData=clean;
@@ -7104,8 +7117,20 @@ function setDMTcDemo(){
 
 // ── PAY CYCLE HELPERS ──
 function getPayCycles(){
-  // Use UTC midnight to avoid timezone drift when comparing with parsed ISO dates
-  const anchor=new Date(Date.UTC(2026,2,22)); // March 22 2026 UTC — anchor for 4/5 cycle
+  // Payroll/time correction cycles — anchor March 29 2026
+  const anchor=new Date(Date.UTC(2026,2,29));
+  const cycles=[];
+  for(let i=-10;i<=12;i++){
+    const s=new Date(anchor.getTime()+i*14*86400000);
+    const e=new Date(s.getTime()+13*86400000);
+    const eEnd=new Date(e.getTime()+86399999);
+    cycles.push({start:s,end:eEnd,label:fmtCycleDate(s)+' – '+fmtCycleDate(e)});
+  }
+  return cycles;
+}
+function getPerfCycles(){
+  // Individual performance cycles — anchor March 22 2026
+  const anchor=new Date(Date.UTC(2026,2,22));
   const cycles=[];
   for(let i=-10;i<=12;i++){
     const s=new Date(anchor.getTime()+i*14*86400000);
@@ -7351,7 +7376,11 @@ function showDMTimeDetail(type,rowId){
     const ms=(r.month||'').replace(/\s*\d{4}\s*$/,'').trim();const ys=(r.month||'').match(/\d{4}/)?.[0]||'2026';
     const ds=String(r.days||'').split(',').map(d=>ms+' '+d.trim()+', '+ys).join(', ');
     const fn=r.name?r.name.split(' ')[0]:r.uid;
-    const hl=r.approvedHours?'Approved Hours: '+r.approvedHours:'Duration: '+r.duration;
+    const hl=r.approvedHours
+      ?'Requested: '+r.duration+'\nApproved Hours: '+r.approvedHours
+      :r.status==='Denied'
+        ?'Requested: '+r.duration+'\nApproved Hours: Denied'
+        :'Requested: '+r.duration+'\nApproved Hours: '+r.duration;
     const al=r.status==='Partial'?'has been partially approved':r.status==='Approved'?'has been approved':'has been denied';
     const statusLabel=r.status==='Approved'?'Approved':r.status==='Denied'?'Denied':'Partial';
     copySubject='Time Off Update – '+statusLabel+' – '+(r.name||r.uid)+(r.uid?' ('+r.uid+')':'');
@@ -7550,8 +7579,14 @@ function savePartial(type,rowId,note){
 function dmTimeAction(type,rowId,status,note,daysStatus){
   sendLog({type:'time_update',rowId,status,note:note,daysStatus:daysStatus||'',updatedBy:_pendingUid,updatedAt:getDatetime()});
   const list=type==='to'?_dmToData:_dmTcData;
-  const r=list.find(x=>x.rowId===rowId);
-  if(r){r.status=status;r.note=note;if(daysStatus)r.daysStatus=daysStatus;}
+  // Update ALL records with this rowId (handles duplicate rows from double-submit)
+  list.filter(x=>x.rowId===rowId).forEach(r=>{
+    r.status=status;r.note=note;
+    if(daysStatus)r.daysStatus=daysStatus;
+    if(daysStatus&&daysStatus.startsWith('hours:')){
+      r.approvedHours=daysStatus.replace('hours:','').trim();
+    }
+  });
   const _det=document.getElementById('dm-time-detail-overlay');if(_det)_det.remove();
   if(type==='to') dmToRender(); else dmTcRender();
 }
@@ -7651,7 +7686,7 @@ const DSR_STORES = [
   {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 3'},
   {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
   {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
-  {id:769,name:'Memorial',    rsm:'Rolando Garcia',   tier:'Tier 1'},
+  {id:769,name:'Memorial',    rsm:'RSM - TBD',        tier:'Tier 1'},
   {id:752,name:'Twin City',   rsm:'Josue Sosa',       tier:'Tier 1'},
   {id:768,name:'W. Orange',   rsm:'Jose Manzo',       tier:'Tier 1'},
 ];
@@ -8272,7 +8307,7 @@ function dsrRenderStore(storeId){
 
   // ── RSM Payout Estimate ── right after store header, RSM/DM/Jaq only
   try {
-  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'rg8855',752:'jq286d',768:'jx820u'};
+  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'',752:'jq286d',768:'jx820u'};
   const _storeRsmUid = _RSM_STORE_UID[storeId];
   const _canSeeRsmPay = isDMUser()||isJaqUser()||(_pendingUid===_storeRsmUid);
   if(_canSeeRsmPay){
