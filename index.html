@@ -7662,13 +7662,14 @@ function buildPartialCopyText(r){
 // ── Constants ──
 const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30};
 const DSR_MONTHS = [
+  {key:'june2026',  label:'June 2026'},
   {key:'may2026',   label:'May 2026'},
   {key:'april2026', label:'April 2026'},
-];
-let _dsrActiveMonth    = 'may2026';
+]; // fallback — overwritten by months_fetch on load
+let _dsrActiveMonth    = 'june2026';
 let DSR_DAYS_IN_MONTH  = 31;
 let DSR_MONTH_LABEL    = 'May 2026';
-let DSR_MONTH_KEY      = 'may2026';
+let DSR_MONTH_KEY      = 'june2026';
 
 // Store goals — all zeroed, populated entirely by goals_fetch from sheet
 const DSR_GOALS = {
@@ -7966,6 +7967,29 @@ function dsrToggleDMMode(){
 function dsrBuildMonthPicker(){
   const wrap = document.getElementById('dsr-month-picker-wrap');
   if(!wrap) return;
+  // Fetch available months from Apps Script (goals tabs drive the list)
+  fetchWithTimeout(LOG_URL+'?type=months_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.months&&d.months.length){
+        // Replace DSR_MONTHS with fetched list (newest first)
+        DSR_MONTHS.length=0;
+        d.months.reverse().forEach(m=>DSR_MONTHS.push(m));
+        // Default to latest month
+        if(!DSR_MONTHS.find(m=>m.key===_dsrActiveMonth)){
+          _dsrActiveMonth = DSR_MONTHS[0].key;
+          DSR_MONTH_KEY   = _dsrActiveMonth;
+          DSR_MONTH_LABEL = DSR_MONTHS[0].label;
+          DSR_DAYS_IN_MONTH = DSR_DAYS_IN_MONTH_MAP[_dsrActiveMonth]||30;
+        }
+      }
+      _renderMonthPicker();
+    })
+    .catch(()=>_renderMonthPicker());
+}
+function _renderMonthPicker(){
+  const wrap = document.getElementById('dsr-month-picker-wrap');
+  if(!wrap) return;
   wrap.style.display = 'flex';
   wrap.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:7px 16px;background:var(--s1)">'
     + '<div style="font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:\'DM Sans\';white-space:nowrap">Month</div>'
@@ -8012,6 +8036,11 @@ function dsrUpdateStrip(){
 // ── Load data ──
 function dsrLoadAll(view){
   const monthKey = DSR_MONTH_KEY;
+  // Always clear stale data from previous month before fetching
+  _dsrMDData={}; _dsrInetData={}; _dsrDSRData=null; _dsrDistData=null;
+  _dsrMDDate=''; _dsrInetDate=''; _dsrDSRDate='';
+  _dsrDaysElapsed=0;
+  dsrUpdateStrip();
   let mdDone=false, inetDone=false;
   _dsrLoading=true;
 
