@@ -3238,7 +3238,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 5/4/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 6/8/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -7282,8 +7282,13 @@ function initWeekChips(){
 }
 function parseFirstDay(r){
   let rawDay=String(r.days||'').split(',')[0].trim();
+  // If Sheets returned a Date object string, extract just the day number
+  const dateObjMatch=rawDay.match(/\b(\d{1,2})\s+\d{4}\b/);
+  if(dateObjMatch) rawDay=dateObjMatch[1];
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
+  // Strip any non-numeric prefix (e.g. "Wed" from Date.toString())
+  rawDay=rawDay.replace(/^[^0-9]+/,'').trim();
   const firstDay=rawDay.replace(/^0/,'');
   if(!firstDay||isNaN(parseInt(firstDay))) return null;
   // Handle month field that may be ISO datetime or Date.toString() from Sheets
