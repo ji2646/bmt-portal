@@ -729,7 +729,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-30APR2026-A94</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-26JUN2026-A1</div>
 </div>
 
 <script>
@@ -1083,12 +1083,12 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','jx820u','jq286d','ji2646dm'];
+const RSM_UIDS=['jq6635','gs0426','mg221k','jx820u','jq286d','cx7250','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
   '777':'jsauceda','747':'gsanchez','775':'mgomez',
-  '769':'rgarcia','752':'jsosa','768':'jmanzo',
+  '769':'cmuzquiz','752':'jsosa','768':'jmanzo',
   'dm':'jgarcia'
 };
 
@@ -1097,8 +1097,8 @@ const STORE_REPS={
   '777':null, // Jaquelin sees all
   '747':['gs0426','ap485d','dg8674','tg4507'], // Gabbi + Dara + Alfredo + Thalia
   '775':['mg221k','ec651n'],                // Matthew + Erica
-  '769':['sc417e','bb8326'],                // TBD + Sergio + Bryan
-  '752':['jq286d','cx7250'],                // Josue Sosa + Christina
+  '769':['bb8326'],                         // Christina RSM + Bryan RSC
+  '752':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   '768':['jx820u','nc3647','ju512j'],       // Jose Manzo + Nancy + Jonatan
   'dm':null,
   'ji2646dm':null
@@ -1108,11 +1108,12 @@ const STORE_REPS={
 
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
-  'jq6635':['jq6635','jv6394','sc417e','et7967'], // Jaquelin — store 777: Joseph, Sergio, Evelyn
+  'jq6635':['jq6635','jv6394','et7967'],           // Jaquelin — store 777: Joseph, Evelyn
   'gs0426':['gs0426','ap485d','dg8674','tg4507'],
   'mg221k':['mg221k','ec651n'],
-  'jq286d':['jq286d','cx7250'],                // Josue Sosa RSM + Christina
+  'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   'jx820u':['jx820u','nc3647','ju512j'],
+  'cx7250':['cx7250','bb8326'],                // Christina RSM + Bryan RSC (store 769)
   // tbd752 placeholder removed — jq286d is now RSM for store 752
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
@@ -1126,7 +1127,7 @@ function canSeeTO(uid){ return true; } // All roles see TO/TC — DM sees all, J
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
-  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'','768':'jx820u','752':'jq286d','777':'jq6635'};
+  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'cx7250','768':'jx820u','752':'jq286d','777':'jq6635'};
   Object.entries(STORE_REPS).forEach(([store,reps])=>{
     if(!reps) return;
     const storeRSM=RSM_BY_STORE_MAP[store]||null;
@@ -1141,15 +1142,14 @@ const STORE_PEER_MAP=(()=>{
   map['gs0426']=(STORE_REPS['747']||[]).filter(u=>u!=='gs0426');
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
-  map['jq286d']=['cx7250'];
-  map['cx7250']=['jq286d'];
+  map['jq286d']=['sc417e'];
+  map['cx7250']=['bb8326'];   // Christina RSM 769
   // Store 777 — Joseph and Sergio see each other + Jaquelin
-  map['jv6394']=['sc417e','jq6635'];
-  map['sc417e']=['jv6394','jq6635'];
-  // Store 769 — Bryan and Evelyn see each other + Rolando
-  map['bb8326']=['sc417e'];
-  map['sc417e']=['bb8326'];
-  map['et7967']=['jv6394','sc417e'];
+  map['jv6394']=['et7967','jq6635'];
+  map['sc417e']=['jq286d'];   // Sergio RSC 752
+  // Store 769 — Bryan RSC peers with Christina RSM
+  map['bb8326']=['cx7250'];
+  map['et7967']=['jv6394','jq6635'];
   return map;
 })();
 let _pendingUid=null;
@@ -1189,6 +1189,7 @@ function verifyPin(){
     uid==='gs0426'?'747':
     uid==='mg221k'?'775':
     uid==='jq286d'?'752':
+    uid==='cx7250'?'769':
     uid==='jx820u'?'768':null;
   const validPin=storeKey?ACTIVITY_CREDS[storeKey]:null;
   if(validPin&&validPin===pin){
@@ -1281,6 +1282,7 @@ function handleActivityClick(){
       _pendingUid==='gs0426'?'747':
       _pendingUid==='mg221k'?'775':
       _pendingUid==='jq286d'?'752':
+      _pendingUid==='cx7250'?'769':
       _pendingUid==='jx820u'?'768':
       'dm');
     launchActivity();
@@ -3238,7 +3240,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 6/8/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 6/26/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3466,10 +3468,10 @@ const SKEIWATCHES=[
 ];
 
 const PLANS=[
-  {id:'supreme',n:'Supreme',full:'Supreme UNL',lines:[60,90,110,130,160]},
-  {id:'smart',  n:'Smart',  full:'Smart UNL',  lines:[50,75,95,110,130]},
-  {id:'select', n:'Select', full:'Select UNL', lines:[40,65,90,100,120]},
-  {id:'sensible',n:'Sensible',full:'Sensible 10GB',  lines:[35,60,90,120,150]},
+  {id:'supreme',n:'Supreme',full:'Supreme UNL',lines:[60,95,115,135,165]},
+  {id:'smart',  n:'Smart',  full:'Smart UNL',  lines:[50,80,100,115,135]},
+  {id:'select', n:'Select', full:'Select UNL', lines:[40,70,95,105,125]},
+  {id:'sensible',n:'Sensible',full:'Sensible 10GB',  lines:[35,65,95,125,155]},
 ];
 
 // promoReq = plan needed for promo pricing. sw/nw/up = promo price. sw_o/nw_o/up_o = other plan price (null = same as promo / not available)
@@ -3480,7 +3482,8 @@ const PHONES=[
   {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:79.99,  nw:199.99,  up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16_512', n:'iPhone 16 512GB',      sw:1029.99,nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
+  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:0,      nw:99.99,   up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:599.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i17e_256',n:'iPhone 17e 256GB',     sw:299.99, nw:399.99,  up:599.99,  sw_o:399.99, nw_o:499.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
@@ -3489,15 +3492,19 @@ const PHONES=[
   {id:'i17_512', n:'iPhone 17 512GB',      sw:1029.99,nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_256',n:'iPhone Air 256GB',     sw:999.99, nw:999.99,  up:999.99,  frp:999.99,  brand:'Apple',    promoReq:'any'},
   {id:'iair_512',n:'iPhone Air 512GB',     sw:1199.99,nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
+  {id:'iair_1tb', n:'iPhone Air 1TB',       sw:1399.99,nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
   {id:'i17p_256',n:'iPhone 17 Pro 256GB',  sw:1099.99,nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
   {id:'i17p_512',n:'iPhone 17 Pro 512GB',  sw:1299.99,nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17p_1tb', n:'iPhone 17 Pro 1TB',    sw:1499.99,nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
   {id:'i17pm_256',n:'iPhone 17 Pro Max 256GB',sw:1199.99,nw:1199.99,up:1199.99,frp:1199.99,brand:'Apple',   promoReq:'any'},
   {id:'i17pm_512',n:'iPhone 17 Pro Max 512GB',sw:1399.99,nw:1399.99,up:1399.99,frp:1399.99,brand:'Apple',   promoReq:'any'},
+  {id:'i17pm_1tb', n:'iPhone 17 Pro Max 1TB', sw:1599.99,nw:1599.99,up:1599.99,frp:1599.99,brand:'Apple',   promoReq:'any'},
+  {id:'i17pm_2tb', n:'iPhone 17 Pro Max 2TB', sw:1999.99,nw:1999.99,up:1999.99,frp:1999.99,brand:'Apple',   promoReq:'any'},
   // Samsung
   {id:'a16',    n:'Galaxy A16',            sw:0,      nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:159.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
   {id:'a17',    n:'Galaxy A17',            sw:0,      nw:19.99,   up:179.99,  sw_o:109.99, nw_o:109.99, up_o:179.99,  frp:179.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',    n:'Galaxy A37',            sw:99.99,  nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
-  {id:'a36',    n:'Galaxy A36',            sw:39.99,  nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'a37',    n:'Galaxy A37',            sw:0,      nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
+  {id:'a36',    n:'Galaxy A36',            sw:0,      nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25fe',  n:'Galaxy S25 FE',         sw:149.99, nw:149.99,  up:649.99,  sw_o:399.99, nw_o:399.99, up_o:649.99,  frp:649.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',    n:'Galaxy S25',            sw:360,    nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
   {id:'s26',    n:'Galaxy S26',            sw:399.99, nw:499.99,  up:899.99,  sw_o:699.99, nw_o:699.99, up_o:899.99,  frp:899.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
@@ -3507,7 +3514,7 @@ const PHONES=[
   {id:'mg26',   n:'moto g 2026',           sw:0,      nw:0,       up:79.99,   sw_o:29.99,  nw_o:29.99,  up_o:79.99,   frp:149.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgpwr',  n:'moto g power 2026',     sw:19.99,  nw:39.99,   up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgsty',  n:'moto g stylus 2025',    sw:29.99,  nw:29.99,   up:239.99,  sw_o:69.99,  nw_o:69.99,  up_o:239.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',  n:'motorola edge 2025',    sw:29.99,  nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'medge',  n:'motorola edge 2025',    sw:0,      nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'razr',   n:'motorola razr 2025',    sw:149.99, nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
   {id:'icon',   n:'Icon 2026',             sw:0,      nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
@@ -3633,7 +3640,7 @@ function renderPlanGrid(){
   const vn=vc();
   $('plan-grid').innerHTML=PLANS.map(p=>{
     const base=vn>0?p.lines[Math.min(vn,5)-1]:p.lines[0];
-    const ap=(vn<=1&&S.ap&&!p.byod)?-5:0;
+    const ap=(S.ap&&!p.byod)?-5:0;
     const display=base+ap;
     const sub=ap<0?`$${base} w/o AutoPay`:(vn>1?vn+' lines':'1 line');
     return`<div class="plan-btn ${S.plan===p.id?'active':''}" onclick="setPlan('${p.id}')">
@@ -3642,14 +3649,13 @@ function renderPlanGrid(){
       <span class="ps">${sub}</span>
     </div>`;
   }).join('');
-  // AutoPay
-  const multiLine=vn>=2;
+  // AutoPay — allowed for all line counts, disabled only for BYOD
   const isByodPlan=S.plan==='byod';
-  const apDisabled=multiLine||isByodPlan;
+  const apDisabled=isByodPlan;
   if(apDisabled){S.ap=false;$('ap-chk').checked=false;}
   $('ap-chk').disabled=apDisabled;
   $('ap-slide').classList.toggle('off',apDisabled);
-  $('ap-note').textContent=multiLine?'Disabled — multi-line account':'Single line only';
+  $('ap-note').textContent='$5 off with AutoPay';
   showPlanNote(S.plan);
 }
 function showPlanNote(id){
@@ -4538,7 +4544,7 @@ function calc(){
   if(S.acct==='new'&&v>0){
     planCostFull=plan.lines[Math.min(v,5)-1];
     planCostMo=planCostFull;
-    if(v===1&&S.ap&&!plan.byod)planCostMo-=5;
+    if(S.ap&&!plan.byod)planCostMo-=5;
   } else if(S.acct==='aal'){
     const aalNewLines=S.lines.filter(l=>l.cat==='v'&&l.lt!=='upgrade').length;
     if(aalNewLines>0){
@@ -5576,7 +5582,7 @@ const RSM_USERS={
   '775':'mgomez',
   '768':'jmanzo',
   '777':'jsauceda',
-  '769':'rgarcia',
+  '769':'cmuzquiz',
   'dm':'jgarcia'
 };
 
@@ -5586,7 +5592,7 @@ const RSM_UID_MAP={
   '775':'mg221k',
   '768':'jx820u',
   '777':'jq6635',
-  '769':'',
+  '769':'cx7250',
   'dm':'ji2646dm'
 };
 
@@ -5597,7 +5603,7 @@ const RSM_INFO={
   '775':{name:'Matthew Gomez',title:'Store Manager'},
   '768':{name:'Jose Manzo',title:'Store Manager'},
   '777':{name:'Jaquelin Sauceda',title:'Store Manager'},
-  '769':{name:'RSM - TBD',title:'Store Manager'},
+  '769':{name:'Christina Muzquiz',title:'Store Manager'},
   'dm':{name:'Josue Garcia',title:'District Manager'}
 };
 let _rsmUser=null;
@@ -6740,7 +6746,7 @@ function repActLoadData(){
     .then(r=>r.json())
     .then(d=>{
       if(d&&(d.to||d.tc)){
-        _raData={to:(d.to||[]),tc:(d.tc||[])};
+        _raData={to:dedupeByRowId(d.to||[]),tc:dedupeByRowId(d.tc||[])};
         renderRA();
       }
       else{setRADemo();}
@@ -7029,6 +7035,31 @@ function actMasterTab(pane){
 }
 
 
+// ── DEDUP HELPER ─────────────────────────────────────────────────────────────
+// Collapses duplicate rowIds (caused by race-condition double-submit) to one record.
+// Keeps the highest-status row: Approved > Partial > Denied > Late > Pending > Sent
+function dedupeByRowId(rows){
+  const STATUS_RANK={
+    'Approved':10,'Partial':9,'Denied':8,'Corrected':8,
+    'Late Final':7,'Late Soft':6,'Late':5,'Pending':4,
+    'Action Required':3,'Sent':2
+  };
+  const rank=s=>STATUS_RANK[s]||1;
+  const map=new Map();
+  for(const r of rows){
+    const id=r.rowId;
+    if(!map.has(id)){map.set(id,r);continue;}
+    const existing=map.get(id);
+    const rRank=rank(r.status);
+    const eRank=rank(existing.status);
+    if(rRank>eRank){map.set(id,r);}
+    else if(rRank===eRank){
+      if((r.note||'').length>(existing.note||'').length) map.set(id,r);
+    }
+  }
+  return Array.from(map.values());
+}
+
 function fetchWithTimeout(url,options={},ms=12000){
   const ctrl=new AbortController();
   const id=setTimeout(()=>ctrl.abort(),ms);
@@ -7040,12 +7071,12 @@ function dmLoadTO(){
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
-        const clean=d.filter(r=>r.rowId&&r.uid).map(r=>{
+        const clean=dedupeByRowId(d.filter(r=>r.rowId&&r.uid).map(r=>{
           if(r.daysStatus&&r.daysStatus.startsWith('hours:')){
             r.approvedHours=r.daysStatus.replace('hours:','').trim();
           }
           return r;
-        });
+        }));
         // DM and Jaq see all; RSM/RSC see only their own requests
         if(isDMUser()||isJaqUser()){
           _dmToData=clean;
@@ -7081,7 +7112,7 @@ function dmLoadTC(){
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
-        const clean=d.filter(r=>r.rowId&&r.uid);
+        const clean=dedupeByRowId(d.filter(r=>r.rowId&&r.uid));
         // DM and Jaq see all; RSM/RSC see only their own requests
         if(isDMUser()||isJaqUser()){
           _dmTcData=clean;
@@ -7692,7 +7723,7 @@ const DSR_STORES = [
   {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 3'},
   {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
   {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
-  {id:769,name:'Memorial',    rsm:'RSM - TBD',        tier:'Tier 1'},
+  {id:769,name:'Memorial',    rsm:'Christina Muzquiz',tier:'Tier 1'},
   {id:752,name:'Twin City',   rsm:'Josue Sosa',       tier:'Tier 1'},
   {id:768,name:'W. Orange',   rsm:'Jose Manzo',       tier:'Tier 1'},
 ];
@@ -8341,7 +8372,7 @@ function dsrRenderStore(storeId){
 
   // ── RSM Payout Estimate ── right after store header, RSM/DM/Jaq only
   try {
-  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'',752:'jq286d',768:'jx820u'};
+  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'cx7250',752:'jq286d',768:'jx820u'};
   const _storeRsmUid = _RSM_STORE_UID[storeId];
   const _canSeeRsmPay = isDMUser()||isJaqUser()||(_pendingUid===_storeRsmUid);
   if(_canSeeRsmPay){
