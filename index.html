@@ -8011,13 +8011,16 @@ function dsrBuildMonthPicker(){
         // Replace DSR_MONTHS with fetched list (newest first)
         DSR_MONTHS.length=0;
         d.months.reverse().forEach(m=>DSR_MONTHS.push(m));
-        // Default to latest month
+        // Default to latest month if current active month isn't in the list
         if(!DSR_MONTHS.find(m=>m.key===_dsrActiveMonth)){
           _dsrActiveMonth = DSR_MONTHS[0].key;
-          DSR_MONTH_KEY   = _dsrActiveMonth;
-          DSR_MONTH_LABEL = DSR_MONTHS[0].label;
-          DSR_DAYS_IN_MONTH = DSR_DAYS_IN_MONTH_MAP[_dsrActiveMonth]||30;
         }
+        // Always sync label + days-in-month to whatever _dsrActiveMonth actually is —
+        // fixes stale defaults (DSR_MONTH_LABEL/DSR_DAYS_IN_MONTH) on first load
+        const activeEntry = DSR_MONTHS.find(m=>m.key===_dsrActiveMonth) || DSR_MONTHS[0];
+        DSR_MONTH_KEY     = _dsrActiveMonth;
+        DSR_MONTH_LABEL   = activeEntry.label;
+        DSR_DAYS_IN_MONTH = DSR_DAYS_IN_MONTH_MAP[_dsrActiveMonth] || 30;
       }
       _renderMonthPicker();
     })
