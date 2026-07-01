@@ -2121,7 +2121,7 @@ function launchPerformance(){
   document.body.style.overflow='';
   const po=document.getElementById('perf-overlay');po.style.display='';po.classList.add('perf-open');
   document.getElementById('perf-header-name').textContent=UID_NAMES[_pendingUid]||_pendingUid;
-  if(_pendingUid==='ji2646dm') logWithIP({type:'perf_open',sessionId:_sessionId,name:UID_NAMES['ji2646dm'],uid:'ji2646dm',datetime:getDatetime(),device:getDevice()});
+  logWithIP({type:'perf_open',sessionId:_sessionId,name:UID_NAMES[_pendingUid]||_pendingUid,uid:_pendingUid,datetime:getDatetime(),device:getDevice()});
   const isDM=_pendingUid==='ji2646dm';
   const isRSM=RSM_UIDS.includes(_pendingUid)&&!isDM;
   _perfRepUid=null;
