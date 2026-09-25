@@ -848,7 +848,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 function fmtRawDate(s){ if(!s) return ''; const p=String(s).split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
 
 const ALLOWED_UIDS=[
-  'gs0426','ap485d','mg221k','tg4507',
+  'mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
   'bb8326','jx820u','ji2646dm','sc417e','ju512j','ec651n',
   'et7967','ah355r'
@@ -859,7 +859,7 @@ const QTOOL_DISABLED_UIDS=['ah355r'];
 const ADMIN_DISABLED_UIDS=['dg8674','rg8855','ec934j','nc3647']; // account disabled by admin
 
 const UID_NAMES={
-  'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra',
+  
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
@@ -1196,7 +1196,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','jx820u','jq286d','cx7250','ji2646dm'];
+const RSM_UIDS=['jq6635','mg221k','jx820u','jq286d','cx7250','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -1208,7 +1208,7 @@ const ACTIVITY_CREDS={
 // Activity store -> rep UIDs
 const STORE_REPS={
   '777':['jq6635','jv6394','et7967','bb8326'], // Jaquelin + Joseph + Evelyn + Bryan
-  '747':['gs0426','ap485d','tg4507'],           // Gabbi + Alfredo + Thalia
+  '747':['tg4507'],                              // Thalia only (RSM TBD)
   '775':['mg221k','ec651n','ah355r'],        // Matthew + Erica + Aliea
   '769':['cx7250','bb8326','et7967'],         // Christina RSM + Bryan + Evelyn
   '752':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
@@ -1222,7 +1222,6 @@ const STORE_REPS={
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
   'jq6635':['jq6635','jv6394','et7967','bb8326'],   // Jaquelin — store 777: Joseph, Evelyn, Bryan
-  'gs0426':['gs0426','ap485d','tg4507'],
   'mg221k':['mg221k','ec651n','ah355r'],
   'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   'jx820u':['jx820u','ju512j'],
@@ -1240,7 +1239,7 @@ function canSeeTO(uid){ return true; } // All roles see TO/TC — DM sees all, J
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
-  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'cx7250','768':'jx820u','752':'jq286d','777':'jq6635'};
+  const RSM_BY_STORE_MAP={'747':null,'775':'mg221k','769':'cx7250','768':'jx820u','752':'jq286d','777':'jq6635'};
   Object.entries(STORE_REPS).forEach(([store,reps])=>{
     if(!reps) return;
     const storeRSM=RSM_BY_STORE_MAP[store]||null;
@@ -1252,8 +1251,7 @@ const STORE_PEER_MAP=(()=>{
     });
   });
   // RSMs see all their store reps
-  map['gs0426']=(STORE_REPS['747']||[]).filter(u=>u!=='gs0426');
-  map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
+    map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
   map['jq286d']=['sc417e'];
   map['cx7250']=['bb8326','et7967'];   // Christina RSM 769
@@ -1299,7 +1297,7 @@ function verifyPin(){
   const uid=_pendingUid;
   const storeKey=uid==='ji2646dm'?'dm':
     uid==='jq6635'?'777':
-    uid==='gs0426'?'747':
+    uid===''?'747':
     uid==='mg221k'?'775':
     uid==='jq286d'?'752':
     uid==='cx7250'?'769':
@@ -1396,7 +1394,7 @@ function handleActivityClick(){
     // Already authenticated via PIN at login — go straight to activity
     _activityStore=_activityStore||(_pendingUid==='ji2646dm'?'dm':
       _pendingUid==='jq6635'?'777':
-      _pendingUid==='gs0426'?'747':
+      _pendingUid===''?'747':
       _pendingUid==='mg221k'?'775':
       _pendingUid==='jq286d'?'752':
       _pendingUid==='cx7250'?'769':
@@ -5756,7 +5754,7 @@ const RSM_USERS={
 };
 
 const RSM_UID_MAP={
-  '747':'gs0426',
+  '747':null,
   '752':'jq286d',
   '775':'mg221k',
   '768':'jx820u',
@@ -7890,7 +7888,7 @@ const DSR_DIST_GOALS = {actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0};
 // Store config
 const DSR_STORES = [
   {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 3'},
-  {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
+  {id:747,name:'College St',  rsm:'RSM TBD',tier:'Tier 2'},
   {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
   {id:769,name:'Memorial',    rsm:'Christina Muzquiz',tier:'Tier 1'},
   {id:752,name:'Twin City',   rsm:'Josue Sosa',       tier:'Tier 1'},
@@ -8542,7 +8540,7 @@ function dsrRenderStore(storeId){
 
   // ── RSM Payout Estimate ── right after store header, RSM/DM/Jaq only
   try {
-  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'cx7250',752:'jq286d',768:'jx820u'};
+  const _RSM_STORE_UID = {777:'jq6635',747:null,775:'mg221k',769:'cx7250',752:'jq286d',768:'jx820u'};
   const _storeRsmUid = _RSM_STORE_UID[storeId];
   const _canSeeRsmPay = isDMUser()||isJaqUser()||(_pendingUid===_storeRsmUid);
   if(_canSeeRsmPay){
@@ -9215,7 +9213,7 @@ const STORES = {
     address:'3786 College St, Beaumont TX 77701',
     leadership:[
       { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
-      { role:'Store Manager', name:'Gabbisette Sanchez', phone:'(713) 614-9278', email:'' },
+      { role:'Store Manager', name:'RSM TBD', phone:'', email:'' },
     ],
     info:[
       { label:'Location ID', val:'80193747' },
@@ -9230,19 +9228,18 @@ const STORES = {
     wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
     wifiNote:'Only use "Cricket POS" on Aktivate iPads',
     staff:[
-      { role:'Retail Sales Consultant', name:'Alfredo Parra', phone:'(832) 641-6303', email:'' },
       { role:'Retail Sales Consultant', name:'Thalia Gonzalez', phone:'(409) 273-1368', email:'' },
     ],
     keys:[
-      { name:'Lockbox', count:1, lockbox:true },
-      { name:'Gabbisette Sanchez', count:1 },
+      { name:'Lockbox', count:3, lockbox:true },
+      { name:'Thalia Gonzalez', count:1 },
+      { name:'Josue Garcia', count:1 },
     ],
     staff:[
-      { role:'Retail Sales Consultant', name:'Alfredo Parra', phone:'(832) 641-6303', email:'' },
       { role:'Retail Sales Consultant', name:'Thalia Gonzalez', phone:'(409) 273-1368', email:'' },
     ],
     security:[
-      { label:'Lockbox', val:'0525', sensitive:true },
+      { label:'Lockbox', val:'2609', sensitive:true },
       { label:'Safe', val:'159432', sensitive:true },
       { label:'Main Demo Brackets', val:'Scorpion (S003)' },
       { label:'Other Demo Brackets', val:'Scorpion (S006)' },
@@ -9273,8 +9270,10 @@ const STORES = {
       { role:'Retail Sales Consultant', name:'Erica Culbert', phone:'(318) 427-8638', email:'' },
     ],
     keys:[
-      { name:'Lockbox', count:1, lockbox:true },
+      { name:'Lockbox', count:4, lockbox:true },
       { name:'Matthew Gomez', count:1 },
+      { name:'Erica Culbert', count:1 },
+      { name:'Josue Garcia', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Erica Culbert', phone:'(318) 427-8638', email:'' },
