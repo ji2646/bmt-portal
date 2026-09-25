@@ -851,7 +851,7 @@ const ALLOWED_UIDS=[
   'mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
   'bb8326','jx820u','ji2646dm','sc417e','ju512j','ec651n',
-  'et7967','ah355r'
+  'et7967','ah355r','je101d'
 ];
 
 const DISABLED_UIDS=[];
@@ -864,7 +864,7 @@ const UID_NAMES={
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
   'jx820u':'Jose Manzo','ju512j':'Jonatan Ramirez','ec651n':'Erica Culbert',
-  'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez','ah355r':'Aliea Hemphill',
+  'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez','je101d':'Juan Ardon','ah355r':'Aliea Hemphill',
   'tbd752':'Store 752 (TBD)',
 };
 function fullName(uid){ return UID_NAMES[uid]||uid; }
@@ -1207,7 +1207,7 @@ const ACTIVITY_CREDS={
 
 // Activity store -> rep UIDs
 const STORE_REPS={
-  '777':['jq6635','jv6394','et7967','bb8326'], // Jaquelin + Joseph + Evelyn + Bryan
+  '777':['jq6635','jv6394','et7967','bb8326','je101d'], // Jaquelin + Joseph + Evelyn + Bryan + Juan
   '747':['tg4507'],                              // Thalia only (RSM TBD)
   '775':['mg221k','ec651n','ah355r'],        // Matthew + Erica + Aliea
   '769':['cx7250','bb8326','et7967'],         // Christina RSM + Bryan + Evelyn
@@ -1221,7 +1221,7 @@ const STORE_REPS={
 
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
-  'jq6635':['jq6635','jv6394','et7967','bb8326'],   // Jaquelin — store 777: Joseph, Evelyn, Bryan
+  'jq6635':['jq6635','jv6394','et7967','bb8326','je101d'], // Jaquelin — store 777: Joseph, Evelyn, Bryan, Juan
   'mg221k':['mg221k','ec651n','ah355r'],
   'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   'jx820u':['jx820u','ju512j'],
@@ -1297,7 +1297,7 @@ function verifyPin(){
   const uid=_pendingUid;
   const storeKey=uid==='ji2646dm'?'dm':
     uid==='jq6635'?'777':
-    uid===''?'747':
+    uid==='je101d'?'777':uid===''?'747':
     uid==='mg221k'?'775':
     uid==='jq286d'?'752':
     uid==='cx7250'?'769':
@@ -1394,7 +1394,7 @@ function handleActivityClick(){
     // Already authenticated via PIN at login — go straight to activity
     _activityStore=_activityStore||(_pendingUid==='ji2646dm'?'dm':
       _pendingUid==='jq6635'?'777':
-      _pendingUid===''?'747':
+      _pendingUid==='je101d'?'777':_pendingUid===''?'747':
       _pendingUid==='mg221k'?'775':
       _pendingUid==='jq286d'?'752':
       _pendingUid==='cx7250'?'769':
@@ -9198,6 +9198,7 @@ const STORES = {
       { role:'Retail Sales Consultant', name:'Joseph Cisneros', phone:'(409) 217-9226', email:'' },
       { role:'Retail Sales Consultant', name:'Evelyn Tellez', phone:'(409) 332-7832', email:'' },
       { role:'Retail Sales Consultant', name:'Bryan Barajas', phone:'(409) 300-0903', email:'' },
+      { role:'Retail Sales Consultant', name:'Juan Ardon', phone:'', email:'' },
     ],
     security:[
       { label:'Lockbox', val:'2568', sensitive:true },
