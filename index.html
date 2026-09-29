@@ -7351,7 +7351,19 @@ function dateInCycle(dateStr,cycle){
 }
 function parseDate(str){
   if(!str) return null;
-  try{const d=new Date(str);return isNaN(d)?null:d;}catch(e){return null;}
+  try{
+    // Handle MM/dd/yyyy format from Code.gs — parse as UTC to avoid timezone shift
+    const mdyMatch=str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if(mdyMatch){
+      return new Date(Date.UTC(parseInt(mdyMatch[3]),parseInt(mdyMatch[1])-1,parseInt(mdyMatch[2])));
+    }
+    // Handle yyyy-MM-dd ISO format
+    const isoMatch=str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(isoMatch){
+      return new Date(Date.UTC(parseInt(isoMatch[1]),parseInt(isoMatch[2])-1,parseInt(isoMatch[3])));
+    }
+    const d=new Date(str);return isNaN(d)?null:d;
+  }catch(e){return null;}
 }
 
 // ── WEEK HELPERS FOR TIME OFF ──
