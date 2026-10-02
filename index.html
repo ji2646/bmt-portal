@@ -841,7 +841,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-18SEP2026-A1</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-02OCT2026-A1</div>
 </div>
 
 <script>
@@ -3357,7 +3357,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 9/18/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 10/2/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3536,7 +3536,7 @@ if(typeof showToast==='undefined'){
     </div>
     <div id="fin-opts" style="display:none">
       <div class="fin-types">
-        <div class="ftype prog on" id="ft-prog" onclick="setFinType('prog')"><div class="fn">Progressive</div><div class="fd">$49.99 today · 10% lease fee + 8.25% tax · No credit check · Flexible payoff</div></div>
+        <div class="ftype prog on" id="ft-prog" onclick="setFinType('prog')"><div class="fn">Progressive</div><div class="fd">$1.00 today · 10% lease fee + 8.25% tax · No credit check · Flexible payoff</div></div>
         <div class="ftype bread" id="ft-bread" onclick="setFinType('bread')"><div class="fn">Bread Pay</div><div class="fd">Apply via Aktivate · Updated terms include variable APR and flexible term lengths.</div></div>
       </div>
       <div id="apr-sec" style="display:none">
@@ -3590,7 +3590,7 @@ if(typeof showToast==='undefined'){
 // ============================================================
 // CONSTANTS
 // ============================================================
-const TAX=0.0825,PROG_LEASE_FEE=0.10,PROG_FEE=PROG_LEASE_FEE+TAX,PROG_INIT=49.99,WATCH_PLAN=10,WATCH_ACT=25,TABLET_PLAN=15,ACT_FEE=25,SIM_FEE=9.99,INTL_CALL=10,HS_ADD=10;
+const TAX=0.0825,PROG_LEASE_FEE=0.10,PROG_FEE=PROG_LEASE_FEE+TAX,PROG_INIT=1,WATCH_PLAN=10,WATCH_ACT=25,TABLET_PLAN=15,ACT_FEE=25,SIM_FEE=9.99,INTL_CALL=10,HS_ADD=10;
 
 const SKEIWATCHES=[
   {id:'skei_c30',n:'Skeiwatch C30',price:99.99},
@@ -3615,7 +3615,7 @@ const PHONES=[
   {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_512', n:'iPhone 16 512GB',      sw:1029.99,nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:79.99,  nw:249.99,  up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:49.99,  nw:199.99,  up:599.99,  sw_o:249.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:649.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'i17e_256',n:'iPhone 17e 256GB',     sw:399.99, nw:499.99,  up:699.99,  sw_o:399.99, nw_o:499.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
@@ -3636,29 +3636,30 @@ const PHONES=[
   {id:'i18pro_1tb',n:'iPhone 18 Pro 1TB',    sw:1799.99,nw:1799.99,up:1799.99,frp:1799.99,brand:'Apple',promoReq:'any'},
   {id:'i18pm_256', n:'iPhone 18 Pro Max 256GB',sw:1299.99,nw:1299.99,up:1299.99,frp:1299.99,brand:'Apple',promoReq:'any'},
   {id:'i18pm_512', n:'iPhone 18 Pro Max 512GB',sw:1399.99,nw:1399.99,up:1399.99,frp:1399.99,brand:'Apple',promoReq:'any'},
-  {id:'i18pm_1tb', n:'iPhone 18 Pro Max 1TB', sw:1799.99,nw:1799.99,up:1799.99,frp:1799.99,brand:'Apple',promoReq:'any'},
+  {id:'i18pm_1tb', n:'iPhone 18 Pro Max 1TB', sw:1899.99,nw:1899.99,up:1899.99,frp:1899.99,brand:'Apple',promoReq:'any'},
   {id:'i17pm_2tb', n:'iPhone 17 Pro Max 2TB', sw:1999.99,nw:1999.99,up:1999.99,frp:1999.99,brand:'Apple',   promoReq:'any'},
   // Samsung
   {id:'a16',    n:'Galaxy A16',            sw:0,      nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:159.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
-  {id:'a17',    n:'Galaxy A17',            sw:0,      nw:19.99,   up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:179.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',    n:'Galaxy A37',            sw:49.99,  nw:129.99,  up:249.99,  sw_o:199.99, nw_o:199.99, up_o:249.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
-  {id:'a57',    n:'Galaxy A57',            sw:549.99, nw:549.99,  up:549.99,  sw_o:549.99, nw_o:549.99, up_o:549.99,  frp:549.99,  brand:'Samsung',  maxLines:4},
+  {id:'a17',    n:'Galaxy A17',            sw:0,      nw:29.99,   up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
+  {id:'a37',    n:'Galaxy A37',            sw:59.99,  nw:129.99,  up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
+  {id:'a57',    n:'Galaxy A57',            sw:149.99, nw:199.99,  up:599.99,  sw_o:299.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25fe',  n:'Galaxy S25 FE',         sw:149.99, nw:199.99,  up:649.99,  sw_o:399.99, nw_o:399.99, up_o:649.99,  frp:649.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26fe',  n:'Galaxy S26 FE',         sw:699.99, nw:699.99,  up:699.99,  sw_o:699.99, nw_o:699.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  maxLines:4},
+  {id:'s26fe',  n:'Galaxy S26 FE',         sw:199.99, nw:299.99,  up:699.99,  sw_o:399.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',    n:'Galaxy S25',            sw:360,    nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
   {id:'s26',    n:'Galaxy S26',            sw:399.99, nw:499.99,  up:899.99,  sw_o:699.99, nw_o:699.99, up_o:899.99,  frp:899.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26u',   n:'Galaxy S26 Ultra',      sw:699.99, nw:899.99,  up:1299.99, sw_o:1099.99,nw_o:1099.99, up_o:1299.99, frp:1299.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'s26u',   n:'Galaxy S26 Ultra',      sw:799.99, nw:999.99,  up:1399.99, sw_o:1099.99,nw_o:1099.99, up_o:1399.99, frp:1399.99, brand:'Samsung',  promoReq:'supreme'},
   {id:'zfold8', n:'Galaxy Z Fold8',        sw:1899.99,nw:1899.99, up:1899.99, sw_o:1899.99,nw_o:1899.99, up_o:1899.99, frp:1899.99, brand:'Samsung',  maxLines:4},
   // Motorola
   {id:'mgplay', n:'moto g play 2026',      sw:0,      nw:0,       up:139.99,  sw_o:29.99,  nw_o:29.99,  up_o:139.99,  frp:139.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
   {id:'mg26',   n:'moto g 2026',           sw:0,      nw:0,       up:89.99,   sw_o:29.99,  nw_o:29.99,  up_o:89.99,   frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgpwr',  n:'moto g power 2026',     sw:0,      nw:9.99,    up:199.99,  sw_o:59.99,  nw_o:59.99,  up_o:199.99,  frp:199.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgsty',  n:'moto g stylus 2025',    sw:29.99,  nw:39.99,   up:149.99,  sw_o:69.99,  nw_o:69.99,  up_o:149.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',  n:'motorola edge 2026',    sw:59.99,  nw:149.99,  up:429.99,  sw_o:129.99, nw_o:199.99, up_o:429.99,  frp:429.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'medge',  n:'motorola edge 2026',    sw:79.99,  nw:149.99,  up:249.99,  sw_o:199.99, nw_o:299.99, up_o:249.99,  frp:469.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'medge25', n:'motorola edge 2025',    sw:9.99,   nw:49.99,   up:359.99,  sw_o:99.99,  nw_o:199.99, up_o:359.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'razr',   n:'motorola razr 2025',    sw:149.99, nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
   {id:'iconp',  n:'Icon Plus 2026',        sw:0,      nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'iconpr', n:'Icon Pro 2026',         sw:0,      nw:0,       up:139.99,  sw_o:39.99,  nw_o:39.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
   {id:'debs3',  n:'Debut S3',              sw:0,      nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
   {id:'debtflex', n:'Cricket Debut Flex',    sw:59.99,  nw:59.99,   up:79.99,   sw_o:59.99,  nw_o:59.99,  up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'any'},
 ];
@@ -3666,9 +3667,9 @@ const PHONES=[
 const WATCHES=[
   {id:'wse3_40',n:'Watch SE 3 – 40mm',  price:289.99,frp:299.99,posOff:10,credit:10,creditMo:6},
   {id:'wse3_44',n:'Watch SE 3 – 44mm',  price:319.99,frp:329.99,posOff:10,credit:10,creditMo:6},
-  {id:'ws11_42',n:'Watch Series 11 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
-  {id:'ws11_46',n:'Watch Series 11 – 46mm',price:519.99,frp:529.99,posOff:10,credit:10,creditMo:10},
-  {id:'wu3',    n:'Watch Ultra 3 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
+  {id:'ws12_42',n:'Watch Series 12 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
+  {id:'ws12_46',n:'Watch Series 12 – 46mm',price:539.99,frp:549.99,posOff:10,credit:10,creditMo:10},
+  {id:'wu4',    n:'Watch Ultra 4 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
 ];
 
 const TABLETS=[
@@ -7875,16 +7876,23 @@ function buildPartialCopyText(r){
 // ══════════════════════════════════════════════════════════════
 
 // ── Constants ──
-const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30};
+const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30,'october2026':31,'november2026':30,'december2026':31};
+// Dynamic fallback: if month not in map, calculate days in month
+function getDaysInMonth(key){if(DSR_DAYS_IN_MONTH_MAP[key])return DSR_DAYS_IN_MONTH_MAP[key];const m=key.match(/^([a-z]+)(\d{4})$/);if(!m)return 30;const months={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};const mo=months[m[1]];const yr=parseInt(m[2]);if(!mo)return 30;return new Date(yr,mo,0).getDate();}
 const DSR_MONTHS = [
-  {key:'june2026',  label:'June 2026'},
-  {key:'may2026',   label:'May 2026'},
-  {key:'april2026', label:'April 2026'},
+  {key:'october2026',   label:'October 2026'},
+  {key:'september2026', label:'September 2026'},
+  {key:'august2026',    label:'August 2026'},
+  {key:'july2026',      label:'July 2026'},
+  {key:'june2026',      label:'June 2026'},
+  {key:'may2026',       label:'May 2026'},
+  {key:'april2026',     label:'April 2026'},
 ]; // fallback — overwritten by months_fetch on load
-let _dsrActiveMonth    = 'september2026';
+const _autoMonth=(()=>{const d=new Date();const mo=d.toLocaleString('en-US',{month:'long'}).toLowerCase();const yr=d.getFullYear();return mo+yr;})();
+let _dsrActiveMonth    = _autoMonth;
 let DSR_DAYS_IN_MONTH  = 31;
-let DSR_MONTH_LABEL    = 'September 2026';
-let DSR_MONTH_KEY      = 'september2026';
+let DSR_MONTH_LABEL    = (()=>{const d=new Date();return d.toLocaleString('en-US',{month:'long'})+' '+d.getFullYear();})();
+let DSR_MONTH_KEY      = _autoMonth;
 
 // Store goals — all zeroed, populated entirely by goals_fetch from sheet
 const DSR_GOALS = {
