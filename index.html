@@ -581,6 +581,80 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
   }
   html:not(.dark-mode) body { background:#F8F9FA !important; }
 }
+/* ── STORE CHIPS ── */
+.store-chips{display:flex;gap:8px;padding:14px 16px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+.store-chips::-webkit-scrollbar{display:none}
+.schip{padding:8px 16px;border-radius:20px;border:1.5px solid var(--bd);background:var(--s1);color:var(--t2);font-family:'DM Sans';font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.3px}
+.schip.active{border-color:var(--g);background:var(--g);color:#fff}
+/* ── STORE BANNER ── */
+.store-banner{background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,169,79,.06)}
+.store-id-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:nowrap;overflow:hidden}
+.store-num{font-family:'Bebas Neue';font-size:18px;color:var(--g);line-height:1;letter-spacing:.5px;flex-shrink:0}
+.store-name{font-family:'Bebas Neue';font-size:18px;color:var(--t1);line-height:1;letter-spacing:.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-addr{font-size:11px;color:var(--t3);line-height:1.6;margin-top:4px}
+/* ── PERSON / STAFF ── */
+.person-block{padding:10px 0;border-bottom:1px solid var(--bd)}
+.person-block:last-child{border-bottom:none;padding-bottom:0}
+.person-block:first-child{padding-top:0}
+.person-role-tag{font-size:10px;color:var(--g);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
+.person-name{font-size:13px;font-weight:800;color:var(--t1);margin-bottom:5px}
+.person-contacts{display:flex;flex-direction:column;gap:4px}
+.person-contact{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:8px}
+.person-contact svg{width:13px;height:13px;flex-shrink:0;color:var(--g)}
+.person-contact a{color:var(--t2);text-decoration:none}
+.person-contact a:hover{color:var(--g)}
+/* ── INFO ROWS ── */
+.info-block{padding:9px 0;border-bottom:1px solid var(--bd)}
+.info-block:last-child{border-bottom:none;padding-bottom:0}
+.info-block:first-child{padding-top:0}
+.info-label{font-size:9.5px;font-weight:800;color:var(--g);letter-spacing:.3px;text-transform:uppercase;margin-bottom:2px;white-space:nowrap}
+.info-val{font-size:13px;font-weight:700;color:var(--t1);word-break:break-all}
+.info-val a{color:var(--t1);text-decoration:none}
+.info-val a:hover{color:var(--g)}
+/* ── WIFI ── */
+.wifi-row{padding:9px 0;border-bottom:1px solid var(--bd)}
+.wifi-row:last-child{border-bottom:none;padding-bottom:0}
+.wifi-row:first-child{padding-top:0}
+.wifi-label{font-size:10px;font-weight:800;color:var(--g);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;white-space:nowrap}
+.wifi-pass{font-size:13px;font-weight:700;color:var(--t1)}
+.wifi-note{margin-top:10px;background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.25);border-radius:var(--r2);padding:9px 12px;font-size:11px;color:#92400E;line-height:1.6;display:flex;align-items:flex-start;gap:7px}
+.wifi-note svg{width:13px;height:13px;color:var(--warn);flex-shrink:0;margin-top:1px}
+/* ── KEY LOG ── */
+.key-row{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.key-row:last-child{margin-bottom:0}
+.key-icon{width:34px;height:34px;border-radius:50%;background:rgba(0,169,79,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.key-icon svg{width:15px;height:15px;color:var(--g)}
+.key-info{flex:1;min-width:0}
+.key-name{font-size:12px;font-weight:800;color:var(--t1)}
+.key-count{background:var(--g);color:#fff;font-family:'Bebas Neue';font-size:18px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:1px}
+.key-count.lockbox{background:var(--t2)}
+/* ── SECURITY ── */
+.sec-row{padding:9px 0;border-bottom:1px solid var(--bd)}
+.sec-row:last-child{border-bottom:none;padding-bottom:0}
+.sec-row:first-child{padding-top:0}
+.sec-label{font-size:10px;font-weight:800;color:var(--g);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;white-space:nowrap}
+.sec-val{font-size:13px;font-weight:700;color:var(--t1)}
+.sec-val.blur{filter:blur(5px);transition:filter .2s;cursor:pointer;user-select:none;border-radius:4px}
+.sec-val.blur:hover,.sec-val.blur.on{filter:none}
+/* ── STORE INFO OVERLAY ── */
+#store-info-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:600;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+/* ── SUPPORT OVERLAY ── */
+#support-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:600;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.page-title{background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:12px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,169,79,.06)}
+.sup-sec{background:var(--s1);border:1.5px solid rgba(0,169,79,.25);border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,169,79,.06)}
+.sup-sec-head{padding:10px 14px;border-bottom:1.5px solid rgba(0,169,79,.2);background:rgba(0,169,79,.04)}
+.sup-sec-title{font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--g)}
+.sup-sec-body{padding:14px}
+.support-block{padding:10px 0;border-bottom:1px solid var(--bd)}
+.support-block:last-child{border-bottom:none;padding-bottom:0}
+.support-block:first-child{padding-top:0}
+.support-name{font-size:13px;font-weight:800;color:var(--t1);margin-bottom:5px}
+.support-contact{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.support-contact:last-child{margin-bottom:0}
+.support-contact svg{width:13px;height:13px;flex-shrink:0;color:var(--g)}
+.support-contact a{color:var(--t2);text-decoration:none}
+.support-note{margin-top:10px;background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.25);border-radius:8px;padding:9px 12px;font-size:11px;color:#92400E;line-height:1.6;display:flex;align-items:flex-start;gap:7px}
+.support-note svg{width:13px!important;height:13px!important;flex-shrink:0;margin-top:1px}
 </style>
 </head>
 <body>
@@ -649,6 +723,8 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
         <button type="button" id="btn-sales-tracker" onclick="launchSalesTracker()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Sales Tracker</span></span></button>
         <button type="button" id="btn-timemgmt" onclick="launchTimeMgmt()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Time Management</span></span></button>
         <button type="button" id="btn-activity" onclick="handleActivityClick()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Activity</span></span></button>
+        <button type="button" id="btn-support" onclick="launchSupport()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 13a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Support Information</span></span></button>
+        <button type="button" id="btn-store-info" onclick="launchStoreInfo()" style="width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Store Information</span></span></button>
         <button type="button" id="btn-store-perf" onclick="launchStoreDash()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">Store Performance</span></span></button>
         <button type="button" id="btn-dm-dash" onclick="launchDMDash()" style="display:none;width:100%;padding:13px;background:#fff;border:1px solid #E2E5E9;border-radius:6px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:8px;letter-spacing:.3px;box-shadow:0 1px 3px rgba(0,0,0,.06)"><span style="display:flex;align-items:center;width:100%"><span style="width:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span style="flex:1;text-align:center;margin-right:26px">DM Dashboard</span></span></button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
@@ -1233,6 +1309,10 @@ function showMenu(){
   // DSR Dashboard: Store Performance (all roles), DM Dashboard (DM + Jaq only)
   const btnSP = document.getElementById('btn-store-perf');
   if(btnSP) btnSP.style.display='block';
+  const btnSI = document.getElementById('btn-store-info');
+  if(btnSI) btnSI.style.display='block';
+  const btnSup = document.getElementById('btn-support');
+  if(btnSup) btnSup.style.display='block';
   const btnDM2 = document.getElementById('btn-dm-dash');
   if(btnDM2) btnDM2.style.display=isDM?'block':'none';
 }
@@ -1307,7 +1387,7 @@ function goHome(){
   // Hide all overlays, show login screen at menu
   document.getElementById('perf-overlay').classList.remove('perf-open');
   ['app-content','tm-overlay','rep-activity-overlay','ra-detail-overlay',
-   'perf-overlay','sales-tracker-overlay','activity-overlay','dsr-overlay'].forEach(id=>{
+   'perf-overlay','sales-tracker-overlay','activity-overlay','dsr-overlay','store-info-overlay','support-overlay'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -2988,12 +3068,12 @@ if(typeof showToast==='undefined'){
 
 <div class="app-content" id="app-content" style="background:#F8F9FA;min-height:100vh">
 <div class="hi-banner">
-  <!-- AIA -->
+  <!-- Cricket Home Internet -->
   <div style="padding:10px 14px;border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:3px;background:var(--s1)">
-    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:2px;font-family:'DM Sans'">📡 AT&T Internet Air</div>
-    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$47/mo + taxes w/ AutoPay!</div>
-    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">Any Govt ID · Only at Cricket</div>
-    <div style="font-size:9px;color:var(--t3);margin-top:1px;line-height:1.3">Via SaraPlus · Billing by AT&T</div>
+    <div style="font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:2px;font-family:'DM Sans'">📶 Cricket Home Internet</div>
+    <div style="font-family:'Bebas Neue';font-size:20px;color:var(--t1);letter-spacing:.5px;line-height:1.1">$45/mo + taxes w/ AutoPay!</div>
+    <div style="font-size:10px;color:var(--t2);font-weight:600;line-height:1.3">Requires Voice Line · Only at Cricket</div>
+    <div style="font-size:9px;color:var(--t3);margin-top:1px;line-height:1.3">Via Aktivate · Billing by Cricket</div>
   </div>
   <!-- Fiber -->
   <div style="padding:10px 14px;display:flex;flex-direction:column;gap:3px;background:var(--s1)">
@@ -3005,7 +3085,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 7/3/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 10/2/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3242,59 +3322,67 @@ const PLANS=[
 // promoReq = plan needed for promo pricing. sw/nw/up = promo price. sw_o/nw_o/up_o = other plan price (null = same as promo / not available)
 const PHONES=[
   // Apple
-  {id:'i13_128', n:'iPhone 13 128GB',      sw:29.99,  nw:99.99,   up:629.99,  sw_o:99.99,  nw_o:199.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i15_128', n:'iPhone 15 128GB',      sw:349.99, nw:449.99,  up:629.99,  sw_o:449.99, nw_o:549.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i15_256', n:'iPhone 15 256GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16_128', n:'iPhone 16 128GB',      sw:729.99, nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16_256', n:'iPhone 16 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i16_512', n:'iPhone 16 512GB',      sw:1029.99,nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
-  {id:'i16e_128',n:'iPhone 16e 128GB',     sw:79.99,  nw:199.99,  up:599.99,  sw_o:249.99, nw_o:349.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_256',n:'iPhone 16e 256GB',     sw:149.99, nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_512',n:'iPhone 16e 512GB',     sw:349.99, nw:499.99,  up:899.99,  sw_o:499.99, nw_o:599.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_256',n:'iPhone 17e 256GB',     sw:299.99, nw:399.99,  up:599.99,  sw_o:399.99, nw_o:499.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_512',n:'iPhone 17e 512GB',     sw:499.99, nw:599.99,  up:799.99,  sw_o:599.99, nw_o:699.99, up_o:799.99,  frp:799.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17_256', n:'iPhone 17 256GB',      sw:829.99, nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i17_512', n:'iPhone 17 512GB',      sw:1029.99,nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
-  {id:'iair_256',n:'iPhone Air 256GB',     sw:999.99, nw:999.99,  up:999.99,  frp:999.99,  brand:'Apple',    promoReq:'any'},
-  {id:'iair_512',n:'iPhone Air 512GB',     sw:1199.99,nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
-  {id:'iair_1tb', n:'iPhone Air 1TB',       sw:1399.99,nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
-  {id:'i17p_256',n:'iPhone 17 Pro 256GB',  sw:1099.99,nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
-  {id:'i17p_512',n:'iPhone 17 Pro 512GB',  sw:1299.99,nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
-  {id:'i17p_1tb', n:'iPhone 17 Pro 1TB',    sw:1499.99,nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
-  {id:'i17pm_256',n:'iPhone 17 Pro Max 256GB',sw:1199.99,nw:1199.99,up:1199.99,frp:1199.99,brand:'Apple',   promoReq:'any'},
-  {id:'i17pm_512',n:'iPhone 17 Pro Max 512GB',sw:1399.99,nw:1399.99,up:1399.99,frp:1399.99,brand:'Apple',   promoReq:'any'},
-  {id:'i17pm_1tb', n:'iPhone 17 Pro Max 1TB', sw:1599.99,nw:1599.99,up:1599.99,frp:1599.99,brand:'Apple',   promoReq:'any'},
-  {id:'i17pm_2tb', n:'iPhone 17 Pro Max 2TB', sw:1999.99,nw:1999.99,up:1999.99,frp:1999.99,brand:'Apple',   promoReq:'any'},
+  {id:'i13_128',  n:'iPhone 13 128GB',           sw:29.99,   nw:99.99,   up:629.99,  sw_o:99.99,  nw_o:199.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i15_128',  n:'iPhone 15 128GB',           sw:349.99,  nw:449.99,  up:629.99,  sw_o:449.99, nw_o:549.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i15_256',  n:'iPhone 15 256GB',           sw:729.99,  nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
+  {id:'i16_128',  n:'iPhone 16 128GB',           sw:729.99,  nw:729.99,  up:729.99,  frp:729.99,  brand:'Apple',    promoReq:'any'},
+  {id:'i16_256',  n:'iPhone 16 256GB',           sw:829.99,  nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
+  {id:'i16_512',  n:'iPhone 16 512GB',           sw:1029.99, nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
+  {id:'i16e_128', n:'iPhone 16e 128GB',          sw:49.99,   nw:199.99,  up:299.99,  sw_o:199.99, nw_o:349.99, up_o:299.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,  nw:299.99,  up:449.99,  sw_o:349.99, nw_o:449.99, up_o:449.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:349.99,  nw:499.99,  up:649.99,  sw_o:549.99, nw_o:599.99, up_o:649.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:149.99,  nw:299.99,  up:449.99,  sw_o:349.99, nw_o:499.99, up_o:599.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:399.99,  nw:499.99,  up:599.99,  sw_o:499.99, nw_o:699.99, up_o:799.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17_256',  n:'iPhone 17 256GB',           sw:929.99,  nw:929.99,  up:929.99,  frp:929.99,  brand:'Apple',    promoReq:'any'},
+  {id:'i17_512',  n:'iPhone 17 512GB',           sw:1129.99, nw:1129.99, up:1129.99, frp:1129.99, brand:'Apple',    promoReq:'any'},
+  {id:'iair_256', n:'iPhone Air 256GB',          sw:1099.99, nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
+  {id:'iair_512', n:'iPhone Air 512GB',          sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'iair_1tb', n:'iPhone Air 1TB',            sw:1699.99, nw:1699.99, up:1699.99, frp:1699.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17p_256', n:'iPhone 17 Pro 256GB',       sw:1099.99, nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17p_512', n:'iPhone 17 Pro 512GB',       sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17p_1tb', n:'iPhone 17 Pro 1TB',         sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17pm_256',n:'iPhone 17 Pro Max 256GB',   sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17pm_512',n:'iPhone 17 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17pm_1tb',n:'iPhone 17 Pro Max 1TB',     sw:1599.99, nw:1599.99, up:1599.99, frp:1599.99, brand:'Apple',    promoReq:'any'},
+  {id:'i17pm_2tb',n:'iPhone 17 Pro Max 2TB',     sw:1999.99, nw:1999.99, up:1999.99, frp:1999.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_256', n:'iPhone 18 Pro 256GB',       sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_512', n:'iPhone 18 Pro 512GB',       sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_1tb', n:'iPhone 18 Pro 1TB',         sw:1899.99, nw:1899.99, up:1899.99, frp:1899.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_256',n:'iPhone 18 Pro Max 256GB',   sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_512',n:'iPhone 18 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_1tb',n:'iPhone 18 Pro Max 1TB',     sw:1799.99, nw:1799.99, up:1799.99, frp:1799.99, brand:'Apple',    promoReq:'any'},
   // Samsung
-  {id:'a16',    n:'Galaxy A16',            sw:0,      nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:159.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
-  {id:'a17',    n:'Galaxy A17',            sw:0,      nw:19.99,   up:179.99,  sw_o:109.99, nw_o:109.99, up_o:179.99,  frp:179.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',    n:'Galaxy A37',            sw:99.99,  nw:99.99,   up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
-  {id:'a36',    n:'Galaxy A36',            sw:39.99,  nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s25fe',  n:'Galaxy S25 FE',         sw:149.99, nw:149.99,  up:649.99,  sw_o:399.99, nw_o:399.99, up_o:649.99,  frp:649.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s25',    n:'Galaxy S25',            sw:360,    nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
-  {id:'s26',    n:'Galaxy S26',            sw:399.99, nw:499.99,  up:899.99,  sw_o:699.99, nw_o:699.99, up_o:899.99,  frp:899.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26u',   n:'Galaxy S26 Ultra',      sw:699.99, nw:899.99,  up:1299.99, sw_o:1099.99,nw_o:1099.99, up_o:1299.99, frp:1299.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'a16',     n:'Galaxy A16',                 sw:0,       nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:199.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
+  {id:'a17',     n:'Galaxy A17',                 sw:0,       nw:29.99,   up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
+  {id:'a37',     n:'Galaxy A37',                 sw:59.99,   nw:129.99,  up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
+  {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'a36',     n:'Galaxy A36',                 sw:39.99,   nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,  nw:299.99,  up:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s25',     n:'Galaxy S25',                 sw:360,     nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
+  {id:'s26',     n:'Galaxy S26',                 sw:499.99,  nw:599.99,  up:999.99,  sw_o:699.99, nw_o:699.99, up_o:999.99,  frp:999.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s26u',    n:'Galaxy S26 Ultra',           sw:799.99,  nw:999.99,  up:1399.99, sw_o:1099.99,nw_o:1099.99,up_o:1399.99, frp:1399.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
   // Motorola
-  {id:'mgplay', n:'moto g play 2026',      sw:0,      nw:0,       up:139.99,  sw_o:29.99,  nw_o:29.99,  up_o:139.99,  frp:139.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
-  {id:'mg26',   n:'moto g 2026',           sw:0,      nw:0,       up:79.99,   sw_o:29.99,  nw_o:29.99,  up_o:79.99,   frp:169.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'mgpwr',  n:'moto g power 2026',     sw:19.99,  nw:39.99,   up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'mgsty',  n:'moto g stylus 2025',    sw:29.99,  nw:29.99,   up:239.99,  sw_o:69.99,  nw_o:69.99,  up_o:239.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',  n:'motorola edge 2025',    sw:29.99,  nw:99.99,   up:199.99,  sw_o:129.99, nw_o:199.99, up_o:199.99,  frp:359.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'razr',   n:'motorola razr 2025',    sw:149.99, nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
+  {id:'mgplay',  n:'moto g play 2026',           sw:0,       nw:0,       up:159.99,  sw_o:29.99,  nw_o:29.99,  up_o:159.99,  frp:159.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
+  {id:'mg26',    n:'moto g 2026',                sw:0,       nw:0,       up:189.99,  sw_o:29.99,  nw_o:29.99,  up_o:189.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'mgpwr',   n:'moto g power 2026',          sw:0,       nw:19.99,   up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:199.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'mgsty',   n:'moto g stylus 2025',         sw:29.99,   nw:39.99,   up:149.99,  sw_o:69.99,  nw_o:69.99,  up_o:149.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'medge',   n:'motorola edge 2026',         sw:79.99,   nw:149.99,  up:249.99,  sw_o:129.99, nw_o:199.99, up_o:249.99,  frp:469.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'razr',    n:'motorola razr 2025',         sw:149.99,  nw:149.99,  up:399.99,  sw_o:399.99, nw_o:399.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
-  {id:'icon',   n:'Icon 2026',             sw:0,      nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
-  {id:'iconp',  n:'Icon Plus 2026',        sw:0,      nw:0,       up:59.99,   sw_o:29.99,  nw_o:29.99,  up_o:59.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
-  {id:'debs3',  n:'Debut S3',              sw:0,      nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
-  {id:'debtflex', n:'Cricket Debut Flex',    sw:59.99,  nw:59.99,   up:79.99,   sw_o:59.99,  nw_o:59.99,  up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'any'},
-  {id:'iconpr', n:'Icon Pro 2026',         sw:0,      nw:0,       up:124.99,  sw_o:29.99,  nw_o:29.99,  up_o:124.99,  frp:124.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'icon',    n:'Icon 2026',                  sw:0,       nw:0,       up:104.99,  sw_o:29.99,  nw_o:29.99,  up_o:104.99,  frp:104.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'iconp',   n:'Icon Plus 2026',             sw:0,       nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'debs3',   n:'Debut S3',                   sw:0,       nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
+  {id:'debtflex',n:'Cricket Debut Flex',         sw:59.99,   nw:59.99,   up:99.99,   sw_o:59.99,  nw_o:59.99,  up_o:99.99,   frp:99.99,   brand:'Cricket',  promoReq:'any'},
+  {id:'iconpr',  n:'Icon Pro 2026',              sw:0,       nw:0,       up:139.99,  sw_o:29.99,  nw_o:29.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
 ];
 
 const WATCHES=[
-  {id:'wse3_40',n:'Watch SE 3 – 40mm',  price:289.99,frp:299.99,posOff:10,credit:10,creditMo:6},
-  {id:'wse3_44',n:'Watch SE 3 – 44mm',  price:319.99,frp:329.99,posOff:10,credit:10,creditMo:6},
-  {id:'ws11_42',n:'Watch Series 11 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
-  {id:'ws11_46',n:'Watch Series 11 – 46mm',price:519.99,frp:529.99,posOff:10,credit:10,creditMo:10},
-  {id:'wu3',    n:'Watch Ultra 3 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
+  {id:'wse3_40',n:'Watch SE 3 – 40mm',     price:289.99,frp:299.99,posOff:10,credit:10,creditMo:6},
+  {id:'wse3_44',n:'Watch SE 3 – 44mm',     price:319.99,frp:329.99,posOff:10,credit:10,creditMo:6},
+  {id:'ws12_42',n:'Watch Series 12 – 42mm',price:489.99,frp:499.99,posOff:10,credit:10,creditMo:10},
+  {id:'ws12_46',n:'Watch Series 12 – 46mm',price:539.99,frp:549.99,posOff:10,credit:10,creditMo:10},
+  {id:'wu4',    n:'Watch Ultra 4 – 49mm',  price:784.99,frp:799.99,posOff:15,credit:15,creditMo:10},
 ];
 
 const TABLETS=[
@@ -4164,7 +4252,7 @@ function renderDealStrip(){
     </div>
     <div class="deal-card android" onclick="launchDeal('hiend')">
       <div class="deal-tag">📱 High End Android</div>
-      ${devPick('hiend',[{id:'razr',lbl:'Razr 2025'},{id:'s25',lbl:'Galaxy S25'},{id:'s25fe',lbl:'Galaxy S25 FE'}])}
+      ${devPick('hiend',[{id:'razr',lbl:'Razr 2025'},{id:'s25',lbl:'Galaxy S25'},{id:'s26fe',lbl:'Galaxy S26 FE'}])}
       ${ltRow3('hiend',['var(--warn)',gc,'var(--indigo)'])}
       <div class="deal-price" style="color:${ltColor(c4.lt)}">${fmt(Math.round(c4otd*100)/100)}</div>
       <div class="deal-sub">Supreme UNL · $90 APD · Protect</div>
@@ -8765,6 +8853,452 @@ function dmSnapPair(pairIdx){
   doCapture(wrap);
   setTimeout(()=>{ if(document.body.contains(wrap)) document.body.removeChild(wrap); },3000);
 }
+
+// ── STORE INFORMATION ────────────────────────────────────────────────────────
+
+const STORES = {
+  '777': {
+    id:'777', name:'Port Arthur – Jefferson Dr',
+    address:'1700 Jefferson Dr, Suite 200, Port Arthur TX 77642',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'Jaquelin Sauceda', phone:'(409) 332-2776', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193777' },
+      { label:'Phone', val:'(409) 548-4956', phone:true },
+      { label:'Email', val:'PortArthurJeffersonDrTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'3ezb' },
+      { label:'AC Filter Size', val:'20×20×1' },
+      { label:'Last Filter Change', val:'October 1, 2026' },
+      { label:'Next Change Due', val:'January 1, 2027' },
+    ],
+    wifi:[
+      { name:'Cricket Demo',  pass:'A10=GR8!' },
+      { name:'Cricket Guest', pass:'Cricket123' },
+    ],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:2, lockbox:true },
+      { name:'Jaquelin Sauceda', count:1 },
+      { name:'Joseph Cisneros', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Joseph Cisneros', phone:'(409) 217-9226', email:'' },
+      { role:'Retail Sales Consultant', name:'Bryan Barajas', phone:'(409) 300-0903', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'2568', sensitive:true },
+      { label:'Safe', val:'572374', sensitive:true },
+      { label:'Main Demo Brackets', val:'Invue' },
+      { label:'Other Demo Brackets', val:'MTI, Scorpion (S006)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+  '747': {
+    id:'747', name:'Beaumont – College St',
+    address:'3786 College St, Beaumont TX 77701',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'RSM TBD', phone:'', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193747' },
+      { label:'Phone', val:'(409) 833-9200', phone:true },
+      { label:'Email', val:'BeaumontCollegeStTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'iusp' },
+      { label:'AC Filter Size', val:'20×20×1' },
+      { label:'Last Filter Change', val:'October 1, 2026' },
+      { label:'Next Change Due', val:'January 1, 2027' },
+    ],
+    wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:3, lockbox:true },
+      { name:'Thalia Gonzalez', count:1 },
+      { name:'Josue Garcia', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Thalia Gonzalez', phone:'(409) 273-1368', email:'' },
+      { role:'Retail Sales Consultant', name:'Evelyn Tellez', phone:'(409) 332-7832', email:'' },
+      { role:'Retail Sales Consultant – Training', name:'Keila Alvarado', phone:'(941) 580-1609', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'2609', sensitive:true },
+      { label:'Safe', val:'159432', sensitive:true },
+      { label:'Main Demo Brackets', val:'Scorpion (S003)' },
+      { label:'Other Demo Brackets', val:'Scorpion (S006)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+  '775': {
+    id:'775', name:'Beaumont – Dowlen Rd',
+    address:'4408 Dowlen Rd, Beaumont TX 77706',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'Matthew Gomez', phone:'(210) 578-5423', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193775' },
+      { label:'Phone', val:'(409) 554-0264', phone:true },
+      { label:'Email', val:'BeaumontDowlenRdTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'luwh' },
+      { label:'AC Filter Size', val:'20×20×1' },
+      { label:'Last Filter Change', val:'October 6, 2026' },
+      { label:'Next Change Due', val:'January 6, 2027' },
+    ],
+    wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:4, lockbox:true },
+      { name:'Matthew Gomez', count:1 },
+      { name:'Erica Culbert', count:1 },
+      { name:'Josue Garcia', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Erica Culbert', phone:'GroupMe', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'1437', sensitive:true },
+      { label:'Safe', val:'Keys for safe are located in the black drawer next to the PC.', sensitive:false },
+      { label:'Main Demo Brackets', val:'Scorpion (S003)' },
+      { label:'Other Demo Brackets', val:'Scorpion (S006)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+  '769': {
+    id:'769', name:'Port Arthur – Memorial Blvd',
+    address:'8555 Memorial Blvd, Suite 300, Port Arthur TX 77640',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'Christina Muzquiz', phone:'(409) 300-6620', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193769' },
+      { label:'Phone', val:'(409) 344-4144', phone:true },
+      { label:'Email', val:'PortArthurMemorialBlvdTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'eked' },
+      { label:'AC Filter Size', val:'20×20×1' },
+      { label:'Last Filter Change', val:'Managed by HVAC Company' },
+      { label:'Next Change Due', val:'—' },
+    ],
+    wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:1, lockbox:true },
+      { name:'Christina Muzquiz', count:1 },
+      { name:'Bryan Barajas', count:1 },
+      { name:'Jaquelin Sauceda', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Bryan Barajas', phone:'(409) 300-0903', email:'' },
+      { role:'Retail Sales Consultant', name:'Evelyn Tellez', phone:'(409) 332-7832', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'4376', sensitive:true },
+      { label:'Safe', val:'169258', sensitive:true },
+      { label:'Main Demo Brackets', val:'Scorpion (S002)' },
+      { label:'Other Demo Brackets', val:'Scorpion (S006)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+  '752': {
+    id:'752', name:'Port Arthur – Twin City Hwy',
+    address:'4515 N Twin City Hwy, Suite 100B, Port Arthur TX 77642',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'Josue Sosa', phone:'(409) 433-2172', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193752' },
+      { label:'Phone', val:'(409) 963-3500', phone:true },
+      { label:'Email', val:'PortArthurTwinCityHwyTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'ghjr' },
+      { label:'AC Filter Size', val:'20×25×1' },
+      { label:'Last Filter Change', val:'July 29, 2026' },
+      { label:'Next Change Due', val:'September 29, 2026' },
+    ],
+    wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:3, lockbox:true },
+      { name:'Josue Sosa', count:1 },
+      { name:'Sergio Cardenas', count:1 },
+      { name:'Bryan Barajas', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Sergio Cardenas', phone:'(409) 293-0469', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'3596', sensitive:true },
+      { label:'Safe', val:'875281', sensitive:true },
+      { label:'Main Demo Brackets', val:'MTI, Scorpion (S006)' },
+      { label:'Other Demo Brackets', val:'Scorpion (S002, S003)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+  '768': {
+    id:'768', name:'West Orange – 16th St',
+    address:'3121 Edgar Brown Dr, Suite C, West Orange TX 77630',
+    leadership:[
+      { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
+      { role:'Store Manager', name:'Jose Manzo', phone:'(409) 549-3428', email:'' },
+    ],
+    info:[
+      { label:'Location ID', val:'80193768' },
+      { label:'Phone', val:'(409) 330-4093', phone:true },
+      { label:'Email', val:'WestOrangeTX@suncommobile.com', email:true },
+      { label:'Mozeus Region Code', val:'807798020361' },
+      { label:'Mozeus PIN', val:'qqup' },
+      { label:'AC Filter Size', val:'24×24×1' },
+      { label:'Last Filter Change', val:'—' },
+      { label:'Next Change Due', val:'Send to DM' },
+    ],
+    wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
+    wifiNote:'Only use "Cricket POS" on Aktivate iPads',
+    keys:[
+      { name:'Lockbox', count:2, lockbox:true },
+      { name:'Jose Manzo', count:1 },
+    ],
+    staff:[
+      { role:'Retail Sales Consultant', name:'Jonatan Ramirez', phone:'(409) 216-3103', email:'' },
+    ],
+    security:[
+      { label:'Lockbox', val:'4806', sensitive:true },
+      { label:'Safe', val:'480951', sensitive:true },
+      { label:'Main Demo Brackets', val:'Scorpion (S004)' },
+      { label:'Other Demo Brackets', val:'Scorpion (S006)' },
+      { label:'RAZR Demo Bracket', val:'MTI' },
+      { label:'Watch Demo Brackets', val:'Scorpion (S005)' },
+    ],
+  },
+};
+
+const phoneIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+const emailIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+const keyIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`;
+const warnIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+const lockboxIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+
+function renderStore(id){
+  const s=STORES[id];
+  const el=document.getElementById('si-content');
+  if(!el||!s) return;
+
+  const leaderHTML=s.leadership.map(p=>`
+    <div class="person-block">
+      <div class="person-role-tag">${p.role}</div>
+      <div class="person-name">${p.name}</div>
+      <div class="person-contacts">
+        ${p.phone?`<div class="person-contact">${phoneIcon}<a href="tel:${p.phone.replace(/\D/g,'')}">${p.phone}</a></div>`:''}
+        ${p.email?`<div class="person-contact">${emailIcon}<a href="mailto:${p.email}">${p.email}</a></div>`:''}
+      </div>
+    </div>
+  `).join('');
+
+  const infoHTML=s.info.map(r=>`
+    <div class="info-block">
+      <div class="info-label">${r.label}</div>
+      <div class="info-val">
+        ${r.phone&&r.val!=='—'?`<a href="tel:${r.val.replace(/\D/g,'')}">${r.val}</a>`:
+          r.email&&r.val!=='—'?`<a href="mailto:${r.val}">${r.val}</a>`:
+          r.val||'—'}
+      </div>
+    </div>
+  `).join('');
+
+  const wifiHTML=s.wifi.map(w=>`
+    <div class="wifi-row">
+      <div class="wifi-label">${w.name}</div>
+      <div class="wifi-pass">${w.pass}</div>
+    </div>
+  `).join('');
+
+  const keysHTML=s.keys.map(k=>`
+    <div class="key-row">
+      <div class="key-icon">${k.lockbox?lockboxIcon:keyIcon}</div>
+      <div class="key-info">
+        <div class="key-name">${k.name}</div>
+      </div>
+      <div class="key-count${k.lockbox?' lockbox':''}">${k.count}</div>
+    </div>
+  `).join('');
+
+  const secHTML=s.security.map(r=>`
+    <div class="sec-row">
+      <div class="sec-label">${r.label}</div>
+      <div class="sec-val${r.sensitive?' blur':''}" ${r.sensitive?'onclick="this.classList.toggle(\'on\')"':''}>${r.val}</div>
+    </div>
+  `).join('');
+
+  el.innerHTML=`
+    <div class="store-banner">
+      <div class="store-id-row">
+        <div class="store-num">${s.id}</div>
+        <div class="store-name">- ${s.name.toUpperCase()}</div>
+      </div>
+      <div class="store-addr" style="display:flex;align-items:flex-start;gap:6px;margin-top:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0;color:var(--g);margin-top:1px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${s.address}</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Leadership</div></div>
+      <div class="sec-body">${leaderHTML}<div style="margin-top:10px"><div class="wifi-note" style="margin:0">${warnIcon}Do not share with external individuals.</div></div></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Staff</div></div>
+      <div class="sec-body">${s.staff&&s.staff.length?s.staff.map(p=>`
+        <div class="person-block">
+          <div class="person-role-tag">${p.role}</div>
+          <div class="person-name">${p.name}</div>
+          <div class="person-contacts">
+            ${p.phone?`<div class="person-contact">${phoneIcon}<a href="tel:${p.phone.replace(/\D/g,'')}">${p.phone}</a></div>`:''}
+            ${p.email?`<div class="person-contact">${emailIcon}<a href="mailto:${p.email}">${p.email}</a></div>`:''}
+          </div>
+        </div>
+      `).join(''):'<div style="font-size:12px;color:var(--t3)">No staff on file</div>'}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Info</div></div>
+      <div class="sec-body">${infoHTML}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Wi-Fi Points</div></div>
+      <div class="sec-body">
+        ${wifiHTML}
+        <div class="wifi-note">${warnIcon}${s.wifiNote}</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Key Count</div></div>
+      <div class="sec-body">${keysHTML}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Security</div></div>
+      <div class="sec-body">${secHTML}</div>
+    </div>
+  `;
+}
+
+function siShowStore(id,el){
+  if(el){
+    document.querySelectorAll('#si-store-chips .schip').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+  }
+  renderStore(id);
+}
+
+function launchStoreInfo(){
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  const ov=document.getElementById('store-info-overlay');
+  if(ov) ov.style.display='block';
+  const chips=document.getElementById('si-store-chips');
+  const storeIds=['777','747','775','769','752','768'];
+  const storeNames={'777':'Jefferson','747':'College St','775':'Dowlen','769':'Memorial','752':'Twin City','768':'W. Orange'};
+  chips.style.display='flex';
+  chips.innerHTML=storeIds.map(id=>`<div class="schip${id==='777'?' active':''}" onclick="siShowStore('${id}',this)">${id} · ${storeNames[id]}</div>`).join('');
+  siShowStore('777',chips.querySelector('.schip.active'));
+}
+
+function closeStoreInfo(){
+  document.getElementById('store-info-overlay').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
+function launchSupport(){
+  document.getElementById('login-screen').style.display='none';
+  document.body.style.overflow='';
+  document.getElementById('support-overlay').style.display='block';
+}
+
+function closeSupport(){
+  document.getElementById('support-overlay').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ls-uid').style.display='none';
+  document.getElementById('ls-menu').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
 </script>
+
+<div id="store-info-overlay">
+  <header style="background:#fff;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200">
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;color:var(--t1)" id="si-header-title">Store Information</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="hdr-home" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="hdr-home-text">Home</span></button>
+      <button class="hdr-back" onclick="closeStoreInfo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span class="hdr-back-text">Back</span></button>
+    </div>
+  </header>
+  <div class="store-chips" id="si-store-chips" style="display:none"></div>
+  <div id="si-content" style="padding:14px 16px;max-width:600px;margin:0 auto"></div>
+</div>
+
+<div id="support-overlay">
+  <header style="background:#fff;border-bottom:2px solid var(--g);box-shadow:0 1px 4px rgba(0,0,0,.06);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200">
+    <div style="font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;color:var(--t1)">Support Information</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="hdr-home" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="hdr-home-text">Home</span></button>
+      <button class="hdr-back" onclick="closeSupport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg><span class="hdr-back-text">Back</span></button>
+    </div>
+  </header>
+  <div style="padding:14px 16px;max-width:600px;margin:0 auto">
+  <div class="page-title">
+    <div style="font-size:11px;color:var(--t3);line-height:1.6">Below you will find all retail support and customer service information. If a retail support contact is not listed, proceed contacting the appropriate customer service line.</div>
+  </div>
+
+  <div class="sup-sec">
+    <div class="sup-sec-head"><div class="sup-sec-title">Escalation Support</div></div>
+    <div class="sup-sec-body">
+      <div class="person-block"><div class="person-role-tag">District Manager</div><div class="person-name">Josue Garcia</div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:4093000196">(409) 300-0196</a></div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:josuegarcia@suncommobile.com">josuegarcia@suncommobile.com</a></div></div>
+      <div class="person-block"><div class="person-role-tag">Retail Store Manager</div><div class="person-name">Jaquelin Sauceda</div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:4093322776">(409) 332-2776</a></div></div>
+      <div class="person-block"><div class="person-role-tag">Indirect Sales Specialist (COR)</div><div class="person-name">Karla Sauzo</div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8326128984">(832) 612-8984</a></div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:karla.sauzo@cricketwireless.com">karla.sauzo@cricketwireless.com</a></div></div>
+      <div class="person-block"><div class="person-role-tag">Associate Director (COR)</div><div class="person-name">Maria Hidalgo</div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:2817026473">(281) 702-6473</a></div><div class="person-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:maria.hidalgo@cricketwireless.com">maria.hidalgo@cricketwireless.com</a></div></div>
+      <div class="support-note" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;color:var(--warn);flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Do not share with external individuals.</div>
+    </div>
+  </div>
+
+  <div class="sup-sec">
+    <div class="sup-sec-head"><div class="sup-sec-title">Retail Support</div></div>
+    <div class="sup-sec-body">
+      <div class="support-block"><div class="support-name">Progressive Leasing</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8447727425">(844) 772-7425</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:app@progleasing.com">app@progleasing.com</a></div><div class="support-note" style="margin-top:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0;margin-top:1px;color:var(--warn)"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Increases go through automated system — listen to them all. Anything else, connect to an agent. Always call in as the retailer, not as a customer.</div></div>
+      <div class="support-block"><div class="support-name">Retail Help Desk</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8339732500">(833) 973-2500</a> · Option 1</div></div>
+      <div class="support-block"><div class="support-name">Porting Help Desk</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8339732500">(833) 973-2500</a> · Option 2</div></div>
+      <div class="support-block"><div class="support-name">Saraplus</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8668011329">(866) 801-1329</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:aiasupport@cricketwireless.com">aiasupport@cricketwireless.com</a></div></div>
+    </div>
+  </div>
+
+  <div class="sup-sec">
+    <div class="sup-sec-head"><div class="sup-sec-title">Customer Service</div></div>
+    <div class="sup-sec-body">
+      <div class="support-block"><div class="support-name">Cricket Care &amp; Warranty</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8002742538">(800) 274-2538</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="https://cricketwireless.com" target="_blank">cricketwireless.com</a></div></div>
+      <div class="support-block"><div class="support-name">Line Cancellation</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8663664133">(866) 366-4133</a></div></div>
+      <div class="support-block"><div class="support-name">Cricket Transfer PIN</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:*7678">*7678</a> (dial from requesting line)</div></div>
+      <div class="support-block"><div class="support-name">Asurion</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8553098342">(855) 309-8342</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="https://phoneclaim.com/cricket" target="_blank">phoneclaim.com/cricket</a></div></div>
+      <div class="support-block"><div class="support-name">Bread Pay</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8449927323">(844) 992-7323</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="https://breadfinancial.com" target="_blank">breadfinancial.com</a></div></div>
+      <div class="support-block"><div class="support-name">Progressive Leasing</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8778981970">(877) 898-1970</a></div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="https://progleasing.com" target="_blank">progleasing.com</a></div></div>
+      <div class="support-block"><div class="support-name">AT&amp;T (Internet)</div><div class="support-contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:8002882020">(800) 288-2020</a></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
 </body>
 </html>
