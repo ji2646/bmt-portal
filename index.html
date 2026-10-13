@@ -802,7 +802,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 function fmtRawDate(s){ if(!s) return ''; const p=String(s).split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
 
 const ALLOWED_UIDS=[
-  'gs0426','ap485d','mg221k','tg4507',
+  'ap485d','mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
   'bb8326','jx820u','ji2646dm','sc417e','nc3647','ju512j','ec651n',
   'et7967'
@@ -813,7 +813,7 @@ const QTOOL_DISABLED_UIDS=[];
 const ADMIN_DISABLED_UIDS=['dg8674','rg8855','ec934j']; // account disabled by admin
 
 const UID_NAMES={
-  'gs0426':'Gabbisette Sanchez','ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
+  'ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
@@ -1150,7 +1150,7 @@ function logQuoteUpdate(quoteStr){
 }
 
 // RSM UIDs — these get the menu
-const RSM_UIDS=['jq6635','gs0426','mg221k','jx820u','jq286d','cx7250','ji2646dm'];
+const RSM_UIDS=['jq6635','mg221k','jx820u','jq286d','cx7250','ji2646dm'];
 
 // Activity 2FA credentials: store# -> pin
 const ACTIVITY_CREDS={
@@ -1162,7 +1162,7 @@ const ACTIVITY_CREDS={
 // Activity store -> rep UIDs
 const STORE_REPS={
   '777':null, // Jaquelin sees all
-  '747':['gs0426','ap485d','dg8674','tg4507'], // Gabbi + Dara + Alfredo + Thalia
+  '747':['ap485d','dg8674','tg4507'],           // Alfredo + Dara + Thalia (no RSM)
   '775':['mg221k','ec651n'],                // Matthew + Erica
   '769':['bb8326'],                         // Christina RSM + Bryan RSC
   '752':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
@@ -1176,7 +1176,6 @@ const STORE_REPS={
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
   'jq6635':['jq6635','jv6394','et7967'],           // Jaquelin — store 777: Joseph, Evelyn
-  'gs0426':['gs0426','ap485d','dg8674','tg4507'],
   'mg221k':['mg221k','ec651n'],
   'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   'jx820u':['jx820u','nc3647','ju512j'],
@@ -1194,7 +1193,7 @@ function canSeeTO(uid){ return true; } // All roles see TO/TC — DM sees all, J
 // Map each UID to their store teammates (for RSC peer comparison)
 const STORE_PEER_MAP=(()=>{
   const map={};
-  const RSM_BY_STORE_MAP={'747':'gs0426','775':'mg221k','769':'cx7250','768':'jx820u','752':'jq286d','777':'jq6635'};
+  const RSM_BY_STORE_MAP={'775':'mg221k','769':'cx7250','768':'jx820u','752':'jq286d','777':'jq6635'};
   Object.entries(STORE_REPS).forEach(([store,reps])=>{
     if(!reps) return;
     const storeRSM=RSM_BY_STORE_MAP[store]||null;
@@ -1206,7 +1205,6 @@ const STORE_PEER_MAP=(()=>{
     });
   });
   // RSMs see all their store reps
-  map['gs0426']=(STORE_REPS['747']||[]).filter(u=>u!=='gs0426');
   map['mg221k']=(STORE_REPS['775']||[]).filter(u=>u!=='mg221k');
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
   map['jq286d']=['sc417e'];
@@ -1253,7 +1251,6 @@ function verifyPin(){
   const uid=_pendingUid;
   const storeKey=uid==='ji2646dm'?'dm':
     uid==='jq6635'?'777':
-    uid==='gs0426'?'747':
     uid==='mg221k'?'775':
     uid==='jq286d'?'752':
     uid==='cx7250'?'769':
@@ -1350,7 +1347,6 @@ function handleActivityClick(){
     // Already authenticated via PIN at login — go straight to activity
     _activityStore=_activityStore||(_pendingUid==='ji2646dm'?'dm':
       _pendingUid==='jq6635'?'777':
-      _pendingUid==='gs0426'?'747':
       _pendingUid==='mg221k'?'775':
       _pendingUid==='jq286d'?'752':
       _pendingUid==='cx7250'?'769':
@@ -1877,10 +1873,10 @@ function renderDistrictDashboard(_targetEl){
     const upgPlusRate=Math.round((r.upgPlusRate||0)*100);
     const protPct=Math.round((r.protectRate||0)*100);
     const ildOk=ildRate>=2; const ildColor=ildOk?'var(--g)':ildRate>=1?'var(--warn)':'var(--err)';
-    const upgOk=upgPlusRate>=8; const upgColor=upgOk?'var(--g)':upgPlusRate>=4?'var(--warn)':'var(--err)';
+    const upgOk=upgPlusRate>=20; const upgColor=upgOk?'var(--g)':upgPlusRate>=10?'var(--warn)':'var(--err)';
     const protOk2=protPct>=50; const protColor=protOk2?'var(--g)':protPct>=40?'var(--warn)':'var(--err)';
     const ildBarW=Math.min(100,Math.round(ildRate/2*100));
-    const upgBarW=Math.min(100,Math.round(upgPlusRate/8*100));
+    const upgBarW=Math.min(100,Math.round(upgPlusRate/20*100));
     const protBarW=Math.min(100,protPct);
     const accRev=r.accRevenue||0;
     const billPay=r.billPay||0;
@@ -2293,7 +2289,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
 
   const protC=r.protectRate>=(PERF_GOALS.protectTarget||.5)?'var(--g)':'var(--err)';
   const ildC=(r.ildRate||0)>=.02?'var(--g)':(r.ildRate||0)>=.01?'var(--warn)':'var(--err)';
-  const upC=(r.upgPlusRate||0)>=.08?'var(--g)':(r.upgPlusRate||0)>=.04?'var(--warn)':'var(--err)';
+  const upC=(r.upgPlusRate||0)>=.20?'var(--g)':(r.upgPlusRate||0)>=.10?'var(--warn)':'var(--err)';
   const pppC=r.pppRate>=.20?'var(--g)':r.pppRate>=(PERF_GOALS.pppMin||.10)?'var(--warn)':'var(--err)';
   const apC=r.autopayRate>=.30?'var(--g)':r.autopayRate>=.28?'var(--warn)':'var(--err)';
   const apoC=apo>=50?'var(--g)':apo>=40?'var(--warn)':apo>0?'var(--err)':'var(--t1)';
@@ -2350,7 +2346,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
         <div style="width:1.5px;background:var(--bd);margin:10px 0 14px"></div>
         ${featCell('ILD',r.ildRate||0,ildC,0.02,0.01)}
         <div style="width:1.5px;background:var(--bd);margin:10px 0 14px"></div>
-        ${featCell('Upgrade Plus',r.upgPlusRate||0,upC,0.08,0.04)}
+        ${featCell('Upgrade Plus',r.upgPlusRate||0,upC,0.20,0.10)}
       </div>
     </div>
 
@@ -2638,7 +2634,7 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, _payHtml){
     </div>
     <!-- Row 3b: Upgrade Plus | ILD -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;align-items:stretch">
-      ${sec('Upgrade Plus',gauge('Upgrade Plus Rate',r.upgPlusRate||0,0.08,null),MD)}
+      ${sec('Upgrade Plus',gauge('Upgrade Plus Rate',r.upgPlusRate||0,0.20,null),MD)}
       ${sec('Intl. Long Distance',gauge('ILD Rate',r.ildRate||0,0.02,null),MD)}
     </div>
     <!-- Row 4: Bill Pay | Acc Revenue -->
@@ -5440,7 +5436,6 @@ const RSM_USERS={
 };
 
 const RSM_UID_MAP={
-  '747':'gs0426',
   '752':'jq286d',
   '775':'mg221k',
   '768':'jx820u',
@@ -5451,7 +5446,6 @@ const RSM_UID_MAP={
 
 // RSM name + title lookup
 const RSM_INFO={
-  '747':{name:'Gabbisette Sanchez',title:'Store Manager'},
   '752':{name:'Josue Sosa',title:'Store Manager'},
   '775':{name:'Matthew Gomez',title:'Store Manager'},
   '768':{name:'Jose Manzo',title:'Store Manager'},
@@ -7573,7 +7567,7 @@ const DSR_DIST_GOALS = {actsGoal:0, upgGoal:0, oppsGoal:0, actsLY:0, oppsLY:0};
 // Store config
 const DSR_STORES = [
   {id:777,name:'Jefferson',   rsm:'Jaquelin Sauceda', tier:'Tier 3'},
-  {id:747,name:'College St',  rsm:'Gabbisette Sanchez',tier:'Tier 2'},
+  {id:747,name:'College St',  rsm:'',                  tier:'Tier 2'},
   {id:775,name:'Dowlen Rd',   rsm:'Matthew Gomez',    tier:'Tier 2'},
   {id:769,name:'Memorial',    rsm:'Christina Muzquiz',tier:'Tier 1'},
   {id:752,name:'Twin City',   rsm:'Josue Sosa',       tier:'Tier 1'},
@@ -8155,7 +8149,7 @@ function dsrRenderStore(storeId){
     dsrRateSec('60+ RP Mix',md.rpm60||0,0.80,null,'smd')
   );
   html+=dsrGrid2(
-    dsrRateSec('Upgrade Plus',md.upgPlusRate||0,0.08,null,'smd'),
+    dsrRateSec('Upgrade Plus',md.upgPlusRate||0,0.20,null,'smd'),
     dsrRateSec('Intl. Long Distance',md.ildRate||0,0.02,null,'smd')
   );
 
@@ -8227,7 +8221,7 @@ function dsrRenderStore(storeId){
 
   // ── RSM Payout Estimate ── right after store header, RSM/DM/Jaq only
   try {
-  const _RSM_STORE_UID = {777:'jq6635',747:'gs0426',775:'mg221k',769:'cx7250',752:'jq286d',768:'jx820u'};
+  const _RSM_STORE_UID = {777:'jq6635',775:'mg221k',769:'cx7250',752:'jq286d',768:'jx820u'};
   const _storeRsmUid = _RSM_STORE_UID[storeId];
   const _canSeeRsmPay = isDMUser()||isJaqUser()||(_pendingUid===_storeRsmUid);
   if(_canSeeRsmPay){
@@ -8624,7 +8618,7 @@ function dsrRenderDM(){
   // Rates
   html+=dsrGrid2(dsrRateSec('AutoPay',distAP,0.30,0.28,'smd'),dsrRateSec('Protect',distProt,0.50,0.48,'smd'));
   html+=dsrGrid2(dsrRateSec('PPP',distPPP,0.20,0.10,'smd'),dsrRateSec('60+ RP Mix',distRPM,0.80,null,'smd'));
-  html+=dsrGrid2(dsrRateSec('Upgrade Plus',distUpgPlus,0.08,null,'smd'),dsrRateSec('Intl. Long Distance',distILD,0.02,null,'smd'));
+  html+=dsrGrid2(dsrRateSec('Upgrade Plus',distUpgPlus,0.20,null,'smd'),dsrRateSec('Intl. Long Distance',distILD,0.02,null,'smd'));
 
   // Accessory Revenue + Internet side by side
   const inetChipColor = inetPerDoor>=2?'var(--ok)':inetPerDoor>=1?'var(--warn)':'var(--err)';
@@ -8799,7 +8793,7 @@ function dsrRenderDM(){
       </div>
       <!-- Upg Plus / ILD / Internet / Bill Pays -->
       <div style="padding:0 10px 8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-        ${tile('Upg Plus',((md.upgPlusRate||0)*100).toFixed(1)+'%','Goal ≥8%',(md.upgPlusRate||0)>=0.08?'var(--ok)':(md.upgPlusRate||0)>=0.05?'var(--warn)':'var(--err)')}
+        ${tile('Upg Plus',((md.upgPlusRate||0)*100).toFixed(1)+'%','Goal ≥20%',(md.upgPlusRate||0)>=0.20?'var(--ok)':(md.upgPlusRate||0)>=0.10?'var(--warn)':'var(--err)')}
         ${tile('ILD',((md.ildRate||0)*100).toFixed(1)+'%','Goal ≥2%',(md.ildRate||0)>=0.02?'var(--ok)':(md.ildRate||0)>=0.01?'var(--warn)':'var(--err)')}
         ${tile('Internet',inetTotal,'AIA + Fiber',inetTotal>=3?'var(--ok)':inetTotal>=1?'var(--warn)':'var(--err)')}
         ${tile('Bill Pays',md.billPay||0,'MTD','var(--t1)')}
@@ -8918,7 +8912,6 @@ const STORES = {
     keys:[
       { name:'Lockbox', count:3, lockbox:true },
       { name:'Thalia Gonzalez', count:1 },
-      { name:'Josue Garcia', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Thalia Gonzalez', phone:'(409) 273-1368', email:'' },
@@ -8957,7 +8950,6 @@ const STORES = {
       { name:'Lockbox', count:4, lockbox:true },
       { name:'Matthew Gomez', count:1 },
       { name:'Erica Culbert', count:1 },
-      { name:'Josue Garcia', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Erica Culbert', phone:'GroupMe', email:'' },
@@ -8994,7 +8986,7 @@ const STORES = {
       { name:'Lockbox', count:1, lockbox:true },
       { name:'Christina Muzquiz', count:1 },
       { name:'Bryan Barajas', count:1 },
-      { name:'Jaquelin Sauceda', count:1 },
+      { name:'Evelyn Tellez', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Bryan Barajas', phone:'(409) 300-0903', email:'' },
@@ -9032,7 +9024,6 @@ const STORES = {
       { name:'Lockbox', count:3, lockbox:true },
       { name:'Josue Sosa', count:1 },
       { name:'Sergio Cardenas', count:1 },
-      { name:'Bryan Barajas', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Sergio Cardenas', phone:'(409) 293-0469', email:'' },
@@ -9066,8 +9057,9 @@ const STORES = {
     wifi:[{ name:'Cricket Demo', pass:'A10=GR8!' },{ name:'Cricket Guest', pass:'Cricket123' }],
     wifiNote:'Only use "Cricket POS" on Aktivate iPads',
     keys:[
-      { name:'Lockbox', count:2, lockbox:true },
-      { name:'Jose Manzo', count:1 },
+      { name:'Lockbox', count:1, lockbox:true },
+      { name:'Jose Manzo', count:2 },
+      { name:'Jonatan Ramirez', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Jonatan Ramirez', phone:'(409) 216-3103', email:'' },
