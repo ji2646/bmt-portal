@@ -2357,7 +2357,7 @@ function renderIndividualDashboard(r,uid,_targetEl){
     <!-- ── SPLIT TILES: ILD | Upgrade Plus | PPP Funded ── -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
       ${split('ILD',pct(r.ildRate||0),ildC,r.ildAdds||0,'')}
-      ${split('Upgrade Plus',pct(r.upgPlusRate||0),upC,r.upgPlusAdds||0,'')}
+      ${split('UPG+',pct(r.upgPlusRate||0),upC,r.upgPlusAdds||0,'')}
       ${split('PPP Funded',pct(r.pppRate||0),pppC,r.pppQty||0,'')}
     </div>
 
@@ -2542,7 +2542,7 @@ function renderRepCardView(body, r, uid, cycleLabel, throughLabel, _payHtml){
   function sec(title,content,badge){
     return `<div style="background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px">
       <div style="padding:7px 14px;background:rgba(0,169,79,.04);border-bottom:1px solid rgba(0,169,79,.15);display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:${isMobile()?'13':'10'}px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
+        <div style="font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--g);font-family:DM Sans">${title}</div>
         ${badge?`<span style="font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:${badge[1]};background:${badge[1]}18;border:1px solid ${badge[1]}30;border-radius:3px;padding:1px 5px;font-family:DM Sans">${badge[0]}</span>`:''}
       </div>
       <div style="padding:12px 14px">${content}</div>
@@ -7004,7 +7004,7 @@ function getPayCycles(){
   // Payroll/time correction cycles — anchor March 29 2026
   const anchor=new Date(Date.UTC(2026,2,29));
   const cycles=[];
-  for(let i=-10;i<=12;i++){
+  for(let i=-10;i<=24;i++){
     const s=new Date(anchor.getTime()+i*14*86400000);
     const e=new Date(s.getTime()+13*86400000);
     const eEnd=new Date(e.getTime()+86399999);
@@ -7016,7 +7016,7 @@ function getPerfCycles(){
   // Individual performance cycles — anchor March 22 2026
   const anchor=new Date(Date.UTC(2026,2,22));
   const cycles=[];
-  for(let i=-10;i<=12;i++){
+  for(let i=-10;i<=24;i++){
     const s=new Date(anchor.getTime()+i*14*86400000);
     const e=new Date(s.getTime()+13*86400000);
     // end = end of day (23:59:59 UTC) so all times on that day match
@@ -7549,16 +7549,15 @@ function buildPartialCopyText(r){
 // ══════════════════════════════════════════════════════════════
 
 // ── Constants ──
-const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30};
+const DSR_DAYS_IN_MONTH_MAP = {'april2026':30,'may2026':31,'june2026':30,'july2026':31,'august2026':31,'september2026':30,'october2026':31};
 const DSR_MONTHS = [
-  {key:'june2026',  label:'June 2026'},
-  {key:'may2026',   label:'May 2026'},
-  {key:'april2026', label:'April 2026'},
+  {key:'october2026',  label:'October 2026'},
+  {key:'september2026',label:'September 2026'},
 ]; // fallback — overwritten by months_fetch on load
-let _dsrActiveMonth    = 'june2026';
+let _dsrActiveMonth    = 'october2026';
 let DSR_DAYS_IN_MONTH  = 31;
-let DSR_MONTH_LABEL    = 'May 2026';
-let DSR_MONTH_KEY      = 'june2026';
+let DSR_MONTH_LABEL    = 'October 2026';
+let DSR_MONTH_KEY      = 'october2026';
 
 // Store goals — all zeroed, populated entirely by goals_fetch from sheet
 const DSR_GOALS = {
@@ -9048,7 +9047,7 @@ const STORES = {
     ],
   },
   '768': {
-    id:'768', name:'West Orange – 16th St',
+    id:'768', name:'West Orange',
     address:'3121 Edgar Brown Dr, Suite C, West Orange TX 77630',
     leadership:[
       { role:'District Manager', name:'Josue Garcia', phone:'(409) 300-0196', email:'josuegarcia@suncommobile.com' },
