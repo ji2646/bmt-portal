@@ -3099,7 +3099,7 @@ if(typeof showToast==='undefined'){
     <div id="deal-global-toggle" style="display:inline-flex;gap:0;border:1px solid var(--bd2);border-radius:20px;overflow:hidden"></div>
   </div>
   <div class="deal-strip" id="deal-strip"></div>
-  <div style="font-size:8px;color:var(--t3);text-align:center;padding:4px 0 2px;letter-spacing:.3px">* All pricing shown for base models · Prog shown at 90-day lease (monthly) · Bread shown at $0 APR · Subject to approval · APD: cases · screens · cables · chargers · power banks</div>
+  <div style="font-size:8px;color:var(--t3);text-align:center;padding:4px 0 2px;letter-spacing:.3px">* All pricing shown for base models · Prog shown at 90-day lease (monthly) · Bread shown at 18.99% APR · Subject to approval · APD: cases · screens · cables · chargers · power banks</div>
 </div>
 
 
@@ -3264,11 +3264,9 @@ if(typeof showToast==='undefined'){
         <div class="ftype bread" id="ft-bread" onclick="setFinType('bread')"><div class="fn">Bread Pay</div><div class="fd">$0 down · Finances incl. tax · 24 months</div></div>
       </div>
       <div id="apr-sec" style="display:none">
-        <div style="font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">APR</div>
-        <div class="apr-row">
-          <div class="apr on" id="apr0" onclick="setAPR(0)"><div class="ar">0%</div><div class="as">Best for customer</div></div>
-          <div class="apr" id="apr14" onclick="setAPR(14.99)"><div class="ar">14.99%</div><div class="as">Alt approval</div></div>
-        </div>
+        <div style="font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">APR — <span id="apr-display">18.99%</span></div>
+        <input type="range" id="apr-slider" min="9.99" max="34.99" step="1" value="18.99" oninput="setAPR(parseFloat(this.value))" style="width:100%;accent-color:var(--bread);margin:4px 0">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--t3)"><span>9.99%</span><span>34.99%</span></div>
       </div>
       <div id="prog-freq-sec" style="margin-top:8px">
         <div style="font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">Payoff Frequency</div>
@@ -3325,12 +3323,12 @@ const PHONES=[
   {id:'i16_256',  n:'iPhone 16 256GB',           sw:829.99,  nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_512',  n:'iPhone 16 512GB',           sw:1029.99, nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
   {id:'i16e_128', n:'iPhone 16e 128GB',          sw:49.99,   nw:199.99,  up:599.99,  sw_o:199.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,  nw:299.99,  up:449.99,  sw_o:349.99, nw_o:449.99, up_o:449.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:349.99,  nw:499.99,  up:649.99,  sw_o:549.99, nw_o:599.99, up_o:649.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:149.99,  nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:349.99,  nw:499.99,  up:899.99,  sw_o:549.99, nw_o:649.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17_256',  n:'iPhone 17 256GB',           sw:399.99,  nw:499.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17_512',  n:'iPhone 17 512GB',           sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,  nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:349.99,  nw:499.99,  up:899.99,  sw_o:549.99, nw_o:649.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:399.99,  nw:499.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17_256',  n:'iPhone 17 256GB',           sw:929.99,  nw:929.99,  up:929.99,  frp:929.99,  brand:'Apple',    promoReq:'any'},
+  {id:'i17_512',  n:'iPhone 17 512GB',           sw:1129.99, nw:1129.99, up:1129.99, frp:1129.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_256', n:'iPhone Air 256GB',          sw:1099.99, nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_512', n:'iPhone Air 512GB',          sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_1tb', n:'iPhone Air 1TB',            sw:1699.99, nw:1699.99, up:1699.99, frp:1699.99, brand:'Apple',    promoReq:'any'},
@@ -3341,23 +3339,23 @@ const PHONES=[
   {id:'i17pm_512',n:'iPhone 17 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
   {id:'i17pm_1tb',n:'iPhone 17 Pro Max 1TB',     sw:1599.99, nw:1599.99, up:1599.99, frp:1599.99, brand:'Apple',    promoReq:'any'},
   {id:'i17pm_2tb',n:'iPhone 17 Pro Max 2TB',     sw:1999.99, nw:1999.99, up:1999.99, frp:1999.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_256', n:'iPhone 18 Pro 256GB',       sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_512', n:'iPhone 18 Pro 512GB',       sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_1tb', n:'iPhone 18 Pro 1TB',         sw:1899.99, nw:1899.99, up:1899.99, frp:1899.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_256',n:'iPhone 18 Pro Max 256GB',   sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_512',n:'iPhone 18 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_1tb',n:'iPhone 18 Pro Max 1TB',     sw:1799.99, nw:1799.99, up:1799.99, frp:1799.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_256', n:'iPhone 18 Pro 256GB',       sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_512', n:'iPhone 18 Pro 512GB',       sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_1tb', n:'iPhone 18 Pro 1TB',         sw:1799.99, nw:1799.99, up:1799.99, frp:1799.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_256',n:'iPhone 18 Pro Max 256GB',   sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_512',n:'iPhone 18 Pro Max 512GB',   sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_1tb',n:'iPhone 18 Pro Max 1TB',     sw:1899.99, nw:1899.99, up:1899.99, frp:1899.99, brand:'Apple',    promoReq:'any'},
   // Samsung
   {id:'a16',     n:'Galaxy A16',                 sw:0,       nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:199.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
   {id:'a17',     n:'Galaxy A17',                 sw:0,       nw:29.99,   up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
   {id:'a37',     n:'Galaxy A37',                 sw:59.99,   nw:129.99,  up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
-  {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  sw_o:299.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'a36',     n:'Galaxy A36',                 sw:39.99,   nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,  nw:299.99,  up:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,  nw:299.99,  up:699.99,  sw_o:399.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',     n:'Galaxy S25',                 sw:360,     nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
   {id:'s26',     n:'Galaxy S26',                 sw:499.99,  nw:599.99,  up:999.99,  sw_o:699.99, nw_o:699.99, up_o:999.99,  frp:999.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s26u',    n:'Galaxy S26 Ultra',           sw:799.99,  nw:999.99,  up:1399.99, sw_o:1099.99,nw_o:1099.99,up_o:1399.99, frp:1399.99, brand:'Samsung',  promoReq:'supreme'},
-  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, sw_o:1599.99,nw_o:1599.99,up_o:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
   // Motorola
   {id:'mgplay',  n:'moto g play 2026',           sw:0,       nw:0,       up:159.99,  sw_o:29.99,  nw_o:29.99,  up_o:159.99,  frp:159.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
   {id:'mg26',    n:'moto g 2026',                sw:0,       nw:0,       up:189.99,  sw_o:29.99,  nw_o:29.99,  up_o:189.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
@@ -3370,7 +3368,8 @@ const PHONES=[
   {id:'iconp',   n:'Icon Plus 2026',             sw:0,       nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
   {id:'debs3',   n:'Debut S3',                   sw:0,       nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
   {id:'debtflex',n:'Cricket Debut Flex',         sw:59.99,   nw:59.99,   up:99.99,   sw_o:59.99,  nw_o:59.99,  up_o:99.99,   frp:99.99,   brand:'Cricket',  promoReq:'any'},
-  {id:'iconpr',  n:'Icon Pro 2026',              sw:0,       nw:0,       up:139.99,  sw_o:29.99,  nw_o:29.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'iconpr',  n:'Icon Pro 2026',              sw:0,       nw:0,       up:139.99,  sw_o:39.99,  nw_o:39.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
+  {id:'iconp27', n:'Icon Plus 2027',            sw:0,       nw:0,       up:169.99,  sw_o:49.99,  nw_o:49.99,  up_o:169.99,  frp:169.99,  brand:'Cricket',  promoReq:'supreme', maxLinesNw:4},
 ];
 
 const WATCHES=[
@@ -3400,7 +3399,7 @@ const SD_PLANS=[
 // ============================================================
 // STATE
 // ============================================================
-let S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+let S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:18.99,progFreq:'monthly',lines:[],nid:1};
 
 // ============================================================
 // HELPERS
@@ -4031,8 +4030,8 @@ function setProgFreq(f){
 }
 function setAPR(r){
   S.breadAPR=r;
-  $('apr0').classList.toggle('on',r===0);
-  $('apr14').classList.toggle('on',r===14.99);
+  const el=$('apr-display');
+  if(el) el.textContent=r.toFixed(2)+'%';
   update();
 }
 
@@ -4187,13 +4186,13 @@ function renderDealStrip(){
   const c6otd=c6pr+sel.lines[0]+ACT_FEE+c6prot+c6tax;
   const c6name=c6ph?c6ph.n.replace(/^(Cricket |motorola |Motorola )/i,''):'-';
 
-  // PPP helper — prog weekly and bread 0% for a given device price + APD
+  // PPP helper — prog monthly and bread 18.99% APR for a given device price + APD
   const pppSub=(devPr, apo)=>{
     const base=devPr+apo;
     if(base<149.99) return '';
     const prog90=base*(1+PROG_FEE);
     const progMo=Math.ceil(prog90/3*100)/100;
-    const breadMo=Math.ceil(base*(1+TAX)/24*100)/100;
+    const _bT=base*(1+TAX);const _bR=S.breadAPR/100/12;const breadMo=Math.ceil(_bT*_bR*Math.pow(1+_bR,24)/(Math.pow(1+_bR,24)-1)*100)/100;
     return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:4px">
       <div style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);border-radius:4px;padding:3px 4px;display:flex;align-items:center;gap:4px">
         <div style="font-size:6px;font-weight:900;color:#f97316;letter-spacing:.3px;white-space:nowrap">PROG</div>
@@ -4281,7 +4280,8 @@ function renderDealStrip(){
 
 function resetAll(){
   if(_sessionQuote) _sessionQuote+=('|[R]|'); _lastQuoteStr='';
-  S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:0,progFreq:'monthly',lines:[],nid:1};
+  S={acct:'new',plan:'supreme',ap:true,aalPlan:'supreme',aalLines:1,txnType:'aal',apoPerDevice:0,apoFin:false,apoSplit:false,apoLeaseAmt:0,finOn:false,finType:'prog',breadAPR:18.99,progFreq:'monthly',lines:[],nid:1};
+  const sliderEl=$('apr-slider');if(sliderEl)sliderEl.value=18.99;const aprDisp=$('apr-display');if(aprDisp)aprDisp.textContent='18.99%';
   const _rb=$('btn-new'),_ra=$('btn-aal');
   if(_rb)_rb.classList.add('active');
   if(_ra)_ra.classList.remove('active');
@@ -4505,8 +4505,7 @@ function calc(){
     progPayment=roundedPayment;
     progLastPayment=+(progTotal-(roundedPayment*(divisor-1))).toFixed(2);
     breadTotal=finBase*(1+TAX);
-    if(S.breadAPR===0){breadMo=breadTotal/24;}
-    else{const r=S.breadAPR/100/12;breadMo=breadTotal*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1);}
+    {const r=S.breadAPR/100/12;breadMo=breadTotal*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1);}
   }
 
   // Watch incentives — new purchased watches only (not BYOD, not upgrades)
@@ -4692,12 +4691,8 @@ function update(){
       approvalSub.textContent='Pre-tax · 90-Day Cost: '+fmt(finBase*(1+PROG_FEE));
     } else {
       const breadTotal=c.breadTotal||finBase*(1+TAX);
-      const r=14.99/100/12;
-      const bread14Mo=Math.ceil(breadTotal*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
-      const bread14Total=Math.round(bread14Mo*24*100)/100;
-      const approvalAmt2=S.breadAPR===0?breadTotal:bread14Total;
-      approvalAmt.textContent=fmt(approvalAmt2);
-      approvalSub.textContent='Incl. tax · '+(S.breadAPR===0?'0%':'14.99%')+' APR · 24 months';
+      approvalAmt.textContent=fmt(breadTotal);
+      approvalSub.textContent='Incl. tax · '+S.breadAPR.toFixed(2)+'% APR · 24 months';
     }
   } else if(approvalDisp){
     approvalDisp.style.display='none';
@@ -4788,12 +4783,13 @@ function renderSummary(c){
       <div class="sr"><span class="sl">10% lease fee + 8.25% tax</span><span class="sv o">+${fmt(c.progFeeAmt)}</span></div>
       <div class="sr"><span class="sl">Total lease amount</span><span class="sv">${fmt(c.progTotal)}</span></div>`;
     } else {
-      const aprLbl=S.breadAPR===0?'0% APR · 24 months':'14.99% APR · 24 months';
+      const aprLbl=S.breadAPR.toFixed(2)+'% APR · 24 months';
       pppHtml=`<div class="ppp-card bread">
         <div class="ppp-lbl">Bread Pay · ${aprLbl}</div>
-        <div class="ppp-val">${fmtMo(c.breadMo)}</div>
+        <div class="ppp-val">${fmt(Math.ceil(c.breadMo*100)/100)}/mo</div>
         <div class="ppp-sub">Approval Needed: ${fmt(c.breadTotal)} (incl. tax)</div>
-        <div class="ppp-sub">24-Month Cost: ${fmt(c.breadTotal)}</div>
+        <div class="ppp-sub">24-Month Cost: ${fmt(Math.ceil(c.breadMo*100)/100*24)}</div>
+        <div class="ppp-sub">Est. interest: +${fmt(Math.max(0,Math.ceil(c.breadMo*100)/100*24-c.breadTotal))}</div>
       </div>
       <div class="sr"><span class="sl">Devices + acc</span><span class="sv">${fmt(c.finBase)}</span></div>
       <div class="sr"><span class="sl">Tax financed in</span><span class="sv b">+${fmt(c.finBase*TAX)}</span></div>`;
@@ -5161,11 +5157,9 @@ function showDMCard(){
       const progPmt=Math.ceil(progTotal/progDivisor*100)/100;
 
       // Bread
-      const bread0Mo=Math.ceil(fbWithTax/24*100)/100;
-      const r=14.99/100/12;
-      const bread14Mo=Math.ceil(fbWithTax*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
-      const bread0Total=Math.round(fbWithTax*100)/100;
-      const bread14Total=Math.round(bread14Mo*24*100)/100;
+      const rApr=S.breadAPR/100/12;
+      const breadMoCalc=Math.ceil(fbWithTax*rApr*Math.pow(1+rApr,24)/(Math.pow(1+rApr,24)-1)*100)/100;
+      const breadTotal24=Math.round(breadMoCalc*24*100)/100;
 
       const tileStyle=(color,border)=>`background:#111;border:1px solid ${border||color+'44'};border-radius:8px;padding:12px 14px;`;
       const lbl=(t,c2)=>`<div style="font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:${c2};margin-bottom:4px">${t}</div>`;
@@ -5184,18 +5178,11 @@ function showDMCard(){
             ${val('$'+progPmt.toFixed(2)+'/'+progFreqSuffix,'#f97316')}
             ${sub2('Approval Needed: '+fmt(fb)+' (pre-tax)<br>90-Day Cost: '+fmt(progTotal)+'<br>Lease fee: '+fmt(prog90Fee)+' (10%) · Est. tax: '+fmt(prog90Tax)+' (8.25%)<br>'+progFreqLabel+' × '+progDivisor+' payments')}
           </div>
-          <!-- Bread: 2 columns -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div style="${tileStyle('#3b82f6')}">
-              ${lbl('Bread Pay 0% APR','#3b82f6')}
-              ${val('$'+bread0Mo.toFixed(2)+'/mo')}
-              ${sub2('Approval Needed: '+fmt(fbWithTax)+'<br>24-Month Cost: '+fmt(bread0Total)+'<br>Est. tax: '+fmt(fbTax)+' (8.25%)<br>APR: 0%')}
-            </div>
-            <div style="${tileStyle('#6366f1')}">
-              ${lbl('Bread Pay 14.99% APR','#8b5cf6')}
-              ${val('$'+bread14Mo.toFixed(2)+'/mo')}
-              ${sub2('Approval Needed: '+fmt(bread14Total)+'<br>24-Month Cost: '+fmt(bread14Total)+'<br>Est. tax: '+fmt(fbTax)+' (8.25%)<br>APR: 14.99%')}
-            </div>
+          <!-- Bread: single tile -->
+          <div style="${tileStyle('#3b82f6')}margin-top:8px">
+            ${lbl('Bread Pay '+S.breadAPR.toFixed(2)+'% APR','#3b82f6')}
+            ${val('$'+breadMoCalc.toFixed(2)+'/mo')}
+            ${sub2('Approval Needed: '+fmt(fbWithTax)+'<br>24-Month Cost: '+fmt(breadTotal24)+'<br>Est. tax: '+fmt(fbTax)+' (8.25%)<br>APR: '+S.breadAPR.toFixed(2)+'%')}
           </div>
         </div>`;
     }
@@ -5360,12 +5347,10 @@ function copyDMCard(){
     const fb=c.finBase;
     const progMo=Math.ceil(fb*(1+PROG_FEE)/3*100)/100;
     const bt0=fb*(1+TAX);
-    const bread0=Math.ceil(bt0/24*100)/100;
-    const r=14.99/100/12;
-    const bread14=Math.ceil(bt0*r*Math.pow(1+r,24)/(Math.pow(1+r,24)-1)*100)/100;
+    const rCopy=S.breadAPR/100/12;
+    const breadCopy=Math.ceil(bt0*rCopy*Math.pow(1+rCopy,24)/(Math.pow(1+rCopy,24)-1)*100)/100;
     txt+=`Progressive: $${progMo.toFixed(2)}/mo x3\n`;
-    txt+=`Bread 0%: $${bread0.toFixed(2)}/mo x24\n`;
-    txt+=`Bread 14.99%: $${bread14.toFixed(2)}/mo x24\n`;
+    txt+=`Bread ${S.breadAPR.toFixed(2)}%: $${breadCopy.toFixed(2)}/mo x24\n`;
   }
   if(apoTotal+skeiwatchTotal>0) txt+=`Accessories: ${fmt(apoTotal+skeiwatchTotal)}\n`;
   if(hasProtect) txt+=`Protect: Included\n`;
@@ -6799,22 +6784,24 @@ function dmToRender(){
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
   if(wk!=='all'){
-    const sunTs=parseInt(wk);const sun=new Date(sunTs);const sat=new Date(sunTs+6*86400000);
+    const sunTs=parseInt(wk);const sun=new Date(sunTs);const sat=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+6);
     items=items.filter(r=>{const d=parseFirstDay(r);return !d||( d>=sun&&d<=sat);});
   }
   // Also filter by chip selection
   if(_dmToWeekChip!==null){
-    const sun=new Date(_dmToWeekChip);const sat=new Date(_dmToWeekChip+6*86400000);
+    const sun=new Date(_dmToWeekChip);const sat=new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+6);
     items=items.filter(r=>{const d=parseFirstDay(r);return !d||(d>=sun&&d<=sat);});
   }
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.days||'').toLowerCase().includes(q)||(r.month||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
-  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
+  if(!items.length){el.innerHTML=(_dmIsDemo?'<div style="text-align:center;padding:10px 14px 4px;color:#b45309;font-size:10px;font-weight:700;font-family:\'DM Sans\'">⚠ Demo mode — GAS offline</div>':'')+
+    '<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No requests found</div>';return;}
+  const demoBanner=_dmIsDemo?`<div style="text-align:center;padding:8px 14px;background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.2);color:#b45309;font-size:10px;font-weight:700;font-family:'DM Sans'">⚠ Demo mode — GAS offline. Real data not loading.</div>`:'';
   const sc={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309',Partial:'#60a5fa','Action Required':'var(--purple)',Corrected:'var(--g)'};
   const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(139,92,246,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Late:'rgba(245,158,11,.08)',Partial:'rgba(59,130,246,.1)','Action Required':'rgba(139,92,246,.1)',Corrected:'rgba(0,169,79,.1)'};
   const sbd={Sent:'#333',Pending:'rgba(139,92,246,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Late:'rgba(245,158,11,.2)',Partial:'rgba(59,130,246,.25)','Action Required':'rgba(139,92,246,.25)',Corrected:'rgba(0,169,79,.25)'};
   const weekCounts={};
   [..._dmToData].forEach(row=>{const fd=parseFirstDay(row);if(!fd)return;const wkk=getWeekStart(fd).getTime();if(!weekCounts[wkk])weekCounts[wkk]=[];weekCounts[wkk].push(row.rowId);});
-  el.innerHTML=items.map(r=>{
+  el.innerHTML=demoBanner+items.map(r=>{
     const fd=parseFirstDay(r);let weekLabel='';let subNum='';
     if(fd){const sun=getWeekStart(fd);const sat=new Date(sun);sat.setDate(sun.getDate()+6);weekLabel='Week of '+(sun.getMonth()+1)+'/'+sun.getDate()+' – '+(sat.getMonth()+1)+'/'+sat.getDate()+'/'+sat.getFullYear();const wkk=sun.getTime();if(weekCounts[wkk]){const idx=weekCounts[wkk].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}}
     const metaLine=weekLabel?(weekLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted)):fmtSubmitted(r.submitted);
@@ -6843,18 +6830,20 @@ function dmTcRender(){
   else if(srt==='oldest') items.sort((a,b)=>{const da=parseDate(a.date)||parseDate(a.submitted)||new Date(0);const db=parseDate(b.date)||parseDate(b.submitted)||new Date(0);return da-db;});
   else items.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(f!=='all') items=items.filter(r=>r.status===f);
-  if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);return !d||(d>=cycles[ci].start&&d<=cycles[ci].end);});}
-  if(_dmTcCycleChip!==null){const cycles=getPayCycles();if(cycles[_dmTcCycleChip])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);return !d||(d>=cycles[_dmTcCycleChip].start&&d<=cycles[_dmTcCycleChip].end);});}
+  if(cyc!=='all'){const cycles=getPayCycles();const ci=parseInt(cyc);if(cycles[ci])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);if(!d)return true;const du=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));return du>=cycles[ci].start&&du<=cycles[ci].end;});}
+  if(_dmTcCycleChip!==null){const cycles=getPayCycles();if(cycles[_dmTcCycleChip])items=items.filter(r=>{const d=parseDate(r.date)||parseDate(r.submitted);if(!d)return true;const du=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));return du>=cycles[_dmTcCycleChip].start&&du<=cycles[_dmTcCycleChip].end;});}
   if(q) items=items.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.uid||'').toLowerCase().includes(q)||(r.date||'').toLowerCase().includes(q)||(r.status||'').toLowerCase().includes(q)||(r.reason||'').toLowerCase().includes(q));
-  if(!items.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
+  if(!items.length){el.innerHTML=(_dmIsDemo?'<div style="text-align:center;padding:10px 14px 4px;color:#b45309;font-size:10px;font-weight:700;font-family:\'DM Sans\'">⚠ Demo mode — GAS offline</div>':'')+
+    '<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">No corrections found</div>';return;}
+  const tcDemoBanner=_dmIsDemo?`<div style="text-align:center;padding:8px 14px;background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.2);color:#b45309;font-size:10px;font-weight:700;font-family:'DM Sans'">⚠ Demo mode — GAS offline. Real data not loading.</div>`:'';
   const sc={Sent:'#4B5563',Pending:'var(--purple)',Approved:'var(--g)',Denied:'var(--err)',Late:'#b45309',Corrected:'var(--g)','Action Required':'var(--purple)'};
   const sb={Sent:'rgba(0,0,0,.04)',Pending:'rgba(139,92,246,.1)',Approved:'rgba(0,169,79,.1)',Denied:'rgba(239,68,68,.1)',Late:'rgba(245,158,11,.08)',Corrected:'rgba(0,169,79,.1)','Action Required':'rgba(139,92,246,.1)'};
   const sbd={Sent:'#333',Pending:'rgba(139,92,246,.25)',Approved:'rgba(0,169,79,.25)',Denied:'rgba(239,68,68,.25)',Late:'rgba(245,158,11,.2)',Corrected:'rgba(0,169,79,.25)','Action Required':'rgba(139,92,246,.25)'};
   const cycles2=getPayCycles();const cycleCounts={};
-  [..._dmTcData].forEach(row=>{const d=parseDate(row.date)||parseDate(row.submitted);if(!d)return;cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
-  el.innerHTML=items.map(r=>{
+  [..._dmTcData].forEach(row=>{const d=parseDate(row.date)||parseDate(row.submitted);if(!d)return;const du=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));cycles2.forEach((c,i)=>{if(du>=c.start&&du<=c.end){if(!cycleCounts[i])cycleCounts[i]=[];cycleCounts[i].push(row.rowId);}});});
+  el.innerHTML=tcDemoBanner+items.map(r=>{
     const d=parseDate(r.date);let cycleLabel='';let subNum='';
-    if(d){cycles2.forEach((c,i)=>{if(d>=c.start&&d<=c.end){cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}};});}
+    if(d){const du=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));cycles2.forEach((c,i)=>{if(du>=c.start&&du<=c.end){cycleLabel=fmtCycleDate(c.start)+' – '+fmtCycleDate(c.end);if(cycleCounts[i]){const idx=cycleCounts[i].indexOf(r.rowId);subNum=idx>=0?'#'+(idx+1):'';}};});}
     const tcMeta=cycleLabel?(cycleLabel+(subNum?' · '+subNum:'')+' · '+fmtSubmitted(r.submitted||r.date)):(r.date?fmtSubmitted(r.date)+' · '+fmtSubmitted(r.submitted):fmtSubmitted(r.submitted));
     return`<div onclick="showDMTimeDetail('tc','${r.rowId}')" style="padding:${isMobile()?'14px 16px':'12px 14px'};border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
@@ -6913,12 +6902,19 @@ function fetchWithTimeout(url,options={},ms=12000){
   const id=setTimeout(()=>ctrl.abort(),ms);
   return fetch(url,{...options,signal:ctrl.signal}).finally(()=>clearTimeout(id));
 }
-function dmLoadTO(){
-  document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetchWithTimeout(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+function dmLoadTO(attempt){
+  attempt=attempt||1;
+  const el=document.getElementById('dm-to-list');
+  if(attempt===1){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  } else {
+    el.innerHTML='<div style="text-align:center;padding:30px;color:#b45309;font-size:11px">⏳ GAS is waking up, retrying… ('+attempt+'/3)</div>';
+  }
+  fetchWithTimeout(LOG_URL+'?type=to_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},28000)
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
+        _dmIsDemo=false;
         const clean=dedupeByRowId(d.filter(r=>r.rowId&&r.uid).map(r=>{
           if(r.daysStatus&&r.daysStatus.startsWith('hours:')){
             r.approvedHours=r.daysStatus.replace('hours:','').trim();
@@ -6933,18 +6929,29 @@ function dmLoadTO(){
         }
         dmToRender();
       } else {
-        document.getElementById('dm-to-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
+        el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
       }
     })
-    .catch(()=>setDMToDemo());
+    .catch(()=>{
+      if(attempt<3){
+        setTimeout(()=>dmLoadTO(attempt+1),3000);
+      } else {
+        setDMToDemo();
+      }
+    });
 }
 function setDMToDemo(){
+  _dmIsDemo=true;
+  // Demo dates anchored to current week so chips still show entries
+  const now=new Date(); const m=now.getMonth(); const y=now.getFullYear();
+  const _mo=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const curMo=_mo[m]+' '+y; const nxtMo=_mo[(m+1)%12]+' '+(m===11?y+1:y);
   const rawToDemo=[
-    {rowId:'tg4507-TO-OLD-40',submitted:'03/31/2026, 9:36 PM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:'April',days:'14',daysStatus:'',status:'Sent',note:'',edited:''},
-    {rowId:'rg8855-TO-OLD-41',submitted:'03/31/2026, 11:14 PM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:'April',days:'08',daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
-    {rowId:'bb8326-TO-OLD-42',submitted:'04/04/2026, 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:'April',days:'15',daysStatus:'',status:'Sent',note:'',edited:''},
-    {rowId:'jq286d-TO-OLD-43',submitted:'04/04/2026, 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:'April',days:'17',daysStatus:'',status:'Sent',note:'',edited:''},
-    {rowId:'gs0426-TO-OLD-44',submitted:'04/04/2026, 2:00 PM',uid:'gs0426',name:'Gabbisette Sanchez',reason:'Personal appointment',duration:'Full Day',month:'April',days:'20',daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'tg4507-TO-OLD-40',submitted:(m+1)+'/'+Math.max(1,now.getDate()-10)+'/'+y+', 9:36 AM',uid:'tg4507',name:'Thalia Gonzalez',reason:'VA appt for grandpa',duration:'Full Day',month:curMo,days:String(now.getDate()+1),daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'rg8855-TO-OLD-41',submitted:(m+1)+'/'+Math.max(1,now.getDate()-9)+'/'+y+', 11:14 AM',uid:'rg8855',name:'Rolando Garcia',reason:'Unexpected personal changes',duration:'9:30 AM – 11:00 AM',month:curMo,days:String(now.getDate()+2),daysStatus:'',status:'Approved',note:'Rolando scheduled — DM will cover opening',edited:''},
+    {rowId:'bb8326-TO-OLD-42',submitted:(m+1)+'/'+Math.max(1,now.getDate()-8)+'/'+y+', 1:04 PM',uid:'bb8326',name:'Bryan Barajas',reason:'Go to Houston to renew residency',duration:'Full Day',month:curMo,days:String(now.getDate()+3),daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'jq286d-TO-OLD-43',submitted:(m+1)+'/'+Math.max(1,now.getDate()-5)+'/'+y+', 5:54 PM',uid:'jq286d',name:'Josue Sosa',reason:'Birthday',duration:'Full Day',month:nxtMo,days:'3',daysStatus:'',status:'Sent',note:'',edited:''},
+    {rowId:'gs0426-TO-OLD-44',submitted:(m+1)+'/'+Math.max(1,now.getDate()-4)+'/'+y+', 2:00 PM',uid:'gs0426',name:'Gabbisette Sanchez',reason:'Personal appointment',duration:'Full Day',month:nxtMo,days:'7',daysStatus:'',status:'Sent',note:'',edited:''},
   ];
   if(isDMUser()||isJaqUser()){
     _dmToData=rawToDemo;
@@ -6954,12 +6961,19 @@ function setDMToDemo(){
   dmToRender();
 }
 
-function dmLoadTC(){
-  document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
-  fetchWithTimeout(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'})
+function dmLoadTC(attempt){
+  attempt=attempt||1;
+  const el=document.getElementById('dm-tc-list');
+  if(attempt===1){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Loading...</div>';
+  } else {
+    el.innerHTML='<div style="text-align:center;padding:30px;color:#b45309;font-size:11px">⏳ GAS is waking up, retrying… ('+attempt+'/3)</div>';
+  }
+  fetchWithTimeout(LOG_URL+'?type=tc_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},28000)
     .then(r=>r.json())
     .then(d=>{
       if(Array.isArray(d)){
+        _dmIsDemo=false;
         const clean=dedupeByRowId(d.filter(r=>r.rowId&&r.uid));
         // DM and Jaq see all; RSM/RSC see only their own requests
         if(isDMUser()||isJaqUser()){
@@ -6969,22 +6983,32 @@ function dmLoadTC(){
         }
         dmTcRender();
       } else {
-        document.getElementById('dm-tc-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
+        el.innerHTML='<div style="text-align:center;padding:30px;color:var(--t3);font-size:11px">Unexpected response. Try refreshing.</div>';
       }
     })
-    .catch(()=>setDMTcDemo());
+    .catch(()=>{
+      if(attempt<3){
+        setTimeout(()=>dmLoadTC(attempt+1),3000);
+      } else {
+        setDMTcDemo();
+      }
+    });
 }
 function setDMTcDemo(){
+  _dmIsDemo=true;
+  // Demo dates anchored near current pay cycle so cycle chips still show entries
+  const now=new Date(); const m=now.getMonth()+1; const y=now.getFullYear();
+  const pd=d=>m+'/'+d+'/'+y;
   const rawTcDemo=[
-    {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:'3/6/2026',location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'ap485d-TC-OLD-098',submitted:'',uid:'ap485d',name:'Alfredo Parra',date:'3/10/2026',location:'College St (747)',reason:'No Internet at college location',shiftStart:'11:31 AM',breakStart:'3:00 PM',breakEnd:'4:08 PM',shiftEnd:'8:13 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'mg221k-TC-OLD-099',submitted:'',uid:'mg221k',name:'Matthew Gomez',date:'3/6/2026',location:'Dowlen Rd (775)',reason:'Internet down',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'6:00 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'bb8326-TC-OLD-100',submitted:'',uid:'bb8326',name:'Bryan Barajas',date:'3/7/2026',location:'Twin City Hwy (752)',reason:'Forgot to clock back in from break',shiftStart:'11:00 AM',breakStart:'3:00 PM',breakEnd:'4:00 PM',shiftEnd:'7:18 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'rg8855-TC-OLD-101',submitted:'',uid:'rg8855',name:'Rolando Garcia',date:'2/7/2026',location:'West Orange (768)',reason:'Discrepancy on timecard',shiftStart:'9:52 AM',breakStart:'2:00 PM',breakEnd:'3:00 PM',shiftEnd:'8:02 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'nc3647-TC-OLD-102',submitted:'',uid:'nc3647',name:'Nancy Cordova',date:'3/12/2026',location:'West Orange (768)',reason:'Forgot to clock back in from break',shiftStart:'12:15 PM',breakStart:'3:00 PM',breakEnd:'4:05 PM',shiftEnd:'8:03 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'jq286d-TC-OLD-103',submitted:'',uid:'jq286d',name:'Josue Sosa',date:'2/15/2026',location:'Jefferson Dr (777)',reason:'Skipped shift lab by accident',shiftStart:'11:37 AM',breakStart:'2:27 PM',breakEnd:'3:11 PM',shiftEnd:'5:35 PM',status:'Corrected',note:'',edited:''},
-    {rowId:'cx7250-TC-OLD-104',submitted:'',uid:'cx7250',name:'Christina Muzquiz',date:'1/28/2026',location:'Memorial Blvd (769)',reason:'Shift lab error clocking in',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'5:05 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'tg4507-TC-OLD-095',submitted:'',uid:'tg4507',name:'Thalia Gonzalez',date:pd(now.getDate()-3),location:'Dowlen Rd (775)',reason:'Forgot to clock back in from lunch',shiftStart:'9:37 AM',breakStart:'2:02 PM',breakEnd:'3:02 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'gs0426-TC-OLD-097',submitted:'',uid:'gs0426',name:'Gabbisette Sanchez',date:pd(now.getDate()-3),location:'College St (747)',reason:'Internet was down in the morning',shiftStart:'9:40 AM',breakStart:'3:30 PM',breakEnd:'4:30 PM',shiftEnd:'8:04 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'ap485d-TC-OLD-098',submitted:'',uid:'ap485d',name:'Alfredo Parra',date:pd(now.getDate()-5),location:'College St (747)',reason:'No Internet at college location',shiftStart:'11:31 AM',breakStart:'3:00 PM',breakEnd:'4:08 PM',shiftEnd:'8:13 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'mg221k-TC-OLD-099',submitted:'',uid:'mg221k',name:'Matthew Gomez',date:pd(now.getDate()-3),location:'Dowlen Rd (775)',reason:'Internet down',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'6:00 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'bb8326-TC-OLD-100',submitted:'',uid:'bb8326',name:'Bryan Barajas',date:pd(now.getDate()-2),location:'Twin City Hwy (752)',reason:'Forgot to clock back in from break',shiftStart:'11:00 AM',breakStart:'3:00 PM',breakEnd:'4:00 PM',shiftEnd:'7:18 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'rg8855-TC-OLD-101',submitted:'',uid:'rg8855',name:'Rolando Garcia',date:pd(Math.max(1,now.getDate()-8)),location:'West Orange (768)',reason:'Discrepancy on timecard',shiftStart:'9:52 AM',breakStart:'2:00 PM',breakEnd:'3:00 PM',shiftEnd:'8:02 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'nc3647-TC-OLD-102',submitted:'',uid:'nc3647',name:'Nancy Cordova',date:pd(Math.max(1,now.getDate()-7)),location:'West Orange (768)',reason:'Forgot to clock back in from break',shiftStart:'12:15 PM',breakStart:'3:00 PM',breakEnd:'4:05 PM',shiftEnd:'8:03 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'jq286d-TC-OLD-103',submitted:'',uid:'jq286d',name:'Josue Sosa',date:pd(Math.max(1,now.getDate()-12)),location:'Jefferson Dr (777)',reason:'Skipped shift lab by accident',shiftStart:'11:37 AM',breakStart:'2:27 PM',breakEnd:'3:11 PM',shiftEnd:'5:35 PM',status:'Corrected',note:'',edited:''},
+    {rowId:'cx7250-TC-OLD-104',submitted:'',uid:'cx7250',name:'Christina Muzquiz',date:pd(Math.max(1,now.getDate()-1)),location:'Memorial Blvd (769)',reason:'Shift lab error clocking in',shiftStart:'9:40 AM',breakStart:'None',breakEnd:'None',shiftEnd:'5:05 PM',status:'Corrected',note:'',edited:''},
   ];
   if(isDMUser()||isJaqUser()){
     _dmTcData=rawTcDemo;
@@ -7052,6 +7076,7 @@ function getWeekLabel(sun){
 // State: which week is selected per context
 let _dmToWeekChip=null; // null = all
 let _raToWeekChip=null;
+let _dmIsDemo=false; // true when GAS fetch failed and demo data is showing
 
 function buildWeekChips(containerId, selectedTs, onSelect){
   const el=document.getElementById(containerId);
@@ -7164,14 +7189,28 @@ function parseFirstDay(r){
   // If Sheets returned a Date object string, extract just the day number
   const dateObjMatch=rawDay.match(/\b(\d{1,2})\s+\d{4}\b/);
   if(dateObjMatch) rawDay=dateObjMatch[1];
+  // If days field is a full date like "11/7/2026" or "11/07/2026", extract day portion (middle number)
+  const slashDateMatch=rawDay.match(/^\d{1,2}\/(\d{1,2})\/\d{4}$/);
+  if(slashDateMatch) rawDay=slashDateMatch[1];
   const _months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   _months.forEach(m=>{rawDay=rawDay.replace(new RegExp('^'+m+'\\s*','i'),'').trim();});
   // Strip any non-numeric prefix (e.g. "Wed" from Date.toString())
   rawDay=rawDay.replace(/^[^0-9]+/,'').trim();
+  // Strip trailing decimal (e.g. "7.0" → "7")
+  rawDay=rawDay.replace(/\.0+$/,'');
   const firstDay=rawDay.replace(/^0/,'');
   if(!firstDay||isNaN(parseInt(firstDay))) return null;
   // Handle month field that may be ISO datetime or Date.toString() from Sheets
   let monthStr=(r.month||'').trim();
+  // Handle Excel/Sheets serial number for month (e.g. "46327" = Nov 2026)
+  if(/^\d{5}(\.\d+)?$/.test(monthStr)){
+    const serial=parseFloat(monthStr);
+    // Excel epoch: Jan 1 1900 = serial 1 (with leap year bug)
+    const excelEpoch=new Date(Date.UTC(1899,11,30));
+    const md=new Date(excelEpoch.getTime()+Math.floor(serial)*86400000);
+    const mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    monthStr=mNames[md.getUTCMonth()]+' '+md.getUTCFullYear();
+  }
   if(/^[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}\s+\d{4}/.test(monthStr)){
     // Date.toString() format — parse with UTC
     const md=new Date(monthStr);
