@@ -818,7 +818,7 @@ const UID_NAMES={
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
   'jx820u':'Jose Manzo','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ec651n':'Erica Culbert',
-  'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez',
+  'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez','ka4020':'Keila Alvarado',
   'tbd752':'Store 752 (TBD)',
 };
 function fullName(uid){ return UID_NAMES[uid]||uid; }
@@ -1175,7 +1175,7 @@ const STORE_REPS={
 
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
-  'jq6635':['jq6635','jv6394','et7967'],           // Jaquelin — store 777: Joseph, Evelyn
+  'jq6635':['jq6635','jv6394','et7967','ka4020'],  // Jaquelin — store 777: Joseph, Evelyn, Keila
   'mg221k':['mg221k','ec651n'],
   'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
   'jx820u':['jx820u','nc3647','ju512j'],
@@ -1210,11 +1210,12 @@ const STORE_PEER_MAP=(()=>{
   map['jq286d']=['sc417e'];
   map['cx7250']=['bb8326'];   // Christina RSM 769
   // Store 777 — Joseph and Sergio see each other + Jaquelin
-  map['jv6394']=['et7967','jq6635'];
+  map['jv6394']=['et7967','ka4020','jq6635'];
   map['sc417e']=['jq286d'];   // Sergio RSC 752
   // Store 769 — Bryan RSC peers with Christina RSM
   map['bb8326']=['cx7250'];
-  map['et7967']=['jv6394','jq6635'];
+  map['et7967']=['jv6394','ka4020','jq6635'];
+  map['ka4020']=['jv6394','et7967','jq6635'];
   return map;
 })();
 let _pendingUid=null;
@@ -1676,7 +1677,7 @@ function switchToCycle(cycleStart){
     let reps=cycle.reps;
     if(isDMv||isJaqv) reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ji2646'&&r.uid!=='ec934j');
     else if(isRSMv){ const t=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&t.includes(r.uid.toLowerCase())); }
-    else { const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))); }
+    else { reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752'); }
     _perfAllData=reps;
     // Keep rep view if one is selected, just reload their data for new cycle
     if(hadRep){
@@ -1750,8 +1751,7 @@ function loadDistrictDashboard(forceRefresh){
             const myTeam=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]).map(u=>u.toLowerCase());
             _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
           } else {
-            const peers=(STORE_PEER_MAP[_pendingUid]||[]).map(u=>u.toLowerCase());
-            _perfAllData=data.filter(r=>r.uid&&(r.uid===_pendingUid||peers.includes(r.uid.toLowerCase()))&&r.uid!=='ec934j'&&r.uid!=='ji2646');
+            _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
           }
           // Store the actual perf cycle start — used by tracker submits & fetches
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
@@ -1779,8 +1779,7 @@ function loadDistrictDashboard(forceRefresh){
           const myReps=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]);
           uidsToFetch=[...myReps];
         } else {
-          const peers=(STORE_PEER_MAP[_pendingUid]||[]);
-          uidsToFetch=[_pendingUid,...peers];
+          uidsToFetch=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
         }
         Promise.all(uidsToFetch.map(uid=>
           fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
@@ -2137,8 +2136,7 @@ function toggleMobileDashboard(){
             const myTeam2=(RSM_TEAM_MAP[uid]||STORE_REPS[_activityStore||uid]||[]).map(u=>u.toLowerCase());
             _perfAllData=data.filter(r=>r.uid&&myTeam2.includes(r.uid.toLowerCase()));
           } else {
-            const peers2=(STORE_PEER_MAP[uid]||[]).map(u=>u.toLowerCase());
-            _perfAllData=data.filter(r=>r.uid&&(r.uid===uid||peers2.includes(r.uid.toLowerCase())));
+            _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
           }
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
         }
@@ -2156,7 +2154,7 @@ function toggleMobileDashboard(){
       }).catch(()=>{
         // Fallback: fetch each peer individually
         const peers3=(STORE_PEER_MAP[uid]||[]);
-        const uids3=isDM?Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm'):isRSM?(STORE_REPS[_activityStore||uid]||[]):[uid,...peers3];
+        const uids3=isDM?Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm'):isRSM?(STORE_REPS[_activityStore||uid]||[]):Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
         Promise.all(uids3.map(u=>fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(u)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000).then(r=>r.json()).catch(()=>null)))
           .then(results=>{
             _perfAllData=results.filter(r=>r&&r.uid);
@@ -3323,12 +3321,12 @@ const PHONES=[
   {id:'i16_256',  n:'iPhone 16 256GB',           sw:829.99,  nw:829.99,  up:829.99,  frp:829.99,  brand:'Apple',    promoReq:'any'},
   {id:'i16_512',  n:'iPhone 16 512GB',           sw:1029.99, nw:1029.99, up:1029.99, frp:1029.99, brand:'Apple',    promoReq:'any'},
   {id:'i16e_128', n:'iPhone 16e 128GB',          sw:49.99,   nw:199.99,  up:599.99,  sw_o:199.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,  nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:349.99,  nw:499.99,  up:899.99,  sw_o:549.99, nw_o:649.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:399.99,  nw:499.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17_256',  n:'iPhone 17 256GB',           sw:929.99,  nw:929.99,  up:929.99,  frp:929.99,  brand:'Apple',    promoReq:'any'},
-  {id:'i17_512',  n:'iPhone 17 512GB',           sw:1129.99, nw:1129.99, up:1129.99, frp:1129.99, brand:'Apple',    promoReq:'any'},
+  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,  nw:299.99,  up:449.99,  sw_o:349.99, nw_o:449.99, up_o:449.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:349.99,  nw:499.99,  up:649.99,  sw_o:549.99, nw_o:599.99, up_o:649.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:149.99,  nw:299.99,  up:699.99,  sw_o:349.99, nw_o:449.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:349.99,  nw:499.99,  up:899.99,  sw_o:549.99, nw_o:649.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17_256',  n:'iPhone 17 256GB',           sw:399.99,  nw:499.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i17_512',  n:'iPhone 17 512GB',           sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
   {id:'iair_256', n:'iPhone Air 256GB',          sw:1099.99, nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_512', n:'iPhone Air 512GB',          sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_1tb', n:'iPhone Air 1TB',            sw:1699.99, nw:1699.99, up:1699.99, frp:1699.99, brand:'Apple',    promoReq:'any'},
@@ -3339,23 +3337,23 @@ const PHONES=[
   {id:'i17pm_512',n:'iPhone 17 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
   {id:'i17pm_1tb',n:'iPhone 17 Pro Max 1TB',     sw:1599.99, nw:1599.99, up:1599.99, frp:1599.99, brand:'Apple',    promoReq:'any'},
   {id:'i17pm_2tb',n:'iPhone 17 Pro Max 2TB',     sw:1999.99, nw:1999.99, up:1999.99, frp:1999.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_256', n:'iPhone 18 Pro 256GB',       sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_512', n:'iPhone 18 Pro 512GB',       sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18p_1tb', n:'iPhone 18 Pro 1TB',         sw:1799.99, nw:1799.99, up:1799.99, frp:1799.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_256',n:'iPhone 18 Pro Max 256GB',   sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_512',n:'iPhone 18 Pro Max 512GB',   sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
-  {id:'i18pm_1tb',n:'iPhone 18 Pro Max 1TB',     sw:1899.99, nw:1899.99, up:1899.99, frp:1899.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_256', n:'iPhone 18 Pro 256GB',       sw:1299.99, nw:1299.99, up:1299.99, frp:1299.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_512', n:'iPhone 18 Pro 512GB',       sw:1499.99, nw:1499.99, up:1499.99, frp:1499.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18p_1tb', n:'iPhone 18 Pro 1TB',         sw:1899.99, nw:1899.99, up:1899.99, frp:1899.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_256',n:'iPhone 18 Pro Max 256GB',   sw:1199.99, nw:1199.99, up:1199.99, frp:1199.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_512',n:'iPhone 18 Pro Max 512GB',   sw:1399.99, nw:1399.99, up:1399.99, frp:1399.99, brand:'Apple',    promoReq:'any'},
+  {id:'i18pm_1tb',n:'iPhone 18 Pro Max 1TB',     sw:1799.99, nw:1799.99, up:1799.99, frp:1799.99, brand:'Apple',    promoReq:'any'},
   // Samsung
   {id:'a16',     n:'Galaxy A16',                 sw:0,       nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:199.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
   {id:'a17',     n:'Galaxy A17',                 sw:0,       nw:29.99,   up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
   {id:'a37',     n:'Galaxy A37',                 sw:59.99,   nw:129.99,  up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
-  {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  sw_o:299.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'a36',     n:'Galaxy A36',                 sw:39.99,   nw:79.99,   up:199.99,  sw_o:129.99, nw_o:129.99, up_o:199.99,  frp:359.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,  nw:299.99,  up:699.99,  sw_o:399.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,  nw:299.99,  up:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s25',     n:'Galaxy S25',                 sw:360,     nw:360,     up:799.99,  sw_o:499.99, nw_o:499.99, up_o:799.99,  frp:799.99,  brand:'Samsung',  promoReq:'supreme'},
   {id:'s26',     n:'Galaxy S26',                 sw:499.99,  nw:599.99,  up:999.99,  sw_o:699.99, nw_o:699.99, up_o:999.99,  frp:999.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s26u',    n:'Galaxy S26 Ultra',           sw:799.99,  nw:999.99,  up:1399.99, sw_o:1099.99,nw_o:1099.99,up_o:1399.99, frp:1399.99, brand:'Samsung',  promoReq:'supreme'},
-  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, sw_o:1599.99,nw_o:1599.99,up_o:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
   // Motorola
   {id:'mgplay',  n:'moto g play 2026',           sw:0,       nw:0,       up:159.99,  sw_o:29.99,  nw_o:29.99,  up_o:159.99,  frp:159.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
   {id:'mg26',    n:'moto g 2026',                sw:0,       nw:0,       up:189.99,  sw_o:29.99,  nw_o:29.99,  up_o:189.99,  frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
@@ -3368,8 +3366,7 @@ const PHONES=[
   {id:'iconp',   n:'Icon Plus 2026',             sw:0,       nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
   {id:'debs3',   n:'Debut S3',                   sw:0,       nw:0,       up:79.99,   sw_o:0,      nw_o:0,      up_o:79.99,   frp:79.99,   brand:'Cricket',  promoReq:'select',  maxLinesNw:4},
   {id:'debtflex',n:'Cricket Debut Flex',         sw:59.99,   nw:59.99,   up:99.99,   sw_o:59.99,  nw_o:59.99,  up_o:99.99,   frp:99.99,   brand:'Cricket',  promoReq:'any'},
-  {id:'iconpr',  n:'Icon Pro 2026',              sw:0,       nw:0,       up:139.99,  sw_o:39.99,  nw_o:39.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
-  {id:'iconp27', n:'Icon Plus 2027',            sw:0,       nw:0,       up:169.99,  sw_o:49.99,  nw_o:49.99,  up_o:169.99,  frp:169.99,  brand:'Cricket',  promoReq:'supreme', maxLinesNw:4},
+  {id:'iconpr',  n:'Icon Pro 2026',              sw:0,       nw:0,       up:139.99,  sw_o:29.99,  nw_o:29.99,  up_o:139.99,  frp:139.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
 ];
 
 const WATCHES=[
