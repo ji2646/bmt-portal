@@ -802,10 +802,10 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
 function fmtRawDate(s){ if(!s) return ''; const p=String(s).split('-'); if(p.length!==3) return s; return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0]; }
 
 const ALLOWED_UIDS=[
-  'ap485d','mg221k','tg4507',
+  'mg221k','tg4507',
   'jq6635','jv6394','jq286d','cx7250',
-  'bb8326','jx820u','ji2646dm','sc417e','nc3647','ju512j','ec651n',
-  'et7967'
+  'bb8326','jx820u','ji2646dm','sc417e','ju512j','ec651n',
+  'et7967','ka4020'
 ];
 
 const DISABLED_UIDS=[];
@@ -813,13 +813,11 @@ const QTOOL_DISABLED_UIDS=[];
 const ADMIN_DISABLED_UIDS=['dg8674','rg8855','ec934j']; // account disabled by admin
 
 const UID_NAMES={
-  'ap485d':'Alfredo Parra','dg8674':'Dara Gazcon',
   'mg221k':'Matthew Gomez','tg4507':'Thalia Gonzalez','jq6635':'Jaquelin Sauceda',
   'jv6394':'Joseph Cisneros','sc417e':'Sergio Cardenas','jq286d':'Josue Sosa',
   'cx7250':'Christina Muzquiz','bb8326':'Bryan Barajas',
-  'jx820u':'Jose Manzo','nc3647':'Nancy Cordova','ju512j':'Jonatan Ramirez','ec651n':'Erica Culbert',
+  'jx820u':'Jose Manzo','ju512j':'Jonatan Ramirez','ec651n':'Erica Culbert',
   'ji2646dm':'Josue Garcia','et7967':'Evelyn Tellez','ka4020':'Keila Alvarado',
-  'tbd752':'Store 752 (TBD)',
 };
 function fullName(uid){ return UID_NAMES[uid]||uid; }
 
@@ -1162,11 +1160,11 @@ const ACTIVITY_CREDS={
 // Activity store -> rep UIDs
 const STORE_REPS={
   '777':null, // Jaquelin sees all
-  '747':['ap485d','dg8674','tg4507'],           // Alfredo + Dara + Thalia (no RSM)
+  '747':['tg4507','et7967','ka4020'],         // Thalia + Evelyn + Keila (no RSM)
   '775':['mg221k','ec651n'],                // Matthew + Erica
   '769':['bb8326'],                         // Christina RSM + Bryan RSC
   '752':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
-  '768':['jx820u','nc3647','ju512j'],       // Jose Manzo + Nancy + Jonatan
+  '768':['jx820u','ju512j'],                // Jose Manzo + Jonatan
   'dm':null,
   'ji2646dm':null
 };
@@ -1175,12 +1173,11 @@ const STORE_REPS={
 
 // RSM team map for dashboard filter: rsm uid → their reps (including themselves)
 const RSM_TEAM_MAP={
-  'jq6635':['jq6635','jv6394','et7967','ka4020'],  // Jaquelin — store 777: Joseph, Evelyn, Keila
+  'jq6635':['jq6635','jv6394','bb8326'],           // Jaquelin — store 777: Joseph, Bryan
   'mg221k':['mg221k','ec651n'],
   'jq286d':['jq286d','sc417e'],                // Josue Sosa RSM + Sergio RSC
-  'jx820u':['jx820u','nc3647','ju512j'],
+  'jx820u':['jx820u','ju512j'],
   'cx7250':['cx7250','bb8326'],                // Christina RSM + Bryan RSC (store 769)
-  // tbd752 placeholder removed — jq286d is now RSM for store 752
 };
 // Jaquelin store 777 sees all (null in STORE_REPS)
 // Role helpers — call these anywhere instead of repeating the checks
@@ -1209,13 +1206,15 @@ const STORE_PEER_MAP=(()=>{
   map['jx820u']=(STORE_REPS['768']||[]).filter(u=>u!=='jx820u');
   map['jq286d']=['sc417e'];
   map['cx7250']=['bb8326'];   // Christina RSM 769
-  // Store 777 — Joseph and Sergio see each other + Jaquelin
-  map['jv6394']=['et7967','ka4020','jq6635'];
+  // Store 777 — Joseph + Bryan see each other + Jaquelin
+  map['jv6394']=['bb8326','jq6635'];
   map['sc417e']=['jq286d'];   // Sergio RSC 752
   // Store 769 — Bryan RSC peers with Christina RSM
   map['bb8326']=['cx7250'];
-  map['et7967']=['jv6394','ka4020','jq6635'];
-  map['ka4020']=['jv6394','et7967','jq6635'];
+  // Store 747 — Thalia + Evelyn + Keila (no RSM)
+  map['tg4507']=['et7967','ka4020'];
+  map['et7967']=['tg4507','ka4020'];
+  map['ka4020']=['tg4507','et7967'];
   return map;
 })();
 let _pendingUid=null;
@@ -1675,9 +1674,7 @@ function switchToCycle(cycleStart){
     if(!cycle) return;
     const isDMv=isDMUser(); const isJaqv=isJaqUser(); const isRSMv=isRSMUser();
     let reps=cycle.reps;
-    if(isDMv||isJaqv) reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ji2646'&&r.uid!=='ec934j');
-    else if(isRSMv){ const t=(RSM_TEAM_MAP[_pendingUid]||[]).map(u=>u.toLowerCase()); reps=reps.filter(r=>r.uid&&t.includes(r.uid.toLowerCase())); }
-    else { reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752'); }
+    reps=reps.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ji2646'&&r.uid!=='ec934j'&&r.uid!=='tbd752');
     _perfAllData=reps;
     // Keep rep view if one is selected, just reload their data for new cycle
     if(hadRep){
@@ -1746,13 +1743,7 @@ function loadDistrictDashboard(forceRefresh){
         }
         const isDM=isDMUser(); const isJaq=isJaqUser(); const isRSM=isRSMUser();
         if(Array.isArray(data)&&data.length){
-          if(isDM||isJaq) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
-          else if(isRSM){
-            const myTeam=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]).map(u=>u.toLowerCase());
-            _perfAllData=data.filter(r=>r.uid&&myTeam.includes(r.uid.toLowerCase())&&r.uid!=='ec934j'&&r.uid!=='ji2646');
-          } else {
-            _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
-          }
+          _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
           // Store the actual perf cycle start — used by tracker submits & fetches
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
           if(!_perfRepUid) renderDistrictDashboard();
@@ -1771,16 +1762,7 @@ function loadDistrictDashboard(forceRefresh){
         const errMsg=err&&err.message?err.message:String(err||'unknown');
         if(dash2) dash2.innerHTML=`<div style='padding:20px;font-family:DM Sans;font-size:11px;color:var(--t3);text-align:center'>Building dashboard from individual data... (${errMsg})</div>`;
         // Build uid list based on role
-        const isDMf=_pendingUid==='ji2646dm';
-        const isRSMf=RSM_UIDS.includes(_pendingUid)&&!isDMf;
-        let uidsToFetch=[];
-        if(isDMf) uidsToFetch=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
-        else if(isRSMf){
-          const myReps=(RSM_TEAM_MAP[_pendingUid]||STORE_REPS[_activityStore||_pendingUid]||[]);
-          uidsToFetch=[...myReps];
-        } else {
-          uidsToFetch=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
-        }
+        let uidsToFetch=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
         Promise.all(uidsToFetch.map(uid=>
           fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(uid)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000)
             .then(r=>r.json()).catch(()=>null)
@@ -2131,13 +2113,7 @@ function toggleMobileDashboard(){
     fetchWithTimeout(LOG_URL+'?type=perf_fetch&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},30000)
       .then(r=>r.json()).then(data=>{
         if(Array.isArray(data)){
-          if(isDM) _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm');
-          else if(isRSM){
-            const myTeam2=(RSM_TEAM_MAP[uid]||STORE_REPS[_activityStore||uid]||[]).map(u=>u.toLowerCase());
-            _perfAllData=data.filter(r=>r.uid&&myTeam2.includes(r.uid.toLowerCase()));
-          } else {
-            _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
-          }
+          _perfAllData=data.filter(r=>r.uid&&r.uid!=='ji2646dm'&&r.uid!=='ec934j'&&r.uid!=='ji2646'&&r.uid!=='tbd752');
           if(_perfAllData.length&&_perfAllData[0].cycleStart) _perfCurrentCycleStart=_perfAllData[0].cycleStart;
         }
         // Temporarily override perf-dashboard to render into mobile panel
@@ -2153,8 +2129,7 @@ function toggleMobileDashboard(){
         panel.appendChild(fakeDiv);
       }).catch(()=>{
         // Fallback: fetch each peer individually
-        const peers3=(STORE_PEER_MAP[uid]||[]);
-        const uids3=isDM?Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm'):isRSM?(STORE_REPS[_activityStore||uid]||[]):Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
+        const uids3=Object.keys(UID_NAMES).filter(u=>u!=='ji2646dm');
         Promise.all(uids3.map(u=>fetchWithTimeout(LOG_URL+'?type=perf_fetch_uid&uid='+encodeURIComponent(u)+'&_='+Date.now(),{method:'GET',mode:'cors',cache:'no-store'},15000).then(r=>r.json()).catch(()=>null)))
           .then(results=>{
             _perfAllData=results.filter(r=>r&&r.uid);
@@ -9026,11 +9001,9 @@ const STORES = {
       { name:'Lockbox', count:1, lockbox:true },
       { name:'Christina Muzquiz', count:1 },
       { name:'Bryan Barajas', count:1 },
-      { name:'Evelyn Tellez', count:1 },
     ],
     staff:[
       { role:'Retail Sales Consultant', name:'Bryan Barajas', phone:'(409) 300-0903', email:'' },
-      { role:'Retail Sales Consultant', name:'Evelyn Tellez', phone:'(409) 332-7832', email:'' },
     ],
     security:[
       { label:'Lockbox', val:'4376', sensitive:true },
