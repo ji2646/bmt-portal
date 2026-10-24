@@ -795,7 +795,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-23OCT2026-A1</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-23OCT2026-A4</div>
 </div>
 
 <script>
@@ -3054,7 +3054,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 10/2/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 10/23/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3272,11 +3272,12 @@ if(typeof showToast==='undefined'){
 const TAX=0.0825,PROG_LEASE_FEE=0.10,PROG_FEE=PROG_LEASE_FEE+TAX,PROG_INIT=1,WATCH_PLAN=10,WATCH_ACT=25,TABLET_PLAN=15,ACT_FEE=25,SIM_FEE=10,INTL_CALL=10,HS_ADD=10;
 
 const SKEIWATCHES=[
-  {id:'skei_c30',n:'Skeiwatch C30',price:99.99},
-  {id:'skei_s40',n:'Skeiwatch S40',price:109.99},
-  {id:'skei_c62',n:'Skeiwatch C62',price:139.99},
-  {id:'skei_c70',n:'Skeiwatch C70',price:159.99},
-  {id:'skei_c80',n:'Skeiwatch C80',price:159.99},
+  {id:'skei_c35',n:'Skeiwatch C35',price:99.99},
+  {id:'skei_s40',n:'Skeiwatch S40',price:119.99},
+  {id:'skei_c62',n:'Skeiwatch C62',price:169.99},
+  {id:'skei_c71',n:'Skeiwatch C71',price:129.99},
+  {id:'skei_c71j',n:'Skeiwatch C71 (777)',price:159.99},
+  {id:'skei_c80',n:'Skeiwatch C80',price:179.99},
 ];
 
 const PLANS=[
@@ -3722,8 +3723,8 @@ function buildCard(l,idx){
     <div class="f full" style="margin:4px -12px 0">
       <div style="border-top:1px solid var(--bd)">
         <div class="feat-lbl" style="padding:8px 12px 4px">Skeiwatch <span style="color:var(--t3);font-weight:400;font-size:9px">(accessory)</span></div>
-        <div style="display:grid;grid-template-columns:repeat(${SKEIWATCHES.length},1fr);gap:0;border-top:1px solid var(--bd)">
-          ${SKEIWATCHES.map(sk=>`<div class="apo-tile${l.skeiwatch===sk.id?' active':''}" onclick="setSkeiwatch(${l.id},'${sk.id}')"><div style="font-weight:800">${sk.n.replace('Skeiwatch ','')}</div><div style="font-size:9px;font-weight:400;margin-top:1px">${fmt(sk.price)}</div></div>`).join('')}
+        <div style="display:grid;grid-template-columns:repeat(${isMobile()?3:SKEIWATCHES.length},1fr);gap:0;border-top:1px solid var(--bd)">
+          ${SKEIWATCHES.map((sk,i)=>`<div class="apo-tile${l.skeiwatch===sk.id?' active':''}" style="white-space:nowrap;${isMobile()?((i%3===2?'border-right:none;':'')+(i>=3?'border-top:1px solid var(--bd);':'')):''}" onclick="setSkeiwatch(${l.id},'${sk.id}')"><div style="font-weight:800">${sk.n.replace('Skeiwatch ','')}</div><div style="font-size:9px;font-weight:400;margin-top:1px">${fmt(sk.price)}</div></div>`).join('')}
         </div>
         ${l.skeiwatch&&S.finOn?`
         <div class="fin-hdr" style="margin:0;padding:8px 12px;border-top:1px solid var(--bd)">
