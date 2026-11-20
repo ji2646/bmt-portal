@@ -795,7 +795,7 @@ html.dark-mode .wchip-past .wlbl{color:#5a5a5a !important}
     </div>
     <span style="font-size:10px;color:#9CA3AF;font-weight:600">Dark</span>
   </div>
-  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-12NOV2026-A1</div>
+  <div style="position:absolute;bottom:calc(20px + env(safe-area-inset-bottom, 20px));left:0;right:0;text-align:center;font-size:10px;color:#9CA3AF;font-family:'DM Sans',sans-serif;letter-spacing:.5px">V-20NOV2026-A2</div>
 </div>
 
 <script>
@@ -3054,7 +3054,7 @@ if(typeof showToast==='undefined'){
 </div>
 <header>
   <div class="hlogo">
-    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 11/12/2026</div></div>
+    <div><div class="htitle">Quote Tool</div><div class="hsub">Pricing effective 11/20/2026</div></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="hdr-refresh" onclick="location.reload()" title="Reload page" style="padding:8px 10px;cursor:pointer;font-family:\'DM Sans\';font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
@@ -3290,12 +3290,12 @@ const PLANS=[
 // promoReq = plan needed for promo pricing. sw/nw/up = promo price. sw_o/nw_o/up_o = other plan price (null = same as promo / not available)
 const PHONES=[
   // Apple
-  {id:'i15_128',  n:'iPhone 15 128GB',           sw:349.99,  nw:449.99,  up:629.99,  sw_o:449.99, nw_o:549.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_128', n:'iPhone 16e 128GB',          sw:49.99,       nw:199.99,   up:599.99,  sw_o:199.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:149.99,   nw:299.99,  up:699.99,  sw_o:299.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:249.99,   nw:399.99,  up:899.99,  sw_o:399.99, nw_o:499.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:399.99,  nw:499.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
-  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:4},
+  {id:'i15_128',  n:'iPhone 15 128GB',           sw:349.99,  nw:449.99,  up:629.99,  sw_o:449.99, nw_o:549.99, up_o:629.99,  frp:629.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
+  {id:'i16e_128', n:'iPhone 16e 128GB',          sw:0,       nw:49.99,   up:599.99,  sw_o:149.99, nw_o:199.99, up_o:599.99,  frp:599.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
+  {id:'i16e_256', n:'iPhone 16e 256GB',          sw:0,   nw:49.99,  up:699.99,  sw_o:199.99, nw_o:249.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
+  {id:'i16e_512', n:'iPhone 16e 512GB',          sw:0,   nw:49.99,  up:899.99,  sw_o:249.99, nw_o:299.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
+  {id:'i17e_256', n:'iPhone 17e 256GB',          sw:99.99,  nw:199.99,  up:699.99,  sw_o:499.99, nw_o:599.99, up_o:699.99,  frp:699.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
+  {id:'i17e_512', n:'iPhone 17e 512GB',          sw:599.99,  nw:699.99,  up:899.99,  sw_o:699.99, nw_o:799.99, up_o:899.99,  frp:899.99,  brand:'Apple',    promoReq:'supreme', maxLines:2},
   {id:'i17_256',  n:'iPhone 17 256GB',           sw:929.99,  nw:929.99,  up:929.99,  frp:929.99,  brand:'Apple',    promoReq:'any'},
   {id:'i17_512',  n:'iPhone 17 512GB',           sw:1129.99, nw:1129.99, up:1129.99, frp:1129.99, brand:'Apple',    promoReq:'any'},
   {id:'iair_256', n:'iPhone Air 256GB',          sw:1099.99, nw:1099.99, up:1099.99, frp:1099.99, brand:'Apple',    promoReq:'any'},
@@ -3317,21 +3317,21 @@ const PHONES=[
   {id:'iduo_512', n:'iPhone Duo 512GB',          sw:2199.99, nw:2199.99, up:2199.99, frp:2199.99, brand:'Apple',    promoReq:'any'},
   {id:'iduo_1tb', n:'iPhone Duo 1TB',            sw:2599.99, nw:2599.99, up:2599.99, frp:2599.99, brand:'Apple',    promoReq:'any'},
   // Samsung
-  {id:'a16',     n:'Galaxy A16',                 sw:0,       nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:199.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
-  {id:'a17',     n:'Galaxy A17',                 sw:0,       nw:0,         up:109.99,  sw_o:109.99, nw_o:109.99, up_o:109.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
-  {id:'a37',     n:'Galaxy A37',                 sw:0,   nw:49.99,  up:404.99,  sw_o:199.99, nw_o:199.99, up_o:404.99,  frp:404.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
+  {id:'a16',     n:'Galaxy A16',                 sw:0,       nw:0,       up:79.99,   sw_o:79.99,  nw_o:79.99,  up_o:79.99,   frp:219.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLinesNw:4},
+  {id:'a17',     n:'Galaxy A17',                 sw:0,       nw:0,         up:99.99,  sw_o:109.99, nw_o:109.99, up_o:99.99,  frp:229.99,  brand:'Samsung',  promoReq:'supreme', maxLinesNw:4},
+  {id:'a37',     n:'Galaxy A37',                 sw:0,   nw:49.99,  up:449.99,  sw_o:249.99, nw_o:249.99, up_o:449.99,  frp:449.99,  brand:'Samsung',  promoReqSw:'supreme', promoReqNw:'supreme', maxLines:4},
   {id:'a57',     n:'Galaxy A57',                 sw:149.99,  nw:199.99,  up:599.99,  sw_o:299.99, nw_o:299.99, up_o:599.99,  frp:599.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
-  {id:'s26fe',   n:'Galaxy S26 FE',              sw:199.99,   nw:299.99,  up:699.99,  sw_o:399.99, nw_o:399.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
+  {id:'s26fe',   n:'Galaxy S26 FE',              sw:49.99,   nw:149.99,  up:699.99,  sw_o:199.99, nw_o:299.99, up_o:699.99,  frp:699.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s26',     n:'Galaxy S26',                 sw:499.99,  nw:599.99,  up:999.99,  sw_o:699.99, nw_o:699.99, up_o:999.99,  frp:999.99,  brand:'Samsung',  promoReq:'supreme', maxLines:4},
   {id:'s26u',    n:'Galaxy S26 Ultra',           sw:799.99,  nw:999.99,  up:1399.99, sw_o:1099.99,nw_o:1099.99,up_o:1399.99, frp:1399.99, brand:'Samsung',  promoReq:'supreme'},
-  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, sw_o:1599.99,nw_o:1599.99,up_o:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
+  {id:'fold8',   n:'Galaxy Z Fold8',             sw:1399.99, nw:1599.99, up:1899.99, sw_o:1599.99,nw_o:1699.99,up_o:1899.99, frp:1899.99, brand:'Samsung',  promoReq:'supreme'},
   // Motorola
   {id:'mgplay',  n:'moto g play 2026',           sw:0,       nw:0,       up:159.99,  sw_o:29.99,  nw_o:29.99,  up_o:159.99,  frp:159.99,  brand:'Motorola', promoReq:'smart',   maxLinesNw:4},
   {id:'mg26',    n:'moto g 2026',                sw:0,       nw:0,       up:89.99,   sw_o:29.99,  nw_o:29.99,  up_o:89.99,   frp:189.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'mgpwr',   n:'moto g power 2026',          sw:0,       nw:19.99,       up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:199.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'mgpwr',   n:'moto g power 2026',          sw:0,       nw:0,       up:109.99,  sw_o:59.99,  nw_o:59.99,  up_o:109.99,  frp:199.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
   {id:'mgsty',   n:'moto g stylus 2025',         sw:29.99,   nw:39.99,   up:149.99,  sw_o:69.99,  nw_o:69.99,  up_o:149.99,  frp:239.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'medge',   n:'motorola edge 2026',         sw:79.99,   nw:149.99,  up:249.99,  sw_o:199.99, nw_o:299.99, up_o:249.99,  frp:469.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
-  {id:'razr',    n:'motorola razr 2025',         sw:149.99,  nw:149.99,  up:399.99,  sw_o:299.99, nw_o:299.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
+  {id:'medge',   n:'motorola edge 2026',         sw:59.99,   nw:119.99,  up:249.99,  sw_o:199.99, nw_o:249.99, up_o:249.99,  frp:469.99,  brand:'Motorola', promoReq:'supreme', maxLinesNw:4},
+  {id:'razr',    n:'motorola razr 2025',         sw:99.99,  nw:99.99,  up:399.99,  sw_o:249.99, nw_o:249.99, up_o:399.99,  frp:599.99,  brand:'Motorola', promoReq:'supreme', maxLines:4},
   // Cricket
   {id:'iconp',   n:'Icon Plus 2026',             sw:0,       nw:0,       up:69.99,   sw_o:29.99,  nw_o:29.99,  up_o:69.99,   frp:109.99,  brand:'Cricket',  promoReq:'smart',   maxLinesNw:4},
   {id:'debtflex',n:'Cricket Debut Flex',         sw:59.99,   nw:59.99,   up:99.99,   sw_o:59.99,  nw_o:59.99,  up_o:99.99,   frp:99.99,   brand:'Cricket',  promoReq:'any'},
@@ -3348,7 +3348,7 @@ const WATCHES=[
 ];
 
 const TABLETS=[
-  {id:'taba11p',n:'Galaxy Tab A11+', price:199.99,frp:259.99},
+  {id:'taba11p',n:'Galaxy Tab A11+', price:199.99,frp:309.99, up:249.99},
 ];
 
 const HS_DEVICES=[
@@ -3381,6 +3381,8 @@ function devById(id,cat){
   if(cat==='h')return HS_DEVICES.find(h=>h.id===id);
 }
 function protectCost(frp){return frp>=550?12:8;}
+// Devices with no Cricket Protect option (per rundown)
+const NO_PROTECT=new Set(['iduo_256','iduo_512','iduo_1tb']);
 function vc(){return S.lines.filter(l=>l.cat==='v').length;}
 function wc(){return S.lines.filter(l=>l.cat==='w').length;}
 function tc(){return S.lines.filter(l=>l.cat==='t').length;}
@@ -3565,7 +3567,8 @@ function lu(id,k,v){
   // Shipping warning for high-value devices
   if(k==='device'&&v){
     const dev=PHONES.find(p=>p.id===v)||TABLETS.find(t=>t.id===v);
-    if(dev&&l.protect){
+    if(NO_PROTECT.has(v)){ l.protect=false; const fe=$('feats-'+id); if(fe) fe.innerHTML=buildFeats(l); }
+    else if(dev&&l.protect){
       l.protectTier=protectCost(dev.frp);
     } else if(dev&&!l.protect&&l.lt!=='upgrade'){
       // Auto-set correct tier for when protect gets toggled later
@@ -3662,7 +3665,7 @@ function buildCard(l,idx){
       devHtml+=`<option value="byod_t" ${l.device==='byod_t'?'selected':''}>Customer's Own Tablet</option>`;
     } else {
       TABLETS.forEach(t=>{ 
-        const pr=l.lt==='upgrade'?t.frp:t.price;
+        const pr=l.lt==='upgrade'?(t.up??t.frp):t.price;
         const tagT=l.lt==='upgrade'?' (FRP)':'';
         devHtml+=`<option value="${t.id}" ${l.device===t.id?'selected':''}>${t.n.replace(/^Samsung /,'')} — ${fmt(pr)}${tagT}</option>`;
       });
@@ -3685,7 +3688,7 @@ function buildCard(l,idx){
     const dev=devById(l.device,l.cat);
     if(dev){
       const linePos=l.cat==='v'?S.lines.filter(x=>x.cat==='v').indexOf(l)+1:null;
-      const pr=isV?devPrice(dev,l.lt,linePos,l.upQual!==false):(l.lt==='upgrade'?(l.upQual!==false?dev.price:dev.frp):dev.price);
+      const pr=isV?devPrice(dev,l.lt,linePos,l.upQual!==false):(l.lt==='upgrade'?(l.upQual!==false?(dev.up??dev.price):dev.frp):dev.price);
       const promoPrice=isV?devPrice(dev,l.lt,null,l.upQual!==false):dev.price; // price without line limit
       const overLimit=isV&&pr!==promoPrice&&pr>0; // price changed due to line limit
       if(pr>=149.99&&overLimit) qual=`<span class="qpill q-warn">Other plan price — Max 4</span>`;
@@ -3821,8 +3824,12 @@ function buildFeats(l){
     protTiles+=featTile('Protect $8/mo','',l.protect&&tier===8,'setProtect('+l.id+',8)','var(--bread)');
     protTiles+=featTile('Protect $12/mo','',l.protect&&tier===12,'setProtect('+l.id+',12)','var(--bread)');
   } else {
-    const pc=protectCost(frp);
-    protTiles+=featTile('Protect','$'+pc+'/mo',l.protect,'tog('+l.id+",'protect')",'var(--bread)');
+    if(dev&&NO_PROTECT.has(dev.id)){
+      protTiles+=featTile('Protect','Not available',false,'','var(--bread)');
+    } else {
+      const pc=protectCost(frp);
+      protTiles+=featTile('Protect','$'+pc+'/mo',l.protect,'tog('+l.id+",'protect')",'var(--bread)');
+    }
   }
   // Remove last border-right
   protTiles=protTiles.replace(/border-right:1px solid var\(--bd\)(?=[^;]*<\/div>\s*$)/,'');
